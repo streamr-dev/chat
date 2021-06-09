@@ -1,0 +1,32 @@
+{
+    "name": "streamr-chat",
+    "version": "1.0.0",
+    "license": "MIT",
+    "scripts": {
+        "webpack": "webpack",
+        "start": "webpack serve",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "streamr-client-react": "^1.1.1"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.14.3",
+        "@babel/node": "^7.14.2",
+        "@babel/plugin-proposal-class-properties": "^7.13.0",
+        "@babel/preset-env": "^7.14.4",
+        "@babel/preset-react": "^7.13.13",
+        "babel-loader": "^8.2.2",
+        "css-loader": "^5.2.6",
+        "file-loader": "^6.2.0",
+        "html-webpack-plugin": "^5.3.1",
+        "image-webpack-loader": "^7.0.1",
+        "path": "^0.12.7",
+        "style-loader": "^2.0.0",
+        "webpack": "^5.38.1",
+        "webpack-cli": "^4.7.0",
+        "webpack-dev-server": "^3.11.2"
+    }
+}
