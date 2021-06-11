@@ -1,48 +1,52 @@
 import express from "express";
 const app = express();
-import { StreamrClient } from "streamr-client";
+import { StreamrClient, Stream, StreamOperation } from "streamr-client";
+import { createServer } from "http";
+import dotenv from "dotenv";
 
+dotenv.config();
 const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
 
 const account = StreamrClient.generateEthereumAccount();
 
 const client = new StreamrClient({
   auth: {
-    privateKey: account.privateKey,
+    privateKey: process.env.PRIVATE_KEY,
   },
 });
 
-let stream: any;
+let stream: Stream;
 
 const createStream = async () => {
-  stream = await client.createStream({
-    id: "/foo/bar", // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
-  });
-  console.log(`Stream ${stream.id} has been created!`);
+  stream = await client.getStream(
+    "0x13327af521d2042f8bd603ee19a4f3a93daa790d/streamr-chat-messages"
+  );
 };
 
 createStream();
 
 app.post("/send", async (req, res) => {
-  console.log(req.query);
   await stream.publish({
     message: req.query.message,
   });
   res.send("Message Sent!");
 });
 
-app.get("/getmessages", async (req, res) => {
-  await client.subscribe(
-    {
-      stream: stream.id,
-    },
-    (message, metadata) => {
-      console.log(message);
-      res.send(message);
-    }
-  );
+app.post("/adduser", async (req, res) => {
+  const user = req.body.user;
+  if (stream.hasPermission(StreamOperation.STREAM_PUBLISH, user) === null) {
+    stream.grantPermission(StreamOperation.STREAM_PUBLISH, user as string);
+  }
+  if (stream.hasPermission(StreamOperation.STREAM_SUBSCRIBE, user) === null) {
+    stream.grantPermission(StreamOperation.STREAM_SUBSCRIBE, user as string);
+  }
+  res.send("User added");
+});
+
+app.get("/generateuser", async (req, res) => {
+  const user = await StreamrClient.generateEthereumAccount();
+  res.send(user);
 });
 
 app.listen(PORT, () => {
