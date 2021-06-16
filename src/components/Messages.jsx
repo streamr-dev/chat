@@ -3,15 +3,27 @@ import { useSubscription } from "streamr-client-react";
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
+
+  const dotw = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday"
+  }
+
   const handleMessages = useCallback((m, metadata) => {
     let unix_timestamp = metadata.messageId.timestamp;
-    var date = new Date(unix_timestamp * 1000);
+    var date = new Date(unix_timestamp);
     var hours = date.getHours();
     var minutes = "0" + date.getMinutes();
     var seconds = "0" + date.getSeconds();
+    let day = date.getDay();
 
     var formattedTime =
-      hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
+      dotw[day] + " " + hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
 
     setMessages([...messages, { ...m, time: formattedTime }]);
   });
