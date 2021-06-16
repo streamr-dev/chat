@@ -4,11 +4,11 @@
 
 ## Other Resources
 :globe_with_meridians: Website https://streamr.network/ <br/>
-:map: Roadmap https://streamr.network/roadmap <br/>
+🗺️ Roadmap https://streamr.network/roadmap <br/>
 :page_facing_up: Whitepaper https://streamr.network/whitepaper <br/>
 :page_facing_up: Network whitepaper https://streamr.network/network-whitepaper <br/>
 :books: Dev docs https://streamr.network/docs/introduction <br/>
 :pencil: Blog https://blog.streamr.network/ <br/>
 :bird: Twitter https://twitter.com/streamr <br/>
 :computer: Github https://github.com/streamr-dev <br/>
-:coin: Data Fund https://streamr.network/fund <br/>
+🪙 Data Fund https://streamr.network/fund <br/>
