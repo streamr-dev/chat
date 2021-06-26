@@ -13,7 +13,8 @@
         "metamask-react": "^1.3.1",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
-        "streamr-client-react": "^1.1.1"
+        "streamr-client": "^5.4.4",
+        "streamr-client-react": "^2.0.0"
     },
     "devDependencies": {
         "@babel/core": "^7.14.3",
