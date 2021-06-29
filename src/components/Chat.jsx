@@ -7,11 +7,14 @@ const Chat = () => {
   const client = useClient();
 
   const handleSend = () => {
+    if(message === '') {
+      return
+    }
     setMessage("");
     client.publish(
-      "0x13327af521d2042f8bd603ee19a4f3a93daa790d/streamr-chat-messages",
+      "0x783c81633290fa641b7bacc5c9cee4c2d709c2e3/streamr-chat-messages",
       {
-        message,
+        message
       }
     );
   };

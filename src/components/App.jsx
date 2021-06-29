@@ -11,13 +11,12 @@ const URL = "http://localhost:3000";
 
 const App = () => {
   const [privateKey, setPrivateKey] = useState("");
-
   const client = useClient();
 
   useEffect(() => {
     const getStream = async () => {
       const stream = await client.getStream(
-        "0x13327af521d2042f8bd603ee19a4f3a93daa790d/streamr-chat-messages"
+        "0x783c81633290fa641b7bacc5c9cee4c2d709c2e3/streamr-chat-messages"
       );
 
       const address = await window.ethereum.selectedAddress;
@@ -26,38 +25,39 @@ const App = () => {
         localStorage.getItem("metamaskAddress") === null ||
         localStorage.getItem("metamaskAddress") !== address
       ) {
-        console.log(user);
         const user = await StreamrClient.generateEthereumAccount();
         setPrivateKey(user.privateKey);
 
-        if (stream.hasPermission("stream_publish", user.address) === null) {
-          stream.grantPermission("stream_publish", user.address);
-        }
-        if (stream.hasPermission("stream_subscribe", user.address) === null) {
-          stream.grantPermission("stream_subscribe", user.address);
-        }
+        stream.grantPermission("stream_publish", user.address);
+        stream.grantPermission("stream_subscribe", user.address);
+
         localStorage.setItem("privateKey", user.privateKey);
         localStorage.setItem("address", user.address);
         localStorage.setItem("metamaskAddress", address);
       } else {
         setPrivateKey(localStorage.getItem("privateKey"));
+        console.log(localStorage.getItem("address"))
       }
     };
 
     getStream();
-    console.log(privateKey);
   }, []);
 
   return (
+    <>
+    {
+      privateKey === '' ? 
+        <>Loading</>:
     <Provider
       auth={{
         privateKey: privateKey,
       }}
     >
-      {console.log(privateKey)}
       <Chat />
       <Messages />
-    </Provider>
+    </Provider> 
+    }
+    </>
   );
 };
 

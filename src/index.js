@@ -5,4 +5,7 @@ import "./index.css";
 
 import App from "./components/App.jsx";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<Provider auth={{
+  ethereum: window.ethereum
+}}
+><App /></Provider>, document.getElementById("root"));

@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { useSubscription } from "streamr-client-react";
+import React, { useCallback, useState, useEffect } from "react";
+import { useClient, useSubscription } from "streamr-client-react";
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
@@ -22,16 +22,22 @@ const Messages = () => {
     var seconds = "0" + date.getSeconds();
     let day = date.getDay();
 
+    console.log('message received')
+
     var formattedTime =
       dotw[day] + " " + hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
 
     setMessages([...messages, { ...m, time: formattedTime }]);
   });
 
+  useEffect(() => {
+    console.log(messages);
+  })
+
   useSubscription(
     {
       stream:
-        "0x13327af521d2042f8bd603ee19a4f3a93daa790d/streamr-chat-messages",
+      "0x783c81633290fa641b7bacc5c9cee4c2d709c2e3/streamr-chat-messages",
     },
     handleMessages
   );
