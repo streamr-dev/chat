@@ -5,7 +5,10 @@ module.exports = {
   entry: path.join(__dirname, "src", "index.js"),
   output: { path: path.join(__dirname, "build"), filename: "index.bundle.js" },
   mode: process.env.NODE_ENV || "development",
-  resolve: { modules: [path.resolve(__dirname, "src"), "node_modules"] },
+  resolve: {
+    modules: [path.resolve(__dirname, "src"), "node_modules"],
+    extensions: ["", ".js", ".jsx", ".ts", ".tsx"],
+  },
   devServer: { contentBase: path.join(__dirname, "src") },
   module: {
     rules: [
@@ -21,6 +24,11 @@ module.exports = {
       {
         test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
         use: ["file-loader"],
+      },
+      {
+        test: /\.(ts|tsx)?$/,
+        use: "ts-loader",
+        exclude: [/node_modules/, /server/],
       },
     ],
   },
