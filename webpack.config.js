@@ -39,6 +39,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "index.html"),
+      favicon: "./src/assets/streamr.svg",
     }),
   ],
 };
