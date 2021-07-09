@@ -77,21 +77,16 @@ const Header = ({
     if (!ensDecoded) {
       ensDecoded = friendAddress.toLowerCase();
     }
-    console.log(ensDecoded);
     try {
       const stream = await client.getOrCreateStream({
         id: `${address.toLowerCase()}/streamr-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
       });
-      console.log(
-        await stream.hasPermission("stream_get" as StreamOperation, ensDecoded)
-      );
       if (
         !(await stream.hasPermission(
           "stream_get" as StreamOperation,
           ensDecoded
         ))
       ) {
-        console.log("test");
         await stream.grantPermission(
           "stream_get" as StreamOperation,
           ensDecoded
@@ -122,7 +117,6 @@ const Header = ({
       setCode(stream);
       setConnectedAddress(address.toLowerCase());
     } catch (err) {
-      console.log(err);
       setCode({} as Stream);
     }
   };
@@ -163,7 +157,6 @@ const Header = ({
         setNoPermissions(true);
       } else {
       } */
-      console.log(err);
       setWrongCode(true);
     }
   };

@@ -61,7 +61,6 @@ const Messages = ({ address, connectedAddress, client }: Props) => {
   }, []);
 
   useEffect(() => {
-    console.log(connectedAddress.toLowerCase());
     const getMessages = async () => {
       await client.subscribe(
         {
@@ -76,10 +75,6 @@ const Messages = ({ address, connectedAddress, client }: Props) => {
 
     getMessages();
   }, [connectedAddress]);
-
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
 
   return (
     <Box marginBottom="25px" marginTop="70px">
