@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import StreamrClient from "streamr-client";
 import { Container, Box } from "@chakra-ui/react";
 
@@ -13,6 +13,8 @@ type Props = {
 const Messages = ({ address, connectedAddress, client }: Props) => {
   const [messages, setMessages] = useState([]);
 
+  const messagesRef = useRef(null);
+
   const dotw = {
     0: "Sunday",
     1: "Monday",
@@ -22,6 +24,14 @@ const Messages = ({ address, connectedAddress, client }: Props) => {
     5: "Friday",
     6: "Saturday",
   };
+
+  const scrollToBottom = () => {
+    messagesRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleMessages = useCallback((m, metadata) => {
     if (!m.hasOwnProperty("message")) {
@@ -84,6 +94,7 @@ const Messages = ({ address, connectedAddress, client }: Props) => {
           />
         );
       })}
+      <div ref={messagesRef} />
     </Box>
   );
 };
