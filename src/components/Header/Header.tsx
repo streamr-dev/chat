@@ -17,6 +17,7 @@ import {
   ModalCloseButton,
   ModalFooter,
   Input,
+  Image,
   Alert,
   Box,
   Menu,
@@ -166,10 +167,11 @@ const Header = ({
   };
 
   return (
-    <Flex direction="row">
+    <Flex direction="row" alignItems="center">
       <Heading as="h2" size="lg">
         Streamr Chat
       </Heading>
+      <Image src="../../assets/streamr.svg" boxSize="50px" marginLeft="7px" />
       <Spacer />
       {address ? (
         <Tooltip label="Click to Copy" placement="bottom">
