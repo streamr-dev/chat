@@ -1,11 +1,17 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { useClient } from "streamr-client-react";
+import StreamrClient from "streamr-client";
+import { Container, Box } from "@chakra-ui/react";
 
 import Message from "./Message";
 
-const Messages = () => {
+type Props = {
+  address: string;
+  connectedAddress: string;
+  client: StreamrClient;
+};
+
+const Messages = ({ address, connectedAddress, client }: Props) => {
   const [messages, setMessages] = useState([]);
-  const client = useClient();
 
   const dotw = {
     0: "Sunday",
@@ -18,6 +24,9 @@ const Messages = () => {
   };
 
   const handleMessages = useCallback((m, metadata) => {
+    if (!m.hasOwnProperty("message")) {
+      return;
+    }
     let unix_timestamp = metadata.messageId.timestamp;
     var date = new Date(unix_timestamp);
     var hours = date.getHours();
@@ -42,11 +51,11 @@ const Messages = () => {
   }, []);
 
   useEffect(() => {
+    console.log(connectedAddress.toLowerCase());
     const getMessages = async () => {
       await client.subscribe(
         {
-          stream:
-            "0x783c81633290fa641b7bacc5c9cee4c2d709c2e3/streamr-chat-messages",
+          stream: `${connectedAddress.toLowerCase()}/streamr-chat-messages`,
           resend: {
             last: 10,
           },
@@ -56,21 +65,26 @@ const Messages = () => {
     };
 
     getMessages();
-  }, []);
+  }, [connectedAddress]);
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
 
   return (
-    <div style={{ margin: "80px" }}>
+    <Box marginTop="20px">
       {messages.map((message) => {
         return (
           <Message
             message={message.message}
             time={message.time}
-            address={message.address}
+            messageAddress={message.address}
+            address={address}
             key={message.id}
           />
         );
       })}
-    </div>
+    </Box>
   );
 };
 

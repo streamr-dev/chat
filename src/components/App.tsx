@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Provider, { useClient } from "streamr-client-react";
 import StreamrClient, { StreamOperation } from "streamr-client";
 import { ethers } from "ethers";
+import { Container } from "@chakra-ui/layout";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import Messages from "./Messages/Messages";
 import Chat from "./Chat/Chat";
@@ -15,13 +17,14 @@ declare global {
 }
 
 const App = () => {
-  const [address, setAddress] = useState<string | null>();
+  const [address, setAddress] = useState("");
+  const [connectedAddress, setConnectedAddress] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [publicAddress, setPublicAddress] = useState("");
   const [client, setClient] = useState<StreamrClient | null>();
   const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
 
-  useEffect(() => {
+  /* useEffect(() => {
     const initializeStream = async () => {
       const stream = await client.getStream(
         "0x783c81633290fa641b7bacc5c9cee4c2d709c2e3/streamr-chat-messages"
@@ -120,19 +123,31 @@ const App = () => {
     };
 
     initializeStream();
-  }, []);
+  }, []); */
 
   return (
-    <>
-      <Header
-        setAddress={setAddress}
-        address={address}
-        setProvider={setProvider}
-        setClient={setClient}
-      />
-      <Chat address={publicAddress} />
-      <Messages />
-    </>
+    <Router>
+      <Container maxW="container.lg" paddingY="8">
+        <Header
+          setAddress={setAddress}
+          address={address}
+          setProvider={setProvider}
+          setClient={setClient}
+          client={client}
+          setConnectedAddress={setConnectedAddress}
+        />
+        <Chat
+          address={address}
+          connectedAddress={connectedAddress}
+          client={client}
+        />
+        <Messages
+          address={address}
+          connectedAddress={connectedAddress}
+          client={client}
+        />
+      </Container>
+    </Router>
   );
 };
 

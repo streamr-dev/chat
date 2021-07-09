@@ -1,5 +1,6 @@
+import { Button, Input } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import { useClient } from "streamr-client-react";
+import StreamrClient from "streamr-client";
 
 import "./Chat.scss";
 
@@ -9,24 +10,26 @@ type Metadata = {
   address: string;
 };
 
-const Chat = ({ address }: { address: string }) => {
+type Props = {
+  address: string;
+  client: StreamrClient;
+  connectedAddress: string;
+};
+
+const Chat = ({ address, client, connectedAddress }: Props) => {
   const [message, setMessage] = useState("");
   const [typing, setTyping] = useState([]);
   const [reducedTyping, setReducedTyping] = useState([]);
-  const client = useClient();
 
   const handleSend = () => {
     if (message === "") {
       return;
     }
     setMessage("");
-    client.publish(
-      "0x783c81633290fa641b7bacc5c9cee4c2d709c2e3/streamr-chat-messages",
-      {
-        message,
-        address,
-      }
-    );
+    client.publish(`${connectedAddress}/streamr-chat-messages`, {
+      message,
+      address,
+    });
   };
 
   const updateMetadata = () => {
@@ -86,10 +89,6 @@ const Chat = ({ address }: { address: string }) => {
     setReducedTyping(newTyping);
   }, [typing]);
 
-  useEffect(() => {
-    console.log(reducedTyping);
-  }, [reducedTyping]);
-
   return (
     <>
       <div className="inputWrapper">
@@ -100,19 +99,24 @@ const Chat = ({ address }: { address: string }) => {
           return <p style={{}}>{t.address} is typing...</p>;
         })}
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <input
+          <Input
             type="text"
             placeholder="Message"
             value={message}
             onChange={(e) => {
               setMessage(e.target.value);
-              updateMetadata();
+              // updateMetadata();
             }}
             className="input"
-          ></input>
-          <button type="submit" className="submitButton" onClick={handleSend}>
+          ></Input>
+          <Button
+            type="submit"
+            onClick={handleSend}
+            bgColor="#ff5c00"
+            color="white"
+          >
             Send
-          </button>
+          </Button>
         </div>
       </div>
     </>
