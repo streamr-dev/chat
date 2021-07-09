@@ -23,6 +23,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Tooltip,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
@@ -170,37 +171,56 @@ const Header = ({
         Streamr Chat
       </Heading>
       <Spacer />
-      <Button
-        colorScheme="blue"
-        onClick={async () => {
-          if (!ethereum) {
-            setAddress("no wallet detected");
-            return;
-          }
-          await window.ethereum.enable();
-          const provider = new ethers.providers.Web3Provider(ethereum);
-          provider.getSigner();
-          await provider.send("eth_requestAccounts", []);
-          if (!ethereum.selectedAddress) {
-            setAddress("wallet not signed in");
-            return;
-          }
-          const client = await new StreamrClient({
-            // restUrl: 'http://localhost/api/v1', // if you want to test locally in the streamr-docker-dev environment
-            auth: { ethereum },
-            publishWithSignature: "never",
-          });
-          setClient(client);
-          let ensAddress;
-          try {
-            ensAddress = await provider.lookupAddress(ethereum.selectedAddress);
-          } catch (err) {}
-          setAddress(ensAddress || ethereum.selectedAddress);
-          setProvider(provider);
-        }}
-      >
-        {address || "Connect"}
-      </Button>
+      {address ? (
+        <Tooltip label="Click to Copy" placement="bottom">
+          <Button
+            color="white"
+            backgroundColor="#0D009A"
+            _hover={{ backgroundColor: "#13013D" }}
+            onClick={() => {
+              navigator.clipboard.writeText(address);
+            }}
+          >
+            {address}
+          </Button>
+        </Tooltip>
+      ) : (
+        <Button
+          color="white"
+          _hover={{ backgroundColor: "#13013D" }}
+          backgroundColor="#0D009A"
+          onClick={async () => {
+            if (!ethereum) {
+              setAddress("no wallet detected");
+              return;
+            }
+            await window.ethereum.enable();
+            const provider = new ethers.providers.Web3Provider(ethereum);
+            provider.getSigner();
+            await provider.send("eth_requestAccounts", []);
+            if (!ethereum.selectedAddress) {
+              setAddress("wallet not signed in");
+              return;
+            }
+            const client = await new StreamrClient({
+              // restUrl: 'http://localhost/api/v1', // if you want to test locally in the streamr-docker-dev environment
+              auth: { ethereum },
+              publishWithSignature: "never",
+            });
+            setClient(client);
+            let ensAddress;
+            try {
+              ensAddress = await provider.lookupAddress(
+                ethereum.selectedAddress
+              );
+            } catch (err) {}
+            setAddress(ensAddress || ethereum.selectedAddress);
+            setProvider(provider);
+          }}
+        >
+          Connect
+        </Button>
+      )}
       <Menu isLazy placement="bottom-end">
         <MenuButton
           marginLeft="3"
@@ -259,32 +279,55 @@ const Header = ({
               flexDir="column"
             >
               Room successfully created! Ask your friend to enter the code:{" "}
-              <Box
-                width="95%"
-                backgroundColor="gray.600"
-                color="white"
-                overflow="scroll"
-                borderRadius="5px"
-                padding="5px"
-                marginY="5px"
-              >
-                {code.id}
-              </Box>
+              <Tooltip label="Click to Copy" placement="bottom">
+                <Box
+                  width="95%"
+                  backgroundColor="#525252"
+                  color="white"
+                  overflow="scroll"
+                  borderRadius="5px"
+                  paddingY="5px"
+                  paddingX="10px"
+                  marginY="5px"
+                  onClick={() => {
+                    navigator.clipboard.writeText(code.id);
+                  }}
+                >
+                  {code.id}
+                </Box>
+              </Tooltip>
             </Alert>
           )}
 
           <ModalFooter>
-            <Button variant="ghost" onClick={createDisclosure.onClose}>
-              Cancel
-            </Button>
-            <Button
-              colorScheme="blue"
-              ml={3}
-              disabled={!client}
-              onClick={handleCreate}
-            >
-              Confirm
-            </Button>
+            {code.id ? (
+              <Button
+                color="white"
+                _hover={{ backgroundColor: "#13013D" }}
+                backgroundColor="#0D009A"
+                ml={3}
+                disabled={!client}
+                onClick={createDisclosure.onClose}
+              >
+                Ok
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={createDisclosure.onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="white"
+                  _hover={{ backgroundColor: "#13013D" }}
+                  backgroundColor="#0D009A"
+                  ml={3}
+                  disabled={!client}
+                  onClick={handleCreate}
+                >
+                  Confirm
+                </Button>
+              </>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -335,17 +378,34 @@ const Header = ({
           )}
 
           <ModalFooter>
-            <Button variant="ghost" onClick={joinDisclosure.onClose}>
-              Cancel
-            </Button>
-            <Button
-              colorScheme="blue"
-              ml={3}
-              disabled={!client}
-              onClick={handleJoin}
-            >
-              Confirm
-            </Button>
+            {rightCode ? (
+              <Button
+                color="white"
+                _hover={{ backgroundColor: "#13013D" }}
+                backgroundColor="#0D009A"
+                ml={3}
+                disabled={!client}
+                onClick={joinDisclosure.onClose}
+              >
+                Confirm
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={joinDisclosure.onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="white"
+                  _hover={{ backgroundColor: "#13013D" }}
+                  backgroundColor="#0D009A"
+                  ml={3}
+                  disabled={!client}
+                  onClick={handleJoin}
+                >
+                  Confirm
+                </Button>
+              </>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>
