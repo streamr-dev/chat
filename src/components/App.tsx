@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Provider, { useClient } from "streamr-client-react";
-import StreamrClient from "streamr-client";
+import StreamrClient, { StreamOperation } from "streamr-client";
+import { ethers } from "ethers";
+import { Container } from "@chakra-ui/layout";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import Messages from "./Messages/Messages";
 import Chat from "./Chat/Chat";
@@ -14,11 +17,14 @@ declare global {
 }
 
 const App = () => {
+  const [address, setAddress] = useState("");
+  const [connectedAddress, setConnectedAddress] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [publicAddress, setPublicAddress] = useState("");
-  const client = useClient();
+  const [client, setClient] = useState<StreamrClient | null>();
+  const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
 
-  useEffect(() => {
+  /* useEffect(() => {
     const initializeStream = async () => {
       const stream = await client.getStream(
         "0x783c81633290fa641b7bacc5c9cee4c2d709c2e3/streamr-chat-messages"
@@ -38,34 +44,72 @@ const App = () => {
 
         setPrivateKey(user.privateKey);
 
-        if (!(await stream.hasPermission("stream_publish", user.address))) {
-          await stream.grantPermission("stream_publish", user.address);
+        if (
+          !(await stream.hasPermission(
+            StreamOperation.STREAM_PUBLISH,
+            user.address
+          ))
+        ) {
+          await stream.grantPermission(
+            StreamOperation.STREAM_PUBLISH,
+            user.address
+          );
         }
-        if (!(await stream.hasPermission("stream_subscribe", user.address))) {
-          await stream.grantPermission("stream_subscribe", user.address);
+        if (
+          !(await stream.hasPermission(
+            StreamOperation.STREAM_SUBSCRIBE,
+            user.address
+          ))
+        ) {
+          await stream.grantPermission(
+            StreamOperation.STREAM_SUBSCRIBE,
+            user.address
+          );
         }
-        if (!(await stream.hasPermission("stream_get", user.address))) {
-          await stream.grantPermission("stream_get", user.address);
+        if (
+          !(await stream.hasPermission(
+            StreamOperation.STREAM_GET,
+            user.address
+          ))
+        ) {
+          await stream.grantPermission(
+            StreamOperation.STREAM_GET,
+            user.address
+          );
         }
 
         if (
-          !(await metadataStream.hasPermission("stream_publish", user.address))
-        ) {
-          await metadataStream.grantPermission("stream_publish", user.address);
-        }
-        if (
           !(await metadataStream.hasPermission(
-            "stream_subscribe",
+            StreamOperation.STREAM_PUBLISH,
             user.address
           ))
         ) {
           await metadataStream.grantPermission(
-            "stream_subscribe",
+            StreamOperation.STREAM_PUBLISH,
             user.address
           );
         }
-        if (!(await metadataStream.hasPermission("stream_get", user.address))) {
-          await metadataStream.grantPermission("stream_get", user.address);
+        if (
+          !(await metadataStream.hasPermission(
+            StreamOperation.STREAM_SUBSCRIBE,
+            user.address
+          ))
+        ) {
+          await metadataStream.grantPermission(
+            StreamOperation.STREAM_SUBSCRIBE,
+            user.address
+          );
+        }
+        if (
+          !(await metadataStream.hasPermission(
+            StreamOperation.STREAM_GET,
+            user.address
+          ))
+        ) {
+          await metadataStream.grantPermission(
+            StreamOperation.STREAM_GET,
+            user.address
+          );
         }
 
         localStorage.setItem("privateKey", user.privateKey);
@@ -79,24 +123,32 @@ const App = () => {
     };
 
     initializeStream();
-  }, []);
+  }, []); */
 
   return (
-    <>
-      {privateKey === "" || publicAddress === "" ? (
-        <>Loading</>
-      ) : (
-        <Provider
-          auth={{
-            privateKey: privateKey,
-          }}
-        >
-          <Header />
-          <Chat address={publicAddress} />
-          <Messages />
-        </Provider>
-      )}
-    </>
+    <Router>
+      <Container maxW="container.lg" paddingY="8">
+        <Header
+          setAddress={setAddress}
+          address={address}
+          setProvider={setProvider}
+          setClient={setClient}
+          client={client}
+          setConnectedAddress={setConnectedAddress}
+          connectedAddress={connectedAddress}
+        />
+        <Chat
+          address={address}
+          connectedAddress={connectedAddress}
+          client={client}
+        />
+        <Messages
+          address={address}
+          connectedAddress={connectedAddress}
+          client={client}
+        />
+      </Container>
+    </Router>
   );
 };
 
