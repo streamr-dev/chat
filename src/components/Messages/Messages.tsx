@@ -72,7 +72,7 @@ const Messages = ({ address, connectedAddress, client }: Props) => {
   }, [messages]);
 
   return (
-    <Box marginTop="20px">
+    <Box marginY="20px">
       {messages.map((message) => {
         return (
           <Message

@@ -1,4 +1,4 @@
-import { Button, Input } from "@chakra-ui/react";
+import { Button, Input, Flex } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import StreamrClient from "streamr-client";
 
@@ -91,34 +91,45 @@ const Chat = ({ address, client, connectedAddress }: Props) => {
 
   return (
     <>
-      <div className="inputWrapper">
+      {/* <div className="inputWrapper">
         {reducedTyping.map((t) => {
           if (address === t.address) {
             return;
           }
           return <p style={{}}>{t.address} is typing...</p>;
-        })}
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <Input
-            type="text"
-            placeholder="Message"
-            value={message}
-            onChange={(e) => {
-              setMessage(e.target.value);
-              // updateMetadata();
-            }}
-            className="input"
-          ></Input>
-          <Button
-            type="submit"
-            onClick={handleSend}
-            bgColor="#ff5c00"
-            color="white"
-          >
-            Send
-          </Button>
-        </div>
-      </div>
+        })} */}
+      <Flex
+        position="fixed"
+        bottom="0px"
+        direction="row"
+        width="container.lg"
+        left="50%"
+        backgroundColor="white"
+        transform="translateX(-50%)"
+        paddingY="10px"
+      >
+        <Input
+          type="text"
+          placeholder="Message"
+          value={message}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            // updateMetadata();
+          }}
+          disabled={connectedAddress === ""}
+        ></Input>
+        <Button
+          type="submit"
+          onClick={handleSend}
+          bgColor="#ff5c00"
+          color="white"
+          disabled={connectedAddress === ""}
+          paddingX="30px"
+          marginLeft="10px"
+        >
+          Send
+        </Button>
+      </Flex>
     </>
   );
 };

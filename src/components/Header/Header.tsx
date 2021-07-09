@@ -18,6 +18,8 @@ import {
   ModalFooter,
   Input,
   Alert,
+  Tag,
+  Box,
 } from "@chakra-ui/react";
 
 type Props = {
@@ -232,7 +234,22 @@ const Header = ({
               w="90%"
               mx="auto"
               borderRadius="5"
-            >{`Room successfully created! Ask your friend to enter the code ${code.id} to join.`}</Alert>
+              display="flex"
+              flexDir="column"
+            >
+              Room successfully created! Ask your friend to enter the code:{" "}
+              <Box
+                width="95%"
+                backgroundColor="gray.600"
+                color="white"
+                overflow="scroll"
+                borderRadius="5px"
+                padding="5px"
+                marginY="5px"
+              >
+                {code.id}
+              </Box>
+            </Alert>
           )}
 
           <ModalFooter>
