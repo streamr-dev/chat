@@ -106,7 +106,7 @@ const Chat = ({ address, client, connectedAddress }: Props) => {
         left="50%"
         backgroundColor="white"
         transform="translateX(-50%)"
-        paddingY="10px"
+        paddingY="20px"
       >
         <Input
           type="text"

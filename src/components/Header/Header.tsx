@@ -174,6 +174,9 @@ const Header = ({
       alignItems="center"
       width="container.lg"
       position="fixed"
+      backgroundColor="white"
+      top="0"
+      paddingY="20px"
     >
       <Heading as="h2" size="lg">
         Streamr Chat

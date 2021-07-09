@@ -20,12 +20,13 @@ const Message = ({ message, address, messageAddress, time }: PropTypes) => {
           {time}
         </Text>
         <Text color="#525252" fontSize="xs" marginBottom="-1">
-          {address}
+          {messageAddress}
         </Text>
         <Box
           borderRadius={sent ? "15px 15px 0px 15px" : "15px 15px 15px 0"}
           width={"25vw"}
-          backgroundColor={sent ? "blue.200" : "gray.200"}
+          backgroundColor={sent ? "#0D009A" : "#525252"}
+          color="white"
           marginY="3"
           marginLeft="0"
           paddingX="4"
