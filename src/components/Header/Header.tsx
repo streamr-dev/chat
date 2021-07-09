@@ -18,9 +18,13 @@ import {
   ModalFooter,
   Input,
   Alert,
-  Tag,
   Box,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 type Props = {
   setClient: React.Dispatch<React.SetStateAction<StreamrClient>>;
@@ -65,20 +69,25 @@ const Header = ({
     }
     setInvalidFriendAddress(false);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    let ensDecoded = await provider.resolveName(friendAddress);
+    let ensDecoded = await provider.resolveName(friendAddress.toLowerCase());
     if (!ensDecoded) {
-      ensDecoded = friendAddress;
+      ensDecoded = friendAddress.toLowerCase();
     }
+    console.log(ensDecoded);
     try {
       const stream = await client.getOrCreateStream({
-        id: `${address.toLowerCase()}/stream-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
+        id: `${address.toLowerCase()}/streamr-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
       });
+      console.log(
+        await stream.hasPermission("stream_get" as StreamOperation, ensDecoded)
+      );
       if (
         !(await stream.hasPermission(
           "stream_get" as StreamOperation,
           ensDecoded
         ))
       ) {
+        console.log("test");
         await stream.grantPermission(
           "stream_get" as StreamOperation,
           ensDecoded
@@ -162,6 +171,7 @@ const Header = ({
       </Heading>
       <Spacer />
       <Button
+        colorScheme="blue"
         onClick={async () => {
           if (!ethereum) {
             setAddress("no wallet detected");
@@ -188,15 +198,26 @@ const Header = ({
           setAddress(ensAddress || ethereum.selectedAddress);
           setProvider(provider);
         }}
-        key="Connect"
-        colorScheme="blue"
       >
         {address || "Connect"}
       </Button>
-      <Button marginX="3" onClick={createDisclosure.onOpen}>
-        Create Room
-      </Button>
-      <Button onClick={joinDisclosure.onOpen}>Join Room</Button>
+      <Menu isLazy placement="bottom-end">
+        <MenuButton
+          marginLeft="3"
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+          variant="ghost"
+          _hover={{ backgroundColor: "none" }}
+          _expanded={{ backgroundColor: "none" }}
+          _selected={{ backgroundColor: "none" }}
+          _focus={{ backgroundColor: "none" }}
+          _
+        ></MenuButton>
+        <MenuList>
+          <MenuItem onClick={createDisclosure.onOpen}>Create Room</MenuItem>
+          <MenuItem onClick={joinDisclosure.onOpen}>Join Room</MenuItem>
+        </MenuList>
+      </Menu>
       <Modal
         isOpen={createDisclosure.isOpen}
         onClose={createDisclosure.onClose}
