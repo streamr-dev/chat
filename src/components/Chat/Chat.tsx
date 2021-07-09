@@ -21,12 +21,12 @@ const Chat = ({ address, client, connectedAddress }: Props) => {
   const [typing, setTyping] = useState([]);
   const [reducedTyping, setReducedTyping] = useState([]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (message === "") {
       return;
     }
     setMessage("");
-    client.publish(`${connectedAddress}/streamr-chat-messages`, {
+    await client.publish(`${connectedAddress}/streamr-chat-messages`, {
       message,
       address,
     });
@@ -57,6 +57,13 @@ const Chat = ({ address, client, connectedAddress }: Props) => {
     }, 3000);
     return () => clearInterval(clearTyping);
   }, []);
+
+  const handleKeypress = (e: any) => {
+    //it triggers by pressing the enter key
+    if (e.key === "Enter") {
+      handleSend();
+    }
+  };
 
   useEffect(() => {
     const getMessages = async () => {
@@ -117,15 +124,16 @@ const Chat = ({ address, client, connectedAddress }: Props) => {
             // updateMetadata();
           }}
           disabled={connectedAddress === ""}
+          onKeyPress={handleKeypress}
         ></Input>
         <Button
           type="submit"
-          onClick={handleSend}
           bgColor="#ff5c00"
           color="white"
           disabled={connectedAddress === ""}
           paddingX="30px"
           marginLeft="10px"
+          onClick={handleSend}
         >
           Send
         </Button>

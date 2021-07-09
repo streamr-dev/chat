@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import StreamrClient from "streamr-client";
-import { Container, Box } from "@chakra-ui/react";
+import { Container, Box, Text } from "@chakra-ui/react";
 
 import Message from "./Message";
 
@@ -77,7 +77,7 @@ const Messages = ({ address, connectedAddress, client }: Props) => {
   }, [connectedAddress]);
 
   return (
-    <Box marginBottom="25px" marginTop="70px">
+    <Box marginBottom="40px" marginTop="70px">
       {messages.map((message) => {
         return (
           <Message

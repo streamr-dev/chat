@@ -135,6 +135,7 @@ const App = () => {
           setClient={setClient}
           client={client}
           setConnectedAddress={setConnectedAddress}
+          connectedAddress={connectedAddress}
         />
         <Chat
           address={address}
