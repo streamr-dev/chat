@@ -28,6 +28,8 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
+import logo from "../../assets/streamr.svg";
+
 type Props = {
   setClient: React.Dispatch<React.SetStateAction<StreamrClient>>;
   address: string;
@@ -171,7 +173,7 @@ const Header = ({
       <Heading as="h2" size="lg">
         Streamr Chat
       </Heading>
-      <Image src="../../assets/streamr.svg" boxSize="50px" marginLeft="7px" />
+      <Image src={logo} boxSize="50px" marginLeft="7px" />
       <Spacer />
       {address ? (
         <Tooltip label="Click to Copy" placement="bottom">
