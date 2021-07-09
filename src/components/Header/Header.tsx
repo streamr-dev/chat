@@ -169,7 +169,12 @@ const Header = ({
   };
 
   return (
-    <Flex direction="row" alignItems="center">
+    <Flex
+      direction="row"
+      alignItems="center"
+      width="container.lg"
+      position="fixed"
+    >
       <Heading as="h2" size="lg">
         Streamr Chat
       </Heading>
@@ -391,7 +396,7 @@ const Header = ({
                 disabled={!client}
                 onClick={joinDisclosure.onClose}
               >
-                Confirm
+                Ok
               </Button>
             ) : (
               <>

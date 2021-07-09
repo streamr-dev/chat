@@ -14,8 +14,8 @@ const Message = ({ message, address, messageAddress, time }: PropTypes) => {
 
   return (
     <Flex width="100%">
-      {sent ? <Spacer /> : <></>}
-      <Box marginLeft="auto">
+      {/* sent ? <Spacer /> : <></> */}
+      <Box marginLeft={sent ? "auto" : "0"}>
         <Text color="#525252" fontSize="xs" marginBottom="-1">
           {time}
         </Text>
