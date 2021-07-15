@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import StreamrClient, { Stream, StreamOperation } from "streamr-client";
 import { ethers } from "ethers";
 import { useHistory } from "react-router-dom";
@@ -30,6 +30,8 @@ import {
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 import logo from "../../assets/streamr.svg";
+import AddModal from './AddModal';
+import { addPermissions } from '../../utils/utils';
 
 type Props = {
   setClient: React.Dispatch<React.SetStateAction<StreamrClient>>;
@@ -56,6 +58,7 @@ const Header = ({
 
   const createDisclosure = useDisclosure();
   const joinDisclosure = useDisclosure();
+  const addDisclosure = useDisclosure();
 
   const [invalidFriendAddress, setInvalidFriendAddress] = useState(false);
   const [friendAddress, setFriendAddress] = useState("");
@@ -65,60 +68,14 @@ const Header = ({
   const [wrongCode, setWrongCode] = useState(false);
   const [noPermissions, setNoPermissions] = useState(false);
 
-  const history = useHistory();
+  const isFirstRender = useRef(true);
 
   const handleCreate = async () => {
-    try {
-      ethers.utils.getAddress(friendAddress);
-    } catch (e) {
-      console.log(e);
-      setInvalidFriendAddress(true);
-      return;
-    }
-    setInvalidFriendAddress(false);
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    let ensDecoded = await provider.resolveName(friendAddress.toLowerCase());
-    if (!ensDecoded) {
-      ensDecoded = friendAddress.toLowerCase();
-    }
     try {
       const stream = await client.getOrCreateStream({
         id: `${address.toLowerCase()}/streamr-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
       });
 
-      if (
-        !(await stream.hasPermission(
-          "stream_get" as StreamOperation,
-          ensDecoded
-        ))
-      ) {
-        await stream.grantPermission(
-          "stream_get" as StreamOperation,
-          ensDecoded
-        );
-      }
-      if (
-        !(await stream.hasPermission(
-          "stream_publish" as StreamOperation,
-          ensDecoded
-        ))
-      ) {
-        await stream.grantPermission(
-          "stream_publish" as StreamOperation,
-          ensDecoded
-        );
-      }
-      if (
-        !(await stream.hasPermission(
-          "stream_subscribe" as StreamOperation,
-          ensDecoded
-        ))
-      ) {
-        await stream.grantPermission(
-          "stream_subscribe" as StreamOperation,
-          ensDecoded
-        );
-      }
       setCode(stream);
       setConnectedAddress(address.toLowerCase());
     } catch (err) {
@@ -168,6 +125,14 @@ const Header = ({
     }
   };
 
+  useEffect(() => {
+    console.log(address);
+    if (isFirstRender) {
+      isFirstRender.current = false;
+      handleCreate();
+    }
+  }, [address])
+
   return (
     <Flex
       direction="column"
@@ -184,18 +149,22 @@ const Header = ({
         <Image src={logo} boxSize="50px" marginLeft="7px" />
         <Spacer />
         {address ? (
-          <Tooltip label="Click to Copy" placement="bottom">
-            <Button
-              color="white"
-              backgroundColor="#0D009A"
-              _hover={{ backgroundColor: "#13013D" }}
-              onClick={() => {
-                navigator.clipboard.writeText(address);
-              }}
-            >
-              {address}
-            </Button>
-          </Tooltip>
+          <>
+            <Tooltip label="Click to Copy" placement="bottom">
+              <Button
+                color="white"
+                backgroundColor="#0D009A"
+                _hover={{ backgroundColor: "#13013D" }}
+                onClick={() => {
+                  handleCreate();
+                  addDisclosure.onOpen()
+                }}
+              >
+                {address}
+              </Button>
+            </Tooltip>
+            <AddModal disclosure={addDisclosure} client={client} code={code} address={address} setCode={setCode} setConnectedAddress={setConnectedAddress} />
+          </>
         ) : (
           <Button
             color="white"
@@ -230,6 +199,8 @@ const Header = ({
               }
               setAddress(ensAddress || ethereum.selectedAddress);
               setProvider(provider);
+              setConnectedAddress(address.toLowerCase());
+              addDisclosure.onOpen()
             }}
           >
             Connect
@@ -424,9 +395,8 @@ const Header = ({
           </ModalContent>
         </Modal>
       </Flex>
-      <Text marginTop="10px">{`Room: ${
-        connectedAddress || "Not in Room"
-      }`}</Text>
+      <Text marginTop="10px">{`Room: ${connectedAddress || "Not in Room"
+        }`}</Text>
     </Flex>
   );
 };
