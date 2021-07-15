@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import Provider, { useClient } from "streamr-client-react";
 import StreamrClient, { StreamOperation } from "streamr-client";
 import { ethers } from "ethers";
@@ -9,6 +9,7 @@ import Messages from "./Messages/Messages";
 import Chat from "./Chat/Chat";
 import Header from "./Header/Header";
 import "./App.css";
+import { UserContext } from "../contexts/UserContext";
 
 declare global {
   interface Window {
@@ -17,9 +18,7 @@ declare global {
 }
 
 const App = () => {
-  const [address, setAddress] = useState("");
   const [connectedAddress, setConnectedAddress] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
   const [publicAddress, setPublicAddress] = useState("");
   const [client, setClient] = useState<StreamrClient | null>();
   const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
@@ -128,25 +127,20 @@ const App = () => {
   return (
     <Router>
       <Container maxW="container.lg" paddingY="8">
-        <Header
-          setAddress={setAddress}
-          address={address}
-          setProvider={setProvider}
-          setClient={setClient}
-          client={client}
-          setConnectedAddress={setConnectedAddress}
-          connectedAddress={connectedAddress}
-        />
-        <Chat
-          address={address}
-          connectedAddress={connectedAddress}
-          client={client}
-        />
-        <Messages
-          address={address}
-          connectedAddress={connectedAddress}
-          client={client}
-        />
+        <UserContext.Provider
+          value={{
+            connectedAddress,
+            publicAddress,
+            client,
+            setPublicAddress,
+            setConnectedAddress,
+            setClient,
+          }}
+        >
+          <Header setProvider={setProvider} />
+          <Chat />
+          <Messages />
+        </UserContext.Provider>
       </Container>
     </Router>
   );
