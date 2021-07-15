@@ -80,13 +80,13 @@ const Messages = () => {
   }, [connectedAddress]);
 
   return (
-    <Box marginBottom="40px" marginTop="70px">
+    <Box marginBottom="40px" marginTop="100px">
       {messages.map((message) => {
         return (
           <Message
             message={message.message}
             time={message.time}
-            messageAddress={message.address}
+            messageAddress={message.publicAddress}
             key={message.id}
           />
         );

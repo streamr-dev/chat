@@ -1,8 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tooltip, Text, Flex, Spinner } from "@chakra-ui/react";
-import StreamrClient, { Stream, StreamOperation } from 'streamr-client';
-import { ethers } from 'ethers'
-import { addPermissions } from '../../utils/utils';
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Tooltip,
+  Text,
+  Flex,
+  Spinner,
+  Spacer,
+} from "@chakra-ui/react";
+import StreamrClient, { Stream, StreamOperation } from "streamr-client";
+import { ethers } from "ethers";
+import { addPermissions } from "../../utils/utils";
+import { CloseIcon } from "@chakra-ui/icons";
 
 interface PropTypes {
   disclosure: any;
@@ -13,60 +31,63 @@ interface PropTypes {
   setConnectedAddress: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const AddModal = ({ disclosure, client, code, address, setCode, setConnectedAddress }: PropTypes) => {
+const AddModal = ({
+  disclosure,
+  client,
+  code,
+  address,
+  setCode,
+  setConnectedAddress,
+}: PropTypes) => {
   const [friendAddress, setFriendAddress] = useState("");
   const [permissions, setPermissions] = useState([]);
 
   useEffect(() => {
     const getPermissions = async () => {
       if (code.getPermissions) {
-        const newPermissions = await code.getPermissions()
+        const newPermissions = await code.getPermissions();
         console.log(newPermissions);
 
-        let newPermissionAddresses: string[] = []
+        let newPermissionAddresses: string[] = [];
         newPermissions.forEach((permission: any) => {
           if (!newPermissionAddresses.includes(permission.user)) {
-            newPermissionAddresses.push(permission.user)
+            newPermissionAddresses.push(permission.user);
           }
-        })
-        setPermissions(newPermissionAddresses)
+        });
+        setPermissions(newPermissionAddresses);
       }
-    }
+    };
     getPermissions();
-  }, [code])
+  }, [code]);
 
   useEffect(() => {
-    console.log(permissions)
-  }, [permissions])
+    console.log(permissions);
+  }, [permissions]);
 
   const handleInvite = async () => {
-    const [data, errors] = await addPermissions(friendAddress.toLowerCase(), address, client);
+    const [data, errors] = await addPermissions(
+      friendAddress.toLowerCase(),
+      address,
+      client
+    );
     if (!errors) {
-      const newPermissions = permissions
+      const newPermissions = permissions.slice();
       if (!newPermissions.includes(friendAddress.toLowerCase())) {
-        newPermissions.push(friendAddress.toLowerCase())
+        newPermissions.push(friendAddress.toLowerCase());
       }
       setPermissions(newPermissions);
     } else {
-      console.log(errors)
+      console.log(errors);
     }
-  }
+  };
 
   return (
-    <Modal
-      isOpen={disclosure.isOpen}
-      onClose={disclosure.onClose}
-      isCentered
-    >
+    <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose} isCentered>
       <ModalOverlay />
-      <ModalContent
-        maxW='30vw'
-      >
-
+      <ModalContent>
         <ModalHeader>Create Room</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-
           <Alert
             status="success"
             w="90%"
@@ -75,9 +96,9 @@ const AddModal = ({ disclosure, client, code, address, setCode, setConnectedAddr
             display="flex"
             flexDir="column"
           >
-            To chat with a friend, add their public address below and have them join using the following code:
-            {code.id ?
-
+            To chat with a friend, add their public address below and have them
+            join using the following code:
+            {code.id ? (
               <Tooltip label="Click to Copy" placement="bottom">
                 <Box
                   width="95%"
@@ -94,18 +115,37 @@ const AddModal = ({ disclosure, client, code, address, setCode, setConnectedAddr
                 >
                   {code.id}
                 </Box>
-              </Tooltip> :
+              </Tooltip>
+            ) : (
               <Spinner />
-            }
+            )}
           </Alert>
-          <Text fontWeight='bold' marginTop='20px'>Invite Friends</Text>
-          <Flex direction='row'>
-            <Input placeholder="Friend's Public Key" value={friendAddress} onChange={(e) => { setFriendAddress(e.target.value) }}></Input>
+          <Text fontWeight="bold" marginTop="20px">
+            Invite Friends
+          </Text>
+          <Flex direction="row">
+            <Input
+              placeholder="Friend's Public Key"
+              value={friendAddress}
+              onChange={(e) => {
+                setFriendAddress(e.target.value);
+              }}
+            ></Input>
             <Button onClick={handleInvite}>Invite</Button>
           </Flex>
-          {permissions.map((permission) => {
-            return <Text>{permission}</Text>
-          })}
+          <Box overflowY="scroll" height="100px">
+            {permissions.map((permission) => {
+              return (
+                <Flex alignItems="center" paddingY="5px">
+                  <Text>{permission}</Text>
+                  <Spacer />
+                  <Button variant="ghost">
+                    <CloseIcon />
+                  </Button>
+                </Flex>
+              );
+            })}
+          </Box>
         </ModalBody>
 
         <ModalFooter>
@@ -122,7 +162,7 @@ const AddModal = ({ disclosure, client, code, address, setCode, setConnectedAddr
         </ModalFooter>
       </ModalContent>
     </Modal>
-  )
-}
+  );
+};
 
 export default AddModal;

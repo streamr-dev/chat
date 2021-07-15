@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Message.scss";
 import { Box, Text, Spacer, Flex } from "@chakra-ui/react";
 import { UserContext } from "../../contexts/UserContext";
