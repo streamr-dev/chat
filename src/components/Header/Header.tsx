@@ -67,6 +67,7 @@ const Header = ({ setProvider }: Props) => {
       const stream = await client.getOrCreateStream({
         id: `${publicAddress.toLowerCase()}/streamr-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
       });
+      console.log(stream);
 
       setCode(stream);
       setConnectedAddress(publicAddress.toLowerCase());
@@ -77,7 +78,7 @@ const Header = ({ setProvider }: Props) => {
   };
 
   useEffect(() => {
-    console.log(publicAddress);
+    console.log("this works!");
     if (isFirstRender) {
       isFirstRender.current = false;
       handleCreate();
@@ -101,7 +102,7 @@ const Header = ({ setProvider }: Props) => {
         <Spacer />
         {publicAddress ? (
           <>
-            <Tooltip label="Click to Copy" placement="bottom">
+            <Tooltip label="Click to Invite" placement="bottom">
               <Button
                 color="white"
                 backgroundColor="#0D009A"
@@ -116,11 +117,8 @@ const Header = ({ setProvider }: Props) => {
             </Tooltip>
             <AddModal
               disclosure={addDisclosure}
-              client={client}
               code={code}
-              address={publicAddress}
               setCode={setCode}
-              setConnectedAddress={setConnectedAddress}
             />
           </>
         ) : (
@@ -164,23 +162,6 @@ const Header = ({ setProvider }: Props) => {
             Connect
           </Button>
         )}
-        <Menu isLazy placement="bottom-end">
-          <MenuButton
-            marginLeft="3"
-            as={Button}
-            rightIcon={<ChevronDownIcon />}
-            variant="ghost"
-            _hover={{ backgroundColor: "none" }}
-            _expanded={{ backgroundColor: "none" }}
-            _selected={{ backgroundColor: "none" }}
-            _focus={{ backgroundColor: "none" }}
-            _
-          ></MenuButton>
-          <MenuList>
-            <MenuItem onClick={createDisclosure.onOpen}>Create Room</MenuItem>
-            <MenuItem onClick={joinDisclosure.onOpen}>Join Room</MenuItem>
-          </MenuList>
-        </Menu>
         <CreateModal
           disclosure={createDisclosure}
           handleCreate={handleCreate}
