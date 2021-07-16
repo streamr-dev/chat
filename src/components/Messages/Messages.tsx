@@ -1,19 +1,22 @@
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+} from "react";
 import StreamrClient from "streamr-client";
 import { Container, Box, Text } from "@chakra-ui/react";
 
 import Message from "./Message";
+import { UserContext } from "../../contexts/UserContext";
 
-type Props = {
-  address: string;
-  connectedAddress: string;
-  client: StreamrClient;
-};
-
-const Messages = ({ address, connectedAddress, client }: Props) => {
+const Messages = () => {
   const [messages, setMessages] = useState([]);
 
   const messagesRef = useRef(null);
+
+  const { connectedAddress, client } = useContext(UserContext);
 
   const dotw = {
     0: "Sunday",
@@ -77,14 +80,13 @@ const Messages = ({ address, connectedAddress, client }: Props) => {
   }, [connectedAddress]);
 
   return (
-    <Box marginBottom="40px" marginTop="70px">
+    <Box marginBottom="40px" marginTop="100px">
       {messages.map((message) => {
         return (
           <Message
             message={message.message}
             time={message.time}
-            messageAddress={message.address}
-            address={address}
+            messageAddress={message.publicAddress}
             key={message.id}
           />
         );

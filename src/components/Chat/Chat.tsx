@@ -1,8 +1,9 @@
 import { Button, Input, Flex } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import StreamrClient from "streamr-client";
 
 import "./Chat.scss";
+import { UserContext } from "../../contexts/UserContext";
 
 type Metadata = {
   isTyping: boolean;
@@ -16,10 +17,12 @@ type Props = {
   connectedAddress: string;
 };
 
-const Chat = ({ address, client, connectedAddress }: Props) => {
+const Chat = () => {
   const [message, setMessage] = useState("");
   const [typing, setTyping] = useState([]);
   const [reducedTyping, setReducedTyping] = useState([]);
+
+  const { connectedAddress, publicAddress, client } = useContext(UserContext);
 
   const handleSend = async () => {
     if (message === "") {
@@ -28,7 +31,7 @@ const Chat = ({ address, client, connectedAddress }: Props) => {
     setMessage("");
     await client.publish(`${connectedAddress}/streamr-chat-messages`, {
       message,
-      address,
+      publicAddress,
     });
   };
 
@@ -38,7 +41,7 @@ const Chat = ({ address, client, connectedAddress }: Props) => {
       {
         isTyping: true,
         time: new Date().getTime() + 5000,
-        address,
+        publicAddress,
       }
     );
   };
