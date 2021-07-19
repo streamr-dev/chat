@@ -64,6 +64,10 @@ const Messages = () => {
   }, []);
 
   useEffect(() => {
+    if (connectedAddress === "") {
+      setMessages([]);
+      return;
+    }
     const getMessages = async () => {
       await client.subscribe(
         {

@@ -13,14 +13,8 @@ import App from "./components/App.tsx";
 import theme from "./components/theme";
 
 ReactDOM.render(
-  <ColorModeProvider
-    options={{
-      useSystsemColorMode: false,
-    }}
-  >
-    <ChakraProvider theme={theme}>
-      <App />
-    </ChakraProvider>
-  </ColorModeProvider>,
+  <ChakraProvider theme={theme}>
+    <App />
+  </ChakraProvider>,
   document.getElementById("root")
 );
