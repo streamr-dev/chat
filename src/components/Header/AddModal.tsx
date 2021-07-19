@@ -36,9 +36,10 @@ interface PropTypes {
   disclosure: any;
   code: Stream;
   setCode: React.Dispatch<React.SetStateAction<Stream>>;
+  handleCreate: () => void;
 }
 
-const AddModal = ({ disclosure, code, setCode }: PropTypes) => {
+const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
   const [friendAddress, setFriendAddress] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -169,92 +170,116 @@ const AddModal = ({ disclosure, code, setCode }: PropTypes) => {
           }
         >
           <TabList>
-            <Tab isDisabled={connectedAddress !== publicAddress}>Invite</Tab>
+            <Tab
+              isDisabled={
+                !(connectedAddress === publicAddress || connectedAddress === "")
+              }
+            >
+              Invite
+            </Tab>
             <Tab>Join</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
               <ModalBody>
-                <Alert
-                  status="success"
-                  w="90%"
-                  mx="auto"
-                  borderRadius="5"
-                  display="flex"
-                  flexDir="column"
-                >
-                  To chat with a friend, add their public address below and have
-                  them join using the following code:
-                  {code.id ? (
-                    <Tooltip label="Click to Copy" placement="bottom">
-                      <Box
-                        width="95%"
-                        backgroundColor="#525252"
-                        color="white"
-                        overflow="none"
-                        borderRadius="5px"
-                        paddingY="5px"
-                        paddingX="10px"
-                        marginY="5px"
-                        onClick={() => {
-                          navigator.clipboard.writeText(code.id);
-                        }}
-                      >
-                        {code.id}
-                      </Box>
-                    </Tooltip>
-                  ) : (
-                    <Spinner marginY="10px" />
-                  )}
-                </Alert>
-                <Heading size="md" marginY="10px">
-                  Invite Friends
-                </Heading>
-                <Flex direction="row">
-                  <InputGroup>
-                    <Input
-                      placeholder="Friend's Public Key"
-                      value={friendAddress}
-                      pr="4.5rem"
-                      onChange={(e) => {
-                        setFriendAddress(e.target.value);
-                      }}
-                    ></Input>
-                    <InputRightElement width="4.5rem">
-                      <Button
-                        onClick={handleInvite}
-                        isLoading={loading}
-                        borderRadius="0 5px 5px 0"
-                      >
-                        Invite
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </Flex>
-                <Box overflowY="scroll" maxHeight="100px" margin="10px">
-                  {permissions.map((permission) => {
-                    if (permission === publicAddress) {
-                      return;
-                    }
-                    return (
-                      <Flex alignItems="center" paddingY="10px">
-                        <Text>{permission}</Text>
-                        <Spacer />
-                        <Button
-                          variant="link"
-                          onClick={() => {
-                            handleDelete(permission);
+                {connectedAddress === publicAddress ? (
+                  <>
+                    <Alert
+                      status="success"
+                      w="90%"
+                      mx="auto"
+                      borderRadius="5"
+                      display="flex"
+                      flexDir="column"
+                    >
+                      To chat with a friend, add their public address below and
+                      have them join using the following code:
+                      {code.id ? (
+                        <Tooltip label="Click to Copy" placement="bottom">
+                          <Box
+                            width="95%"
+                            backgroundColor="#525252"
+                            color="white"
+                            overflow="none"
+                            borderRadius="5px"
+                            paddingY="5px"
+                            paddingX="10px"
+                            marginY="5px"
+                            onClick={() => {
+                              navigator.clipboard.writeText(code.id);
+                            }}
+                          >
+                            {code.id}
+                          </Box>
+                        </Tooltip>
+                      ) : (
+                        <Spinner marginY="10px" />
+                      )}
+                    </Alert>
+                    <Heading size="md" marginY="10px">
+                      Invite Friends
+                    </Heading>
+                    <Flex direction="row">
+                      <InputGroup>
+                        <Input
+                          placeholder="Friend's Public Key"
+                          value={friendAddress}
+                          pr="4.5rem"
+                          onChange={(e) => {
+                            setFriendAddress(e.target.value);
                           }}
-                        >
-                          <CloseIcon />
-                        </Button>
-                      </Flex>
-                    );
-                  })}
-                </Box>
+                        ></Input>
+                        <InputRightElement width="4.5rem">
+                          <Button
+                            onClick={handleInvite}
+                            isLoading={loading}
+                            borderRadius="0 5px 5px 0"
+                          >
+                            Invite
+                          </Button>
+                        </InputRightElement>
+                      </InputGroup>
+                    </Flex>
+                    <Box overflowY="scroll" maxHeight="100px" margin="10px">
+                      {permissions.map((permission) => {
+                        if (permission === publicAddress) {
+                          return;
+                        }
+                        return (
+                          <Flex alignItems="center" paddingY="10px">
+                            <Text>{permission}</Text>
+                            <Spacer />
+                            <Button
+                              variant="link"
+                              onClick={() => {
+                                handleDelete(permission);
+                              }}
+                            >
+                              <CloseIcon />
+                            </Button>
+                          </Flex>
+                        );
+                      })}
+                    </Box>
+                  </>
+                ) : (
+                  <Button onClick={handleCreate}>Join Personal Room</Button>
+                )}
               </ModalBody>
 
               <ModalFooter>
+                {connectedAddress === publicAddress ? (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setConnectedAddress("");
+                    }}
+                  >
+                    Disconnect
+                  </Button>
+                ) : (
+                  <></>
+                )}
                 <Button
                   color="white"
                   _hover={{ backgroundColor: "#13013D" }}
@@ -321,7 +346,7 @@ const AddModal = ({ disclosure, code, setCode }: PropTypes) => {
                     <Button
                       variant="ghost"
                       onClick={() => {
-                        setConnectedAddress(publicAddress);
+                        setConnectedAddress("");
                         setRightCode(false);
                         setDisconnected(true);
                       }}

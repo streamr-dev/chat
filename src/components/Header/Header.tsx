@@ -84,12 +84,12 @@ const Header = ({ setProvider }: Props) => {
     }
   };
 
-  useEffect(() => {
-    if (isFirstRender) {
-      isFirstRender.current = false;
-      handleCreate();
-    }
-  }, [publicAddress]);
+  // useEffect(() => {
+  //   if (isFirstRender) {
+  //     isFirstRender.current = false;
+  //     handleCreate();
+  //   }
+  // }, [publicAddress]);
 
   return (
     <Flex
@@ -124,6 +124,7 @@ const Header = ({ setProvider }: Props) => {
               disclosure={addDisclosure}
               code={code}
               setCode={setCode}
+              handleCreate={handleCreate}
             />
           </>
         ) : (
@@ -160,7 +161,7 @@ const Header = ({ setProvider }: Props) => {
               }
               setPublicAddress(ensAddress || ethereum.selectedAddress);
               setProvider(provider);
-              setConnectedAddress(publicAddress.toLowerCase());
+              setConnectedAddress("");
               addDisclosure.onOpen();
             }}
           >
