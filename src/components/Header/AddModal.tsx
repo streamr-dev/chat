@@ -46,6 +46,7 @@ const AddModal = ({ disclosure, code, setCode }: PropTypes) => {
   const [rightCode, setRightCode] = useState(false);
   const [wrongCode, setWrongCode] = useState(false);
   const [noPermissions, setNoPermissions] = useState(false);
+  const [disconnected, setDisconnected] = useState(false);
 
   const { client, connectedAddress, publicAddress, setConnectedAddress } =
     useContext(UserContext);
@@ -109,10 +110,15 @@ const AddModal = ({ disclosure, code, setCode }: PropTypes) => {
     setPermissions(newPermissions);
   };
 
+  useEffect(() => {
+    console.log(connectedAddress + " " + publicAddress);
+  }, [connectedAddress]);
+
   const handleJoin = async () => {
     const msg = {
       hello: "world",
     };
+    setDisconnected(false);
 
     // Publish the event to the Stream
     try {
@@ -154,9 +160,16 @@ const AddModal = ({ disclosure, code, setCode }: PropTypes) => {
     <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose} isCentered>
       <ModalOverlay />
       <ModalContent maxW={{ base: "90vw", md: "40vw" }}>
-        <Tabs isFitted variant="enclosed">
+        <Tabs
+          isFitted
+          defaultIndex={
+            connectedAddress === publicAddress || connectedAddress === ""
+              ? 0
+              : 1
+          }
+        >
           <TabList>
-            <Tab>Invite</Tab>
+            <Tab isDisabled={connectedAddress !== publicAddress}>Invite</Tab>
             <Tab>Join</Tab>
           </TabList>
           <TabPanels>
@@ -273,41 +286,59 @@ const AddModal = ({ disclosure, code, setCode }: PropTypes) => {
                   ></Input>
                 </ModalBody>
               ) : (
-                <Alert status="error" w="90%" mx="auto" borderRadius="5">
+                <Alert status="error" mx="auto" borderRadius="5">
                   You must click connect before creating a room!
                 </Alert>
               )}
 
               {wrongCode && (
-                <Alert status="error" w="90%" mx="auto" borderRadius="5">
+                <Alert status="error" mx="auto" borderRadius="5">
                   The code you provided is invalid!
                 </Alert>
               )}
 
               {rightCode && (
-                <Alert status="success" w="90%" mx="auto" borderRadius="5">
+                <Alert status="success" mx="auto" borderRadius="5">
                   You successfully joined the room!
                 </Alert>
               )}
 
               {noPermissions && (
-                <Alert status="error" w="90%" mx="auto" borderRadius="5">
+                <Alert status="error" mx="auto" borderRadius="5">
                   You don't have sufficient permissions!
                 </Alert>
               )}
 
-              <ModalFooter>
+              {disconnected && (
+                <Alert status="success" mx="auto" borderRadius="5">
+                  You successfully disconnected from the room!
+                </Alert>
+              )}
+
+              <ModalFooter marginTop="10px">
                 {rightCode ? (
-                  <Button
-                    color="white"
-                    _hover={{ backgroundColor: "#13013D" }}
-                    backgroundColor="#0D009A"
-                    ml={3}
-                    disabled={!client}
-                    onClick={disclosure.onClose}
-                  >
-                    Ok
-                  </Button>
+                  <>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setConnectedAddress(publicAddress);
+                        setRightCode(false);
+                        setDisconnected(true);
+                      }}
+                    >
+                      Disconnect
+                    </Button>
+                    <Button
+                      color="white"
+                      _hover={{ backgroundColor: "#13013D" }}
+                      backgroundColor="#0D009A"
+                      ml={3}
+                      disabled={!client}
+                      onClick={disclosure.onClose}
+                    >
+                      Ok
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Button variant="ghost" onClick={disclosure.onClose}>

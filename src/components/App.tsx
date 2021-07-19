@@ -124,6 +124,10 @@ const App = () => {
     initializeStream();
   }, []); */
 
+  useEffect(() => {
+    Notification.requestPermission();
+  }, []);
+
   return (
     <Router>
       <Container maxW="container.lg" paddingY="8">

@@ -26,6 +26,9 @@ import {
   MenuList,
   MenuItem,
   Tooltip,
+  Switch,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
@@ -45,6 +48,8 @@ type Props = {
 const Header = ({ setProvider }: Props) => {
   const { ethereum } = window;
 
+  const { colorMode, toggleColorMode } = useColorMode();
+
   const createDisclosure = useDisclosure();
   const joinDisclosure = useDisclosure();
   const addDisclosure = useDisclosure();
@@ -52,6 +57,8 @@ const Header = ({ setProvider }: Props) => {
   const [code, setCode] = useState<Stream>({} as Stream);
 
   const isFirstRender = useRef(true);
+
+  const white = useColorModeValue("white", "gray.800");
 
   const {
     connectedAddress,
@@ -78,7 +85,6 @@ const Header = ({ setProvider }: Props) => {
   };
 
   useEffect(() => {
-    console.log("this works!");
     if (isFirstRender) {
       isFirstRender.current = false;
       handleCreate();
@@ -90,7 +96,7 @@ const Header = ({ setProvider }: Props) => {
       direction="column"
       width="container.lg"
       position="fixed"
-      backgroundColor="white"
+      backgroundColor={white}
       top="0"
       paddingY="20px"
     >
@@ -108,7 +114,6 @@ const Header = ({ setProvider }: Props) => {
                 backgroundColor="#0D009A"
                 _hover={{ backgroundColor: "#13013D" }}
                 onClick={() => {
-                  handleCreate();
                   addDisclosure.onOpen();
                 }}
               >
@@ -162,6 +167,13 @@ const Header = ({ setProvider }: Props) => {
             Connect
           </Button>
         )}
+        {/* <Switch
+          value={colorMode}
+          onChange={(e) => {
+            console.log(colorMode);
+            toggleColorMode();
+          }}
+        /> */}
         <CreateModal
           disclosure={createDisclosure}
           handleCreate={handleCreate}
