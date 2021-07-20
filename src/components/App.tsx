@@ -10,6 +10,7 @@ import Chat from "./Chat/Chat";
 import Header from "./Header/Header";
 import "./App.css";
 import { UserContext } from "../contexts/UserContext";
+import Users from "./Users/Users";
 
 declare global {
   interface Window {
@@ -144,6 +145,7 @@ const App = () => {
           <Header setProvider={setProvider} />
           <Chat />
           <Messages />
+          <Users />
         </UserContext.Provider>
       </Container>
     </Router>

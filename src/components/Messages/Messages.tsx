@@ -16,7 +16,7 @@ const Messages = () => {
 
   const messagesRef = useRef(null);
 
-  const { connectedAddress, client } = useContext(UserContext);
+  const { connectedAddress, client, publicAddress } = useContext(UserContext);
 
   const dotw = {
     0: "Sunday",
@@ -81,6 +81,23 @@ const Messages = () => {
     };
 
     getMessages();
+  }, [connectedAddress]);
+
+  useEffect(() => {
+    if (connectedAddress === "") {
+      return;
+    }
+    const updatePresence = setInterval(() => {
+      console.log("log!");
+      client.publish(
+        `${connectedAddress.toLowerCase()}/streamr-chat-metadata`,
+        {
+          publicAddress,
+          timestamp: new Date().getTime() + 5000,
+        }
+      );
+    }, 3000);
+    return () => clearInterval(updatePresence);
   }, [connectedAddress]);
 
   return (

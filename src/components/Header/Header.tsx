@@ -74,7 +74,10 @@ const Header = ({ setProvider }: Props) => {
       const stream = await client.getOrCreateStream({
         id: `${publicAddress.toLowerCase()}/streamr-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
       });
-      console.log(stream);
+      const metadataStream = await client.getOrCreateStream({
+        id: `${publicAddress.toLowerCase()}/streamr-chat-metadata`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
+      });
+      console.log(metadataStream);
 
       setCode(stream);
       setConnectedAddress(publicAddress.toLowerCase());

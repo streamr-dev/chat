@@ -306,6 +306,7 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                       setRightCode(false);
                       setWrongCode(false);
                       setNoPermissions(false);
+                      setDisconnected(false);
                       setJoinCode(e.target.value);
                     }}
                   ></Input>

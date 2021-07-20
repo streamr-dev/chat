@@ -1,7 +1,11 @@
-import { ethers } from 'ethers';
-import StreamrClient, { StreamOperation, Stream } from 'streamr-client';
+import { ethers } from "ethers";
+import StreamrClient, { StreamOperation, Stream } from "streamr-client";
 
-export const addPermissions = async (friendAddress: string, connectedAddress: string, client: StreamrClient) => {
+export const addPermissions = async (
+  friendAddress: string,
+  connectedAddress: string,
+  client: StreamrClient
+) => {
   try {
     ethers.utils.getAddress(friendAddress);
   } catch (err) {
@@ -18,15 +22,9 @@ export const addPermissions = async (friendAddress: string, connectedAddress: st
     });
 
     if (
-      !(await stream.hasPermission(
-        "stream_get" as StreamOperation,
-        ensDecoded
-      ))
+      !(await stream.hasPermission("stream_get" as StreamOperation, ensDecoded))
     ) {
-      await stream.grantPermission(
-        "stream_get" as StreamOperation,
-        ensDecoded
-      );
+      await stream.grantPermission("stream_get" as StreamOperation, ensDecoded);
     }
     if (
       !(await stream.hasPermission(
@@ -46,6 +44,43 @@ export const addPermissions = async (friendAddress: string, connectedAddress: st
       ))
     ) {
       await stream.grantPermission(
+        "stream_subscribe" as StreamOperation,
+        ensDecoded
+      );
+    }
+    const metadata = await client.getOrCreateStream({
+      id: `${connectedAddress.toLowerCase()}/streamr-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
+    });
+
+    if (
+      !(await metadata.hasPermission(
+        "stream_get" as StreamOperation,
+        ensDecoded
+      ))
+    ) {
+      await metadata.grantPermission(
+        "stream_get" as StreamOperation,
+        ensDecoded
+      );
+    }
+    if (
+      !(await metadata.hasPermission(
+        "stream_publish" as StreamOperation,
+        ensDecoded
+      ))
+    ) {
+      await metadata.grantPermission(
+        "stream_publish" as StreamOperation,
+        ensDecoded
+      );
+    }
+    if (
+      !(await metadata.hasPermission(
+        "stream_subscribe" as StreamOperation,
+        ensDecoded
+      ))
+    ) {
+      await metadata.grantPermission(
         "stream_subscribe" as StreamOperation,
         ensDecoded
       );
@@ -54,4 +89,4 @@ export const addPermissions = async (friendAddress: string, connectedAddress: st
   } catch (err) {
     return [null, err];
   }
-}
+};
