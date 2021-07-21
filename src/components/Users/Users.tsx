@@ -1,5 +1,19 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Box, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  Heading,
+  Input,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import StreamrClient from "streamr-client";
 import { UserContext } from "../../contexts/UserContext";
 
@@ -8,9 +22,10 @@ interface PresenceMessage {
   timestamp: string;
 }
 
-const Users = () => {
+const Users = ({}) => {
   const { client, connectedAddress } = useContext(UserContext);
   const [presence, setPresence] = useState<PresenceMessage[]>([]);
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   const handlePresence = (message: PresenceMessage) => {
     setPresence((oldPresence) => {
@@ -51,22 +66,25 @@ const Users = () => {
     };
 
     getPresence();
-  });
+  }, [connectedAddress]);
 
   return (
-    <Box
-      height="100vh"
-      width="20vw"
-      position="absolute"
-      right={0}
-      top={0}
-      backgroundColor="gray.300"
-    >
-      <Heading>Users</Heading>
-      {presence.map((p) => {
-        return <Text>{p.publicAddress}</Text>;
-      })}
-    </Box>
+    <>
+      <Button onClick={onOpen}>Users</Button>
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Users</DrawerHeader>
+
+          <DrawerBody>
+            {presence.map((p) => {
+              return <p>{p.publicAddress}</p>;
+            })}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 };
 

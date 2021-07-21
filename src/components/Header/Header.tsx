@@ -38,6 +38,7 @@ import { addPermissions } from "../../utils/utils";
 import JoinModal from "./JoinModal";
 import { UserContext } from "../../contexts/UserContext";
 import CreateModal from "./CreateModal";
+import Users from "../Users/Users";
 
 type Props = {
   setProvider: React.Dispatch<
@@ -97,13 +98,13 @@ const Header = ({ setProvider }: Props) => {
   return (
     <Flex
       direction="column"
-      width="container.lg"
+      width="60vw"
       position="fixed"
       backgroundColor={white}
       top="0"
       paddingY="20px"
     >
-      <Flex direction="row" alignItems="center" width="container.lg">
+      <Flex direction="row" alignItems="center" width="100%">
         <Heading as="h2" size="lg">
           Streamr Chat
         </Heading>
@@ -189,6 +190,7 @@ const Header = ({ setProvider }: Props) => {
       <Text marginTop="10px">{`Room: ${
         connectedAddress || "Not in Room"
       }`}</Text>
+      <Users />
     </Flex>
   );
 };

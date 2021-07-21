@@ -131,7 +131,7 @@ const App = () => {
 
   return (
     <Router>
-      <Container maxW="container.lg" paddingY="8">
+      <Container maxW="60%" paddingY="8">
         <UserContext.Provider
           value={{
             connectedAddress,
@@ -145,7 +145,6 @@ const App = () => {
           <Header setProvider={setProvider} />
           <Chat />
           <Messages />
-          <Users />
         </UserContext.Provider>
       </Container>
     </Router>
