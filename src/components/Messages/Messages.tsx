@@ -101,7 +101,7 @@ const Messages = () => {
   }, [connectedAddress]);
 
   return (
-    <Box marginBottom="40px" marginTop="100px">
+    <Box paddingBottom="80px" paddingTop="100px" paddingX="20px">
       {messages.map((message) => {
         return (
           <Message
