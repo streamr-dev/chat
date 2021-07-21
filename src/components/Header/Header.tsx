@@ -98,11 +98,12 @@ const Header = ({ setProvider }: Props) => {
   return (
     <Flex
       direction="column"
-      width="60vw"
+      width="100%"
       position="fixed"
       backgroundColor={white}
       top="0"
       paddingY="20px"
+      paddingX="20px"
     >
       <Flex direction="row" alignItems="center" width="100%">
         <Heading as="h2" size="lg">
@@ -130,6 +131,7 @@ const Header = ({ setProvider }: Props) => {
               setCode={setCode}
               handleCreate={handleCreate}
             />
+            {connectedAddress ? <Users /> : <></>}
           </>
         ) : (
           <Button
@@ -190,7 +192,6 @@ const Header = ({ setProvider }: Props) => {
       <Text marginTop="10px">{`Room: ${
         connectedAddress || "Not in Room"
       }`}</Text>
-      <Users />
     </Flex>
   );
 };

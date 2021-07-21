@@ -112,15 +112,15 @@ const Chat = () => {
         position="fixed"
         bottom="0px"
         direction="row"
-        width="container.lg"
-        left="50%"
+        width="100vw"
         backgroundColor="white"
-        transform="translateX(-50%)"
         paddingY="20px"
+        paddingX="20px"
       >
         <Input
           type="text"
           placeholder="Message"
+          width="100%"
           value={message}
           onChange={(e) => {
             setMessage(e.target.value);

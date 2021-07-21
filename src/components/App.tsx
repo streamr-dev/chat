@@ -11,6 +11,7 @@ import Header from "./Header/Header";
 import "./App.css";
 import { UserContext } from "../contexts/UserContext";
 import Users from "./Users/Users";
+import { Box } from "@chakra-ui/react";
 
 declare global {
   interface Window {
@@ -131,7 +132,7 @@ const App = () => {
 
   return (
     <Router>
-      <Container maxW="60%" paddingY="8">
+      <Box height="100vh" width="100vw" paddingY="8">
         <UserContext.Provider
           value={{
             connectedAddress,
@@ -146,7 +147,7 @@ const App = () => {
           <Chat />
           <Messages />
         </UserContext.Provider>
-      </Container>
+      </Box>
     </Router>
   );
 };

@@ -11,11 +11,14 @@ import {
   DrawerOverlay,
   Heading,
   Input,
+  Spinner,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import StreamrClient from "streamr-client";
 import { UserContext } from "../../contexts/UserContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers } from "@fortawesome/free-solid-svg-icons";
 
 interface PresenceMessage {
   publicAddress: string;
@@ -70,17 +73,23 @@ const Users = ({}) => {
 
   return (
     <>
-      <Button onClick={onOpen}>Users</Button>
+      <Button onClick={onOpen} variant="unstyled" marginX="10px">
+        <FontAwesomeIcon icon={faUsers} />
+      </Button>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader>Users</DrawerHeader>
 
-          <DrawerBody>
-            {presence.map((p) => {
-              return <p>{p.publicAddress}</p>;
-            })}
+          <DrawerBody display="flex">
+            {presence.length === 0 ? (
+              <Spinner marginX="auto" />
+            ) : (
+              presence.map((p) => {
+                return <Text>{p.publicAddress}</Text>;
+              })
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
