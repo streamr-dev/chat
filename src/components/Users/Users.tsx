@@ -80,14 +80,14 @@ const Users = ({}) => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Users</DrawerHeader>
+          <DrawerHeader>Connected Users</DrawerHeader>
 
           <DrawerBody display="flex">
             {presence.length === 0 ? (
               <Spinner marginX="auto" />
             ) : (
               presence.map((p) => {
-                return <Text>{p.publicAddress}</Text>;
+                return <Text overflowWrap="anywhere">{p.publicAddress}</Text>;
               })
             )}
           </DrawerBody>
