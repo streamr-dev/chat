@@ -231,6 +231,7 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                         ></Input>
                         <InputRightElement width="4.5rem">
                           <Button
+                            variant='primary'
                             onClick={handleInvite}
                             isLoading={loading}
                             borderRadius="0 5px 5px 0"
@@ -263,7 +264,7 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                     </Box>
                   </>
                 ) : (
-                  <Button onClick={handleCreate}>Join Personal Room</Button>
+                  <Button variant='secondary' onClick={handleCreate}>Join Personal Room</Button>
                 )}
               </ModalBody>
 
@@ -281,9 +282,6 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                   <></>
                 )}
                 <Button
-                  color="white"
-                  _hover={{ backgroundColor: "#13013D" }}
-                  backgroundColor="#0D009A"
                   ml={3}
                   disabled={!client}
                   onClick={disclosure.onClose}
@@ -367,13 +365,10 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                   </>
                 ) : (
                   <>
-                    <Button variant="ghost" onClick={disclosure.onClose}>
+                    <Button variant='secondary' onClick={disclosure.onClose}>
                       Cancel
                     </Button>
                     <Button
-                      color="white"
-                      _hover={{ backgroundColor: "#13013D" }}
-                      backgroundColor="#0D009A"
                       ml={3}
                       disabled={!client}
                       onClick={handleJoin}

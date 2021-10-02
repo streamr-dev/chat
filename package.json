@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "webpack": "webpack",
-    "start": "webpack serve --port 3000 --open",
+    "start": "webpack serve --port 4000 --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

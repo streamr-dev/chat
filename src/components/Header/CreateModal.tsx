@@ -101,13 +101,10 @@ const CreateModal = ({ disclosure, handleCreate, code, setCode }: Props) => {
             </Button>
           ) : (
             <>
-              <Button variant="ghost" onClick={disclosure.onClose}>
+              <Button variant='secondary' onClick={disclosure.onClose}>
                 Cancel
               </Button>
               <Button
-                color="white"
-                _hover={{ backgroundColor: "#13013D" }}
-                backgroundColor="#0D009A"
                 ml={3}
                 disabled={!client}
                 onClick={handleCreate}

@@ -115,9 +115,6 @@ const Header = ({ setProvider }: Props) => {
           <>
             <Tooltip label="Click to Invite" placement="bottom">
               <Button
-                color="white"
-                backgroundColor="#0D009A"
-                _hover={{ backgroundColor: "#13013D" }}
                 onClick={() => {
                   addDisclosure.onOpen();
                 }}
@@ -135,9 +132,6 @@ const Header = ({ setProvider }: Props) => {
           </>
         ) : (
           <Button
-            color="white"
-            _hover={{ backgroundColor: "#13013D" }}
-            backgroundColor="#0D009A"
             onClick={async () => {
               if (!ethereum) {
                 setPublicAddress("no wallet detected");

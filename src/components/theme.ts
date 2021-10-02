@@ -13,11 +13,55 @@ const config: ThemeConfig = {
 
 const styles = {
   global: (props: any) => ({
-    "html, body": {
-      backgroundColor: props.colorMode !== "dark" ? "white" : "gray.800",
+    body: {
+      color: 'red'
     },
   }),
 };
 
-const theme = extendTheme({ config });
+const theme = extendTheme({
+  components: {
+    Button: {
+      baseStyle: (props) => ({
+        bg: '#0324FF',
+        backgroundColor: '#0324FF',
+        borderRadius: "4px",
+        color: 'white',
+        padding: '10px 16px',
+        _hover: {
+          bg: '#0C009A',
+          backgroundColor: '#0C009A',
+        },
+        _active: {
+          bg: '#09006D',
+          backgroundColor: '#09006D',
+        }
+      }),
+      variants: {
+        primary: (props) => ({
+          fontSize: 'md',
+          color: 'white',
+          backgroundColor: mode('#0324FF', 'red.500')(props),
+          _hover: {
+            color: mode('white', 'red.500')(props),
+            backgroundColor: '#0C009A',
+          },
+        }),
+        secondary: (props: any) => ({
+          bg: mode('#EFEFEF', 'red.500')(props),
+          backgroundColor: mode('#EFEFEF', 'red.500')(props),
+          color: mode('#323232', 'white')(props),
+          _hover: {
+            bg: mode('#E7E7E7', 'red.500')(props),
+            backgroundColor: mode('#E7E7E7', 'red.500')(props),
+          },
+          _active: {
+            bg: mode('#D8D8D8', 'red.500')(props),
+            backgroundColor: mode('#D8D8D8', 'red.500')(props),
+          },
+        })
+      }
+    }
+  }
+});
 export default theme;
