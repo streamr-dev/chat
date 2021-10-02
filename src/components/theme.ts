@@ -48,7 +48,6 @@ const theme = extendTheme({
           },
         }),
         secondary: (props: any) => ({
-          bg: mode('#EFEFEF', 'red.500')(props),
           backgroundColor: mode('#EFEFEF', 'red.500')(props),
           color: mode('#323232', 'white')(props),
           _hover: {
@@ -58,6 +57,15 @@ const theme = extendTheme({
           _active: {
             bg: mode('#D8D8D8', 'red.500')(props),
             backgroundColor: mode('#D8D8D8', 'red.500')(props),
+          },
+        }),
+        ghost: (props: any) => ({
+          backgroundColor: "transparent",
+          _hover: {
+            backgroundColor: "transparent"
+          },
+          _active: {
+            backgroundColor: "transparent"
           },
         })
       }

@@ -27,7 +27,7 @@ const Message = ({ message, messageAddress, time }: PropTypes) => {
         <Box
           borderRadius={sent ? "15px 15px 0px 15px" : "15px 15px 15px 0"}
           width={"25vw"}
-          backgroundColor={sent ? "#0D009A" : "#525252"}
+          backgroundColor={sent ? "#0324FF" : "#525252"}
           color="white"
           marginY="3"
           marginLeft="0"

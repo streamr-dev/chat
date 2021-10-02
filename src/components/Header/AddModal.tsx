@@ -251,7 +251,7 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                             <Text>{permission}</Text>
                             <Spacer />
                             <Button
-                              variant="link"
+                              variant="ghost"
                               onClick={() => {
                                 handleDelete(permission);
                               }}
@@ -271,7 +271,7 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
               <ModalFooter>
                 {connectedAddress === publicAddress ? (
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     onClick={() => {
                       setConnectedAddress("");
                     }}

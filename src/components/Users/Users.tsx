@@ -73,7 +73,7 @@ const Users = ({}) => {
 
   return (
     <>
-      <Button onClick={onOpen} variant="unstyled" marginX="10px">
+      <Button onClick={onOpen} variant="ghost" marginX="10px">
         <FontAwesomeIcon icon={faUsers} />
       </Button>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
