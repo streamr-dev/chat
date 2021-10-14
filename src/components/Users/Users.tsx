@@ -86,8 +86,8 @@ const Users = ({}) => {
             {presence.length === 0 ? (
               <Spinner marginX="auto" />
             ) : (
-              presence.map((p) => {
-                return <Text overflowWrap="anywhere">{p.publicAddress}</Text>;
+              presence.map((p, i) => {
+                return <Text key={i} overflowWrap="anywhere">{p.publicAddress}</Text>;
               })
             )}
           </DrawerBody>

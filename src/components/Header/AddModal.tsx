@@ -171,16 +171,17 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
         >
           <TabList>
             <Tab
+              key="invite"
               isDisabled={
                 !(connectedAddress === publicAddress || connectedAddress === "")
               }
             >
               Invite
             </Tab>
-            <Tab>Join</Tab>
+            <Tab key="join">Join</Tab>
           </TabList>
           <TabPanels>
-            <TabPanel>
+            <TabPanel key="tab1">
               <ModalBody>
                 {connectedAddress === publicAddress ? (
                   <>
@@ -242,12 +243,12 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                       </InputGroup>
                     </Flex>
                     <Box overflowY="scroll" maxHeight="100px" margin="10px">
-                      {permissions.map((permission) => {
+                      {permissions.map((permission, i) => {
                         if (permission === publicAddress) {
                           return;
                         }
                         return (
-                          <Flex alignItems="center" paddingY="10px">
+                          <Flex key={i} alignItems="center" paddingY="10px">
                             <Text>{permission}</Text>
                             <Spacer />
                             <Button
@@ -290,7 +291,7 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                 </Button>
               </ModalFooter>
             </TabPanel>
-            <TabPanel>
+            <TabPanel key="tab2">
               <Heading size="md" marginTop="10px">
                 Join Room
               </Heading>

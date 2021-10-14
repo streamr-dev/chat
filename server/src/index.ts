@@ -1,7 +1,6 @@
 import express from "express";
 const app = express();
 import { StreamrClient, Stream, StreamOperation } from "streamr-client";
-import { createServer } from "http";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -26,27 +25,42 @@ const createStream = async () => {
 
 createStream();
 
-app.post("/send", async (req, res) => {
-  await stream.publish({
-    message: req.query.message,
-  });
-  res.send("Message Sent!");
+app.post("/send", async (req:express.Request, res:express.Response) => {
+  try {
+    await stream.publish({
+      message: req.query.message,
+    });
+    res.send("Message Sent!");
+  } catch (e){
+    res.status(500).send(e.message)
+    console.error(e)
+  }
 });
 
-app.post("/adduser", async (req, res) => {
-  const user = req.body.user;
-  if (stream.hasPermission(StreamOperation.STREAM_PUBLISH, user) === null) {
-    stream.grantPermission(StreamOperation.STREAM_PUBLISH, user as string);
+app.post("/adduser", async (req:express.Request, res:express.Response) => {
+  try {
+    const user = req.body.user;
+    if (stream.hasPermission(StreamOperation.STREAM_PUBLISH, user) === null) {
+      stream.grantPermission(StreamOperation.STREAM_PUBLISH, user as string);
+    }
+    if (stream.hasPermission(StreamOperation.STREAM_SUBSCRIBE, user) === null) {
+      stream.grantPermission(StreamOperation.STREAM_SUBSCRIBE, user as string);
+    }
+    res.send("User added");
+  } catch (e){
+    res.status(500).send(e.message)
+    console.error(e)
   }
-  if (stream.hasPermission(StreamOperation.STREAM_SUBSCRIBE, user) === null) {
-    stream.grantPermission(StreamOperation.STREAM_SUBSCRIBE, user as string);
-  }
-  res.send("User added");
 });
 
-app.get("/generateuser", async (req, res) => {
-  const user = await StreamrClient.generateEthereumAccount();
-  res.send(user);
+app.get("/generateuser", async (req:express.Request, res:express.Response) => {
+  try {
+    const user = await StreamrClient.generateEthereumAccount();
+    res.send(user);
+  } catch (e){
+    res.status(500).send(e.message)
+    console.error(e)
+  }
 });
 
 app.listen(PORT, () => {

@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "webpack": "webpack",
+    "build": "webpack build",
     "start": "webpack serve --port 4000 --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -36,11 +37,13 @@
     "@babel/plugin-transform-runtime": "^7.14.5",
     "@babel/preset-env": "^7.14.4",
     "@babel/preset-react": "^7.13.13",
+    "@types/express": "^4.17.13",
     "@types/react": "^17.0.11",
     "@types/react-router-dom": "^5.1.8",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.6",
+    "dotenv": "^10.0.0",
     "eslint": "^7.12.1",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.22.1",

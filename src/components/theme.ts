@@ -22,7 +22,7 @@ const styles = {
 const theme = extendTheme({
   components: {
     Button: {
-      baseStyle: (props) => ({
+      baseStyle: (props: any) => ({
         bg: '#0324FF',
         backgroundColor: '#0324FF',
         borderRadius: "4px",
@@ -38,7 +38,7 @@ const theme = extendTheme({
         }
       }),
       variants: {
-        primary: (props) => ({
+        primary: (props: any) => ({
           fontSize: 'md',
           color: 'white',
           backgroundColor: mode('#0324FF', 'red.500')(props),

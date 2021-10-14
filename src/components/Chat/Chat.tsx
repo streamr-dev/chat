@@ -70,6 +70,7 @@ const Chat = () => {
 
   useEffect(() => {
     const getMessages = async () => {
+      if (!client) return
       await client.subscribe(
         {
           stream:
