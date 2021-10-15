@@ -9,6 +9,6 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src", "globals.d.ts"],
+  "include": ["src", "globals.d.ts", "static-server.js"],
   "exclude": ["node_modules", "server/**/*"]
 }

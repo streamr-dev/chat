@@ -1,36 +1,32 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react"
 import {
-  Alert,
-  Box,
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Tooltip,
-  Text,
-  Flex,
-  Spinner,
-  Spacer,
-  InputRightElement,
-  InputGroup,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Heading,
-} from "@chakra-ui/react";
-import StreamrClient, { Stream, StreamOperation } from "streamr-client";
-import { ethers } from "ethers";
-import { addPermissions } from "../../utils/utils";
-import { CloseIcon } from "@chakra-ui/icons";
-import { getCombinedNodeFlags } from "typescript";
-import { UserContext } from "../../contexts/UserContext";
+    Alert,
+    Box,
+    Button,
+    Input,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalOverlay,
+    Tooltip,
+    Text,
+    Flex,
+    Spinner,
+    Spacer,
+    InputRightElement,
+    InputGroup,
+    Tabs,
+    TabList,
+    TabPanels,
+    Tab,
+    TabPanel,
+    Heading,
+} from "@chakra-ui/react"
+import { Stream } from "streamr-client"
+import { addPermissions } from "../../utils/utils"
+import { CloseIcon } from "@chakra-ui/icons"
+import { UserContext } from "../../contexts/UserContext"
 
 interface PropTypes {
   disclosure: any;
@@ -39,352 +35,333 @@ interface PropTypes {
   handleCreate: () => void;
 }
 
-const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
-  const [friendAddress, setFriendAddress] = useState("");
-  const [permissions, setPermissions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [joinCode, setJoinCode] = useState("");
-  const [rightCode, setRightCode] = useState(false);
-  const [wrongCode, setWrongCode] = useState(false);
-  const [noPermissions, setNoPermissions] = useState(false);
-  const [disconnected, setDisconnected] = useState(false);
+const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
+    const [friendAddress, setFriendAddress] = useState("")
+    const [permissions, setPermissions] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [joinCode, setJoinCode] = useState("")
+    const [rightCode, setRightCode] = useState(false)
+    const [wrongCode, setWrongCode] = useState(false)
+    const [noPermissions, setNoPermissions] = useState(false)
+    const [disconnected, setDisconnected] = useState(false)
 
-  const { client, connectedAddress, publicAddress, setConnectedAddress } =
-    useContext(UserContext);
+    const { client, connectedAddress, publicAddress, setConnectedAddress } =
+    useContext(UserContext)
 
-  useEffect(() => {
-    const getPermissions = async () => {
-      if (code.getPermissions) {
-        const newPermissions = await code.getPermissions();
-        console.log(newPermissions);
+    useEffect(() => {
+        const getPermissions = async () => {
+            if (code.getPermissions) {
+                const newPermissions = await code.getPermissions()
+                // eslint-disable-next-line no-console
+                console.log(newPermissions)
 
-        let newPermissionAddresses: string[] = [];
-        newPermissions.forEach((permission: any) => {
-          if (!newPermissionAddresses.includes(permission.user)) {
-            newPermissionAddresses.push(permission.user);
-          }
-        });
-        setPermissions(newPermissionAddresses);
-      }
-    };
-    getPermissions();
-  }, [code]);
+                const newPermissionAddresses: string[] = []
+                newPermissions.forEach((permission: any) => {
+                    if (!newPermissionAddresses.includes(permission.user)) {
+                        newPermissionAddresses.push(permission.user)
+                    }
+                })
+                setPermissions(newPermissionAddresses)
+            }
+        }
+        getPermissions()
+    }, [code])
 
-  useEffect(() => {
-    console.log(permissions);
-  }, [permissions]);
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log(permissions)
+    }, [permissions])
 
-  const handleInvite = async () => {
-    setLoading(true);
-    const [data, errors] = await addPermissions(
-      friendAddress.toLowerCase(),
-      connectedAddress,
-      client
-    );
-    if (!errors) {
-      const newPermissions = permissions.slice();
-      if (!newPermissions.includes(friendAddress.toLowerCase())) {
-        newPermissions.push(friendAddress.toLowerCase());
-      }
-      setPermissions(newPermissions);
-    } else {
-      console.log(errors);
+    const handleInvite = async () => {
+        setLoading(true)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [data, errors] = await addPermissions(
+            friendAddress.toLowerCase(),
+            connectedAddress,
+            client
+        )
+        if (!errors) {
+            const newPermissions = permissions.slice()
+            if (!newPermissions.includes(friendAddress.toLowerCase())) {
+                newPermissions.push(friendAddress.toLowerCase())
+            }
+            setPermissions(newPermissions)
+        } else {
+            // eslint-disable-next-line no-console
+            console.log(errors)
+        }
+        setLoading(false)
     }
-    setLoading(false);
-  };
 
-  const handleDelete = async (address: string) => {
-    const currentPermissions = await code.getPermissions();
-    const filteredPermissions = currentPermissions.filter((permission: any) => {
-      return address === permission.user;
-    });
-    filteredPermissions.forEach((permission) => {
-      code.revokePermission(permission.id);
-    });
-    const newPermissions = permissions.slice();
-    if (newPermissions.includes(address.toLowerCase())) {
-      const index = newPermissions.indexOf(address.toLowerCase());
-      if (index > -1) {
-        newPermissions.splice(index, 1);
-      }
+    const handleDelete = async (address: string) => {
+        const currentPermissions = await code.getPermissions()
+        const filteredPermissions = currentPermissions.filter((permission: any) => {
+            return address === permission.user
+        })
+        filteredPermissions.forEach((permission) => {
+            code.revokePermission(permission.id)
+        })
+        const newPermissions = permissions.slice()
+        if (newPermissions.includes(address.toLowerCase())) {
+            const index = newPermissions.indexOf(address.toLowerCase())
+            if (index > -1) {
+                newPermissions.splice(index, 1)
+            }
+        }
+        setPermissions(newPermissions)
     }
-    setPermissions(newPermissions);
-  };
 
-  useEffect(() => {
-    console.log(connectedAddress + " " + publicAddress);
-  }, [connectedAddress]);
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log(connectedAddress + " " + publicAddress)
+    }, [connectedAddress])
 
-  const handleJoin = async () => {
-    const msg = {
-      hello: "world",
-    };
-    setDisconnected(false);
+    const handleJoin = async () => {
+        const msg = {
+            hello: "world",
+        }
+        setDisconnected(false)
 
-    // Publish the event to the Stream
-    try {
-      await client.publish(joinCode, msg);
-      const words = joinCode.toLowerCase().split("/");
-      setConnectedAddress(words[0]);
-      /* const words = joinCode.split("/");
-      setConnectedAddress(words[0]);
-      const stream = await client.getOrCreateStream({
-        id: `${words[0]}/streamr-chat-messages`, // or 0x1234567890123456789012345678901234567890/foo/bar or mydomain.eth/foo/bar
-      });
-
-      console.log(joinCode);
-
-      if (
-        !(await stream.hasPermission(
-          "stream_publish" as StreamOperation,
-          joinCode
-        ))
-      ) {
-        console.log("no permissions!");
-        throw new Error("You have insufficient permissions!");
-      } else {
-        setRightCode(true);
-        } */
-      setRightCode(true);
-    } catch (err) {
-      console.log(err);
-      /* console.log(err.message);
-      if ((err.message = "You have insufficient permissions!")) {
-        setNoPermissions(true);
-      } else {
-      } */
-      setWrongCode(true);
+        // Publish the event to the Stream
+        try {
+            await client.publish(joinCode, msg)
+            const words = joinCode.toLowerCase().split("/")
+            setConnectedAddress(words[0])
+            setRightCode(true)
+        } catch (err) {
+            console.error(err)
+            setWrongCode(true)
+        }
     }
-  };
 
-  return (
-    <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose} isCentered>
-      <ModalOverlay />
-      <ModalContent maxW={{ base: "90vw", md: "40vw" }}>
-        <Tabs
-          isFitted
-          defaultIndex={
-            connectedAddress === publicAddress || connectedAddress === ""
-              ? 0
-              : 1
-          }
-        >
-          <TabList>
-            <Tab
-              key="invite"
-              isDisabled={
-                !(connectedAddress === publicAddress || connectedAddress === "")
-              }
-            >
+    return (
+        <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent maxW={{ base: "90vw", md: "40vw" }}>
+                <Tabs
+                    isFitted
+                    defaultIndex={
+                        connectedAddress === publicAddress || connectedAddress === ""
+                            ? 0
+                            : 1
+                    }
+                >
+                    <TabList>
+                        <Tab
+                            key="invite"
+                            isDisabled={
+                                !(connectedAddress === publicAddress || connectedAddress === "")
+                            }
+                        >
               Invite
-            </Tab>
-            <Tab key="join">Join</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel key="tab1">
-              <ModalBody>
-                {connectedAddress === publicAddress ? (
-                  <>
-                    <Alert
-                      status="success"
-                      w="90%"
-                      mx="auto"
-                      borderRadius="5"
-                      display="flex"
-                      flexDir="column"
-                    >
+                        </Tab>
+                        <Tab key="join">Join</Tab>
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel key="tab1">
+                            <ModalBody>
+                                {connectedAddress === publicAddress ? (
+                                    <>
+                                        <Alert
+                                            status="success"
+                                            w="90%"
+                                            mx="auto"
+                                            borderRadius="5"
+                                            display="flex"
+                                            flexDir="column"
+                                        >
                       To chat with a friend, add their public address below and
                       have them join using the following code:
-                      {code.id ? (
-                        <Tooltip label="Click to Copy" placement="bottom">
-                          <Box
-                            width="95%"
-                            backgroundColor="#525252"
-                            color="white"
-                            overflow="none"
-                            borderRadius="5px"
-                            paddingY="5px"
-                            paddingX="10px"
-                            marginY="5px"
-                            onClick={() => {
-                              navigator.clipboard.writeText(code.id);
-                            }}
-                          >
-                            {code.id}
-                          </Box>
-                        </Tooltip>
-                      ) : (
-                        <Spinner marginY="10px" />
-                      )}
-                    </Alert>
-                    <Heading size="md" marginY="10px">
+                                            {code.id ? (
+                                                <Tooltip label="Click to Copy" placement="bottom">
+                                                    <Box
+                                                        width="95%"
+                                                        backgroundColor="#525252"
+                                                        color="white"
+                                                        overflow="none"
+                                                        borderRadius="5px"
+                                                        paddingY="5px"
+                                                        paddingX="10px"
+                                                        marginY="5px"
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(code.id)
+                                                        }}
+                                                    >
+                                                        {code.id}
+                                                    </Box>
+                                                </Tooltip>
+                                            ) : (
+                                                <Spinner marginY="10px" />
+                                            )}
+                                        </Alert>
+                                        <Heading size="md" marginY="10px">
                       Invite Friends
-                    </Heading>
-                    <Flex direction="row">
-                      <InputGroup>
-                        <Input
-                          placeholder="Friend's Public Key"
-                          value={friendAddress}
-                          pr="4.5rem"
-                          onChange={(e) => {
-                            setFriendAddress(e.target.value);
-                          }}
-                        ></Input>
-                        <InputRightElement width="4.5rem">
-                          <Button
-                            variant='primary'
-                            onClick={handleInvite}
-                            isLoading={loading}
-                            borderRadius="0 5px 5px 0"
-                          >
+                                        </Heading>
+                                        <Flex direction="row">
+                                            <InputGroup>
+                                                <Input
+                                                    placeholder="Friend's Public Key"
+                                                    value={friendAddress}
+                                                    pr="4.5rem"
+                                                    onChange={(e) => {
+                                                        setFriendAddress(e.target.value)
+                                                    }}
+                                                ></Input>
+                                                <InputRightElement width="4.5rem">
+                                                    <Button
+                                                        variant='primary'
+                                                        onClick={handleInvite}
+                                                        isLoading={loading}
+                                                        borderRadius="0 5px 5px 0"
+                                                    >
                             Invite
-                          </Button>
-                        </InputRightElement>
-                      </InputGroup>
-                    </Flex>
-                    <Box overflowY="scroll" maxHeight="100px" margin="10px">
-                      {permissions.map((permission, i) => {
-                        if (permission === publicAddress) {
-                          return;
-                        }
-                        return (
-                          <Flex key={i} alignItems="center" paddingY="10px">
-                            <Text>{permission}</Text>
-                            <Spacer />
-                            <Button
-                              variant="ghost"
-                              onClick={() => {
-                                handleDelete(permission);
-                              }}
-                            >
-                              <CloseIcon />
-                            </Button>
-                          </Flex>
-                        );
-                      })}
-                    </Box>
-                  </>
-                ) : (
-                  <Button variant='secondary' onClick={handleCreate}>Join Personal Room</Button>
-                )}
-              </ModalBody>
+                                                    </Button>
+                                                </InputRightElement>
+                                            </InputGroup>
+                                        </Flex>
+                                        <Box overflowY="scroll" maxHeight="100px" margin="10px">
+                                            {permissions.map((permission, i) => {
+                                                if (permission === publicAddress) {
+                                                    return
+                                                }
+                                                return (
+                                                    <Flex key={i} alignItems="center" paddingY="10px">
+                                                        <Text>{permission}</Text>
+                                                        <Spacer />
+                                                        <Button
+                                                            variant="ghost"
+                                                            onClick={() => {
+                                                                handleDelete(permission)
+                                                            }}
+                                                        >
+                                                            <CloseIcon />
+                                                        </Button>
+                                                    </Flex>
+                                                )
+                                            })}
+                                        </Box>
+                                    </>
+                                ) : (
+                                    <Button variant='secondary' onClick={handleCreate}>Join Personal Room</Button>
+                                )}
+                            </ModalBody>
 
-              <ModalFooter>
-                {connectedAddress === publicAddress ? (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setConnectedAddress("");
-                    }}
-                  >
+                            <ModalFooter>
+                                {connectedAddress === publicAddress ? (
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => {
+                                            setConnectedAddress("")
+                                        }}
+                                    >
                     Disconnect
-                  </Button>
-                ) : (
-                  <></>
-                )}
-                <Button
-                  ml={3}
-                  disabled={!client}
-                  onClick={disclosure.onClose}
-                >
+                                    </Button>
+                                ) : (
+                                    <></>
+                                )}
+                                <Button
+                                    ml={3}
+                                    disabled={!client}
+                                    onClick={disclosure.onClose}
+                                >
                   Ok
-                </Button>
-              </ModalFooter>
-            </TabPanel>
-            <TabPanel key="tab2">
-              <Heading size="md" marginTop="10px">
+                                </Button>
+                            </ModalFooter>
+                        </TabPanel>
+                        <TabPanel key="tab2">
+                            <Heading size="md" marginTop="10px">
                 Join Room
-              </Heading>
-              {client ? (
-                <ModalBody>
-                  <Input
-                    placeholder="Enter Code"
-                    value={joinCode}
-                    marginY="10px"
-                    onChange={(e) => {
-                      setRightCode(false);
-                      setWrongCode(false);
-                      setNoPermissions(false);
-                      setDisconnected(false);
-                      setJoinCode(e.target.value);
-                    }}
-                  ></Input>
-                </ModalBody>
-              ) : (
-                <Alert status="error" mx="auto" borderRadius="5">
+                            </Heading>
+                            {client ? (
+                                <ModalBody>
+                                    <Input
+                                        placeholder="Enter Code"
+                                        value={joinCode}
+                                        marginY="10px"
+                                        onChange={(e) => {
+                                            setRightCode(false)
+                                            setWrongCode(false)
+                                            setNoPermissions(false)
+                                            setDisconnected(false)
+                                            setJoinCode(e.target.value)
+                                        }}
+                                    ></Input>
+                                </ModalBody>
+                            ) : (
+                                <Alert status="error" mx="auto" borderRadius="5">
                   You must click connect before creating a room!
-                </Alert>
-              )}
+                                </Alert>
+                            )}
 
-              {wrongCode && (
-                <Alert status="error" mx="auto" borderRadius="5">
+                            {wrongCode && (
+                                <Alert status="error" mx="auto" borderRadius="5">
                   The code you provided is invalid!
-                </Alert>
-              )}
+                                </Alert>
+                            )}
 
-              {rightCode && (
-                <Alert status="success" mx="auto" borderRadius="5">
+                            {rightCode && (
+                                <Alert status="success" mx="auto" borderRadius="5">
                   You successfully joined the room!
-                </Alert>
-              )}
+                                </Alert>
+                            )}
 
-              {noPermissions && (
-                <Alert status="error" mx="auto" borderRadius="5">
+                            {noPermissions && (
+                                <Alert status="error" mx="auto" borderRadius="5">
                   You don't have sufficient permissions!
-                </Alert>
-              )}
+                                </Alert>
+                            )}
 
-              {disconnected && (
-                <Alert status="success" mx="auto" borderRadius="5">
+                            {disconnected && (
+                                <Alert status="success" mx="auto" borderRadius="5">
                   You successfully disconnected from the room!
-                </Alert>
-              )}
+                                </Alert>
+                            )}
 
-              <ModalFooter marginTop="10px">
-                {rightCode ? (
-                  <>
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        setConnectedAddress("");
-                        setRightCode(false);
-                        setDisconnected(true);
-                      }}
-                    >
+                            <ModalFooter marginTop="10px">
+                                {rightCode ? (
+                                    <>
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => {
+                                                setConnectedAddress("")
+                                                setRightCode(false)
+                                                setDisconnected(true)
+                                            }}
+                                        >
                       Disconnect
-                    </Button>
-                    <Button
-                      color="white"
-                      _hover={{ backgroundColor: "#13013D" }}
-                      backgroundColor="#0D009A"
-                      ml={3}
-                      disabled={!client}
-                      onClick={disclosure.onClose}
-                    >
+                                        </Button>
+                                        <Button
+                                            color="white"
+                                            _hover={{ backgroundColor: "#13013D" }}
+                                            backgroundColor="#0D009A"
+                                            ml={3}
+                                            disabled={!client}
+                                            onClick={disclosure.onClose}
+                                        >
                       Ok
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant='secondary' onClick={disclosure.onClose}>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button variant='secondary' onClick={disclosure.onClose}>
                       Cancel
-                    </Button>
-                    <Button
-                      ml={3}
-                      disabled={!client}
-                      onClick={handleJoin}
-                    >
+                                        </Button>
+                                        <Button
+                                            ml={3}
+                                            disabled={!client}
+                                            onClick={handleJoin}
+                                        >
                       Confirm
-                    </Button>
-                  </>
-                )}
-              </ModalFooter>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </ModalContent>
-    </Modal>
-  );
-};
+                                        </Button>
+                                    </>
+                                )}
+                            </ModalFooter>
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
+            </ModalContent>
+        </Modal>
+    )
+}
 
-export default AddModal;
+export default AddModal
