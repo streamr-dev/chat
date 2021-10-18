@@ -82,7 +82,7 @@ const Users = ({}) => {
           <DrawerCloseButton />
           <DrawerHeader>Connected Users</DrawerHeader>
 
-          <DrawerBody display="flex">
+          <DrawerBody display="flex" flexDir="column">
             {presence.length === 0 ? (
               <Spinner marginX="auto" />
             ) : (

@@ -264,7 +264,7 @@ const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
                     </Box>
                   </>
                 ) : (
-                  <Button variant='secondary' onClick={handleCreate}>Join Personal Room</Button>
+                  <Button variant='secondary' onClick={handleCreate}>Create Chatroom</Button>
                 )}
               </ModalBody>
 

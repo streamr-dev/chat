@@ -163,6 +163,7 @@ const Header = ({ setProvider }: Props) => {
               setProvider(provider);
               setConnectedAddress("");
               addDisclosure.onOpen();
+              handleCreate();
             }}
           >
             Connect
