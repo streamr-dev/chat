@@ -124,6 +124,17 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
         setPermissions(newPermissions)
     }
 
+    const onClose = async () => {
+        setFriendAddress("")
+        setJoinCode("")
+        setRightCode(false)
+        setWrongCode(false)
+        setNoPermissions(false)
+        setDisconnected(false)
+        setInvalidAddress(false)
+        disclosure.onClose()
+    }
+
     useEffect(() => {
         // eslint-disable-next-line no-console
         console.log(connectedAddress + " " + publicAddress)
@@ -148,7 +159,7 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
     }
 
     return (
-        <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose} isCentered>
+        <Modal isOpen={disclosure.isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent maxW={{ base: "90vw", md: "40vw" }}>
                 <Tabs
@@ -281,7 +292,7 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
                                 <Button
                                     ml={3}
                                     disabled={!client}
-                                    onClick={disclosure.onClose}
+                                    onClick={onClose}
                                 >
                   Ok
                                 </Button>
@@ -355,14 +366,14 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
                                             backgroundColor="#0D009A"
                                             ml={3}
                                             disabled={!client}
-                                            onClick={disclosure.onClose}
+                                            onClick={onClose}
                                         >
                       Ok
                                         </Button>
                                     </>
                                 ) : (
                                     <>
-                                        <Button variant='secondary' onClick={disclosure.onClose}>
+                                        <Button variant='secondary' onClick={onClose}>
                       Cancel
                                         </Button>
                                         <Button
