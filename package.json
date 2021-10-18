@@ -8,6 +8,7 @@
     "eslint:fix": "eslint src --fix",
     "eslint:quiet": "eslint src --quiet",
     "build": "webpack build",
+    "build:prod": "webpack build --mode=production --progress",
     "start": "webpack serve --port 4000 --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -54,7 +54,6 @@ const Header = ({ setProvider }: Props): any => {
             await metadataStream.grantPermission('stream_get' as StreamOperation, undefined)
             // eslint-disable-next-line no-console
             console.log(metadataStream)
-
             setCode(stream)
             setConnectedAddress(publicAddress.toLowerCase())
         } catch (err) {

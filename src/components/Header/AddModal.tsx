@@ -27,6 +27,7 @@ import { Stream } from "streamr-client"
 import { addPermissions } from "../../utils/utils"
 import { CloseIcon } from "@chakra-ui/icons"
 import { UserContext } from "../../contexts/UserContext"
+import { ethers } from 'ethers'
 
 interface PropTypes {
   disclosure: any;
@@ -44,6 +45,7 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
     const [wrongCode, setWrongCode] = useState(false)
     const [noPermissions, setNoPermissions] = useState(false)
     const [disconnected, setDisconnected] = useState(false)
+    const [isInvalidAddress, setInvalidAddress] = useState(false)
 
     const { client, connectedAddress, publicAddress, setConnectedAddress } =
     useContext(UserContext)
@@ -74,12 +76,23 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
 
     const handleInvite = async () => {
         setLoading(true)
+        // validate the given address 
+        const address = friendAddress 
+        
+        try {
+            ethers.utils.getAddress(address)
+        } catch (e) {
+            console.warn(e)
+            setInvalidAddress(true)
+            return setLoading(false)
+        }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [data, errors] = await addPermissions(
             friendAddress.toLowerCase(),
             connectedAddress,
             client
         )
+
         if (!errors) {
             const newPermissions = permissions.slice()
             if (!newPermissions.includes(friendAddress.toLowerCase())) {
@@ -200,10 +213,11 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
                                         <Flex direction="row">
                                             <InputGroup>
                                                 <Input
-                                                    placeholder="Friend's Public Key"
+                                                    placeholder="Friend's Address"
                                                     value={friendAddress}
                                                     pr="4.5rem"
                                                     onChange={(e) => {
+                                                        setInvalidAddress(false)
                                                         setFriendAddress(e.target.value)
                                                     }}
                                                 ></Input>
@@ -219,6 +233,11 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
                                                 </InputRightElement>
                                             </InputGroup>
                                         </Flex>
+                                        { isInvalidAddress && (
+                                            <Alert status="error" mx="auto" borderRadius="5">
+                                                The address you provided is invalid!
+                                            </Alert>
+                                        )}
                                         <Box overflowY="scroll" maxHeight="100px" margin="10px">
                                             {permissions.map((permission, i) => {
                                                 if (permission === publicAddress) {
