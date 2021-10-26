@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, useColorModeValue } from "@chakra-ui/react";
 import React, {
   useCallback, useContext, useEffect,
   useRef, useState
@@ -13,6 +13,8 @@ const Messages = () => {
   const messagesRef = useRef(null);
 
   const { connectedAddress, client, publicAddress } = useContext(UserContext);
+
+  const white = useColorModeValue("white", "gray.800");
 
   const dotw = {
     0: "Sunday",
@@ -97,7 +99,7 @@ const Messages = () => {
   }, [connectedAddress]);
 
   return (
-    <Box paddingBottom="80px" paddingTop="100px" paddingX="20px">
+    <Box backgroundColor={white} paddingBottom="80px" paddingTop="100px" paddingX="20px">
       {messages.map((message) => {
         return (
           <Message

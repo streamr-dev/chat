@@ -1,7 +1,7 @@
 import {
   Button,
   Flex,
-  Heading, Image, Spacer, Text, Tooltip, useColorMode,
+  Heading, Image, Spacer, Switch, Text, Tooltip, useColorMode,
   useColorModeValue, useDisclosure
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
@@ -145,13 +145,14 @@ const Header = ({ setProvider }: Props) => {
             Connect
           </Button>
         )}
-        {/* <Switch
-          value={colorMode}
+        <Switch
+          isChecked={colorMode === 'dark'}
+          marginLeft={"3"}
           onChange={(e) => {
             console.log(colorMode);
             toggleColorMode();
           }}
-        /> */}
+        />
         <CreateModal
           disclosure={createDisclosure}
           handleCreate={handleCreate}

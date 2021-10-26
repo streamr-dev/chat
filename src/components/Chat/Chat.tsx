@@ -1,4 +1,4 @@
-import { Button, Flex, Input } from "@chakra-ui/react";
+import { Button, Flex, Input, useColorModeValue } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
 import StreamrClient from "streamr-client";
 import { UserContext } from "../../contexts/UserContext";
@@ -23,6 +23,8 @@ const Chat = () => {
   const [reducedTyping, setReducedTyping] = useState([]);
 
   const { connectedAddress, publicAddress, client } = useContext(UserContext);
+
+  const white = useColorModeValue("white", "gray.800");
 
   const handleSend = async () => {
     if (message === "") {
@@ -113,7 +115,7 @@ const Chat = () => {
         bottom="0px"
         direction="row"
         width="100vw"
-        backgroundColor="white"
+        backgroundColor={white}
         paddingY="20px"
         paddingX="20px"
       >
