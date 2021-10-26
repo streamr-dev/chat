@@ -1,44 +1,20 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
-import StreamrClient, { Stream, StreamOperation } from "streamr-client";
-import { ethers } from "ethers";
-import { useHistory } from "react-router-dom";
-
 import {
   Button,
   Flex,
-  Heading,
-  Spacer,
-  Modal,
-  useDisclosure,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalHeader,
-  ModalCloseButton,
-  ModalFooter,
-  Input,
-  Image,
-  Alert,
-  Box,
-  Menu,
-  Text,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Tooltip,
-  Switch,
-  useColorMode,
-  useColorModeValue,
+  Heading, Image, Spacer, Text, Tooltip, useColorMode,
+  useColorModeValue, useDisclosure
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-
+import { ethers } from "ethers";
+import React, { useContext, useRef, useState } from "react";
+import StreamrClient, { Stream } from "streamr-client";
 import logo from "../../assets/streamr.svg";
-import AddModal from "./AddModal";
-import { addPermissions } from "../../utils/utils";
-import JoinModal from "./JoinModal";
 import { UserContext } from "../../contexts/UserContext";
-import CreateModal from "./CreateModal";
 import Users from "../Users/Users";
+import AddModal from "./AddModal";
+import CreateModal from "./CreateModal";
+import JoinModal from "./JoinModal";
+
+
 
 type Props = {
   setProvider: React.Dispatch<

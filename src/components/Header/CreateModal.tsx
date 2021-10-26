@@ -1,16 +1,5 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Input,
-  Alert,
-  Tooltip,
-  Box,
-  ModalFooter,
-  Button,
+  Alert, Box, Button, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tooltip
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { Stream } from "streamr-client";

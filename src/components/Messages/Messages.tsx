@@ -1,15 +1,11 @@
+import { Box } from "@chakra-ui/react";
 import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  useContext,
+  useCallback, useContext, useEffect,
+  useRef, useState
 } from "react";
-import StreamrClient from "streamr-client";
-import { Container, Box, Text } from "@chakra-ui/react";
-
-import Message from "./Message";
 import { UserContext } from "../../contexts/UserContext";
+import Message from "./Message";
+
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);

@@ -1,9 +1,9 @@
-import { Button, Input, Flex } from "@chakra-ui/react";
-import React, { useState, useEffect, useContext } from "react";
+import { Button, Flex, Input } from "@chakra-ui/react";
+import React, { useContext, useEffect, useState } from "react";
 import StreamrClient from "streamr-client";
-
-import "./Chat.scss";
 import { UserContext } from "../../contexts/UserContext";
+import "./Chat.scss";
+
 
 type Metadata = {
   isTyping: boolean;

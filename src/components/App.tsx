@@ -1,17 +1,14 @@
-import React, { useState, useEffect, createContext } from "react";
-import Provider, { useClient } from "streamr-client-react";
-import StreamrClient, { StreamOperation } from "streamr-client";
+import { Box } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import { Container } from "@chakra-ui/layout";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
-
-import Messages from "./Messages/Messages";
+import StreamrClient from "streamr-client";
+import { UserContext } from "../contexts/UserContext";
+import "./App.css";
 import Chat from "./Chat/Chat";
 import Header from "./Header/Header";
-import "./App.css";
-import { UserContext } from "../contexts/UserContext";
-import Users from "./Users/Users";
-import { Box } from "@chakra-ui/react";
+import Messages from "./Messages/Messages";
+
 
 declare global {
   interface Window {

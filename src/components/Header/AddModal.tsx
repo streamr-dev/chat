@@ -1,45 +1,24 @@
-import React, { useContext, useEffect, useState } from "react";
+import { CloseIcon } from "@chakra-ui/icons";
 import {
   Alert,
   Box,
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Tooltip,
-  Text,
-  Flex,
-  Spinner,
-  Spacer,
-  InputRightElement,
-  InputGroup,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Heading,
+  Button, Flex, Heading, Input, InputGroup, InputRightElement, Modal,
+  ModalBody, ModalContent,
+  ModalFooter, ModalOverlay, Spacer, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip
 } from "@chakra-ui/react";
-import StreamrClient, { Stream, StreamOperation } from "streamr-client";
-import { ethers } from "ethers";
-import { addPermissions } from "../../utils/utils";
-import { CloseIcon } from "@chakra-ui/icons";
-import { getCombinedNodeFlags } from "typescript";
+import React, { useContext, useEffect, useState } from "react";
+import { Stream } from "streamr-client";
 import { UserContext } from "../../contexts/UserContext";
+import { addPermissions } from "../../utils/utils";
 
-interface PropTypes {
+interface AddModalProps {
   disclosure: any;
   code: Stream;
   setCode: React.Dispatch<React.SetStateAction<Stream>>;
   handleCreate: () => void;
 }
 
-const AddModal = ({ disclosure, code, setCode, handleCreate }: PropTypes) => {
+const AddModal = ({ disclosure, code, setCode, handleCreate }: AddModalProps) => {
   const [friendAddress, setFriendAddress] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(false);

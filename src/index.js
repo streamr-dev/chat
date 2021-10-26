@@ -1,16 +1,13 @@
+import {
+  ChakraProvider
+} from "@chakra-ui/react";
+import "focus-visible/dist/focus-visible";
 import React from "react";
 import ReactDOM from "react-dom";
-import Provider from "streamr-client-react";
-import {
-  ChakraProvider,
-  ColorModeProvider,
-  ColorModeScript,
-} from "@chakra-ui/react";
-import "./index.css";
-import "focus-visible/dist/focus-visible";
-
 import App from "./components/App.tsx";
 import theme from "./components/theme";
+import "./index.css";
+
 
 ReactDOM.render(
   <ChakraProvider theme={theme}>

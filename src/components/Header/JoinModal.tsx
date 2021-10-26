@@ -14,12 +14,12 @@ import React, { useContext, useState } from "react";
 import StreamrClient from "streamr-client";
 import { UserContext } from "../../contexts/UserContext";
 
-interface Props {
+type JoinModalProps = {
   disclosure: any;
   client: StreamrClient;
 }
 
-const JoinModal = ({ disclosure, client }: Props) => {
+const JoinModal = ({ disclosure, client }: JoinModalProps) => {
   const [rightCode, setRightCode] = useState(false);
   const [wrongCode, setWrongCode] = useState(false);
   const [noPermissions, setNoPermissions] = useState(false);

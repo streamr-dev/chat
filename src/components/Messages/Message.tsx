@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
-import "./Message.scss";
-import { Box, Text, Spacer, Flex } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
+import React, { useContext, useState } from "react";
 import { UserContext } from "../../contexts/UserContext";
+import "./Message.scss";
 
-type PropTypes = {
+type MessageProps = {
   message: string;
   messageAddress: string;
   time: string;
 };
 
-const Message = ({ message, messageAddress, time }: PropTypes) => {
+const Message = ({ message, messageAddress, time }: MessageProps) => {
   const { publicAddress } = useContext(UserContext);
 
   const [sent, setSent] = useState(publicAddress === messageAddress);

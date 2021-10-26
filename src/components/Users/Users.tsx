@@ -1,24 +1,17 @@
-import React, { useEffect, useState, useContext } from "react";
 import {
-  Box,
   Button,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  Heading,
-  Input,
-  Spinner,
+  DrawerContent, DrawerHeader,
+  DrawerOverlay, Spinner,
   Text,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
-import StreamrClient from "streamr-client";
-import { UserContext } from "../../contexts/UserContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../contexts/UserContext";
 
 interface PresenceMessage {
   publicAddress: string;
