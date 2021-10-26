@@ -99,19 +99,28 @@ const Messages = () => {
   }, [connectedAddress]);
 
   return (
-    <Box backgroundColor={white} paddingBottom="80px" paddingTop="100px" paddingX="20px">
-      {messages.map((message) => {
-        return (
-          <Message
-            message={message.message}
-            time={message.time}
-            messageAddress={message.publicAddress}
-            key={message.id}
-          />
-        );
-      })}
-      <div ref={messagesRef} />
-    </Box>
+    <>
+    {
+      messages.length === 0 ? 
+      <Box backgroundColor={white} height='full' paddingBottom="80px" paddingTop="100px" paddingX="20px">
+        <div ref={messagesRef} />
+      </Box> :
+      <Box backgroundColor={white} paddingBottom="80px" paddingTop="100px" paddingX="20px">
+        {messages.map((message) => {
+          return (
+            <Message
+              message={message.message}
+              time={message.time}
+              messageAddress={message.publicAddress}
+              key={message.id}
+            />
+          );
+        })}
+        <div ref={messagesRef} />
+      </Box>
+      }
+    </>
+    
   );
 };
 

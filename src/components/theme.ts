@@ -41,22 +41,22 @@ const theme = extendTheme({
         primary: (props) => ({
           fontSize: 'md',
           color: 'white',
-          backgroundColor: mode('#0324FF', 'red.500')(props),
+          backgroundColor: mode('#0324FF', '#0324FF')(props),
           _hover: {
-            color: mode('white', 'red.500')(props),
+            color: mode('white', 'white')(props),
             backgroundColor: '#0C009A',
           },
         }),
         secondary: (props: any) => ({
-          backgroundColor: mode('#EFEFEF', 'red.500')(props),
+          backgroundColor: mode('#EFEFEF', 'gray.500')(props),
           color: mode('#323232', 'white')(props),
           _hover: {
-            bg: mode('#E7E7E7', 'red.500')(props),
-            backgroundColor: mode('#E7E7E7', 'red.500')(props),
+            bg: mode('#E7E7E7', '#E7E7E7')(props),
+            backgroundColor: mode('#E7E7E7', 'gray.400')(props),
           },
           _active: {
-            bg: mode('#D8D8D8', 'red.500')(props),
-            backgroundColor: mode('#D8D8D8', 'red.500')(props),
+            bg: mode('#D8D8D8', '#D8D8D8')(props),
+            backgroundColor: mode('#D8D8D8', 'gray.300')(props),
           },
         }),
         ghost: (props: any) => ({
