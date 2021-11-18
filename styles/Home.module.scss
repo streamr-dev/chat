@@ -1,0 +1,49 @@
+.main {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/images/landingpage.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.helloworld {
+  font-family: "Karelia";
+  font-size: 80px;
+  margin-top: -100px;
+  margin-bottom: 100px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.createRoomButton {
+  font-size: 22px;
+  font-family: "Karelia";
+  padding: 20px 50px;
+  background: #FF5924;
+  color: white;
+  border-radius: 100px;
+  border: none;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
+  transition: all .4s ease-in-out;
+
+  &:hover {
+    background-color: #de4716;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes float {
+	0% {
+		transform: translatey(0px);
+	}
+	50% {
+		transform: translatey(-20px);
+	}
+	100% {
+		transform: translatey(0px);
+	}
+}

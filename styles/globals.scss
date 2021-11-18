@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'Karelia';
+  src: url('/fonts/KareliaTrial-Regular.otf'); // pattern: /directoryName/file.extension
+ }
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Karelia", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
