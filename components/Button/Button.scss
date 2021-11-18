@@ -1,0 +1,18 @@
+button {
+  display: inline-flex;
+  font-size: 22px;
+  font-family: "Karelia";
+  padding: 20px 50px 25px 50px;
+  background: #FF5924;
+  color: white;
+  border-radius: 100px;
+  border: none;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
+  transition: all .4s ease-in-out;
+  align-items: center;
+
+  &:hover {
+    background-color: #de4716;
+    transform: translateY(10px);
+  }
+}
