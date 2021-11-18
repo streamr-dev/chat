@@ -1,8 +1,8 @@
 import {
     Button,
     Flex,
-    Heading, Image, Spacer, Text,
-    Tooltip,
+    Heading, Image, Spacer, Switch, Text, Tooltip,
+    useColorMode,
     useColorModeValue, useDisclosure
 } from "@chakra-ui/react"
 import { ethers } from "ethers"
@@ -12,6 +12,8 @@ import logo from "../../assets/streamr.svg"
 import { UserContext } from "../../contexts/UserContext"
 import Users from "../Users/Users"
 import AddModal from "./AddModal"
+import CreateModal from "./CreateModal"
+import JoinModal from "./JoinModal"
 
 type Props = {
   setProvider: React.Dispatch<
@@ -22,6 +24,10 @@ type Props = {
 const Header = ({ setProvider }: Props): any => {
     const { ethereum } = window
 
+    const { colorMode, toggleColorMode } = useColorMode()
+
+    const createDisclosure = useDisclosure()
+    const joinDisclosure = useDisclosure()
     const addDisclosure = useDisclosure()
 
     const [code, setCode] = useState<Stream>({} as Stream)
@@ -120,18 +126,33 @@ const Header = ({ setProvider }: Props): any => {
                                     ethereum.selectedAddress
                                 )
                             } catch (err) {
-                                console.error(err)
+                                console.log(err)
                             }
                             setPublicAddress(ensAddress || ethereum.selectedAddress)
                             setProvider(provider)
                             setConnectedAddress("")
                             addDisclosure.onOpen()
+                            handleCreate()
                         }}
                     >
             Connect
                     </Button>
                 )}
-                {}
+                <Switch
+                    isChecked={colorMode === 'dark'}
+                    marginLeft={"3"}
+                    onChange={(e) => {
+                        console.log(colorMode)
+                        toggleColorMode()
+                    }}
+                />
+                <CreateModal
+                    disclosure={createDisclosure}
+                    handleCreate={handleCreate}
+                    code={code}
+                    setCode={setCode}
+                />
+                <JoinModal disclosure={joinDisclosure} client={client} />
             </Flex>
             <Text marginTop="10px">{`Room: ${
                 connectedAddress || "Not in Room"

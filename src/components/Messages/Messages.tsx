@@ -1,21 +1,19 @@
+import { Box, useColorModeValue } from "@chakra-ui/react"
 import React, {
-    useCallback,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
+    useCallback, useContext, useEffect,
+    useRef, useState
 } from "react"
-import { Box } from "@chakra-ui/react"
-
-import Message from "./Message"
 import { UserContext } from "../../contexts/UserContext"
+import Message from "./Message"
 
-const Messages = (): any => {
+const Messages = () => {
     const [messages, setMessages] = useState([])
 
     const messagesRef = useRef(null)
 
     const { connectedAddress, client, publicAddress } = useContext(UserContext)
+
+    const white = useColorModeValue("white", "gray.800")
 
     const dotw = {
         0: "Sunday",
@@ -44,17 +42,17 @@ const Messages = (): any => {
         const hours = date.getHours()
         const minutes = "0" + date.getMinutes()
         const seconds = "0" + date.getSeconds()
-        const dayType: keyof typeof dotw = 0
-        const day = date.getDay() as typeof dayType
+        let day: keyof typeof dotw
+        day = date.getDay() as typeof day
 
         const formattedTime =
-        dotw[day] +
-        " " +
-        hours +
-        ":" +
-        minutes.substr(-2) +
-        ":" +
-        seconds.substr(-2)
+      dotw[day] +
+      " " +
+      hours +
+      ":" +
+      minutes.substr(-2) +
+      ":" +
+      seconds.substr(-2)
 
         setMessages((oldArray) => [
             ...oldArray,
@@ -86,8 +84,8 @@ const Messages = (): any => {
         if (connectedAddress === "") {
             return
         }
-
         const updatePresence = setInterval(() => {
+            console.log("log!")
             client.publish(
                 `${connectedAddress.toLowerCase()}/streamr-chat-metadata`,
                 {
@@ -100,19 +98,28 @@ const Messages = (): any => {
     }, [connectedAddress])
 
     return (
-        <Box paddingBottom="80px" paddingTop="100px" paddingX="20px">
-            {messages.map((message) => {
-                return (
-                    <Message
-                        message={message.message}
-                        time={message.time}
-                        messageAddress={message.publicAddress}
-                        key={message.id}
-                    />
-                )
-            })}
-            <div ref={messagesRef} />
-        </Box>
+        <>
+            {
+                messages.length === 0 ? 
+                    <Box backgroundColor={white} height='full' paddingBottom="80px" paddingTop="100px" paddingX="20px">
+                        <div ref={messagesRef} />
+                    </Box> :
+                    <Box backgroundColor={white} paddingBottom="80px" paddingTop="100px" paddingX="20px">
+                        {messages.map((message) => {
+                            return (
+                                <Message
+                                    message={message.message}
+                                    time={message.time}
+                                    messageAddress={message.publicAddress}
+                                    key={message.id}
+                                />
+                            )
+                        })}
+                        <div ref={messagesRef} />
+                    </Box>
+            }
+        </>
+    
     )
 }
 

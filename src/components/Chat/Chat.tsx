@@ -1,8 +1,7 @@
-import { Button, Input, Flex } from "@chakra-ui/react"
-import React, { useState, useEffect, useContext } from "react"
-
-import "./Chat.scss"
+import { Button, Flex, Input, useColorModeValue } from "@chakra-ui/react"
+import React, { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../contexts/UserContext"
+import "./Chat.scss"
 
 type Metadata = {
   isTyping: boolean;
@@ -17,6 +16,8 @@ const Chat = (): any => {
     const [reducedTyping, setReducedTyping] = useState([])
 
     const { connectedAddress, publicAddress, client } = useContext(UserContext)
+
+    const white = useColorModeValue("white", "gray.800")
 
     const handleSend = async () => {
         if (message === "") {
@@ -109,7 +110,7 @@ const Chat = (): any => {
                 bottom="0px"
                 direction="row"
                 width="100vw"
-                backgroundColor="white"
+                backgroundColor={white}
                 paddingY="20px"
                 paddingX="20px"
             >

@@ -1,13 +1,12 @@
-import React from "react"
-import ReactDOM from "react-dom"
 import {
     ChakraProvider
 } from "@chakra-ui/react"
-import "./index.css"
 import "focus-visible/dist/focus-visible"
-
+import React from "react"
+import ReactDOM from "react-dom"
 import App from "./components/App.tsx"
 import theme from "./components/theme"
+import "./index.css"
 
 ReactDOM.render(
     <ChakraProvider theme={theme}>

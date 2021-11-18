@@ -1,19 +1,17 @@
-import React, { useEffect, useState, useContext } from "react"
 import {
     Button,
     Drawer,
     DrawerBody,
     DrawerCloseButton,
-    DrawerContent,
-    DrawerHeader,
-    DrawerOverlay,
-    Spinner,
+    DrawerContent, DrawerHeader,
+    DrawerOverlay, Spinner,
     Text,
-    useDisclosure,
+    useDisclosure
 } from "@chakra-ui/react"
-import { UserContext } from "../../contexts/UserContext"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUsers } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import React, { useContext, useEffect, useState } from "react"
+import { UserContext } from "../../contexts/UserContext"
 
 interface PresenceMessage {
   publicAddress: string;
@@ -68,7 +66,7 @@ const Users = (): any => {
 
     return (
         <>
-            <Button onClick={onOpen} variant="ghost" marginX="10px">
+            <Button onClick={onOpen} variant="ghost" marginLeft="10px" marginRight='7px'>
                 <FontAwesomeIcon icon={faUsers} />
             </Button>
             <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
@@ -77,12 +75,12 @@ const Users = (): any => {
                     <DrawerCloseButton />
                     <DrawerHeader>Connected Users</DrawerHeader>
 
-                    <DrawerBody display="flex">
+                    <DrawerBody display="flex" flexDir="column">
                         {presence.length === 0 ? (
                             <Spinner marginX="auto" />
                         ) : (
-                            presence.map((p, i) => {
-                                return <Text key={i} overflowWrap="anywhere">{p.publicAddress}</Text>
+                            presence.map((p) => {
+                                return <Text overflowWrap="anywhere">{p.publicAddress}</Text>
                             })
                         )}
                     </DrawerBody>

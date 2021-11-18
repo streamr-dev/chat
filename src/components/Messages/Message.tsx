@@ -1,15 +1,15 @@
+import { Box, Flex, Text } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
-import "./Message.scss"
-import { Box, Text, Flex } from "@chakra-ui/react"
 import { UserContext } from "../../contexts/UserContext"
+import "./Message.scss"
 
-type PropTypes = {
+type MessageProps = {
   message: string;
   messageAddress: string;
   time: string;
 };
 
-const Message = ({ message, messageAddress, time }: PropTypes): any => {
+const Message = ({ message, messageAddress, time }: MessageProps) => {
     const { publicAddress } = useContext(UserContext)
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

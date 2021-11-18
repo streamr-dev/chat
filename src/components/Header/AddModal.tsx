@@ -1,42 +1,25 @@
-import React, { useContext, useEffect, useState } from "react"
+import { CloseIcon } from "@chakra-ui/icons"
 import {
     Alert,
     Box,
-    Button,
-    Input,
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalOverlay,
-    Tooltip,
-    Text,
-    Flex,
-    Spinner,
-    Spacer,
-    InputRightElement,
-    InputGroup,
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
-    Heading,
+    Button, Flex, Heading, Input, InputGroup, InputRightElement, Modal,
+    ModalBody, ModalContent,
+    ModalFooter, ModalOverlay, Spacer, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip
 } from "@chakra-ui/react"
+import { ethers } from "ethers"
+import React, { useContext, useEffect, useState } from "react"
 import { Stream } from "streamr-client"
-import { addPermissions } from "../../utils/utils"
-import { CloseIcon } from "@chakra-ui/icons"
 import { UserContext } from "../../contexts/UserContext"
-import { ethers } from 'ethers'
+import { addPermissions } from "../../utils/utils"
 
-interface PropTypes {
+interface AddModalProps {
   disclosure: any;
   code: Stream;
   setCode: React.Dispatch<React.SetStateAction<Stream>>;
   handleCreate: () => void;
 }
 
-const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
+const AddModal = ({ disclosure, code, setCode, handleCreate }: AddModalProps) => {
     const [friendAddress, setFriendAddress] = useState("")
     const [permissions, setPermissions] = useState([])
     const [loading, setLoading] = useState(false)
@@ -250,12 +233,12 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
                                             </Alert>
                                         )}
                                         <Box overflowY="scroll" maxHeight="100px" margin="10px">
-                                            {permissions.map((permission, i) => {
+                                            {permissions.map((permission) => {
                                                 if (permission === publicAddress) {
                                                     return
                                                 }
                                                 return (
-                                                    <Flex key={i} alignItems="center" paddingY="10px">
+                                                    <Flex alignItems="center" paddingY="10px">
                                                         <Text>{permission}</Text>
                                                         <Spacer />
                                                         <Button
@@ -272,7 +255,7 @@ const AddModal = ({ disclosure, code, handleCreate }: PropTypes): any => {
                                         </Box>
                                     </>
                                 ) : (
-                                    <Button variant='secondary' onClick={handleCreate}>Join Personal Room</Button>
+                                    <Button variant='secondary' onClick={handleCreate}>Create Chatroom</Button>
                                 )}
                             </ModalBody>
 
