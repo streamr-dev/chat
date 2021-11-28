@@ -1,0 +1,27 @@
+.roomSelector {
+    margin: 8px;
+    text-align: left;
+    padding: 20px;
+    font-size: 18px;
+    font-family: "Karelia";
+    background-color: rgb(255, 255, 255);
+    border: none;
+    height: 92px;
+    width: 350px;
+    border-radius: 20px;
+}
+
+.roomText {
+    display: flex;
+    flex-direction: column;
+}
+
+.roomName {
+    font-size: 16px;
+}
+
+.roomMessage {
+    font-family: "IBM Plex Sans";
+    font-size: 16px;
+    color: #59799C;
+}
