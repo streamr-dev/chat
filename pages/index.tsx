@@ -2,7 +2,14 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { MetamaskDelegatedAccess } from '../src/lib/MetamaskDelegatedAccess'
 import styles from '../styles/Home.module.scss'
+
+const metamask = new MetamaskDelegatedAccess()
+const connectMetamask = async () => {
+  const {client, address} = await metamask.connect()
+  console.log('metamask connected', address, client)
+}
 
 const Home: NextPage = () => {
   return (
@@ -16,7 +23,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <nav>
           <h4 className={styles.title}>Streamr.Chat</h4>
-          <button className={styles.connect}>Connect a wallet</button>
+          <button className={styles.connect} onClick={() => connectMetamask() } >Connect a wallet</button>
         </nav>
         <h2 className={styles.helloworld}>Hello world.</h2>
         <Link href='/chat'>
