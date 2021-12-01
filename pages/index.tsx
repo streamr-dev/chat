@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import Navbar from '../src/components/Navbar/Navbar'
 import styles from '../styles/Home.module.scss'
 
 const Home: NextPage = () => {
@@ -14,10 +15,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <nav>
-          <h4 className={styles.title}>Streamr.Chat</h4>
-          <button className={styles.connect}>Connect a wallet</button>
-        </nav>
+        <Navbar />
         <h2 className={styles.helloworld}>Hello world.</h2>
         <Link href='/chat'>
           <button className={styles.createRoomButton}><span className={styles.createRoomButtonText}>Create new room</span>

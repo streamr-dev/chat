@@ -1,9 +1,15 @@
 .container {
-    padding: 40px;
+    height: 80%;
+}
+
+.plusSign {
+    background-color: white;
+    border-radius: 50px;
+    width: 100px;
 }
 
 .addRoom {
-    margin: 8px;
+    margin: 0px 8px 0px 8px;
     text-align: left;
     padding: 20px;
     font-size: 18px;
