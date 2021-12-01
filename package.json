@@ -1,6 +1,9 @@
 {
   "name": "streamr-chat-next",
   "private": true,
+  "engines": {
+    "node": ">=14.18.2"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
