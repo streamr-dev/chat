@@ -1,17 +1,19 @@
-import styles from './Room.module.scss';
+import styles from './Room.module.scss'
 
 type RoomProps = {
-  name?: string;
-  image?: string;
+  name?: string
+  image?: string
 }
 
-const Room = ({ image, name }: RoomProps) => {
-  return <div className={styles.roomSelector}>
-    <div className={styles.roomText}>
-      <span className={styles.roomName}>random-name-abc</span>
-      <span className={styles.roomMessage}>Empty roomw</span>
+const Room = ({ image, name }: RoomProps): JSX.Element => {
+  return (
+    <div className={styles.roomSelector}>
+      <div className={styles.roomText}>
+        <span className={styles.roomName}>random-name-abc</span>
+        <span className={styles.roomMessage}>Empty room</span>
+      </div>
     </div>
-  </div>
+  )
 }
 
-export default Room;
+export default Room
