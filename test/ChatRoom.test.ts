@@ -1,6 +1,7 @@
 import { ChatRoomManager } from '../src/lib/ChatRoom'
 import { StreamrClient } from "streamr-client"
 
+
 describe('ChatRoom', () => {
     const senderPrivateKey = '0x435fe42bde8b4040646e37040a4f945a3233d7ede63d472d3ca46d3020ffb7a3'
     const receiverPrivateKey = '0xc0f76a931c4b42fa44ec3af1d2410b032fca23658c44b976299175ac2be15d96'
