@@ -1,6 +1,6 @@
-import styles from './Navbar.module.scss';
+import styles from './Navbar.module.scss'
 
-const Navbar = () => {
+const Navbar = (): JSX.Element => {
   return (
     <nav className={styles.navbar}>
       <h4 className={styles.title}>Streamr.Chat</h4>
@@ -9,4 +9,4 @@ const Navbar = () => {
   )
 }
 
-export default Navbar;
+export default Navbar

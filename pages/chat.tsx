@@ -4,13 +4,13 @@ import Sidebar from "../src/components/Sidebar/Sidebar"
 import styles from '../styles/Chat.module.scss'
 
 const Chat = (): JSX.Element => {
-  return <div className={styles.container}>
-    <Navbar />
-    <div className={styles.content}>
-      <Sidebar />
-      <ChatWindow />
+    return <div className={styles.container}>
+        <Navbar />
+        <div className={styles.content}>
+            <Sidebar />
+            <ChatWindow />
+        </div>
     </div>
-  </div>
 }
 
 export default Chat
