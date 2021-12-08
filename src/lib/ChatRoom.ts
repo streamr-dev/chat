@@ -110,6 +110,7 @@ export class ChatRoomManager {
         }, Date.now(), this.STREAM_PARTITION_MESSAGES)
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async publishMetadata(streamId: string, metadata: any): Promise<any> {
         return this.client.publish(streamId, {
             type: 'metadata',
