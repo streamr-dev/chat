@@ -5,6 +5,7 @@ type RoomProps = {
   image?: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Room = ({ image, name }: RoomProps): JSX.Element => {
   return (
     <div className={styles.roomSelector}>
