@@ -6,5 +6,5 @@ type ButtonProps = {
 }
 
 const Button = ({onClick, children}: ButtonProps) => {
-  return <button>{children}</button>
+    return <button>{children}</button>
 }
