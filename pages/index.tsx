@@ -1,15 +1,27 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { MetamaskDelegatedAccess } from '../src/lib/MetamaskDelegatedAccess'
+ //import { useEffect } from 'react'
+ //import detectEthereumProvider from '@metamask/detect-provider'
+ //import { MetamaskDelegatedAccess } from '../src/lib/MetamaskDelegatedAccess'
 import styles from '../styles/Home.module.scss'
 
-const metamask = new MetamaskDelegatedAccess()
-const connectMetamask = async () => {
-  const {client, address} = await metamask.connect()
-  console.log('metamask connected', address, client)
-}
+/*
+let metamask: MetamaskDelegatedAccess | null = null
+useEffect(()=>{
+  const initializeMetamaskDelegatedAccess = async () => {
+    metamask = new MetamaskDelegatedAccess(await detectEthereumProvider())
+  }
+  initializeMetamaskDelegatedAccess()
+}, []);
 
+const connectMetamask = async () => {
+  const { client, address} = await metamask!.connect()
+  // eslint-disable-next-line no-console
+  console.log('metamask connected', address, client)
+  
+}
+*/
 const Home: NextPage = () => {
     return (
         <div className={styles.container}>
@@ -22,7 +34,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <nav>
           <h4 className={styles.title}>Streamr.Chat</h4>
-          <button className={styles.connect} onClick={() => connectMetamask() } >Connect a wallet</button>
+          <button className={styles.connect} onClick={() => /*connectMetamask()*/ console.log('') } >Connect a wallet</button>
         </nav>
         <h2 className={styles.helloworld}>Hello world.</h2>
         <Link href='/chat'>

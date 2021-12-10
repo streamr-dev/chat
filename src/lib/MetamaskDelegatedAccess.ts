@@ -1,27 +1,27 @@
+
 import { Wallet } from "ethers"
 import { Buffer } from 'buffer'
 import { encrypt } from "eth-sig-util"
 import { bufferToHex } from 'ethereumjs-util'
 import {StreamrClient} from "streamr-client"
 
-declare global {
-    interface Window { 
-        ethereum: any
-    }
-}
-
 export class MetamaskDelegatedAccess {
     metamaskAddress?: string 
     clientAddress?: string
+    provider?: any
 
-    constructor(){
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    constructor(provider: any){
+        this.provider = provider
     }
 
     public async connect(): Promise<{client: StreamrClient, address: string}>{
         // enable and fetch metamask account
-        await window.ethereum.enable()
-        this.metamaskAddress = window.ethereum.selectedAddress
-        
+        //this.provider = await detectEthereumProvider()
+        await this.provider.enable()
+        this.metamaskAddress = this.provider.selectedAddress
+                
+
         // get the delegated key 
         let sessionWallet: Wallet
         const encryptedPrivateKey = localStorage.getItem('streamr-chat-encrypted-session-key')
@@ -33,7 +33,6 @@ export class MetamaskDelegatedAccess {
             // decrypt and use
             sessionWallet = await this.decryptAccount(encryptedPrivateKey)
         }
-
         return {
             client: new StreamrClient({
                 auth: { 
@@ -47,7 +46,8 @@ export class MetamaskDelegatedAccess {
     private async createAccount(): Promise<Wallet>{
         const wallet = Wallet.createRandom()
         this.clientAddress = wallet.address
-        const encryptionPublicKey = await window.ethereum.request({
+        
+        const encryptionPublicKey = await this.provider.request({
             method: 'eth_getEncryptionPublicKey',
             params: [this.metamaskAddress]
         })
@@ -70,11 +70,11 @@ export class MetamaskDelegatedAccess {
     }
 
     private async decryptAccount(encryptedPrivateKey: string): Promise<Wallet> {
-        const decrypted = await window.ethereum.request({
+        
+        const decrypted = await this.provider.request({
             method: 'eth_decrypt',
             params: [encryptedPrivateKey, this.metamaskAddress]
         })
-
         const wallet = new Wallet(JSON.parse(decrypted).privateKey)
         this.clientAddress = wallet.address
         return wallet
