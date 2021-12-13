@@ -4,6 +4,7 @@ import { Buffer } from 'buffer'
 import { encrypt } from "eth-sig-util"
 import { bufferToHex } from 'ethereumjs-util'
 import {StreamrClient} from "streamr-client"
+import detectEthereumProvider from "@metamask/detect-provider"
 
 export class MetamaskDelegatedAccess {
     metamaskAddress?: string 
@@ -79,4 +80,9 @@ export class MetamaskDelegatedAccess {
         this.clientAddress = wallet.address
         return wallet
     }
+}
+
+export const initializeMetamaskDelegatedAccess = async (): Promise<MetamaskDelegatedAccess> => {
+    const provider = await detectEthereumProvider()
+    return new MetamaskDelegatedAccess(provider)
 }
