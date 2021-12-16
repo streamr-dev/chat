@@ -1,5 +1,8 @@
 import { createGlobalStyle } from 'styled-components'
 import { PLEX } from './utils/css'
+import { HashRouter, Route, Routes } from 'react-router-dom'
+import Home from './Home'
+import Chat from './Chat'
 
 const Global = createGlobalStyle`
     html,
@@ -12,7 +15,18 @@ export default function App() {
     return (
         <>
             <Global />
-            H3110 world!
+            <HashRouter>
+                <Routes>
+                    <Route
+                        element={<Home />}
+                        path="/"
+                    />
+                    <Route
+                        element={<Chat />}
+                        path="/chat"
+                    />
+                </Routes>
+            </HashRouter>
         </>
     )
 }
