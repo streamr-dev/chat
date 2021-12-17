@@ -7,7 +7,7 @@ type Props = {
 
 const UnstyledNavbar = ({ className }: Props) => (
     <nav className={className}>
-        <h4>Streamr.Chat</h4>
+        <h4>thechat.eth</h4>
         <button
             type="button"
             onClick={() => {
@@ -20,6 +20,7 @@ const UnstyledNavbar = ({ className }: Props) => (
 )
 
 const Navbar = styled(UnstyledNavbar)`
+    align-items: center;
     box-sizing: border-box;
     display: flex;
     flex-direction: row;

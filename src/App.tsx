@@ -1,13 +1,30 @@
 import { createGlobalStyle } from 'styled-components'
 import { PLEX } from './utils/css'
 import { HashRouter, Route, Routes } from 'react-router-dom'
-import Home from './Home'
-import Chat from './Chat'
+import Home from './components/pages/Home'
+import Chat from './components/pages/Chat'
 
 const Global = createGlobalStyle`
     html,
     body {
         font-family: ${PLEX};
+        font-size: 16px;
+        padding: 0;
+        margin: 0;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    input,
+    textarea {
+        font-family: inherit;
     }
 `
 
@@ -17,14 +34,8 @@ export default function App() {
             <Global />
             <HashRouter>
                 <Routes>
-                    <Route
-                        element={<Home />}
-                        path="/"
-                    />
-                    <Route
-                        element={<Chat />}
-                        path="/chat"
-                    />
+                    <Route element={<Home />} path="/" />
+                    <Route element={<Chat />} path="/chat" />
                 </Routes>
             </HashRouter>
         </>
