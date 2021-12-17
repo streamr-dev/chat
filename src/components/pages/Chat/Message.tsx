@@ -8,7 +8,7 @@ type Props = {
 }
 
 const Body = styled.div`
-    background-color: #a0a2a3;
+    background-color: #F1F4F7;
     border-radius: 0.75rem;
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -22,7 +22,7 @@ const AvatarWrap = styled.div`
 `
 
 const Avatar = styled.div`
-    background-color: #a0a2a3;
+    background-color: #F1F4F7;
     border-radius: 50%;
     height: 2.5rem;
     width: 2.5rem;
