@@ -70,12 +70,13 @@ const UnstyledChat = ({ className }: Props) => {
     const [messages, setMessages] = useState<MessagesCollection>({
         [room0.id]: [
             { id: 0, from: SOMEONE, body: 'Hey there', createdAt: new Date(2020, 12, 20).getTime() },
-            { id: 1, from: SOMEONE, body: 'U guys heard of that new virus', createdAt: new Date(2020, 12, 20).getTime() },
+            { id: 1, from: SOMEONE, body: 'U guys heard of that new virus thing?', createdAt: new Date(2020, 12, 20).getTime() },
             { id: 2, from: ME, body: 'Yep, nothing to worry about', createdAt: new Date(2020, 12, 20).getTime() },
             { id: 3, from: ME, body: 'lol', createdAt: new Date(2020, 12, 20).getTime() },
-            { id: 4, from: SOMEONE_ELSE, body: 'lol', createdAt: new Date(2021, 12, 20).getTime() },
-            { id: 5, from: SOMEONE_ELSE, body: 'that did not age well', createdAt: new Date(2021, 12, 20).getTime() },
-            { id: 6, from: ME, body: 'ikr?', createdAt: new Date(2021, 12, 20).getTime() },
+            { id: 4, from: SOMEONE, body: 'sic', createdAt: new Date(2021, 3, 26).getTime() },
+            { id: 5, from: SOMEONE_ELSE, body: 'lol', createdAt: new Date(2021, 12, 20).getTime() },
+            { id: 6, from: SOMEONE_ELSE, body: 'that did not age well', createdAt: new Date(2021, 12, 20).getTime() },
+            { id: 7, from: ME, body: 'ikr?!', createdAt: new Date(2021, 12, 20).getTime() },
         ],
         [room1.id]: [],
         [room2.id]: [],
