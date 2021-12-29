@@ -21,7 +21,7 @@ const UnstyledRoom = ({ name = 'Room', recentMessage, icon = <div />, ...props }
         {...props}
         icon={icon}
         afterContent={(
-            <>1</>
+            <></>
         )}
     >
         <Name>{name}</Name>
