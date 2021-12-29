@@ -49,7 +49,7 @@ const Root = styled.div<RootProps>`
     `}
 `
 
-const UnstyledMessage = ({ className, incoming, payload: { from, body, createdAt } }: Props) => {
+const UnstyledMessage = ({ className, incoming, payload: { body, createdAt } }: Props) => {
     return (
         <Root className={className} $incoming={incoming}>
             {incoming && (
