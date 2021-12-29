@@ -100,9 +100,10 @@ type Props = {
     className?: string,
     children?: React.ReactNode,
     onSubmit?: (arg0: string) => void,
+    title?: string,
 }
 
-const UnstyledChatWindow = ({ className, children, onSubmit }: Props) => {
+const UnstyledChatWindow = ({ className, children, onSubmit, title }: Props) => {
     const [value, setValue] = useState<string>('')
 
     const feedRef = useRef<HTMLDivElement>(null)
@@ -126,7 +127,7 @@ const UnstyledChatWindow = ({ className, children, onSubmit }: Props) => {
         <div className={className}>
             <Header>
                 <RoomName>
-                    Awesome gangs
+                    {title || <>&zwnj;</>}
                 </RoomName>
                 <RoomActions>
                     <RoomAction />

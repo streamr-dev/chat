@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Helmet from 'react-helmet'
 import styled from 'styled-components'
 import ChatWindow from './ChatWindow'
@@ -89,6 +89,14 @@ const UnstyledChat = ({ className }: Props) => {
 
     const roomMessages: Array<MessagePayload> = roomId != null ? messages[roomId] : EMPTY_ROOM
 
+    const room = roomId != null ? rooms[roomId] : undefined
+
+    useEffect(() => {
+        if (roomId == null && rooms.length) {
+            setRoomId(0)
+        }
+    }, [roomId, rooms])
+
     return (
         <>
             <Helmet title="Let's chat!" />
@@ -111,6 +119,7 @@ const UnstyledChat = ({ className }: Props) => {
                             ))}
                         </Sidebar>
                         <ChatWindow
+                            title={room && room.name}
                             onSubmit={(body: string) => {
                                 if (roomId == null) {
                                     return
