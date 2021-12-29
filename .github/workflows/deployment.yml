@@ -2,7 +2,7 @@ name: Site
 on:
   push:
     branches:
-      - move-to-cra
+      - development
 jobs:
   publish:
     runs-on: ubuntu-latest
