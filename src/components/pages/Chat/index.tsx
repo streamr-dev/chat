@@ -50,13 +50,13 @@ const room2: RoomPayload = {
 }
 
 // TBD from streamr client.
-const SOMEONE = '0xAAAA'
+const SOMEONE = '0x0x7da4E5E40C41f5eCbeFb4fa59B2153888a11731'
 
 // TBD from streamr client
-const SOMEONE_ELSE = '0xBBBB'
+const SOMEONE_ELSE = '0x0xcd9c7c57a2d1468686c2d141530f7b70e771c05'
 
 // TBD from web3 provider.
-const ME = '0xCCCC'
+const ME = '0x7da4e5e40c41f5ecbefb4fa59b2153888a11731'
 
 type MessagesCollection = {
     [index: string | number]: Array<MessagePayload>,
