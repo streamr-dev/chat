@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components'
+import Identicon from 'identicon.js'
 
 export type MessagePayload = {
     id: number,
@@ -27,7 +28,7 @@ const AvatarWrap = styled.div`
     margin-right: 1rem;
 `
 
-const Avatar = styled.div`
+const Avatar = styled.img`
     background-color: #F1F4F7;
     border-radius: 50%;
     height: 2.5rem;
@@ -49,12 +50,19 @@ const Root = styled.div<RootProps>`
     `}
 `
 
-const UnstyledMessage = ({ className, incoming, payload: { body, createdAt } }: Props) => {
+const AVATAR_OPTIONS = {
+    size: 40,
+}
+
+const UnstyledMessage = ({ className, incoming, payload: { from, body, createdAt } }: Props) => {
     return (
         <Root className={className} $incoming={incoming}>
             {incoming && (
                 <AvatarWrap>
-                    <Avatar />
+                    <Avatar
+                        src={`data:image/png;base64,${new Identicon(from, AVATAR_OPTIONS).toString()}`}
+                        alt={from}
+                    />
                 </AvatarWrap>
             )}
             <Body title={new Date(createdAt).toString()}>
@@ -62,7 +70,10 @@ const UnstyledMessage = ({ className, incoming, payload: { body, createdAt } }: 
             </Body>
             {!incoming && (
                 <AvatarWrap>
-                    <Avatar />
+                    <Avatar
+                        src={`data:image/png;base64,${new Identicon(from, AVATAR_OPTIONS).toString()}`}
+                        alt={from}
+                    />
                 </AvatarWrap>
             )}
         </Root>
