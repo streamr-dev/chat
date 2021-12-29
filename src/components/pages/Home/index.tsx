@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../../Navbar'
 import { KARELIA } from '../../../utils/css'
 import Background from './background.png'
+import Button from '../../Button'
 
 const StreamrPlug = styled.span`
     background-color: white;
@@ -22,7 +23,6 @@ const StreamrPlug = styled.span`
 const CreateLink = styled(Link)`
     align-items: center;
     background: #ff5924;
-    border: none;
     border-radius: 100px;
     box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
     color: white;
@@ -30,12 +30,10 @@ const CreateLink = styled(Link)`
     font-family: ${KARELIA};
     font-size: 22px;
     padding: 25px 50px;
-    transition: all 0.4s ease-in-out;
 
     :hover,
     :focus {
         background-color: #de4716;
-        transform: translateY(10px);
     }
 
     div {
@@ -71,7 +69,7 @@ const UnstyledHome = ({ className }: Props) => {
                 <Content>
                     <div>
                         <h1>Hello world.</h1>
-                        <CreateLink to="/chat">
+                        <Button as={CreateLink} to="/chat">
                             <div>Create new room</div>
                             <svg
                                 width="20"
@@ -89,7 +87,7 @@ const UnstyledHome = ({ className }: Props) => {
                                     fill="white"
                                 />
                             </svg>
-                        </CreateLink>
+                        </Button>
                     </div>
                 </Content>
                 <StreamrPlug>
