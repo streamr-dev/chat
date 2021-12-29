@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Helmet from 'react-helmet'
 import styled from 'styled-components'
 import ChatWindow from './ChatWindow'
@@ -6,6 +6,7 @@ import Sidebar from './Sidebar'
 import Navbar from '../../Navbar'
 import Room from './Room'
 import Background from '../Home/background.png'
+import type { MessagePayload } from './Message'
 import Message from './Message'
 
 const Content = styled.div`
@@ -24,30 +25,69 @@ type Props = {
     className?: string
 }
 
-type MessagePayload = [
+type RoomPayload = {
     id: number,
-    from: string,
-    body: string,
-]
+    name: string,
+    readAt: number,
+}
+
+const room0: RoomPayload = {
+    id: 0,
+    name: 'Lorem ipsums dfkjashdfb kjashbf kjasbhfdk jabsdf',
+    readAt: new Date(2022, 12, 20).getTime(), // future, altho no messages (wat? lol)
+}
+
+const room1: RoomPayload = {
+    id: 1,
+    name: 'sfkhsdfkjbdkgbsdkfhbgksdjhbfgksjdhgsdfjbs',
+    readAt: new Date(2021, 12, 20).getTime(), // past
+}
+
+const room2: RoomPayload = {
+    id: 2,
+    name: 'Emat',
+    readAt: new Date(2022, 12, 20).getTime(), // future
+}
+
+// TBD from streamr client.
+const SOMEONE = '0xAAAA'
+
+// TBD from streamr client
+const SOMEONE_ELSE = '0xBBBB'
+
+// TBD from web3 provider.
+const ME = '0xCCCC'
+
+type MessagesCollection = {
+    [index: string | number]: Array<MessagePayload>,
+}
+
+const EMPTY_ROOM: Array<MessagePayload> = []
 
 const UnstyledChat = ({ className }: Props) => {
-    const [messages, setMessages] = useState<Array<MessagePayload>>([
-        [0, '0xa047314ff08Cead7726Ceb90fc0CB39D80607227', 'Message 1'],
-        [1, '0xa047314ff08Cead7726Ceb90fcACB39D80607227', 'Message 2'],
-        [2, '0xa047314ff08Cead7726Ceb90fc0CB39D80607227', 'Message 3'],
-        [3, '0xa047314ff08Cead7726Ceb90fcACB39D80607227', 'Message 4'],
-        [4, '0xa047314ff08Cead7726Ceb90fcACB39D80607227', 'Message 5'],
-        [5, '0xa047314ff08Cead7726Ceb90fc0CB39D80607227', 'Message 6'],
-        [6, '0xa047314ff08Cead7726Ceb90fcACB39D80607227', 'Message 7'],
-        [7, '0xa047314ff08Cead7726Ceb90fc0CB39D80607227', 'Message 8'],
-        [8, '0xa047314ff08Cead7726Ceb90fcACB39D80607227', 'Message 9'],
-        [9, '0xa047314ff08Cead7726Ceb90fc0CB39D80607227', 'Message 10'],
-        [10, '0xa047314ff08Cead7726Ceb90fcACB39D80607227', 'Message 11'],
-        [11, '0xa047314ff08Cead7726Ceb90fc0CB39D80607227', 'Message 12'],
-        [12, '0xa047314ff08Cead7726Ceb90fc0CB39D80607227', 'Message 13'],
-    ])
-
     const [roomId, setRoomId] = useState<number | void>()
+
+    const [messages, setMessages] = useState<MessagesCollection>({
+        [room0.id]: [
+            { id: 0, from: SOMEONE, body: 'Hey there', createdAt: new Date(2020, 12, 20).getTime() },
+            { id: 1, from: SOMEONE, body: 'U guys heard of that new virus', createdAt: new Date(2020, 12, 20).getTime() },
+            { id: 2, from: ME, body: 'Yep, nothing to worry about', createdAt: new Date(2020, 12, 20).getTime() },
+            { id: 3, from: ME, body: 'lol', createdAt: new Date(2020, 12, 20).getTime() },
+            { id: 4, from: SOMEONE_ELSE, body: 'lol', createdAt: new Date(2021, 12, 20).getTime() },
+            { id: 5, from: SOMEONE_ELSE, body: 'that did not age well', createdAt: new Date(2021, 12, 20).getTime() },
+            { id: 6, from: ME, body: 'ikr?', createdAt: new Date(2021, 12, 20).getTime() },
+        ],
+        [room1.id]: [],
+        [room2.id]: [],
+    })
+
+    const rooms = useMemo<RoomPayload[]>(() => [
+        room0,
+        room1,
+        room2,
+    ], [])
+
+    const roomMessages: Array<MessagePayload> = roomId != null ? messages[roomId] : EMPTY_ROOM
 
     return (
         <>
@@ -57,29 +97,44 @@ const UnstyledChat = ({ className }: Props) => {
                 <Content>
                     <div>
                         <Sidebar>
-                            <Room active={roomId === 0} name="Lorem ipsum" onClick={() => setRoomId(0)} />
-                            <Room active={roomId === 1} name="Dolor sit" onClick={() => setRoomId(1)} />
-                            <Room active={roomId === 2} name="Emat" onClick={() => setRoomId(2)} />
-                            <Room active={roomId === 3} name="Lorem ipsum" onClick={() => setRoomId(3)} />
+                            {rooms.map((room) => (
+                                <Room
+                                    key={room.id}
+                                    active={room.id === roomId}
+                                    name={room.name}
+                                    onClick={() => {
+                                        setRoomId(room.id)
+                                    }}
+                                    recentMessage={[...messages[room.id]].pop()}
+                                    unread={false}
+                                />
+                            ))}
                         </Sidebar>
                         <ChatWindow
                             onSubmit={(body: string) => {
-                                setMessages((current) => [
+                                if (roomId == null) {
+                                    return
+                                }
+
+                                setMessages((current) => ({
                                     ...current,
-                                    [
-                                        current.length + 1,
-                                        '0xa047314ff08Cead7726Ceb90fc0CB39D80607227',
-                                        body,
+                                    [roomId]: [
+                                        ...current[roomId],
+                                        {
+                                            id: current[roomId].length + 1,
+                                            from: ME,
+                                            body,
+                                            createdAt: Date.now(),
+                                        },
                                     ],
-                                ])
+                                }))
                             }}
                         >
-                            {messages.map(([id, from, body]) => (
+                            {roomMessages.map((message) => (
                                 <Message
-                                    key={id}
-                                    from={from}
-                                    body={body}
-                                    createdAt={Date.now()}
+                                    incoming={message.from !== ME}
+                                    key={message.id}
+                                    payload={message}
                                 />
                             ))}
                         </ChatWindow>

@@ -1,10 +1,16 @@
 import styled, { css } from 'styled-components'
 
+export type MessagePayload = {
+    id: number,
+    body: string,
+    from: string,
+    createdAt: number,
+}
+
 type Props = {
     className?: string,
-    body?: string,
-    createdAt?: number,
-    from: string,
+    payload: MessagePayload,
+    incoming?: boolean,
 }
 
 const Body = styled.div`
@@ -28,8 +34,6 @@ const Avatar = styled.div`
     width: 2.5rem;
 `
 
-const ME = '0xa047314ff08Cead7726Ceb90fc0CB39D80607227'
-
 type RootProps = {
     $incoming?: boolean,
 }
@@ -45,9 +49,7 @@ const Root = styled.div<RootProps>`
     `}
 `
 
-const UnstyledMessage = ({ className, body = 'Message', createdAt = Date.now(), from }: Props) => {
-    const incoming = from !== ME
-
+const UnstyledMessage = ({ className, incoming, payload: { from, body, createdAt } }: Props) => {
     return (
         <Root className={className} $incoming={incoming}>
             {incoming && (
@@ -55,10 +57,8 @@ const UnstyledMessage = ({ className, body = 'Message', createdAt = Date.now(), 
                     <Avatar />
                 </AvatarWrap>
             )}
-            <Body>
-                {from}
-                <br />
-                {body} at {createdAt}
+            <Body title={new Date(createdAt).toString()}>
+                {body}
             </Body>
             {!incoming && (
                 <AvatarWrap>

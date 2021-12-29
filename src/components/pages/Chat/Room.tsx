@@ -1,59 +1,42 @@
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
+import type { Props as SidebarItemProps } from './SidebarItem'
+import SidebarItem from './SidebarItem'
+import type { MessagePayload } from './Message'
 
-type Props = {
-    active?: boolean,
+type Props = SidebarItemProps & {
     name?: string,
-    recentMessage?: string | null,
-    onClick?: () => void,
+    recentMessage?: MessagePayload,
+    unread?: boolean,
 }
 
-type ShapeProps = {
-    $active?: boolean,
-}
+const Name = styled.div``
 
-export const Shape = styled.button<ShapeProps>`
-    align-items: center;
-    appearance: none;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 1.25rem;
-    border: none;
-    cursor: pointer;
-    display: block;
-    display: flex;
-    height: 5.75rem;
-    padding: 0 1.5rem;
-    text-align: left;
-    width: 100%;
-    transition: 0.8s background-color;
-
-    & + & {
-        margin-top: 1rem;
-    }
-
-    ${({ $active }) => !!$active && css`
-        background-color: #ffffff !important;
-        transition-duration: 0.1s;
-    `}
-
-    :hover,
-    :focus {
-        background-color: rgba(255, 255, 255, 0.8);
-        transition-duration: 0.1s;
-    }
+const RecentMessage = styled.div`
+    color: #59799C;
+    font-size: 0.875rem;
 `
 
-const UnstyledRoom = ({ name = 'Room', recentMessage = null, active = false, onClick }: Props) => (
-    <Shape $active={active} onClick={onClick}>
-        <div>
-            {/* Image */}
-        </div>
-        <div>
-            <div>{name}</div>
-            <div>{recentMessage == null ? 'Empty room' : recentMessage}</div>
-        </div>
-    </Shape>
+const UnstyledRoom = ({ name = 'Room', recentMessage, icon = <div />, ...props }: Props) => (
+    <SidebarItem
+        {...props}
+        icon={icon}
+        afterContent={(
+            <>1</>
+        )}
+    >
+        <Name>{name}</Name>
+        <RecentMessage>{(recentMessage && recentMessage.body) || 'Empty room'}</RecentMessage>
+    </SidebarItem>
 )
 
-const Room = styled(UnstyledRoom)``
+const Room = styled(UnstyledRoom)`
+    ${Name},
+    ${RecentMessage} {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+`
 
 export default Room
