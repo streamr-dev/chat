@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components'
 import Identicon from 'identicon.js'
+import DateTooltip from './DateTooltip'
 
 export type MessagePayload = {
     id: number,
@@ -23,6 +24,7 @@ const Body = styled.div`
     max-width: 100%;
     min-width: 0;
     padding: 0.625rem 1rem;
+    position: relative;
     word-wrap: break-word;
 `
 
@@ -68,7 +70,8 @@ const UnstyledMessage = ({ className, incoming, payload: { from, body, createdAt
                     />
                 </AvatarWrap>
             )}
-            <Body title={new Date(createdAt).toString()}>
+            <Body>
+                <DateTooltip timestamp={createdAt} />
                 {body}
             </Body>
             {!incoming && (
@@ -92,6 +95,12 @@ const Message = styled(UnstyledMessage)`
 
     & + & {
         margin-top: 0.625rem;
+    }
+
+    ${Body}:hover ${DateTooltip} {
+        opacity: 1;
+        transition-delay: 1s;
+        visibility: visible;
     }
 `
 
