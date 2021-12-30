@@ -65,7 +65,7 @@ type MessagesCollection = {
 const EMPTY_ROOM: Array<MessagePayload> = []
 
 const UnstyledChat = ({ className }: Props) => {
-    const [roomId, setRoomId] = useState<number | void>()
+    const [roomId, setRoomId] = useState<number | undefined>()
 
     const [messages, setMessages] = useState<MessagesCollection>({
         [room0.id]: [
@@ -120,6 +120,7 @@ const UnstyledChat = ({ className }: Props) => {
                             ))}
                         </Sidebar>
                         <ChatWindow
+                            roomId={roomId}
                             title={room && room.name}
                             onSubmit={(body: string) => {
                                 if (roomId == null) {

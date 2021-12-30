@@ -87,10 +87,11 @@ type Props = {
     className?: string,
     children?: React.ReactNode,
     onSubmit?: (arg0: string) => void,
+    roomId?: number,
     title?: string,
 }
 
-const UnstyledChatWindow = ({ className, children, onSubmit, title }: Props) => {
+const UnstyledChatWindow = ({ className, children, onSubmit, title, roomId }: Props) => {
     const feedRef = useRef<HTMLDivElement>(null)
 
     useLayoutEffect(() => {
@@ -120,6 +121,7 @@ const UnstyledChatWindow = ({ className, children, onSubmit, title }: Props) => 
                 </div>
             </FeedWrap>
             <MessageInput
+                key={roomId}
                 onSubmit={onSubmit}
             />
         </div>
