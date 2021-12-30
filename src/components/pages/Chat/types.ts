@@ -24,5 +24,6 @@ export type ChatState = {
     identity?: string,
     messages: MessagesCollection,
     roomId?: string,
+    roomNameEditable: boolean,
     rooms: RoomPayload[],
 }

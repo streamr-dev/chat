@@ -6,12 +6,15 @@ const initialState = {
     identity: undefined,
     messages: {},
     roomId: undefined,
+    roomNameEditable: false,
     rooms: [],
 }
 
 export enum ActionType {
     AddMessages = 'add messages',
     AddRooms = 'add rooms',
+    EditRoomName = 'edit room name',
+    RenameRoom = 'rename room',
     Reset = 'reset',
     SelectRoom = 'select room',
     SetDraft = 'set draft',
@@ -41,6 +44,10 @@ type ResetAction = Omit<Action<ActionType.Reset, undefined>, 'payload'>
 
 type SetDraftAction = Action<ActionType.SetDraft, string>
 
+type RenameRoomAction = Action<ActionType.RenameRoom, string>
+
+type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
+
 type A = SelectRoomAction
     | AddRoomsAction
     | SetRoomsAction
@@ -49,9 +56,27 @@ type A = SelectRoomAction
     | SetIdentityAction
     | ResetAction
     | SetDraftAction
+    | RenameRoomAction
+    | EditRoomNameAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
+        case ActionType.EditRoomName:
+            return {
+                ...state,
+                roomNameEditable: action.payload,
+            }
+        case ActionType.RenameRoom:
+            ((room: RoomPayload | undefined) => {
+                if (room) {
+                    room.name = action.payload
+                }
+            })(state.rooms.find(({ id }) => id === state.roomId))
+
+            return {
+                ...state,
+                roomNameEditable: false,
+            }
         case ActionType.SetDraft:
             return !state.roomId ? state : {
                 ...state,
@@ -71,6 +96,7 @@ function reducer(state: ChatState, action: A): ChatState {
             return {
                 ...state,
                 roomId: action.payload,
+                roomNameEditable: false,
             }
         case ActionType.SetRooms:
             return {

@@ -1,8 +1,10 @@
 import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
-import { KARELIA, MEDIUM } from '../../../utils/css'
-import { useRoom } from './ChatStore'
 import MessageInput from './MessageInput'
+import RoomName from './RoomName'
+import ModifyIcon from './modify.svg'
+import MoreIcon from './more.svg'
+import { ActionType, useDispatch, useStore } from './ChatStore'
 
 const Header = styled.div`
     align-items: center;
@@ -15,17 +17,6 @@ const Header = styled.div`
     width: 100%;
 `
 
-const RoomName = styled.div`
-    flex-grow: 1;
-    font-family: ${KARELIA};
-    font-size: 1.625rem;
-    font-weight: ${MEDIUM};
-    line-height: normal;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`
-
 const RoomActions = styled.div`
     display: flex;
     margin-left: 1rem;
@@ -33,15 +24,36 @@ const RoomActions = styled.div`
 
 const RoomAction = styled.button`
     appearance: none;
-    background-color: #F7F9FC;
     border-radius: 50%;
     border: 0;
+    cursor: pointer;
     display: block;
     height: 2.5rem;
     width: 2.5rem;
+    padding: 0;
+    transition: 300ms background-color;
+
+    &[disabled] {
+        cursor: default;
+        opacity: 0.5;
+    }
+
+    :hover {
+        background-color: #EBEFF5;
+        transition-duration: 50ms;
+    }
+
+    &,
+    &[disabled] {
+        background-color: #F7F9FC;
+    }
 
     & + & {
         margin-left: 0.75rem;
+    }
+
+    img {
+        display: block;
     }
 `
 
@@ -93,10 +105,6 @@ type Props = {
 const UnstyledChatWindow = ({ className, children }: Props) => {
     const feedRef = useRef<HTMLDivElement>(null)
 
-    const room = useRoom()
-
-    const title = room && room.name
-
     useLayoutEffect(() => {
         const { current: feed } = feedRef
 
@@ -105,15 +113,29 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
         }
     }, [children])
 
+    const dispatch = useDispatch()
+
+    const { roomNameEditable } = useStore()
+
     return (
         <div className={className}>
             <Header>
-                <RoomName>
-                    {title || <>&zwnj;</>}
-                </RoomName>
+                <RoomName />
                 <RoomActions>
-                    <RoomAction />
-                    <RoomAction />
+                    <RoomAction
+                        onClick={() => {
+                            dispatch({
+                                type: ActionType.EditRoomName,
+                                payload: true,
+                            })
+                        }}
+                        disabled={roomNameEditable}
+                    >
+                        <img src={ModifyIcon} alt="" />
+                    </RoomAction>
+                    <RoomAction>
+                        <img src={MoreIcon} alt="" />
+                    </RoomAction>
                 </RoomActions>
             </Header>
             <FeedWrap>

@@ -44,7 +44,7 @@ function UnstyledRoom({ id, name = 'Room', icon = <div />, ...props }: Props) {
             icon={icon}
             onClick={onClick}
         >
-            <Name>{name}</Name>
+            <Name>{name || <>Untitled room</>}</Name>
             <RecentMessage>{(recentMessage && recentMessage.body) || 'Empty room'}</RecentMessage>
         </SidebarItem>
     )

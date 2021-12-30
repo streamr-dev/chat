@@ -40,7 +40,7 @@ function UnstyledMessageInput({ className }: Props) {
 
     const dispatch = useDispatch()
 
-    const { identity, roomId } = useStore()
+    const { identity, roomId, roomNameEditable } = useStore()
 
     function onSubmit(body: string) {
         if (identity == null) {
@@ -82,6 +82,20 @@ function UnstyledMessageInput({ className }: Props) {
     useEffect(() => {
         focus(inputRef.current)
     }, [roomId])
+
+    const skipRoomNameEditRef = useRef<boolean>(true)
+
+    useEffect(() => {
+        if (skipRoomNameEditRef.current) {
+            skipRoomNameEditRef.current = false
+            return
+        }
+
+
+        if (!roomNameEditable) {
+            focus(inputRef.current)
+        }
+    }, [roomNameEditable])
 
     return (
         <div className={className}>
