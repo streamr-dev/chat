@@ -84,8 +84,8 @@ const Feed = styled(UnstyledFeed)`
 `
 
 type Props = {
-    className?: string,
     children?: React.ReactNode,
+    className?: string,
     onSubmit?: (arg0: string) => void,
     roomId?: number,
     title?: string,
