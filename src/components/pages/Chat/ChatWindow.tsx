@@ -19,10 +19,14 @@ const RoomName = styled.div`
     font-size: 1.625rem;
     font-weight: ${MEDIUM};
     line-height: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `
 
 const RoomActions = styled.div`
     display: flex;
+    margin-left: 1rem;
 `
 
 const RoomAction = styled.button`
