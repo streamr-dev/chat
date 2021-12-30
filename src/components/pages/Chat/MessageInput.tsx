@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
+import { v4 as uuidv4 } from 'uuid'
+import { ActionType, useDispatch, useStore } from './ChatStore'
 import SubmitButton from './SubmitButton'
 
 type Props = {
     className?: string,
-    onSubmit?: (arg0: string) => void,
 }
 
 type InnerProps = {
@@ -29,12 +30,32 @@ const Inner = styled.div<InnerProps>`
     `}
 `
 
-function UnstyledMessageInput({ className, onSubmit }: Props) {
+function UnstyledMessageInput({ className }: Props) {
     const [value, setValue] = useState<string>('')
 
     const inputRef = useRef<HTMLInputElement>(null)
 
     const submittable = !/^\s*$/.test(value)
+
+    const dispatch = useDispatch()
+
+    const { identity, roomId } = useStore()
+
+    function onSubmit(body: string) {
+        if (identity == null) {
+            return
+        }
+
+        dispatch({
+            type: ActionType.AddMessages,
+            payload: [{
+                body,
+                createdAt: Date.now(),
+                sender: identity,
+                id: uuidv4(),
+            }],
+        })
+    }
 
     function submit() {
         if (submittable && typeof onSubmit === 'function') {
@@ -58,6 +79,15 @@ function UnstyledMessageInput({ className, onSubmit }: Props) {
             input.focus()
         }
     }
+
+    // Focus the text field on room change.
+    useEffect(() => {
+        const { current: input } = inputRef
+
+        if (input) {
+            input.focus()
+        }
+    }, [roomId])
 
     return (
         <div className={className}>
