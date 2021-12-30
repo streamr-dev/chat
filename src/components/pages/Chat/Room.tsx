@@ -1,9 +1,11 @@
 import styled from 'styled-components'
 import type { Props as SidebarItemProps } from './SidebarItem'
 import SidebarItem from './SidebarItem'
-import type { MessagePayload } from './Message'
+import type { MessagePayload } from './types'
+import { ActionType, useDispatch, useStore } from './ChatStore'
 
 type Props = SidebarItemProps & {
+    id: string,
     name?: string,
     recentMessage?: MessagePayload,
     unread?: boolean,
@@ -16,18 +18,37 @@ const RecentMessage = styled.div`
     font-size: 0.875rem;
 `
 
-const UnstyledRoom = ({ name = 'Room', recentMessage, icon = <div />, ...props }: Props) => (
-    <SidebarItem
-        {...props}
-        icon={icon}
-        afterContent={(
-            <></>
-        )}
-    >
-        <Name>{name}</Name>
-        <RecentMessage>{(recentMessage && recentMessage.body) || 'Empty room'}</RecentMessage>
-    </SidebarItem>
-)
+function UnstyledRoom({ id, name = 'Room', icon = <div />, ...props }: Props) {
+    const { roomId, messages } = useStore()
+
+    const dispatch = useDispatch()
+
+    const recentMessage: MessagePayload | undefined = [...messages[id]].pop()
+
+    const active = id === roomId
+
+    function onClick() {
+        dispatch({
+            type: ActionType.SelectRoom,
+            payload: id,
+        })
+    }
+
+    return (
+        <SidebarItem
+            {...props}
+            afterContent={(
+                <></>
+            )}
+            active={active}
+            icon={icon}
+            onClick={onClick}
+        >
+            <Name>{name}</Name>
+            <RecentMessage>{(recentMessage && recentMessage.body) || 'Empty room'}</RecentMessage>
+        </SidebarItem>
+    )
+}
 
 const Room = styled(UnstyledRoom)`
     ${Name},

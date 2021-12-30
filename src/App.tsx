@@ -3,6 +3,7 @@ import { PLEX } from './utils/css'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/pages/Home'
 import Chat from './components/pages/Chat'
+import ChatStore from './components/pages/Chat/ChatStore'
 
 const Global = createGlobalStyle`
     html,
@@ -34,8 +35,18 @@ export default function App() {
             <Global />
             <HashRouter>
                 <Routes>
-                    <Route element={<Home />} path="/" />
-                    <Route element={<Chat />} path="/chat" />
+                    <Route
+                        element={<Home />}
+                        path="/"
+                    />
+                    <Route
+                        element={(
+                            <ChatStore>
+                                <Chat />
+                            </ChatStore>
+                        )}
+                        path="/chat"
+                    />
                 </Routes>
             </HashRouter>
         </>

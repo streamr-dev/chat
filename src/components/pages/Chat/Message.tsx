@@ -1,13 +1,8 @@
 import styled, { css } from 'styled-components'
 import Identicon from 'identicon.js'
 import DateTooltip from './DateTooltip'
-
-export type MessagePayload = {
-    id: number,
-    body: string,
-    from: string,
-    createdAt: number,
-}
+import type { MessagePayload } from './types'
+import { useStore } from './ChatStore'
 
 type Props = {
     className?: string,
@@ -59,14 +54,18 @@ const AVATAR_OPTIONS = {
     size: 40,
 }
 
-const UnstyledMessage = ({ className, incoming, payload: { from, body, createdAt } }: Props) => {
+const UnstyledMessage = ({ className, payload: { sender, body, createdAt } }: Props) => {
+    const { identity } = useStore()
+
+    const incoming = identity !== sender
+
     return (
         <Root className={className} $incoming={incoming}>
             {incoming && (
                 <AvatarWrap>
                     <Avatar
-                        src={`data:image/png;base64,${new Identicon(from, AVATAR_OPTIONS).toString()}`}
-                        alt={from}
+                        src={`data:image/png;base64,${new Identicon(sender, AVATAR_OPTIONS).toString()}`}
+                        alt={sender}
                     />
                 </AvatarWrap>
             )}
@@ -77,8 +76,8 @@ const UnstyledMessage = ({ className, incoming, payload: { from, body, createdAt
             {!incoming && (
                 <AvatarWrap>
                     <Avatar
-                        src={`data:image/png;base64,${new Identicon(from, AVATAR_OPTIONS).toString()}`}
-                        alt={from}
+                        src={`data:image/png;base64,${new Identicon(sender, AVATAR_OPTIONS).toString()}`}
+                        alt={sender}
                     />
                 </AvatarWrap>
             )}

@@ -1,6 +1,8 @@
 import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
+import { v4 as uuidv4 } from 'uuid'
 import { KARELIA, MEDIUM } from '../../../utils/css'
+import { ActionType, useDispatch, useRoom, useStore } from './ChatStore'
 import MessageInput from './MessageInput'
 
 const Header = styled.div`
@@ -87,12 +89,18 @@ type Props = {
     children?: React.ReactNode,
     className?: string,
     onSubmit?: (arg0: string) => void,
-    roomId?: number,
-    title?: string,
 }
 
-const UnstyledChatWindow = ({ className, children, onSubmit, title, roomId }: Props) => {
+const UnstyledChatWindow = ({ className, children }: Props) => {
     const feedRef = useRef<HTMLDivElement>(null)
+
+    const { roomId, identity } = useStore()
+
+    const room = useRoom()
+
+    const title = room && room.name
+
+    const dispatch = useDispatch()
 
     useLayoutEffect(() => {
         const { current: feed } = feedRef
@@ -101,6 +109,22 @@ const UnstyledChatWindow = ({ className, children, onSubmit, title, roomId }: Pr
             feed.scrollTop = feed.scrollHeight
         }
     }, [children])
+
+    function onSubmit(body: string) {
+        if (identity == null) {
+            return
+        }
+
+        dispatch({
+            type: ActionType.AddMessages,
+            payload: [{
+                body,
+                createdAt: Date.now(),
+                sender: identity,
+                id: uuidv4(),
+            }],
+        })
+    }
 
     return (
         <div className={className}>

@@ -1,0 +1,24 @@
+export type RoomPayload = {
+    id: string,
+    name: string,
+    readAt: number,
+}
+
+export type MessagePayload = {
+    body: string,
+    createdAt: number,
+    sender: string,
+    id: string,
+}
+
+export type MessagesCollection = {
+    [index: string]: Array<MessagePayload>,
+}
+
+export type ChatState = {
+    drafts: any,
+    identity?: string,
+    messages: MessagesCollection,
+    roomId?: string,
+    rooms: RoomPayload[],
+}
