@@ -17,10 +17,13 @@ type Props = {
 const Body = styled.div`
     background-color: #F1F4F7;
     border-radius: 0.75rem;
+    flex: 0 1 auto;
     font-size: 0.875rem;
     line-height: 1.25rem;
     max-width: 100%;
+    min-width: 0;
     padding: 0.625rem 1rem;
+    word-wrap: break-word;
 `
 
 const AvatarWrap = styled.div`
