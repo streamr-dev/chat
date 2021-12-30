@@ -101,7 +101,7 @@ function reducer(state: ChatState, action: A): ChatState {
         case ActionType.SetRooms:
             return {
                 ...state,
-                roomId: state.roomId == null && action.payload.length ? action.payload[0].id : undefined,
+                roomId: !state.roomId && action.payload.length ? action.payload[0].id : state.roomId,
                 rooms: action.payload,
                 messages: action.payload.reduce((memo: MessagesCollection, { id }: RoomPayload) => {
                     Object.assign(memo, {
