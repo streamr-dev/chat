@@ -31,6 +31,7 @@ const AvatarWrap = styled.div`
 const Avatar = styled.img`
     background-color: #F1F4F7;
     border-radius: 50%;
+    display: block;
     height: 2.5rem;
     width: 2.5rem;
 `
