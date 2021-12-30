@@ -74,19 +74,17 @@ function UnstyledMessageInput({ className }: Props) {
         }
     }
 
-    const onKeyDown = ({ key }: React.KeyboardEvent) => {
+    function onKeyDown({ key }: React.KeyboardEvent) {
         if (key === 'Enter') {
             submit()
         }
     }
 
-
-    const onSubmitClick = () => {
+    function onSubmitClick() {
         submit()
         focus(inputRef.current)
     }
 
-    // Focus the text field on room change.
     useEffect(() => {
         focus(inputRef.current)
     }, [roomId])
