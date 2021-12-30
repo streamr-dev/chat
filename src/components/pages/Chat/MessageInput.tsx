@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
 import { ActionType, useDispatch, useDraft, useStore } from './ChatStore'
 import SubmitButton from './SubmitButton'
+import focus from '../../../utils/focus'
 
 type Props = {
     className?: string,
@@ -29,13 +30,6 @@ const Inner = styled.div<InnerProps>`
         }
     `}
 `
-
-function focus(input: HTMLInputElement | null): void {
-    if (input) {
-        input.focus()
-        input.setSelectionRange(input.value.length, input.value.length)
-    }
-}
 
 function UnstyledMessageInput({ className }: Props) {
     const draft = useDraft()
