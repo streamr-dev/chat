@@ -1,6 +1,7 @@
-import React, { forwardRef, useLayoutEffect, useRef, useState } from 'react'
+import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { KARELIA, MEDIUM } from '../../../utils/css'
+import MessageInput from './MessageInput'
 
 const Header = styled.div`
     align-items: center;
@@ -82,24 +83,6 @@ const Feed = styled(UnstyledFeed)`
     }
 `
 
-const Footer = styled.div`
-    padding: 1.5rem;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-
-    input {
-        background-color: #F7F9FC;
-        border-radius: 0.75rem;
-        border: 0;
-        outline: 0;
-        height: 3rem;
-        padding: 0 1.25rem;
-        width: 100%;
-    }
-`
-
 type Props = {
     className?: string,
     children?: React.ReactNode,
@@ -108,16 +91,7 @@ type Props = {
 }
 
 const UnstyledChatWindow = ({ className, children, onSubmit, title }: Props) => {
-    const [value, setValue] = useState<string>('')
-
     const feedRef = useRef<HTMLDivElement>(null)
-
-    const onKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && /\w/.test(value) && typeof onSubmit === 'function') {
-            onSubmit(value)
-            setValue('')
-        }
-    }
 
     useLayoutEffect(() => {
         const { current: feed } = feedRef
@@ -145,17 +119,9 @@ const UnstyledChatWindow = ({ className, children, onSubmit, title }: Props) => 
                     </Feed>
                 </div>
             </FeedWrap>
-            <Footer>
-                <input
-                    type="text"
-                    placeholder="Type a message"
-                    value={value}
-                    onChange={(e) => {
-                        setValue(e.currentTarget.value)
-                    }}
-                    onKeyDown={onKeyDown}
-                />
-            </Footer>
+            <MessageInput
+                onSubmit={onSubmit}
+            />
         </div>
     )
 }
