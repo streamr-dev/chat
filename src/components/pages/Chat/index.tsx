@@ -8,6 +8,7 @@ import Room from './Room'
 import Background from '../Home/background.png'
 import type { MessagePayload } from './Message'
 import Message from './Message'
+import ChatStore from './ChatStore'
 
 const Content = styled.div`
     height: 100vh;
@@ -99,7 +100,7 @@ const UnstyledChat = ({ className }: Props) => {
     }, [roomId, rooms])
 
     return (
-        <>
+        <ChatStore>
             <Helmet title="Let's chat!" />
             <main className={className}>
                 <Navbar />
@@ -152,7 +153,7 @@ const UnstyledChat = ({ className }: Props) => {
                     </div>
                 </Content>
             </main>
-        </>
+        </ChatStore>
     )
 }
 
