@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer } from "react"
-import type { ChatState, RoomPayload, MessagePayload, MessagesCollection } from './types'
+import type { ChatState, RoomPayload, MessagePayload, MessagesCollection, DraftCollection } from './types'
 
 const initialState = {
     drafts: {},
@@ -14,6 +14,7 @@ export enum ActionType {
     AddRooms = 'add rooms',
     Reset = 'reset',
     SelectRoom = 'select room',
+    SetDraft = 'set draft',
     SetIdentity = 'set identity',
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
@@ -38,6 +39,8 @@ type SetIdentityAction = Action<ActionType.SetIdentity, string | undefined>
 
 type ResetAction = Omit<Action<ActionType.Reset, undefined>, 'payload'>
 
+type SetDraftAction = Action<ActionType.SetDraft, string>
+
 type A = SelectRoomAction
     | AddRoomsAction
     | SetRoomsAction
@@ -45,9 +48,18 @@ type A = SelectRoomAction
     | SetMessagesAction
     | SetIdentityAction
     | ResetAction
+    | SetDraftAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
+        case ActionType.SetDraft:
+            return !state.roomId ? state : {
+                ...state,
+                drafts: {
+                    ...state.drafts,
+                    [state.roomId]: action.payload,
+                },
+            }
         case ActionType.Reset:
             return initialState
         case ActionType.SetIdentity:
@@ -68,6 +80,13 @@ function reducer(state: ChatState, action: A): ChatState {
                 messages: action.payload.reduce((memo: MessagesCollection, { id }: RoomPayload) => {
                     Object.assign(memo, {
                         [id]: state.messages[id] || [],
+                    })
+
+                    return memo
+                }, {}),
+                drafts: action.payload.reduce((memo: DraftCollection, { id }: RoomPayload) => {
+                    Object.assign(memo, {
+                        [id]: state.drafts[id] || '',
                     })
 
                     return memo
@@ -136,6 +155,16 @@ export function useRoom(): RoomPayload | undefined {
     const { roomId, rooms } = useStore()
 
     return rooms.find(({ id }) => roomId === id)
+}
+
+export function useDraft(): string {
+    const { roomId, drafts } = useStore()
+
+    if (!roomId) {
+        return ''
+    }
+
+    return drafts[roomId]
 }
 
 export default function ChatStore({ children }: Props) {

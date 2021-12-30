@@ -15,6 +15,10 @@ export type MessagesCollection = {
     [index: string]: Array<MessagePayload>,
 }
 
+export type DraftCollection = {
+    [index: string]: string,
+}
+
 export type ChatState = {
     drafts: any,
     identity?: string,

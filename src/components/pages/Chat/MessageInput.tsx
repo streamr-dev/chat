@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
-import { ActionType, useDispatch, useStore } from './ChatStore'
+import { ActionType, useDispatch, useDraft, useStore } from './ChatStore'
 import SubmitButton from './SubmitButton'
 
 type Props = {
@@ -30,12 +30,19 @@ const Inner = styled.div<InnerProps>`
     `}
 `
 
+function focus(input: HTMLInputElement | null): void {
+    if (input) {
+        input.focus()
+        input.setSelectionRange(input.value.length, input.value.length)
+    }
+}
+
 function UnstyledMessageInput({ className }: Props) {
-    const [value, setValue] = useState<string>('')
+    const draft = useDraft()
 
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const submittable = !/^\s*$/.test(value)
+    const submittable = !/^\s*$/.test(draft)
 
     const dispatch = useDispatch()
 
@@ -59,8 +66,11 @@ function UnstyledMessageInput({ className }: Props) {
 
     function submit() {
         if (submittable && typeof onSubmit === 'function') {
-            onSubmit(value)
-            setValue('')
+            onSubmit(draft)
+            dispatch({
+                type: ActionType.SetDraft,
+                payload: '',
+            })
         }
     }
 
@@ -70,23 +80,15 @@ function UnstyledMessageInput({ className }: Props) {
         }
     }
 
+
     const onSubmitClick = () => {
-        const { current: input } = inputRef
-
         submit()
-
-        if (input) {
-            input.focus()
-        }
+        focus(inputRef.current)
     }
 
     // Focus the text field on room change.
     useEffect(() => {
-        const { current: input } = inputRef
-
-        if (input) {
-            input.focus()
-        }
+        focus(inputRef.current)
     }, [roomId])
 
     return (
@@ -95,13 +97,16 @@ function UnstyledMessageInput({ className }: Props) {
                 <input
                     autoFocus
                     onChange={(e) => {
-                        setValue(e.currentTarget.value)
+                        dispatch({
+                            type: ActionType.SetDraft,
+                            payload: e.currentTarget.value,
+                        })
                     }}
                     onKeyDown={onKeyDown}
                     placeholder="Type a message"
                     ref={inputRef}
                     type="text"
-                    value={value}
+                    value={draft}
                 />
                 <SubmitButton onClick={onSubmitClick} />
             </Inner>
