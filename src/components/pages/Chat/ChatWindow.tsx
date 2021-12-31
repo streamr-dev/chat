@@ -5,10 +5,11 @@ import RoomName from './RoomName'
 import ModifyIcon from './modify.svg'
 import MoreIcon from './more.svg'
 import { ActionType, useDispatch, useStore } from './ChatStore'
+import Dropdown from '../../Dropdown'
 
 const Header = styled.div`
     align-items: center;
-    box-shadow: inset 0 -1px 0 #DEE6EE;
+    box-shadow: inset 0 -1px 0 #dee6ee;
     display: flex;
     height: 92px;
     padding: 0 2rem;
@@ -39,13 +40,13 @@ const RoomAction = styled.button`
     }
 
     :hover {
-        background-color: #EBEFF5;
+        background-color: #ebeff5;
         transition-duration: 50ms;
     }
 
     &,
     &[disabled] {
-        background-color: #F7F9FC;
+        background-color: #f7f9fc;
     }
 
     & + & {
@@ -73,18 +74,18 @@ const FeedFlex = styled.div`
 `
 
 type FeedProps = {
-    className?: string,
-    children?: React.ReactNode,
+    className?: string
+    children?: React.ReactNode
 }
 
-const UnstyledFeed = forwardRef(({ className, children }: FeedProps, ref: React.Ref<HTMLDivElement>) => (
-    <div className={className}>
-        <div />
-        <FeedFlex ref={ref}>
-            {children}
-        </FeedFlex>
-    </div>
-))
+const UnstyledFeed = forwardRef(
+    ({ className, children }: FeedProps, ref: React.Ref<HTMLDivElement>) => (
+        <div className={className}>
+            <div />
+            <FeedFlex ref={ref}>{children}</FeedFlex>
+        </div>
+    )
+)
 
 const Feed = styled(UnstyledFeed)`
     height: 100%;
@@ -97,9 +98,9 @@ const Feed = styled(UnstyledFeed)`
 `
 
 type Props = {
-    children?: React.ReactNode,
-    className?: string,
-    onSubmit?: (arg0: string) => void,
+    children?: React.ReactNode
+    className?: string
+    onSubmit?: (arg0: string) => void
 }
 
 const UnstyledChatWindow = ({ className, children }: Props) => {
@@ -133,16 +134,18 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
                     >
                         <img src={ModifyIcon} alt="" />
                     </RoomAction>
-                    <RoomAction>
-                        <img src={MoreIcon} alt="" />
-                    </RoomAction>
+                    <Dropdown
+                        button={
+                            <RoomAction>
+                                <img src={MoreIcon} alt="" />
+                            </RoomAction>
+                        }
+                    />
                 </RoomActions>
             </Header>
             <FeedWrap>
                 <div>
-                    <Feed ref={feedRef}>
-                        {children}
-                    </Feed>
+                    <Feed ref={feedRef}>{children}</Feed>
                 </div>
             </FeedWrap>
             <MessageInput />
