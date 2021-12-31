@@ -68,7 +68,7 @@ const ListItem = styled.tr`
     }
 `
 
-const Dropdown = ({ button }: Props) => {
+const RoomDropdown = ({ button }: Props) => {
     const [isOpen, setIsOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
@@ -213,4 +213,4 @@ const Dropdown = ({ button }: Props) => {
     )
 }
 
-export default Dropdown
+export default RoomDropdown
