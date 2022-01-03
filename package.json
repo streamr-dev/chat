@@ -8,6 +8,7 @@
   },
   "homepage": ".",
   "dependencies": {
+    "@metamask/detect-provider": "^1.2.0",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
@@ -18,6 +19,9 @@
     "@types/react-helmet": "^6.1.4",
     "@types/react-router-dom": "^5.3.2",
     "@types/styled-components": "^5.1.18",
+    "eth-sig-util": "^3.0.1",
+    "ethereumjs-util": "^7.1.3",
+    "ethers": "^5.5.2",
     "identicon.js": "^2.3.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
