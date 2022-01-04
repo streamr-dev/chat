@@ -1,8 +1,7 @@
 
 import { Wallet } from "ethers"
 import { Buffer } from 'buffer'
-import { encrypt } from "eth-sig-util"
-import { bufferToHex } from 'ethereumjs-util'
+import { encrypt } from "@metamask/eth-sig-util"
 import {StreamrClient} from "streamr-client"
 import detectEthereumProvider from "@metamask/detect-provider"
 
@@ -52,18 +51,24 @@ export class MetamaskDelegatedAccess {
             params: [this.metamaskAddress]
         })
 
-        const encryptedMessage = bufferToHex(
-            Buffer.from(
+        //const encryptedMessage = bufferToHex(
+        const encryptedMessage = Buffer.from(
                 JSON.stringify(
-                    encrypt(
+                    /*encrypt(
                         encryptionPublicKey,
                         { data: JSON.stringify({privateKey: sessionWallet.privateKey}) },
                         'x25519-xsalsa20-poly1305'
-                    )
+                    )*/
+                    encrypt({
+                        publicKey: encryptionPublicKey,
+                        data: JSON.stringify({privateKey: sessionWallet.privateKey}),
+                        version: 'x25519-xsalsa20-poly1305'
+                    })
                 ),
                 'utf8'
             )
-        )
+            .toString('hex')
+        //)
 
         localStorage.setItem('streamr-chat-encrypted-session-key', encryptedMessage)
         return sessionWallet

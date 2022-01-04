@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import Button from './Button'
 import { KARELIA } from '../utils/css'
-import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
+import { BreakTest } from '../lib/BreakTest'
 
 type Props = {
     className?: string
@@ -13,8 +13,7 @@ const UnstyledNavbar = ({ className }: Props) => (
         <Button
             type="button"
             onClick={async () => {
-                const access = await initializeMetamaskDelegatedAccess()
-                console.log('metamask connected', access)
+                const test = await BreakTest()
             }}
         >
             Connect a wallet
