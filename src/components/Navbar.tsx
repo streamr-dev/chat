@@ -1,26 +1,59 @@
 import styled from 'styled-components'
 import Button from './Button'
 import { KARELIA } from '../utils/css'
-import { BreakTest } from '../lib/BreakTest'
+// import { BreakTest } from '../lib/BreakTest'
+import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
+
+import React, { useState } from 'react';
+
 
 type Props = {
     className?: string
 }
 
+const UnstyledNavbar = ({ className }: Props) => {
+    const [buttonText, setActive] = useState('Connect a wallet');
+    return (
+        <nav className={className}>
+            <h4>thechat.eth</h4>
+            <Button
+                type="button"
+                onClick={async () => {
+                    if (buttonText === 'Connect a wallet') {
+                        const access = await initializeMetamaskDelegatedAccess()
+                        console.log(`connected with Metamask address: ${access.metamaskAddress}`)  
+                        console.log(`connected with session address: ${access.sessionAddress}`)
+                        setActive(access.metamaskAddress as string)
+                    } else {
+                        localStorage.clear()
+                        window.location.reload()
+                    }
+                }}
+            >
+                {buttonText}
+            </Button>
+        </nav>
+    );
+}
+/*
 const UnstyledNavbar = ({ className }: Props) => (
     <nav className={className}>
         <h4>thechat.eth</h4>
         <Button
             type="button"
             onClick={async () => {
-                const test = await BreakTest()
+                //const test = await BreakTest()
+                const access = await initializeMetamaskDelegatedAccess()
+                console.log('access', access)
+                //buttonText = access.metamaskAddress as string
+                buttonText = access.metamaskAddress as string
             }}
         >
-            Connect a wallet
+            {{buttonText}}
         </Button>
     </nav>
 )
-
+*/
 const Navbar = styled(UnstyledNavbar)`
     align-items: center;
     box-sizing: border-box;

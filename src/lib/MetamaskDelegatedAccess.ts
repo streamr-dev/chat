@@ -7,7 +7,7 @@ import detectEthereumProvider from "@metamask/detect-provider"
 
 export class MetamaskDelegatedAccess {
     metamaskAddress?: string 
-    clientAddress?: string
+    sessionAddress?: string
     provider?: any
    
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -44,7 +44,7 @@ export class MetamaskDelegatedAccess {
 
     private async createAccount(): Promise<Wallet>{
         const sessionWallet = Wallet.createRandom()
-        this.clientAddress = sessionWallet.address
+        this.sessionAddress = sessionWallet.address
 
         const encryptionPublicKey = await this.provider.request({
             method: 'eth_getEncryptionPublicKey',
@@ -80,12 +80,14 @@ export class MetamaskDelegatedAccess {
             params: [encryptedPrivateKey, this.metamaskAddress]
         })
         const wallet = new Wallet(JSON.parse(decrypted).privateKey)
-        this.clientAddress = wallet.address
+        this.sessionAddress = wallet.address
         return wallet
     }
 }
 
 export const initializeMetamaskDelegatedAccess = async (): Promise<MetamaskDelegatedAccess> => {
     const provider = await detectEthereumProvider()
-    return new MetamaskDelegatedAccess(provider)
+    const accessManager = new MetamaskDelegatedAccess(provider)
+    await accessManager.connect()
+    return accessManager
 }
