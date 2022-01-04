@@ -1,9 +1,9 @@
 import Helmet from 'react-helmet'
 import styled from 'styled-components'
 import ChatWindow from './ChatWindow'
-import Sidebar from './Sidebar'
+import RoomList from './RoomList'
 import Navbar from '../../Navbar'
-import Room from './Room'
+import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
 import { useMessages, useStore } from './ChatStore'
@@ -39,9 +39,9 @@ const UnstyledChat = ({ className }: Props) => {
                 <Navbar />
                 <Content>
                     <div>
-                        <Sidebar>
+                        <RoomList>
                             {rooms.map((room) => (
-                                <Room
+                                <RoomItem
                                     key={room.id}
                                     id={room.id}
                                     active={room.id === roomId}
@@ -49,7 +49,7 @@ const UnstyledChat = ({ className }: Props) => {
                                     unread={false}
                                 />
                             ))}
-                        </Sidebar>
+                        </RoomList>
                         <ChatWindow>
                             {messages.map((message) => (
                                 <Message key={message.id} payload={message} />

@@ -18,7 +18,7 @@ const RecentMessage = styled.div`
     font-size: 0.875rem;
 `
 
-function UnstyledRoom({ id, name = 'Room', icon = <div />, ...props }: Props) {
+function UnstyledRoomItem({ id, name = 'Room', icon = <div />, ...props }: Props) {
     const { roomId, messages } = useStore()
 
     const dispatch = useDispatch()
@@ -50,7 +50,7 @@ function UnstyledRoom({ id, name = 'Room', icon = <div />, ...props }: Props) {
     )
 }
 
-const Room = styled(UnstyledRoom)`
+const RoomItem = styled(UnstyledRoomItem)`
     ${Name},
     ${RecentMessage} {
         min-width: 0;
@@ -60,4 +60,4 @@ const Room = styled(UnstyledRoom)`
     }
 `
 
-export default Room
+export default RoomItem

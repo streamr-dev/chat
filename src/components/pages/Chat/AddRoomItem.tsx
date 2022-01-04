@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 
-function UnstyledAddRoom(props: Props) {
+function UnstyledAddRoomItem(props: Props) {
     const dispatch = useDispatch()
 
     return (
@@ -43,7 +43,7 @@ function UnstyledAddRoom(props: Props) {
     )
 }
 
-const AddRoom = styled(UnstyledAddRoom)`
+const AddRoomItem = styled(UnstyledAddRoomItem)`
     font-size: 1.125rem;
 
     svg {
@@ -51,4 +51,4 @@ const AddRoom = styled(UnstyledAddRoom)`
     }
 `
 
-export default AddRoom
+export default AddRoomItem
