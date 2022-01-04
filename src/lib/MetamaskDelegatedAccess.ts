@@ -10,7 +10,7 @@ export class MetamaskDelegatedAccess {
     metamaskAddress?: string 
     clientAddress?: string
     provider?: any
-
+   
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     constructor(provider: any){
         this.provider = provider
@@ -18,10 +18,8 @@ export class MetamaskDelegatedAccess {
 
     public async connect(): Promise<{client: StreamrClient, address: string}>{
         // enable and fetch metamask account
-        //this.provider = await detectEthereumProvider()
         await this.provider.enable()
         this.metamaskAddress = this.provider.selectedAddress
-                
 
         // get the delegated key 
         let sessionWallet: Wallet
@@ -34,6 +32,7 @@ export class MetamaskDelegatedAccess {
             // decrypt and use
             sessionWallet = await this.decryptAccount(encryptedPrivateKey)
         }
+
         return {
             client: new StreamrClient({
                 auth: { 
@@ -45,9 +44,9 @@ export class MetamaskDelegatedAccess {
     }
 
     private async createAccount(): Promise<Wallet>{
-        const wallet = Wallet.createRandom()
-        this.clientAddress = wallet.address
-        
+        const sessionWallet = Wallet.createRandom()
+        this.clientAddress = sessionWallet.address
+
         const encryptionPublicKey = await this.provider.request({
             method: 'eth_getEncryptionPublicKey',
             params: [this.metamaskAddress]
@@ -58,7 +57,7 @@ export class MetamaskDelegatedAccess {
                 JSON.stringify(
                     encrypt(
                         encryptionPublicKey,
-                        { data: JSON.stringify({privateKey: wallet.privateKey}) },
+                        { data: JSON.stringify({privateKey: sessionWallet.privateKey}) },
                         'x25519-xsalsa20-poly1305'
                     )
                 ),
@@ -67,11 +66,10 @@ export class MetamaskDelegatedAccess {
         )
 
         localStorage.setItem('streamr-chat-encrypted-session-key', encryptedMessage)
-        return wallet
+        return sessionWallet
     }
 
     private async decryptAccount(encryptedPrivateKey: string): Promise<Wallet> {
-        
         const decrypted = await this.provider.request({
             method: 'eth_decrypt',
             params: [encryptedPrivateKey, this.metamaskAddress]
