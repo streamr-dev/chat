@@ -33,15 +33,18 @@ const StyledModalContent = styled.div`
         height: 440px;
         padding: 0px 20px;
     }
+
     .closeButton {
         background-color: transparent;
         border: none;
     }
+
     .modalHeader {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
     }
+
     .walletOptions {
         flex: 1;
         display: flex;
@@ -49,6 +52,7 @@ const StyledModalContent = styled.div`
         overflow: auto;
         min-height: 100%;
     }
+
     .walletOption {
         background-color: #f1f4f7;
         margin-top: 8px;
@@ -63,6 +67,7 @@ const StyledModalContent = styled.div`
         font-family: IBM Plex Sans;
         font-weight: bold;
     }
+
     .walletOption:hover {
         background-color: #dfe3e8;
     }
@@ -92,6 +97,7 @@ const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}
+                onRequestClose={closeModal}
             >
                 <StyledModalContent>
                     <div className="contentContainer">
