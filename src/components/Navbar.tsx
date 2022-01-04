@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import Button from './Button'
 import { KARELIA } from '../utils/css'
+import WalletModal from './WalletModal'
 
 type Props = {
     className?: string
@@ -9,14 +10,18 @@ type Props = {
 const UnstyledNavbar = ({ className }: Props) => (
     <nav className={className}>
         <h4>thechat.eth</h4>
-        <Button
-            type="button"
-            onClick={() => {
-                console.log('Connect!')
-            }}
-        >
-            Connect a wallet
-        </Button>
+        <WalletModal
+            button={
+                <Button
+                    type="button"
+                    onClick={() => {
+                        console.log('Connect!')
+                    }}
+                >
+                    Connect a wallet
+                </Button>
+            }
+        />
     </nav>
 )
 
@@ -53,7 +58,7 @@ const Navbar = styled(UnstyledNavbar)`
     ${Button}:focus {
         background-color: #fefefe;
     }
-    
+
     ${Button}:active {
         background-color: #f7f7f7;
     }
