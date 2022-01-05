@@ -51,24 +51,17 @@ export class MetamaskDelegatedAccess {
             params: [this.metamaskAddress]
         })
 
-        //const encryptedMessage = bufferToHex(
         const encryptedMessage = Buffer.from(
-                JSON.stringify(
-                    /*encrypt(
-                        encryptionPublicKey,
-                        { data: JSON.stringify({privateKey: sessionWallet.privateKey}) },
-                        'x25519-xsalsa20-poly1305'
-                    )*/
-                    encrypt({
-                        publicKey: encryptionPublicKey,
-                        data: JSON.stringify({privateKey: sessionWallet.privateKey}),
-                        version: 'x25519-xsalsa20-poly1305'
-                    })
-                ),
-                'utf8'
-            )
-            .toString('hex')
-        //)
+            JSON.stringify(
+                encrypt({
+                    publicKey: encryptionPublicKey,
+                    data: JSON.stringify({privateKey: sessionWallet.privateKey}),
+                    version: 'x25519-xsalsa20-poly1305'
+                })
+            ),
+            'utf8'
+        )
+        .toString('hex')
 
         localStorage.setItem('streamr-chat-encrypted-session-key', encryptedMessage)
         return sessionWallet
