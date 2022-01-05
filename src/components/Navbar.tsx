@@ -1,24 +1,41 @@
 import styled from 'styled-components'
 import Button from './Button'
 import { KARELIA } from '../utils/css'
+import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
+
+import { useState } from 'react';
+
 
 type Props = {
     className?: string
 }
 
-const UnstyledNavbar = ({ className }: Props) => (
-    <nav className={className}>
-        <h4>thechat.eth</h4>
-        <Button
-            type="button"
-            onClick={() => {
-                console.log('Connect!')
-            }}
-        >
-            Connect a wallet
-        </Button>
-    </nav>
-)
+const UnstyledNavbar = ({ className }: Props) => {    
+    const [metamaskAddress, setAddress] = useState('0x')
+    const [connected, setConnected] = useState<boolean>(false)
+    const connect = async () => {
+        const access = await initializeMetamaskDelegatedAccess()
+        console.log(`connected with Metamask address: ${access.metamaskAddress}`)  
+        console.log(`connected with session address: ${access.sessionAddress}`)
+        setAddress(access.metamaskAddress as string)
+        setConnected(true)
+    }
+
+    const disconnect = () => {
+        localStorage.clear()
+        window.location.reload()
+    }
+    return (
+        <nav className={className}>
+            <h4>thechat.eth</h4>
+            { connected ? 
+                <Button type="button" onClick={disconnect}>{metamaskAddress}</Button>
+                :
+                <Button type="button" onClick={connect}>Connect a wallet</Button>
+            }
+        </nav>
+    );
+}
 
 const Navbar = styled(UnstyledNavbar)`
     align-items: center;
