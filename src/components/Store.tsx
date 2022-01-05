@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer } from "react"
-import type { ChatState, RoomPayload, MessagePayload, MessagesCollection, DraftCollection } from './types'
+import type { ChatState, RoomPayload, MessagePayload, MessagesCollection, DraftCollection } from '../utils/types'
 
 const initialState = {
     drafts: {},
@@ -193,7 +193,7 @@ export function useDraft(): string {
     return drafts[roomId]
 }
 
-export default function ChatStore({ children }: Props) {
+export default function Store({ children }: Props) {
     const [state, dispatch] = useReducer(reducer, initialState)
 
     return (

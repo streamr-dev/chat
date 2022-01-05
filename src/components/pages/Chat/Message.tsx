@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components'
 import Identicon from 'identicon.js'
 import DateTooltip from './DateTooltip'
-import type { MessagePayload } from './types'
-import { useStore } from './ChatStore'
+import type { MessagePayload } from '../../../utils/types'
+import { useStore } from '../../Store'
 
 type Props = {
     className?: string,

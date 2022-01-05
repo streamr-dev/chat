@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
-import { ActionType, useDispatch, useDraft, useStore } from './ChatStore'
+import { ActionType, useDispatch, useDraft, useStore } from '../../Store'
 import SubmitButton from './SubmitButton'
 import focus from '../../../utils/focus'
 

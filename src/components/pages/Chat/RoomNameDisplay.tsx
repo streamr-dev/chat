@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { KARELIA, MEDIUM } from '../../../utils/css'
-import { ActionType, useDispatch, useRoom } from './ChatStore'
+import { ActionType, useDispatch, useRoom } from '../../Store'
 
 type Props = {
     className?: string

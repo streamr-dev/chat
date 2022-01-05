@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
-import { ActionType, useDispatch } from "./ChatStore"
-import type { RoomPayload } from "./types"
+import { ActionType, useDispatch } from "../../Store"
+import type { RoomPayload } from "../../../utils/types"
 import { v4 as uuidv4 } from 'uuid'
 
 // TBD from streamr client.

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { ActionType, useDispatch } from './ChatStore'
+import { ActionType, useDispatch } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'

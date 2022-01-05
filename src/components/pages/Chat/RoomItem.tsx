@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import type { Props as SidebarItemProps } from './SidebarItem'
 import SidebarItem from './SidebarItem'
-import type { MessagePayload } from './types'
-import { ActionType, useDispatch, useStore } from './ChatStore'
+import type { MessagePayload } from '../../../utils/types'
+import { ActionType, useDispatch, useStore } from '../../Store'
 
 type Props = SidebarItemProps & {
     id: string,

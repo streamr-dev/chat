@@ -6,7 +6,7 @@ import Navbar from '../../Navbar'
 import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
-import { useMessages, useStore } from './ChatStore'
+import { useMessages, useStore } from '../../Store'
 import usePopulate from './usePopulate'
 
 const Content = styled.div`
