@@ -11,7 +11,6 @@ type Props = {
 }
 
 const UnstyledNavbar = ({ className }: Props) => {    
-    // const [buttonText, setActive] = useState('Connect a wallet');
     const [metamaskAddress, setAddress] = useState('0x')
     const [connected, setConnected] = useState<boolean>(false)
     const connect = async () => {
