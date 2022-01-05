@@ -4,21 +4,22 @@ import { Buffer } from 'buffer'
 import { encrypt } from "@metamask/eth-sig-util"
 import {StreamrClient} from "streamr-client"
 import detectEthereumProvider from "@metamask/detect-provider"
+import { MetaMaskInpageProvider } from "@metamask/providers"
 
 export class MetamaskDelegatedAccess {
     metamaskAddress?: string 
     sessionAddress?: string
-    provider?: any
+    provider: MetaMaskInpageProvider
    
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    constructor(provider: any){
+    constructor(provider: MetaMaskInpageProvider){
         this.provider = provider
     }
 
     public async connect(): Promise<{client: StreamrClient, address: string}>{
         // enable and fetch metamask account
-        await this.provider.enable()
-        this.metamaskAddress = this.provider.selectedAddress
+        const providers = await this.provider.request({ method: 'eth_requestAccounts' }) as Array<string>
+        this.metamaskAddress = providers[0]
 
         // get the delegated key 
         let sessionWallet: Wallet
@@ -49,7 +50,7 @@ export class MetamaskDelegatedAccess {
         const encryptionPublicKey = await this.provider.request({
             method: 'eth_getEncryptionPublicKey',
             params: [this.metamaskAddress]
-        })
+        }) as string
 
         const encryptedMessage = Buffer.from(
             JSON.stringify(
@@ -71,7 +72,7 @@ export class MetamaskDelegatedAccess {
         const decrypted = await this.provider.request({
             method: 'eth_decrypt',
             params: [encryptedPrivateKey, this.metamaskAddress]
-        })
+        }) as string
         const wallet = new Wallet(JSON.parse(decrypted).privateKey)
         this.sessionAddress = wallet.address
         return wallet
@@ -79,7 +80,7 @@ export class MetamaskDelegatedAccess {
 }
 
 export const initializeMetamaskDelegatedAccess = async (): Promise<MetamaskDelegatedAccess> => {
-    const provider = await detectEthereumProvider()
+    const provider = await detectEthereumProvider() as MetaMaskInpageProvider
     const accessManager = new MetamaskDelegatedAccess(provider)
     await accessManager.connect()
     return accessManager
