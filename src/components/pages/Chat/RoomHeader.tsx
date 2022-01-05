@@ -5,7 +5,7 @@ import ModifyIcon from './modify.svg'
 import MoreIcon from './more.svg'
 import RoomNameDisplay from './RoomNameDisplay'
 import RoomNameEditor from './RoomNameEditor'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 type Props = {
     className?: string
@@ -31,14 +31,16 @@ function UnstyledRoomHeader({ className }: Props) {
         setValue(title)
     }, [title])
 
-    function accept() {
+    function submit(e: React.FormEvent) {
+        e.preventDefault()
+
         dispatch({
             type: ActionType.RenameRoom,
             payload: value,
         })
     }
 
-    function reject() {
+    function reset() {
         dispatch({
             type: ActionType.EditRoomName,
             payload: false,
@@ -49,13 +51,12 @@ function UnstyledRoomHeader({ className }: Props) {
     }
 
     return (
-        <div className={className}>
+        <form className={className} onSubmit={submit}>
             <RoomName>
                 {roomNameEditable ? (
                     <RoomNameEditor
-                        accept={accept}
+                        onAbort={reset}
                         onChange={setValue}
-                        reject={reject}
                         value={value}
                     />
                 ) : (
@@ -65,16 +66,17 @@ function UnstyledRoomHeader({ className }: Props) {
             <Collection>
                 {roomNameEditable ? (
                     <>
-                        <RoomAction $backgroundless onClick={reject}>
+                        <RoomAction type="button" onClick={reset} $backgroundless>
                             <span>Cancel</span>
                         </RoomAction>
-                        <RoomAction onClick={accept}>
+                        <RoomAction type="submit">
                             <span>Save</span>
                         </RoomAction>
                     </>
                 ) : (
                     <>
                         <RoomAction
+                            type="button"
                             onClick={() => {
                                 dispatch({
                                     type: ActionType.EditRoomName,
@@ -84,13 +86,13 @@ function UnstyledRoomHeader({ className }: Props) {
                         >
                             <img src={ModifyIcon} alt="" />
                         </RoomAction>
-                        <RoomAction>
+                        <RoomAction type="button">
                             <img src={MoreIcon} alt="" />
                         </RoomAction>
                     </>
                 )}
             </Collection>
-        </div>
+        </form>
     )
 }
 

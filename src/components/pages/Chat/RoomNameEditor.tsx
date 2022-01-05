@@ -2,31 +2,27 @@ import styled from 'styled-components'
 
 type Props = {
     className?: string
-    onChange: (arg0: string) => void
-    value: string
-    accept: () => void
-    reject: () => void
+    onAbort?: () => void
+    onChange?: (arg0: string) => void
+    value?: string
 }
 
 function UnstyledRoomNameEditor({
     className,
-    value,
+    onAbort,
     onChange: onChangeProp,
-    accept,
-    reject,
+    value = '',
 }: Props) {
     function onKeyDown(e: React.KeyboardEvent) {
-        if (e.key === 'Enter') {
-            accept()
-        }
-
-        if (e.key === 'Escape') {
-            reject()
+        if (e.key === 'Escape' && onAbort) {
+            onAbort()
         }
     }
 
     function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-        onChangeProp(e.currentTarget.value)
+        if (onChangeProp) {
+            onChangeProp(e.currentTarget.value)
+        }
     }
 
     return (
