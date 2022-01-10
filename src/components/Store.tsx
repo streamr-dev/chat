@@ -8,6 +8,7 @@ const initialState = {
     roomId: undefined,
     roomNameEditable: false,
     rooms: [],
+    metamaskAddress: '',
 }
 
 export enum ActionType {
@@ -21,6 +22,7 @@ export enum ActionType {
     SetIdentity = 'set identity',
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
+    SetMetamaskAddress = 'set metamask address',
 }
 
 type Action<A, B> = {
@@ -48,6 +50,8 @@ type RenameRoomAction = Action<ActionType.RenameRoom, string>
 
 type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
+type SetMetamaskAddressAction = Action<ActionType.SetMetamaskAddress, string | undefined>
+
 type A = SelectRoomAction
     | AddRoomsAction
     | SetRoomsAction
@@ -58,6 +62,8 @@ type A = SelectRoomAction
     | SetDraftAction
     | RenameRoomAction
     | EditRoomNameAction
+    | SetMetamaskAddressAction
+
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -142,6 +148,11 @@ function reducer(state: ChatState, action: A): ChatState {
                     ...action.payload,
                 ],
             })
+        case ActionType.SetMetamaskAddress:
+            return {
+                ...state,
+                metamaskAddress: action.payload as string,
+            }
         default:
             return state
     }

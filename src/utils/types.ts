@@ -26,4 +26,5 @@ export type ChatState = {
     roomId?: string,
     roomNameEditable: boolean,
     rooms: RoomPayload[],
+    metamaskAddress: string,
 }

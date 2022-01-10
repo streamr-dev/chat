@@ -4,6 +4,7 @@ import { KARELIA } from '../utils/css'
 import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 
 import { useState } from 'react';
+import { ActionType, useDispatch, useStore } from './Store';
 
 
 type Props = {
@@ -11,14 +12,33 @@ type Props = {
 }
 
 const UnstyledNavbar = ({ className }: Props) => {    
-    const [metamaskAddress, setAddress] = useState('0x')
-    const [connected, setConnected] = useState<boolean>(false)
+    const dispatch = useDispatch()
+
+
+    const store = useStore()
+    console.log('store', store)
     const connect = async () => {
         const access = await initializeMetamaskDelegatedAccess()
-        console.log(`connected with Metamask address: ${access.metamaskAddress}`)  
-        console.log(`connected with session address: ${access.sessionAddress}`)
-        setAddress(access.metamaskAddress as string)
-        setConnected(true)
+        console.log(`connected with Metamask address: ${access.metamask.address}`)  
+        console.log(`connected with session address: ${access.session.address}`)
+        dispatch({
+            type: ActionType.SetMetamaskAddress,
+            payload: access.metamask.address as string,
+        })
+        /*
+        dispatch({
+            type: ActionType.SetSessionAddress,
+            payload: access.session.address as string,
+        })
+
+        dispatch({
+            type: ActionType.SetStreamrClient,
+            payload: new StreamrClient({
+                auth:{
+                    privateKey: access.session.privateKey
+                }
+            }),
+        })*/
     }
 
     const disconnect = () => {
@@ -28,8 +48,8 @@ const UnstyledNavbar = ({ className }: Props) => {
     return (
         <nav className={className}>
             <h4>thechat.eth</h4>
-            { connected ? 
-                <Button type="button" onClick={disconnect}>{metamaskAddress}</Button>
+            { store.metamaskAddress ? 
+                <Button type="button" onClick={disconnect}>{store.metamaskAddress}</Button>
                 :
                 <Button type="button" onClick={connect}>Connect a wallet</Button>
             }
