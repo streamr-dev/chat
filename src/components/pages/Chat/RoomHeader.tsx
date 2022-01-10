@@ -66,7 +66,11 @@ function UnstyledRoomHeader({ className }: Props) {
             <Collection>
                 {roomNameEditable ? (
                     <>
-                        <RoomAction type="button" onClick={reset} $backgroundless>
+                        <RoomAction
+                            type="button"
+                            onClick={reset}
+                            $backgroundless
+                        >
                             <span>Cancel</span>
                         </RoomAction>
                         <RoomAction type="submit">

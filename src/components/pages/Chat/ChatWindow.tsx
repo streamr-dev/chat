@@ -19,18 +19,18 @@ const FeedFlex = styled.div`
 `
 
 type FeedProps = {
-    className?: string,
-    children?: React.ReactNode,
+    className?: string
+    children?: React.ReactNode
 }
 
-const UnstyledFeed = forwardRef(({ className, children }: FeedProps, ref: React.Ref<HTMLDivElement>) => (
-    <div className={className}>
-        <div />
-        <FeedFlex ref={ref}>
-            {children}
-        </FeedFlex>
-    </div>
-))
+const UnstyledFeed = forwardRef(
+    ({ className, children }: FeedProps, ref: React.Ref<HTMLDivElement>) => (
+        <div className={className}>
+            <div />
+            <FeedFlex ref={ref}>{children}</FeedFlex>
+        </div>
+    )
+)
 
 const Feed = styled(UnstyledFeed)`
     height: 100%;
@@ -43,9 +43,9 @@ const Feed = styled(UnstyledFeed)`
 `
 
 type Props = {
-    children?: React.ReactNode,
-    className?: string,
-    onSubmit?: (arg0: string) => void,
+    children?: React.ReactNode
+    className?: string
+    onSubmit?: (arg0: string) => void
 }
 
 const UnstyledChatWindow = ({ className, children }: Props) => {
@@ -64,9 +64,7 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
             <RoomHeader />
             <FeedWrap>
                 <div>
-                    <Feed ref={feedRef}>
-                        {children}
-                    </Feed>
+                    <Feed ref={feedRef}>{children}</Feed>
                 </div>
             </FeedWrap>
             <MessageInput />

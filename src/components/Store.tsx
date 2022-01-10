@@ -1,6 +1,12 @@
-import { createContext, useContext, useReducer } from "react"
-import StreamrClient from "streamr-client"
-import type { ChatState, RoomPayload, MessagePayload, MessagesCollection, DraftCollection } from '../utils/types'
+import { createContext, useContext, useReducer } from 'react'
+import StreamrClient from 'streamr-client'
+import type {
+    ChatState,
+    RoomPayload,
+    MessagePayload,
+    MessagesCollection,
+    DraftCollection,
+} from '../utils/types'
 
 const initialState = {
     drafts: {},
@@ -11,7 +17,7 @@ const initialState = {
     rooms: [],
     metamaskAddress: '',
     sessionAddress: '',
-    streamrClient: undefined
+    streamrClient: undefined,
 }
 
 export enum ActionType {
@@ -27,12 +33,12 @@ export enum ActionType {
     SetRooms = 'set rooms',
     SetMetamaskAddress = 'set metamask address',
     SetSessionAddress = 'set session address',
-    SetStreamrClient = 'set streamr client'
+    SetStreamrClient = 'set streamr client',
 }
 
 type Action<A, B> = {
-    type: A,
-    payload: B,
+    type: A
+    payload: B
 }
 
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
@@ -55,13 +61,23 @@ type RenameRoomAction = Action<ActionType.RenameRoom, string>
 
 type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
-type SetMetamaskAddressAction = Action<ActionType.SetMetamaskAddress, string | undefined>
+type SetMetamaskAddressAction = Action<
+    ActionType.SetMetamaskAddress,
+    string | undefined
+>
 
-type SetSessionAddressAction = Action<ActionType.SetSessionAddress, string | undefined>
+type SetSessionAddressAction = Action<
+    ActionType.SetSessionAddress,
+    string | undefined
+>
 
-type SetStreamrClient = Action<ActionType.SetStreamrClient, StreamrClient | undefined>
+type SetStreamrClient = Action<
+    ActionType.SetStreamrClient,
+    StreamrClient | undefined
+>
 
-type A = SelectRoomAction
+type A =
+    | SelectRoomAction
     | AddRoomsAction
     | SetRoomsAction
     | AddMessagesAction
@@ -75,7 +91,6 @@ type A = SelectRoomAction
     | SetSessionAddressAction
     | SetStreamrClient
 
-
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
         case ActionType.EditRoomName:
@@ -84,7 +99,7 @@ function reducer(state: ChatState, action: A): ChatState {
                 roomNameEditable: action.payload,
             }
         case ActionType.RenameRoom:
-            ((room: RoomPayload | undefined) => {
+            ;((room: RoomPayload | undefined) => {
                 if (room) {
                     room.name = action.payload
                 }
@@ -95,13 +110,15 @@ function reducer(state: ChatState, action: A): ChatState {
                 roomNameEditable: false,
             }
         case ActionType.SetDraft:
-            return !state.roomId ? state : {
-                ...state,
-                drafts: {
-                    ...state.drafts,
-                    [state.roomId]: action.payload,
-                },
-            }
+            return !state.roomId
+                ? state
+                : {
+                      ...state,
+                      drafts: {
+                          ...state.drafts,
+                          [state.roomId]: action.payload,
+                      },
+                  }
         case ActionType.Reset:
             return initialState
         case ActionType.SetIdentity:
@@ -118,47 +135,57 @@ function reducer(state: ChatState, action: A): ChatState {
         case ActionType.SetRooms:
             return {
                 ...state,
-                roomId: !state.roomId && action.payload.length ? action.payload[0].id : state.roomId,
+                roomId:
+                    !state.roomId && action.payload.length
+                        ? action.payload[0].id
+                        : state.roomId,
                 rooms: action.payload,
-                messages: action.payload.reduce((memo: MessagesCollection, { id }: RoomPayload) => {
-                    Object.assign(memo, {
-                        [id]: state.messages[id] || [],
-                    })
+                messages: action.payload.reduce(
+                    (memo: MessagesCollection, { id }: RoomPayload) => {
+                        Object.assign(memo, {
+                            [id]: state.messages[id] || [],
+                        })
 
-                    return memo
-                }, {}),
-                drafts: action.payload.reduce((memo: DraftCollection, { id }: RoomPayload) => {
-                    Object.assign(memo, {
-                        [id]: state.drafts[id] || '',
-                    })
+                        return memo
+                    },
+                    {}
+                ),
+                drafts: action.payload.reduce(
+                    (memo: DraftCollection, { id }: RoomPayload) => {
+                        Object.assign(memo, {
+                            [id]: state.drafts[id] || '',
+                        })
 
-                    return memo
-                }, {}),
+                        return memo
+                    },
+                    {}
+                ),
             }
         case ActionType.AddRooms:
             return reducer(state, {
                 type: ActionType.SetRooms,
-                payload: [
-                    ...state.rooms,
-                    ...action.payload,
-                ],
+                payload: [...state.rooms, ...action.payload],
             })
         case ActionType.SetMessages:
-            return state.roomId == null ? state : {
-                ...state,
-                messages: {
-                    ...state.messages,
-                    [state.roomId]: action.payload,
-                },
-            }
+            return state.roomId == null
+                ? state
+                : {
+                      ...state,
+                      messages: {
+                          ...state.messages,
+                          [state.roomId]: action.payload,
+                      },
+                  }
         case ActionType.AddMessages:
-            return state.roomId == null ? state : reducer(state, {
-                type: ActionType.SetMessages,
-                payload: [
-                    ...state.messages[state.roomId],
-                    ...action.payload,
-                ],
-            })
+            return state.roomId == null
+                ? state
+                : reducer(state, {
+                      type: ActionType.SetMessages,
+                      payload: [
+                          ...state.messages[state.roomId],
+                          ...action.payload,
+                      ],
+                  })
         case ActionType.SetMetamaskAddress:
             return {
                 ...state,
@@ -180,7 +207,7 @@ function reducer(state: ChatState, action: A): ChatState {
 }
 
 type Props = {
-    children?: React.ReactNode,
+    children?: React.ReactNode
 }
 
 const StateContext = createContext<ChatState>(initialState)

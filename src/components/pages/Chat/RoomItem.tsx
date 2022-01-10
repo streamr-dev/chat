@@ -5,20 +5,25 @@ import type { MessagePayload } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 
 type Props = SidebarItemProps & {
-    id: string,
-    name?: string,
-    recentMessage?: MessagePayload,
-    unread?: boolean,
+    id: string
+    name?: string
+    recentMessage?: MessagePayload
+    unread?: boolean
 }
 
 const Name = styled.div``
 
 const RecentMessage = styled.div`
-    color: #59799C;
+    color: #59799c;
     font-size: 0.875rem;
 `
 
-function UnstyledRoomItem({ id, name = 'Room', icon = <div />, ...props }: Props) {
+function UnstyledRoomItem({
+    id,
+    name = 'Room',
+    icon = <div />,
+    ...props
+}: Props) {
     const { roomId, messages } = useStore()
 
     const dispatch = useDispatch()
@@ -37,15 +42,15 @@ function UnstyledRoomItem({ id, name = 'Room', icon = <div />, ...props }: Props
     return (
         <SidebarItem
             {...props}
-            afterContent={(
-                <></>
-            )}
+            afterContent={<></>}
             active={active}
             icon={icon}
             onClick={onClick}
         >
             <Name>{name || <>Untitled room</>}</Name>
-            <RecentMessage>{(recentMessage && recentMessage.body) || 'Empty room'}</RecentMessage>
+            <RecentMessage>
+                {(recentMessage && recentMessage.body) || 'Empty room'}
+            </RecentMessage>
         </SidebarItem>
     )
 }

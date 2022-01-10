@@ -5,13 +5,13 @@ import type { MessagePayload } from '../../../utils/types'
 import { useStore } from '../../Store'
 
 type Props = {
-    className?: string,
-    payload: MessagePayload,
-    incoming?: boolean,
+    className?: string
+    payload: MessagePayload
+    incoming?: boolean
 }
 
 const Body = styled.div`
-    background-color: #F1F4F7;
+    background-color: #f1f4f7;
     border-radius: 0.75rem;
     flex: 0 1 auto;
     font-size: 0.875rem;
@@ -29,7 +29,7 @@ const AvatarWrap = styled.div`
 `
 
 const Avatar = styled.img`
-    background-color: #F1F4F7;
+    background-color: #f1f4f7;
     border-radius: 50%;
     display: block;
     height: 2.5rem;
@@ -37,25 +37,30 @@ const Avatar = styled.img`
 `
 
 type RootProps = {
-    $incoming?: boolean,
+    $incoming?: boolean
 }
 
 const Root = styled.div<RootProps>`
-    ${({ $incoming }) => !$incoming && css`
-        justify-content: flex-end;
+    ${({ $incoming }) =>
+        !$incoming &&
+        css`
+            justify-content: flex-end;
 
-        ${Body} {
-            background-color: #615EF0;
-            color: #ffffff;
-        }
-    `}
+            ${Body} {
+                background-color: #615ef0;
+                color: #ffffff;
+            }
+        `}
 `
 
 const AVATAR_OPTIONS = {
     size: 40,
 }
 
-const UnstyledMessage = ({ className, payload: { sender, body, createdAt } }: Props) => {
+const UnstyledMessage = ({
+    className,
+    payload: { sender, body, createdAt },
+}: Props) => {
     const { identity } = useStore()
 
     const incoming = identity !== sender
@@ -65,7 +70,10 @@ const UnstyledMessage = ({ className, payload: { sender, body, createdAt } }: Pr
             {incoming && (
                 <AvatarWrap>
                     <Avatar
-                        src={`data:image/png;base64,${new Identicon(sender, AVATAR_OPTIONS).toString()}`}
+                        src={`data:image/png;base64,${new Identicon(
+                            sender,
+                            AVATAR_OPTIONS
+                        ).toString()}`}
                         alt={sender}
                     />
                 </AvatarWrap>
@@ -77,7 +85,10 @@ const UnstyledMessage = ({ className, payload: { sender, body, createdAt } }: Pr
             {!incoming && (
                 <AvatarWrap>
                     <Avatar
-                        src={`data:image/png;base64,${new Identicon(sender, AVATAR_OPTIONS).toString()}`}
+                        src={`data:image/png;base64,${new Identicon(
+                            sender,
+                            AVATAR_OPTIONS
+                        ).toString()}`}
                         alt={sender}
                     />
                 </AvatarWrap>

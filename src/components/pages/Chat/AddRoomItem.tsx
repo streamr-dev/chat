@@ -15,11 +15,13 @@ function UnstyledAddRoomItem(props: Props) {
 
                 dispatch({
                     type: ActionType.AddRooms,
-                    payload: [{
-                        id,
-                        name: '',
-                        readAt: Date.now(),
-                    }],
+                    payload: [
+                        {
+                            id,
+                            name: '',
+                            readAt: Date.now(),
+                        },
+                    ],
                 })
 
                 dispatch({
@@ -27,8 +29,14 @@ function UnstyledAddRoomItem(props: Props) {
                     payload: id,
                 })
             }}
-            icon={(
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            icon={
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 22 22"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
                     <path
                         fillRule="evenodd"
                         clipRule="evenodd"
@@ -36,7 +44,7 @@ function UnstyledAddRoomItem(props: Props) {
                         fill="black"
                     />
                 </svg>
-            )}
+            }
         >
             Add new room
         </SidebarItem>

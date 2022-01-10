@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react"
-import { ActionType, useDispatch } from "../../Store"
-import type { RoomPayload } from "../../../utils/types"
+import { useEffect, useRef } from 'react'
+import { ActionType, useDispatch } from '../../Store'
+import type { RoomPayload } from '../../../utils/types'
 import { v4 as uuidv4 } from 'uuid'
 
 // TBD from streamr client.
@@ -44,24 +44,60 @@ export default function usePopulate(identity: string) {
 
         dispatch({
             type: ActionType.AddRooms,
-            payload: [
-                room0,
-                room1,
-                room2,
-            ],
+            payload: [room0, room1, room2],
         })
 
         dispatch({
             type: ActionType.AddMessages,
             payload: [
-                { id: uuidv4(), sender: SOMEONE, body: 'Hey there', createdAt: new Date(2020, 12, 20).getTime() },
-                { id: uuidv4(), sender: SOMEONE, body: 'U guys heard of that new virus thing?', createdAt: new Date(2020, 12, 20).getTime() },
-                { id: uuidv4(), sender: identityRef.current, body: 'Yep, nothing to worry about', createdAt: new Date(2020, 12, 20).getTime() },
-                { id: uuidv4(), sender: identityRef.current, body: 'lol', createdAt: new Date(2020, 12, 20).getTime() },
-                { id: uuidv4(), sender: SOMEONE, body: 'sic', createdAt: new Date(2021, 3, 26).getTime() },
-                { id: uuidv4(), sender: SOMEONE_ELSE, body: 'lol', createdAt: new Date(2021, 12, 20).getTime() },
-                { id: uuidv4(), sender: SOMEONE_ELSE, body: 'that did not age well', createdAt: new Date(2021, 12, 20).getTime() },
-                { id: uuidv4(), sender: identityRef.current, body: 'ikr?!', createdAt: new Date(2021, 12, 20).getTime() },        
+                {
+                    id: uuidv4(),
+                    sender: SOMEONE,
+                    body: 'Hey there',
+                    createdAt: new Date(2020, 12, 20).getTime(),
+                },
+                {
+                    id: uuidv4(),
+                    sender: SOMEONE,
+                    body: 'U guys heard of that new virus thing?',
+                    createdAt: new Date(2020, 12, 20).getTime(),
+                },
+                {
+                    id: uuidv4(),
+                    sender: identityRef.current,
+                    body: 'Yep, nothing to worry about',
+                    createdAt: new Date(2020, 12, 20).getTime(),
+                },
+                {
+                    id: uuidv4(),
+                    sender: identityRef.current,
+                    body: 'lol',
+                    createdAt: new Date(2020, 12, 20).getTime(),
+                },
+                {
+                    id: uuidv4(),
+                    sender: SOMEONE,
+                    body: 'sic',
+                    createdAt: new Date(2021, 3, 26).getTime(),
+                },
+                {
+                    id: uuidv4(),
+                    sender: SOMEONE_ELSE,
+                    body: 'lol',
+                    createdAt: new Date(2021, 12, 20).getTime(),
+                },
+                {
+                    id: uuidv4(),
+                    sender: SOMEONE_ELSE,
+                    body: 'that did not age well',
+                    createdAt: new Date(2021, 12, 20).getTime(),
+                },
+                {
+                    id: uuidv4(),
+                    sender: identityRef.current,
+                    body: 'ikr?!',
+                    createdAt: new Date(2021, 12, 20).getTime(),
+                },
             ],
         })
     }, [dispatch])
