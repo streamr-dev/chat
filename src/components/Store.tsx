@@ -61,20 +61,11 @@ type RenameRoomAction = Action<ActionType.RenameRoom, string>
 
 type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
-type SetMetamaskAddressAction = Action<
-    ActionType.SetMetamaskAddress,
-    string
->
+type SetMetamaskAddressAction = Action<ActionType.SetMetamaskAddress, string>
 
-type SetSessionAddressAction = Action<
-    ActionType.SetSessionAddress,
-    string
->
+type SetSessionAddressAction = Action<ActionType.SetSessionAddress, string>
 
-type SetStreamrClient = Action<
-    ActionType.SetStreamrClient,
-    StreamrClient
->
+type SetStreamrClient = Action<ActionType.SetStreamrClient, StreamrClient>
 
 type A =
     | SelectRoomAction
