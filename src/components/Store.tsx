@@ -63,17 +63,17 @@ type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
 type SetMetamaskAddressAction = Action<
     ActionType.SetMetamaskAddress,
-    string | undefined
+    string
 >
 
 type SetSessionAddressAction = Action<
     ActionType.SetSessionAddress,
-    string | undefined
+    string
 >
 
 type SetStreamrClient = Action<
     ActionType.SetStreamrClient,
-    StreamrClient | undefined
+    StreamrClient
 >
 
 type A =
@@ -189,17 +189,17 @@ function reducer(state: ChatState, action: A): ChatState {
         case ActionType.SetMetamaskAddress:
             return {
                 ...state,
-                metamaskAddress: action.payload as string,
+                metamaskAddress: action.payload,
             }
         case ActionType.SetSessionAddress:
             return {
                 ...state,
-                sessionAddress: action.payload as string,
+                sessionAddress: action.payload,
             }
         case ActionType.SetStreamrClient:
             return {
                 ...state,
-                streamrClient: action.payload as StreamrClient,
+                streamrClient: action.payload,
             }
         default:
             return state

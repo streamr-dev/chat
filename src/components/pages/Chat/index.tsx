@@ -26,9 +26,8 @@ type Props = {
 
 const UnstyledChat = ({ className }: Props) => {
     const messages = useMessages()
+    const { roomId, rooms } = useStore()
 
-    const { roomId, rooms, metamaskAddress } = useStore()
-    console.log('metamask', metamaskAddress)
     return (
         <>
             <Helmet title="Let's chat!" />

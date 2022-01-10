@@ -14,7 +14,6 @@ type Props = {
 const UnstyledNavbar = ({ className }: Props) => {
     const dispatch = useDispatch()
     const store = useStore()
-    console.log('store', store)
     const connect = async () => {
         const access = await initializeMetamaskDelegatedAccess()
         console.log(
