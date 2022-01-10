@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 import Button from './Button'
 import { KARELIA } from '../utils/css'
 import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
@@ -27,7 +28,9 @@ const UnstyledNavbar = ({ className }: Props) => {
     }
     return (
         <nav className={className}>
-            <h4>thechat.eth</h4>
+            <h4>
+                <Link to="/">thechat.eth</Link>
+            </h4>
             { connected ? 
                 <Button type="button" onClick={disconnect}>{metamaskAddress}</Button>
                 :
