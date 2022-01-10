@@ -3,8 +3,8 @@ import Button from './Button'
 import { KARELIA } from '../utils/css'
 import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 
-import { useState } from 'react';
 import { ActionType, useDispatch, useStore } from './Store';
+import StreamrClient from 'streamr-client';
 
 
 type Props = {
@@ -25,7 +25,6 @@ const UnstyledNavbar = ({ className }: Props) => {
             type: ActionType.SetMetamaskAddress,
             payload: access.metamask.address as string,
         })
-        /*
         dispatch({
             type: ActionType.SetSessionAddress,
             payload: access.session.address as string,
@@ -38,7 +37,7 @@ const UnstyledNavbar = ({ className }: Props) => {
                     privateKey: access.session.privateKey
                 }
             }),
-        })*/
+        })
     }
 
     const disconnect = () => {

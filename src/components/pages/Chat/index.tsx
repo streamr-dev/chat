@@ -7,7 +7,6 @@ import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
 import { useMessages, useStore } from '../../Store'
-import usePopulate from './usePopulate'
 
 const Content = styled.div`
     height: 100vh;
@@ -26,8 +25,6 @@ type Props = {
 }
 
 const UnstyledChat = ({ className }: Props) => {
-    usePopulate('0x7da4e5e40c41f5ecbefb4fa59b2153888a11731')
-
     const messages = useMessages()
 
     const { roomId, rooms, metamaskAddress } = useStore()

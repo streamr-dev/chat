@@ -2,7 +2,6 @@
 import { Wallet } from "ethers"
 import { Buffer } from 'buffer'
 import { encrypt } from "@metamask/eth-sig-util"
-import {StreamrClient} from "streamr-client"
 import detectEthereumProvider from "@metamask/detect-provider"
 import { MetaMaskInpageProvider } from "@metamask/providers"
 

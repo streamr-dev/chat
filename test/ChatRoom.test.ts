@@ -35,6 +35,7 @@ describe('ChatRoom', () => {
             await senderManager.createRoom(timestamp)
             await senderManager.createRoom(timestamp)
         } catch (e: any){
+            // eslint-disable-next-line jest/no-conditional-expect
             expect(e.message).toBe(`Room [${timestamp}](0x9374effd895610e89adbc17b632423ec254f351a/streamr-chat/room/${timestamp}) already exists`)
         }
     })
@@ -115,6 +116,7 @@ describe('ChatRoom', () => {
                 done()
             })
             senderManager.publishMessage(streamId, 'Hello Encryption').then((sent) => {
+                // eslint-disable-next-line jest/no-conditional-expect
                 return expect(sent.serializedContent.length).toBe(120)
             }).catch((e) => {
                 throw e

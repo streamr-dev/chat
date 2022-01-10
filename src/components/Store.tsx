@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer } from "react"
+import StreamrClient from "streamr-client"
 import type { ChatState, RoomPayload, MessagePayload, MessagesCollection, DraftCollection } from '../utils/types'
 
 const initialState = {
@@ -9,6 +10,8 @@ const initialState = {
     roomNameEditable: false,
     rooms: [],
     metamaskAddress: '',
+    sessionAddress: '',
+    streamrClient: undefined
 }
 
 export enum ActionType {
@@ -23,6 +26,8 @@ export enum ActionType {
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
     SetMetamaskAddress = 'set metamask address',
+    SetSessionAddress = 'set session address',
+    SetStreamrClient = 'set streamr client'
 }
 
 type Action<A, B> = {
@@ -52,6 +57,10 @@ type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
 type SetMetamaskAddressAction = Action<ActionType.SetMetamaskAddress, string | undefined>
 
+type SetSessionAddressAction = Action<ActionType.SetSessionAddress, string | undefined>
+
+type SetStreamrClient = Action<ActionType.SetStreamrClient, StreamrClient | undefined>
+
 type A = SelectRoomAction
     | AddRoomsAction
     | SetRoomsAction
@@ -63,6 +72,8 @@ type A = SelectRoomAction
     | RenameRoomAction
     | EditRoomNameAction
     | SetMetamaskAddressAction
+    | SetSessionAddressAction
+    | SetStreamrClient
 
 
 function reducer(state: ChatState, action: A): ChatState {
@@ -152,6 +163,16 @@ function reducer(state: ChatState, action: A): ChatState {
             return {
                 ...state,
                 metamaskAddress: action.payload as string,
+            }
+        case ActionType.SetSessionAddress:
+            return {
+                ...state,
+                sessionAddress: action.payload as string,
+            }
+        case ActionType.SetStreamrClient:
+            return {
+                ...state,
+                streamrClient: action.payload as StreamrClient,
             }
         default:
             return state
