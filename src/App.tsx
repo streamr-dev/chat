@@ -35,14 +35,8 @@ export default function App() {
             <Global />
             <HashRouter>
                 <Routes>
-                    <Route
-                        element={<Home />}
-                        path="/"
-                    />
-                    <Route
-                        element={<Chat />}
-                        path="/chat"
-                    />
+                    <Route element={<Home />} path="/" />
+                    <Route element={<Chat />} path="/chat" />
                 </Routes>
             </HashRouter>
         </Store>

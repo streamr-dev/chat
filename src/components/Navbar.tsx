@@ -4,22 +4,39 @@ import Button from './Button'
 import { KARELIA } from '../utils/css'
 import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 
-import { useState } from 'react';
-
+import { ActionType, useDispatch, useStore } from './Store'
+import StreamrClient from 'streamr-client'
 
 type Props = {
     className?: string
 }
 
-const UnstyledNavbar = ({ className }: Props) => {    
-    const [metamaskAddress, setAddress] = useState('0x')
-    const [connected, setConnected] = useState<boolean>(false)
+const UnstyledNavbar = ({ className }: Props) => {
+    const dispatch = useDispatch()
+    const store = useStore()
     const connect = async () => {
         const access = await initializeMetamaskDelegatedAccess()
-        console.log(`connected with Metamask address: ${access.metamaskAddress}`)  
-        console.log(`connected with session address: ${access.sessionAddress}`)
-        setAddress(access.metamaskAddress as string)
-        setConnected(true)
+        console.log(
+            `connected with Metamask address: ${access.metamask.address}`
+        )
+        console.log(`connected with session address: ${access.session.address}`)
+        dispatch({
+            type: ActionType.SetMetamaskAddress,
+            payload: access.metamask.address,
+        })
+        dispatch({
+            type: ActionType.SetSessionAddress,
+            payload: access.session.address,
+        })
+
+        dispatch({
+            type: ActionType.SetStreamrClient,
+            payload: new StreamrClient({
+                auth: {
+                    privateKey: access.session.privateKey,
+                },
+            }),
+        })
     }
 
     const disconnect = () => {
@@ -31,13 +48,17 @@ const UnstyledNavbar = ({ className }: Props) => {
             <h4>
                 <Link to="/">thechat.eth</Link>
             </h4>
-            { connected ? 
-                <Button type="button" onClick={disconnect}>{metamaskAddress}</Button>
-                :
-                <Button type="button" onClick={connect}>Connect a wallet</Button>
-            }
+            {store.metamaskAddress ? (
+                <Button type="button" onClick={disconnect}>
+                    {store.metamaskAddress}
+                </Button>
+            ) : (
+                <Button type="button" onClick={connect}>
+                    Connect a wallet
+                </Button>
+            )}
         </nav>
-    );
+    )
 }
 
 const Navbar = styled(UnstyledNavbar)`
@@ -73,7 +94,7 @@ const Navbar = styled(UnstyledNavbar)`
     ${Button}:focus {
         background-color: #fefefe;
     }
-    
+
     ${Button}:active {
         background-color: #f7f7f7;
     }

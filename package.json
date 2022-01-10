@@ -44,7 +44,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --write src test"
   },
   "eslintConfig": {
     "extends": [
@@ -66,6 +67,7 @@
   },
   "devDependencies": {
     "@types/identicon.js": "^2.3.1",
-    "@types/uuid": "^8.3.3"
+    "@types/uuid": "^8.3.3",
+    "prettier": "2.5.1"
   }
 }

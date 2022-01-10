@@ -2,8 +2,8 @@ import styled from 'styled-components'
 import AddRoom from './AddRoomItem'
 
 type Props = {
-    className?: string,
-    children?: React.ReactNode,
+    className?: string
+    children?: React.ReactNode
 }
 
 const UnstyledRoomList = ({ className, children }: Props) => (
