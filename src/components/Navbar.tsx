@@ -22,11 +22,11 @@ const UnstyledNavbar = ({ className }: Props) => {
         console.log(`connected with session address: ${access.session.address}`)
         dispatch({
             type: ActionType.SetMetamaskAddress,
-            payload: access.metamask.address as string,
+            payload: access.metamask.address,
         })
         dispatch({
             type: ActionType.SetSessionAddress,
-            payload: access.session.address as string,
+            payload: access.session.address,
         })
 
         dispatch({
