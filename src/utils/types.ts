@@ -1,10 +1,5 @@
 import StreamrClient from 'streamr-client'
-
-export type RoomPayload = {
-    id: string
-    name: string
-    readAt: number
-}
+import { ChatRoom } from '../lib/ChatRoom'
 
 export type MessagePayload = {
     body: string
@@ -27,7 +22,7 @@ export type ChatState = {
     messages: MessagesCollection
     roomId?: string
     roomNameEditable: boolean
-    rooms: RoomPayload[]
+    rooms: ChatRoom[]
     metamaskAddress: string
     sessionAddress: string
     streamrClient: StreamrClient | undefined

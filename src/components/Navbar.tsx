@@ -6,6 +6,7 @@ import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAcces
 
 import { ActionType, useDispatch, useStore } from './Store'
 import StreamrClient from 'streamr-client'
+import { ChatRoomManager } from '../lib/ChatRoomManager'
 
 type Props = {
     className?: string
@@ -29,13 +30,26 @@ const UnstyledNavbar = ({ className }: Props) => {
             payload: access.session.address,
         })
 
+        const streamrClient = new StreamrClient({
+            auth: {
+                privateKey: access.session.privateKey,
+            },
+        })
+
         dispatch({
             type: ActionType.SetStreamrClient,
-            payload: new StreamrClient({
-                auth: {
-                    privateKey: access.session.privateKey,
-                },
-            }),
+            payload: streamrClient,
+        })
+
+        const chatRoomManager = new ChatRoomManager(
+            access.metamask.address,
+            streamrClient,
+            access.provider
+        )
+        const rooms = await chatRoomManager.fetchRooms()
+        dispatch({
+            type: ActionType.SetRooms,
+            payload: rooms,
         })
     }
 

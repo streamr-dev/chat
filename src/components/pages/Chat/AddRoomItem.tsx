@@ -1,32 +1,24 @@
 import styled from 'styled-components'
-import { ActionType, useDispatch } from '../../Store'
+import { ActionType, useDispatch, useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
+import { ChatRoomManager } from '../../../lib/ChatRoomManager'
 
 function UnstyledAddRoomItem(props: Props) {
     const dispatch = useDispatch()
+    const { metamaskAddress, streamrClient } = useStore()
+    const chatRoomManager = new ChatRoomManager(metamaskAddress, streamrClient!)
 
     return (
         <SidebarItem
             {...props}
-            onClick={() => {
+            onClick={async () => {
                 const id = uuidv4()
-
+                const room = await chatRoomManager!.createRoom(id)
                 dispatch({
                     type: ActionType.AddRooms,
-                    payload: [
-                        {
-                            id,
-                            name: '',
-                            readAt: Date.now(),
-                        },
-                    ],
-                })
-
-                dispatch({
-                    type: ActionType.SelectRoom,
-                    payload: id,
+                    payload: [room],
                 })
             }}
             icon={

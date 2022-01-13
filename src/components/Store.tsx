@@ -1,8 +1,9 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
+import { ChatRoom } from '../lib/ChatRoom'
+
 import type {
     ChatState,
-    RoomPayload,
     MessagePayload,
     MessagesCollection,
     DraftCollection,
@@ -43,9 +44,9 @@ type Action<A, B> = {
 
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
 
-type AddRoomsAction = Action<ActionType.AddRooms, RoomPayload[]>
+type AddRoomsAction = Action<ActionType.AddRooms, ChatRoom[]>
 
-type SetRoomsAction = Action<ActionType.SetRooms, RoomPayload[]>
+type SetRoomsAction = Action<ActionType.SetRooms, ChatRoom[]>
 
 type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
 
@@ -90,7 +91,7 @@ function reducer(state: ChatState, action: A): ChatState {
                 roomNameEditable: action.payload,
             }
         case ActionType.RenameRoom:
-            ;((room: RoomPayload | undefined) => {
+            ;((room: ChatRoom | undefined) => {
                 if (room) {
                     room.name = action.payload
                 }
@@ -132,7 +133,7 @@ function reducer(state: ChatState, action: A): ChatState {
                         : state.roomId,
                 rooms: action.payload,
                 messages: action.payload.reduce(
-                    (memo: MessagesCollection, { id }: RoomPayload) => {
+                    (memo: MessagesCollection, { id }: ChatRoom) => {
                         Object.assign(memo, {
                             [id]: state.messages[id] || [],
                         })
@@ -142,7 +143,7 @@ function reducer(state: ChatState, action: A): ChatState {
                     {}
                 ),
                 drafts: action.payload.reduce(
-                    (memo: DraftCollection, { id }: RoomPayload) => {
+                    (memo: DraftCollection, { id }: ChatRoom) => {
                         Object.assign(memo, {
                             [id]: state.drafts[id] || '',
                         })
@@ -227,7 +228,7 @@ export function useMessages(): MessagePayload[] {
     return messages[roomId]
 }
 
-export function useRoom(): RoomPayload | undefined {
+export function useRoom(): ChatRoom | undefined {
     const { roomId, rooms } = useStore()
 
     return rooms.find(({ id }) => roomId === id)
