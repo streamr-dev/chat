@@ -7,7 +7,7 @@ type Props = {
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'>
 
 function trunc(address: string) {
-    if (/^0x[a-f\d]{40}$/.test(address)) {
+    if (/^0x[a-f\d]{40}$/i.test(address)) {
         return `${address.slice(0, 6)}...${address.slice(-4)}`
     }
 
