@@ -1,5 +1,4 @@
-import StreamrClient from 'streamr-client'
-import { ChatRoom } from '../lib/ChatRoom'
+import { StreamrClient, Stream } from 'streamr-client'
 
 export type MessagePayload = {
     body: string
@@ -26,4 +25,19 @@ export type ChatState = {
     metamaskAddress: string
     sessionAddress: string
     streamrClient: StreamrClient | undefined
+}
+
+export interface ChatMessage {
+    type: 'text' | 'metadata'
+    payload: string
+}
+
+export interface ChatRoom {
+    id: string
+    name: string
+    stream: Stream
+    publishMessage: (message: string) => Promise<void>
+    publishMetadata: (metadata: any) => Promise<void>
+    subscribeMessages: (callback: (message: ChatMessage) => void) => void
+    subscribeMetadata: (callback: (metadata: any) => void) => void
 }
