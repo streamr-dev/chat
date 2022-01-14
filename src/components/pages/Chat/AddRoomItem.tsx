@@ -7,8 +7,11 @@ import { ChatRoomManager } from '../../../lib/ChatRoomManager'
 
 function UnstyledAddRoomItem(props: Props) {
     const dispatch = useDispatch()
-    const { metamaskAddress, streamrClient } = useStore()
-    const chatRoomManager = new ChatRoomManager(metamaskAddress, streamrClient!)
+    const { metamaskAddress, session } = useStore()
+    const chatRoomManager = new ChatRoomManager(
+        metamaskAddress,
+        session.streamrClient!
+    )
 
     return (
         <SidebarItem

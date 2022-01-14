@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
-import { ChatRoom } from '../lib/ChatRoom'
+import { ChatRoom, StreamrSession } from '../utils/types'
 
 import type {
     ChatState,
@@ -8,6 +8,9 @@ import type {
     MessagesCollection,
     DraftCollection,
 } from '../utils/types'
+import { Wallet } from 'ethers'
+import { ChatRoomManager } from '../lib/ChatRoomManager'
+import { MetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 
 const initialState = {
     drafts: {},
@@ -17,9 +20,11 @@ const initialState = {
     roomNameEditable: false,
     rooms: [],
     metamaskAddress: '',
-    sessionAddress: '',
-    streamrClient: undefined,
-}
+    session: {
+        wallet: undefined,
+        streamrClient: undefined,
+    } as StreamrSession,
+} as ChatState
 
 export enum ActionType {
     AddMessages = 'add messages',
@@ -32,9 +37,7 @@ export enum ActionType {
     SetIdentity = 'set identity',
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
-    SetMetamaskAddress = 'set metamask address',
-    SetSessionAddress = 'set session address',
-    SetStreamrClient = 'set streamr client',
+    SetSession = 'set session',
 }
 
 type Action<A, B> = {
@@ -62,11 +65,7 @@ type RenameRoomAction = Action<ActionType.RenameRoom, string>
 
 type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
-type SetMetamaskAddressAction = Action<ActionType.SetMetamaskAddress, string>
-
-type SetSessionAddressAction = Action<ActionType.SetSessionAddress, string>
-
-type SetStreamrClient = Action<ActionType.SetStreamrClient, StreamrClient>
+type SetSessionAction = Action<ActionType.SetSession, MetamaskDelegatedAccess>
 
 type A =
     | SelectRoomAction
@@ -79,9 +78,7 @@ type A =
     | SetDraftAction
     | RenameRoomAction
     | EditRoomNameAction
-    | SetMetamaskAddressAction
-    | SetSessionAddressAction
-    | SetStreamrClient
+    | SetSessionAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -178,20 +175,29 @@ function reducer(state: ChatState, action: A): ChatState {
                           ...action.payload,
                       ],
                   })
-        case ActionType.SetMetamaskAddress:
+        case ActionType.SetSession:
+            const access = action.payload
+            const streamrClient = new StreamrClient({
+                auth: {
+                    privateKey: access.session.privateKey,
+                },
+            })
+
+            const chatRoomManager = new ChatRoomManager(
+                access.metamask.address,
+                streamrClient,
+                access.provider
+            )
+
+            chatRoomManager.fetchRooms()
+            console.log('called fetchRooms')
             return {
                 ...state,
-                metamaskAddress: action.payload,
-            }
-        case ActionType.SetSessionAddress:
-            return {
-                ...state,
-                sessionAddress: action.payload,
-            }
-        case ActionType.SetStreamrClient:
-            return {
-                ...state,
-                streamrClient: action.payload,
+                metamaskAddress: access.metamask.address,
+                session: {
+                    wallet: new Wallet(access.session.privateKey),
+                    streamrClient,
+                },
             }
         default:
             return state

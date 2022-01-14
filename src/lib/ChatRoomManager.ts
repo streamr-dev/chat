@@ -1,6 +1,6 @@
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import { StreamrClient, Stream, StreamOperation } from 'streamr-client'
-import { ChatMessage, ChatRoom } from './ChatRoom'
+import { ChatMessage, ChatRoom } from '../utils/types'
 
 export class ChatRoomManager {
     client: StreamrClient

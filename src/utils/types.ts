@@ -1,3 +1,4 @@
+import { Wallet } from 'ethers'
 import { StreamrClient, Stream } from 'streamr-client'
 
 export type MessagePayload = {
@@ -23,13 +24,17 @@ export type ChatState = {
     roomNameEditable: boolean
     rooms: ChatRoom[]
     metamaskAddress: string
-    sessionAddress: string
-    streamrClient: StreamrClient | undefined
+    session: StreamrSession
 }
 
 export interface ChatMessage {
     type: 'text' | 'metadata'
     payload: string
+}
+
+export interface StreamrSession {
+    wallet: Wallet | undefined
+    streamrClient: StreamrClient | undefined
 }
 
 export interface ChatRoom {
