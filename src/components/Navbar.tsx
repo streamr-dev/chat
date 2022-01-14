@@ -14,7 +14,7 @@ type Props = {
 const ConnectButton = styled(Button)`
     color: #ff5924;
     font-size: 15px;
-    padding: 10px 30px;
+    padding: 0 30px;
 `
 
 const UnstyledNavbar = ({ className }: Props) => {
@@ -86,10 +86,11 @@ const Navbar = styled(UnstyledNavbar)`
     }
 
     ${Button} {
-        border-radius: 100px;
+        align-items: center;
+        border-radius: 1.5rem;
+        display: flex;
         font-family: ${KARELIA};
         font-weight: ${SEMIBOLD};
-        height: 100%;
 
         :hover,
         :focus {

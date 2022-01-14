@@ -27,7 +27,7 @@ const AddressButton = styled(UnstyledAddressButton)`
     display: flex;
     font-size: 1rem;
     letter-spacing: 0.05em;
-    padding: 10px 30px 10px 1.5rem;
+    padding: 0 30px 0 1.5rem;
 
     img {
         flex: 0;
