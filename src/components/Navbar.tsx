@@ -1,15 +1,21 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import Button from './Button'
-import { KARELIA } from '../utils/css'
+import { KARELIA, SEMIBOLD } from '../utils/css'
 import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
-
+import AddressButton from './AddressButton'
 import { ActionType, useDispatch, useStore } from './Store'
 import StreamrClient from 'streamr-client'
 
 type Props = {
     className?: string
 }
+
+const ConnectButton = styled(Button)`
+    color: #ff5924;
+    font-size: 15px;
+    padding: 10px 30px;
+`
 
 const UnstyledNavbar = ({ className }: Props) => {
     const dispatch = useDispatch()
@@ -49,13 +55,11 @@ const UnstyledNavbar = ({ className }: Props) => {
                 <Link to="/">thechat.eth</Link>
             </h4>
             {store.metamaskAddress ? (
-                <Button type="button" onClick={disconnect}>
-                    {store.metamaskAddress}
-                </Button>
+                <AddressButton type="button" onClick={disconnect} address={store.metamaskAddress} />
             ) : (
-                <Button type="button" onClick={connect}>
-                    Connect a wallet
-                </Button>
+                <ConnectButton type="button" onClick={connect}>
+                    <span>Connect a wallet</span>
+                </ConnectButton>
             )}
         </nav>
     )
@@ -83,20 +87,23 @@ const Navbar = styled(UnstyledNavbar)`
 
     ${Button} {
         border-radius: 100px;
-        color: #ff5924;
         font-family: ${KARELIA};
-        font-size: 15px;
+        font-weight: ${SEMIBOLD};
         height: 100%;
-        padding: 10px 30px 13px;
+
+        :hover,
+        :focus {
+            background-color: #fefefe;
+        }
+
+        :active {
+            background-color: #f7f7f7;
+        }
     }
 
-    ${Button}:hover,
-    ${Button}:focus {
-        background-color: #fefefe;
-    }
-
-    ${Button}:active {
-        background-color: #f7f7f7;
+    ${Button} > span {
+        display: block;
+        transform: translateY(-0.1em);
     }
 `
 
