@@ -1,9 +1,17 @@
 import path from 'path'
+import webpack from 'webpack'
 
 const CracoConfig = {
     webpack: {
         alias: {
             'styled-components': path.resolve(__dirname, 'node_modules/styled-components'),
+        },
+        plugins: {
+            add: [
+                new webpack.ProvidePlugin({
+                    Buffer: ['buffer', 'Buffer'],
+                })
+            ],
         },
         configure({ resolve = {}, module: { rules, ...module }, ...config }: any) {
             const { fallback = {}, plugins = [] } = resolve
