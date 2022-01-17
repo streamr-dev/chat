@@ -5,7 +5,7 @@ import {
     StreamOperation,
     StreamPermision,
 } from 'streamr-client'
-import { ChatMessage, ChatRoom } from '../utils/types'
+import { ChatMessage, ChatRoom, MessageType } from '../utils/types'
 
 const ROOM_PREFIX: string = 'streamr-chat/room'
 const LOCAL_STORAGE_KEY = 'streamr-chat-rooms'
@@ -23,7 +23,7 @@ const publishMessage = async (
     return client.publish(
         streamId,
         {
-            type: 'text',
+            type: MessageType.TEXT,
             payload: message,
         },
         Date.now(),
@@ -40,7 +40,7 @@ const publishMetadata = async (
     return client.publish(
         streamId,
         {
-            type: 'metadata',
+            type: MessageType.METADATA,
             payload: metadata,
         } as ChatMessage,
         Date.now(),
