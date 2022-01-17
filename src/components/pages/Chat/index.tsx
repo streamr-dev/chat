@@ -7,7 +7,7 @@ import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
 import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
-import { ChatRoomManager } from '../../../lib/ChatRoomManager'
+import { fetchRooms } from '../../../lib/ChatRoomManager'
 import { useEffect, useState } from 'react'
 import { detectTypedEthereumProvider } from '../../../lib/MetamaskDelegatedAccess'
 import { ChatRoom } from '../../../utils/types'
@@ -45,22 +45,18 @@ const UnstyledChat = ({ className }: Props) => {
             if (isLoading) {
                 return
             }
-
-            const provider = session.provider
-
-            const chatRoomManager = new ChatRoomManager(
-                metamaskAddress,
-                session.streamrClient!,
-                provider
-            )
             // the callback allows for rooms to be rendered as soon as they're fetched
             // opposed to waiting for them all to arrive and then render
-            await chatRoomManager.fetchRooms((chatRoom: ChatRoom) => {
-                dispatch({
-                    type: ActionType.AddRooms,
-                    payload: [chatRoom],
-                })
-            })
+            await fetchRooms(
+                session.streamrClient!,
+                session.provider!,
+                (chatRoom: ChatRoom) => {
+                    dispatch({
+                        type: ActionType.AddRooms,
+                        payload: [chatRoom],
+                    })
+                }
+            )
         }
 
         fn()

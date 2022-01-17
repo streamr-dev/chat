@@ -9,7 +9,6 @@ import type {
     DraftCollection,
 } from '../utils/types'
 import { Wallet } from 'ethers'
-import { ChatRoomManager } from '../lib/ChatRoomManager'
 import { MetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 
 const initialState = {

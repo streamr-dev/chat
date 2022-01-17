@@ -3,20 +3,18 @@ import { ActionType, useDispatch, useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
-import { ChatRoomManager } from '../../../lib/ChatRoomManager'
+import { createRoom } from '../../../lib/ChatRoomManager'
 import { useCallback } from 'react'
-import { ChatRoom } from '../../../utils/types'
 
 function useCreateRoom(): () => Promise<void> {
     const dispatch = useDispatch()
     const { metamaskAddress, session, rooms } = useStore()
-    const chatRoomManager = new ChatRoomManager(
-        metamaskAddress,
-        session.streamrClient!
-    )
+
     return useCallback(async () => {
         const id = uuidv4()
-        const room = await chatRoomManager.createRoom(
+        const room = await createRoom(
+            session.streamrClient!,
+            metamaskAddress,
             id,
             rooms.map((r) => r.id)
         )
@@ -24,7 +22,7 @@ function useCreateRoom(): () => Promise<void> {
             type: ActionType.AddRooms,
             payload: [room],
         })
-    }, [chatRoomManager])
+    }, [metamaskAddress, session, rooms])
 }
 
 function UnstyledAddRoomItem(props: Props) {
