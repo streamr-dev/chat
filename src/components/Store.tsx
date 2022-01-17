@@ -175,20 +175,21 @@ function reducer(state: ChatState, action: A): ChatState {
                       ],
                   })
         case ActionType.SetSession:
-            const access = action.payload
+            const { session, metamask, provider } = action.payload
+
             const streamrClient = new StreamrClient({
                 auth: {
-                    privateKey: access.session.privateKey,
+                    privateKey: session.privateKey,
                 },
             })
 
             return {
                 ...state,
-                metamaskAddress: access.metamask.address,
+                metamaskAddress: metamask.address,
                 session: {
-                    wallet: new Wallet(access.session.privateKey),
+                    wallet: new Wallet(session.privateKey),
                     streamrClient,
-                    provider: access.provider,
+                    provider: provider,
                 },
             }
         default:
