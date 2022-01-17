@@ -7,8 +7,9 @@ import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
 import { useMessages, useStore } from '../../Store'
-import detectEthereumProvider from '@metamask/detect-provider'
 import { ChatRoomManager } from '../../../lib/ChatRoomManager'
+import { useEffect } from 'react'
+import { detectTypedEthereumProvider } from '../../../lib/MetamaskDelegatedAccess'
 
 const Content = styled.div`
     height: 100vh;
@@ -26,17 +27,34 @@ type Props = {
     className?: string
 }
 
-const UnstyledChat = async async ({ className }: Props) => {
+const UnstyledChat = ({ className }: Props) => {
     const messages = useMessages()
-    const { roomId, rooms, session, metamaskAddress } = useStore()
+    const { roomId, rooms, metamaskAddress, session } = useStore()
 
-    const chatRoomManager = new ChatRoomManager(
-        metamaskAddress,
-        session.streamrClient!,
-        detectEthereumProvider()
-    )
+    useEffect(() => {
+        if (!session.streamrClient) {
+            // No streamr client. Skip.
+            return
+        }
 
-    await chatRoomManager.fetchRooms()
+        const fn = async () => {
+            const provider = await detectTypedEthereumProvider()
+
+            const chatRoomManager = new ChatRoomManager(
+                metamaskAddress,
+                session.streamrClient!,
+                provider
+            )
+
+            const foundRooms = await chatRoomManager.fetchRooms()
+            for (const room of foundRooms) {
+                rooms.push(room)
+            }
+            console.log('rooms array', rooms)
+        }
+
+        fn()
+    }, [metamaskAddress, session, rooms])
 
     return (
         <>

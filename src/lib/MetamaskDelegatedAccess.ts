@@ -97,3 +97,13 @@ export const initializeMetamaskDelegatedAccess =
         await accessManager.connect()
         return accessManager
     }
+
+export const detectTypedEthereumProvider =
+    async (): Promise<MetaMaskInpageProvider> => {
+        const provider =
+            (await detectEthereumProvider()) as MetaMaskInpageProvider
+        if (!provider) {
+            throw new Error('MetaMask not detected')
+        }
+        return provider
+    }

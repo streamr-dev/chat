@@ -44,7 +44,11 @@ const UnstyledNavbar = ({ className }: Props) => {
                 <Link to="/">thechat.eth</Link>
             </h4>
             {store.metamaskAddress ? (
-                <AddressButton type="button" onClick={disconnect} address={store.metamaskAddress} />
+                <AddressButton
+                    type="button"
+                    onClick={disconnect}
+                    address={store.metamaskAddress}
+                />
             ) : (
                 <ConnectButton type="button" onClick={connect}>
                     <span>Connect a wallet</span>

@@ -221,11 +221,17 @@ export class ChatRoomManager {
         if (localStreamIds) {
             // build the room objects from the local ref
             const streamIds = JSON.parse(localStreamIds)
+            console.log('found local rooms', streamIds)
             for (let i = 0; i < streamIds.length; i++) {
-                const streamId = streamIds[i]
-                const room = await this.generateChatRoom(streamId)
-                this.rooms[streamId] = room
-                rooms.push(room)
+                try {
+                    const streamId = streamIds[i]
+                    const room = await this.generateChatRoom(streamId)
+                    console.log(room)
+                    this.rooms[streamId] = room
+                    rooms.push(room)
+                } catch (e) {
+                    console.warn('failed to load room', e)
+                }
             }
         } else {
             // create a metamask/streamr-client instance to fetch the parent identity's streams
@@ -238,15 +244,21 @@ export class ChatRoomManager {
                 operation: 'stream_subscribe' as StreamOperation,
             })
 
+            console.log('fetched streams', streams)
+
             for (let i = 0; i < streams.length; i++) {
-                const stream = streams[i]
-                if (stream.id.includes(this.ROOM_PREFIX)) {
-                    const chatRoom = await this.generateChatRoom(
-                        stream.id,
-                        stream
-                    )
-                    this.rooms[stream.id] = chatRoom
-                    rooms.push(chatRoom)
+                try {
+                    const stream = streams[i]
+                    if (stream.id.includes(this.ROOM_PREFIX)) {
+                        const chatRoom = await this.generateChatRoom(
+                            stream.id,
+                            stream
+                        )
+                        this.rooms[stream.id] = chatRoom
+                        rooms.push(chatRoom)
+                    }
+                } catch (e) {
+                    console.warn('failed to fetch room', e)
                 }
             }
 
