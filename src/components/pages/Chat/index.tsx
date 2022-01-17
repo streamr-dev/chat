@@ -8,8 +8,7 @@ import Background from '../Home/background.png'
 import Message from './Message'
 import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
 import { fetchRooms } from '../../../lib/ChatRoomManager'
-import { useEffect, useState } from 'react'
-import { detectTypedEthereumProvider } from '../../../lib/MetamaskDelegatedAccess'
+import { useEffect } from 'react'
 import { ChatRoom } from '../../../utils/types'
 
 const Content = styled.div`
