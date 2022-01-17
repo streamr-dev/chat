@@ -33,7 +33,7 @@ const DropDownListContainer = styled.div`
     right: 35px;
     z-index: 100;
 `
-const DropDownList = styled.table`
+const DropDownList = styled.div`
     width: 250px;
     padding: 0;
     margin: 0;
@@ -53,9 +53,10 @@ const DropDownList = styled.table`
         margin: 0px;
     }
 `
-const ListItem = styled.tr`
+const ListItem = styled.div`
     padding: 10px 15px;
     background-clip: padding-box;
+    align-items: center;
     display: flex;
 
     td {
@@ -77,6 +78,11 @@ const ListItem = styled.tr`
 
     :hover {
         background-color: #f1f4f7;
+    }
+
+    svg {
+        width: 1rem;
+        margin-right: 0.75rem;
     }
 `
 
@@ -112,42 +118,30 @@ const RoomDropdown = ({ button }: Props) => {
                 <DropDownListContainer ref={ref}>
                     <DropDownList>
                         <ListItem>
-                            <td>
-                                <AddMemberIcon />
-                            </td>
-                            <td>Add member</td>
+                            <AddMemberIcon />
+                            Add member
                         </ListItem>
                         <ListItem>
-                            <td>
-                                <EditMembersIcon />
-                            </td>
-                            <td>Edit members</td>
+                            <EditMembersIcon />
+                            Edit members
                         </ListItem>
                         <hr></hr>
                         <ListItem>
-                            <td>
-                                <SearchIcon />
-                            </td>
-                            <td>Search in conversation</td>
+                            <SearchIcon />
+                            Search in conversation
                         </ListItem>
                         <ListItem>
-                            <td>
-                                <DownloadIcon />
-                            </td>
-                            <td>Save to local</td>
+                            <DownloadIcon />
+                            Save to local
                         </ListItem>
                         <ListItem>
-                            <td>
-                                <CopyIcon />
-                            </td>
-                            <td>Copy room id</td>
+                            <CopyIcon />
+                            Copy room id
                         </ListItem>
                         <hr></hr>
                         <ListItem>
-                            <td>
-                                <DeleteIcon />
-                            </td>
-                            <td>Delete room</td>
+                            <DeleteIcon />
+                            Delete room
                         </ListItem>
                     </DropDownList>
                 </DropDownListContainer>
