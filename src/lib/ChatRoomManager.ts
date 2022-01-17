@@ -132,13 +132,14 @@ const storeRoomIds = (ids: Array<string>) => {
 
 export const createRoom = async (
     client: StreamrClient,
+    address: string,
     metamaskAddress: string,
     roomName: string,
     roomIds: Array<string>,
     requireEncryptedData = false
 ): Promise<ChatRoom> => {
     const streamId = getStreamIdFromRoomName(
-        await client.getAddress(),
+        address,
         roomName,
         requireEncryptedData
     )
@@ -161,6 +162,7 @@ export const createRoom = async (
 
 export const fetchRooms = async (
     client: StreamrClient,
+    clientAddress: string,
     provider: MetaMaskInpageProvider,
     roomCallback?: (c: ChatRoom) => void
 ): Promise<Array<ChatRoom>> => {
@@ -192,8 +194,6 @@ export const fetchRooms = async (
             search: 'streamr-chat/room',
             operation: 'stream_subscribe' as StreamOperation,
         })
-
-        const clientAddress = await client.getAddress()
 
         for (let i = 0; i < streams.length; i++) {
             try {

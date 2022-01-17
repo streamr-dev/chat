@@ -14,6 +14,7 @@ function useCreateRoom(): () => Promise<void> {
         const id = uuidv4()
         const room = await createRoom(
             session.streamrClient!,
+            session.wallet!.address,
             metamaskAddress,
             id,
             rooms.map((r) => r.id)

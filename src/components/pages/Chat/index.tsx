@@ -49,6 +49,7 @@ const UnstyledChat = ({ className }: Props) => {
             // opposed to waiting for them all to arrive and then render
             await fetchRooms(
                 session.streamrClient!,
+                session.wallet!.address,
                 session.provider!,
                 (chatRoom: ChatRoom) => {
                     dispatch({
