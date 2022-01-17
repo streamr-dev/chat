@@ -1,12 +1,15 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
+import { ChatRoom, StreamrSession } from '../utils/types'
+
 import type {
     ChatState,
-    RoomPayload,
     MessagePayload,
     MessagesCollection,
     DraftCollection,
 } from '../utils/types'
+import { Wallet } from 'ethers'
+import { MetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 
 const initialState = {
     drafts: {},
@@ -16,9 +19,11 @@ const initialState = {
     roomNameEditable: false,
     rooms: [],
     metamaskAddress: '',
-    sessionAddress: '',
-    streamrClient: undefined,
-}
+    session: {
+        wallet: undefined,
+        streamrClient: undefined,
+    } as StreamrSession,
+} as ChatState
 
 export enum ActionType {
     AddMessages = 'add messages',
@@ -31,9 +36,7 @@ export enum ActionType {
     SetIdentity = 'set identity',
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
-    SetMetamaskAddress = 'set metamask address',
-    SetSessionAddress = 'set session address',
-    SetStreamrClient = 'set streamr client',
+    SetSession = 'set session',
 }
 
 type Action<A, B> = {
@@ -43,9 +46,9 @@ type Action<A, B> = {
 
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
 
-type AddRoomsAction = Action<ActionType.AddRooms, RoomPayload[]>
+type AddRoomsAction = Action<ActionType.AddRooms, ChatRoom[]>
 
-type SetRoomsAction = Action<ActionType.SetRooms, RoomPayload[]>
+type SetRoomsAction = Action<ActionType.SetRooms, ChatRoom[]>
 
 type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
 
@@ -61,11 +64,7 @@ type RenameRoomAction = Action<ActionType.RenameRoom, string>
 
 type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
-type SetMetamaskAddressAction = Action<ActionType.SetMetamaskAddress, string>
-
-type SetSessionAddressAction = Action<ActionType.SetSessionAddress, string>
-
-type SetStreamrClient = Action<ActionType.SetStreamrClient, StreamrClient>
+type SetSessionAction = Action<ActionType.SetSession, MetamaskDelegatedAccess>
 
 type A =
     | SelectRoomAction
@@ -78,9 +77,7 @@ type A =
     | SetDraftAction
     | RenameRoomAction
     | EditRoomNameAction
-    | SetMetamaskAddressAction
-    | SetSessionAddressAction
-    | SetStreamrClient
+    | SetSessionAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -90,7 +87,7 @@ function reducer(state: ChatState, action: A): ChatState {
                 roomNameEditable: action.payload,
             }
         case ActionType.RenameRoom:
-            ;((room: RoomPayload | undefined) => {
+            ;((room: ChatRoom | undefined) => {
                 if (room) {
                     room.name = action.payload
                 }
@@ -132,7 +129,7 @@ function reducer(state: ChatState, action: A): ChatState {
                         : state.roomId,
                 rooms: action.payload,
                 messages: action.payload.reduce(
-                    (memo: MessagesCollection, { id }: RoomPayload) => {
+                    (memo: MessagesCollection, { id }: ChatRoom) => {
                         Object.assign(memo, {
                             [id]: state.messages[id] || [],
                         })
@@ -142,7 +139,7 @@ function reducer(state: ChatState, action: A): ChatState {
                     {}
                 ),
                 drafts: action.payload.reduce(
-                    (memo: DraftCollection, { id }: RoomPayload) => {
+                    (memo: DraftCollection, { id }: ChatRoom) => {
                         Object.assign(memo, {
                             [id]: state.drafts[id] || '',
                         })
@@ -177,20 +174,23 @@ function reducer(state: ChatState, action: A): ChatState {
                           ...action.payload,
                       ],
                   })
-        case ActionType.SetMetamaskAddress:
+        case ActionType.SetSession:
+            const { session, metamask, provider } = action.payload
+
+            const streamrClient = new StreamrClient({
+                auth: {
+                    privateKey: session.privateKey,
+                },
+            })
+
             return {
                 ...state,
-                metamaskAddress: action.payload,
-            }
-        case ActionType.SetSessionAddress:
-            return {
-                ...state,
-                sessionAddress: action.payload,
-            }
-        case ActionType.SetStreamrClient:
-            return {
-                ...state,
-                streamrClient: action.payload,
+                metamaskAddress: metamask.address,
+                session: {
+                    wallet: new Wallet(session.privateKey),
+                    streamrClient,
+                    provider: provider,
+                },
             }
         default:
             return state
@@ -227,7 +227,7 @@ export function useMessages(): MessagePayload[] {
     return messages[roomId]
 }
 
-export function useRoom(): RoomPayload | undefined {
+export function useRoom(): ChatRoom | undefined {
     const { roomId, rooms } = useStore()
 
     return rooms.find(({ id }) => roomId === id)

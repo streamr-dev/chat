@@ -3,7 +3,7 @@ import Button from '../Button'
 import UserIcon from './user.svg'
 
 type Props = {
-    address: string,
+    address: string
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'>
 
 function trunc(address: string) {

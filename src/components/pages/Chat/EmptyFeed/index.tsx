@@ -43,7 +43,10 @@ const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => (
     <div className={className}>
         <div>
             {roomCreatedAt != null && (
-                <CreatedAt>You created this room on {format(roomCreatedAt, 'iiii, LLL do yyyy')}</CreatedAt>
+                <CreatedAt>
+                    You created this room on{' '}
+                    {format(roomCreatedAt, 'iiii, LLL do yyyy')}
+                </CreatedAt>
             )}
             <AddMemberButton
                 type="button"

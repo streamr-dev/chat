@@ -6,7 +6,10 @@ import Navbar from '../../Navbar'
 import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
-import { useMessages, useStore } from '../../Store'
+import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
+import { fetchRooms } from '../../../lib/ChatRoomManager'
+import { useEffect } from 'react'
+import { ChatRoom } from '../../../utils/types'
 
 const Content = styled.div`
     height: 100vh;
@@ -26,7 +29,32 @@ type Props = {
 
 const UnstyledChat = ({ className }: Props) => {
     const messages = useMessages()
-    const { roomId, rooms } = useStore()
+    const { roomId, rooms, metamaskAddress, session } = useStore()
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (!session.streamrClient) {
+            // No streamr client. Skip.
+            return
+        }
+        const fn = async () => {
+            // the callback allows for rooms to be rendered as soon as they're fetched
+            // opposed to waiting for them all to arrive and then render
+            await fetchRooms(
+                session.streamrClient!,
+                session.wallet!.address,
+                session.provider!,
+                (chatRoom: ChatRoom) => {
+                    dispatch({
+                        type: ActionType.AddRooms,
+                        payload: [chatRoom],
+                    })
+                }
+            )
+        }
+
+        fn()
+    }, [dispatch, metamaskAddress, session])
 
     return (
         <>
