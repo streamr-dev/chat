@@ -1,5 +1,10 @@
 import { MetaMaskInpageProvider } from '@metamask/providers'
-import { StreamrClient, Stream, StreamOperation } from 'streamr-client'
+import {
+    StreamrClient,
+    Stream,
+    StreamOperation,
+    StreamPermision,
+} from 'streamr-client'
 import { ChatMessage, ChatRoom } from '../utils/types'
 
 const ROOM_PREFIX: string = 'streamr-chat/room'
@@ -97,7 +102,7 @@ export const generateChatRoom = async (
             subscribeMessages(client, streamId, callback),
         subscribeMetadata: (callback: (metadata: any) => void) =>
             subscribeMetadata(client, streamId, callback),
-    } as ChatRoom
+    }
 }
 
 const getStreamIdFromRoomName = (
@@ -113,9 +118,9 @@ export const sendChatRoomInvitation = async (
     client: StreamrClient,
     streamId: string,
     recipient: string
-): Promise<void> => {
+): Promise<StreamPermision[]> => {
     const stream = await client.getStream(streamId)
-    await stream.grantPermissions(
+    return await stream.grantPermissions(
         [
             StreamOperation.STREAM_PUBLISH,
             StreamOperation.STREAM_SUBSCRIBE,
