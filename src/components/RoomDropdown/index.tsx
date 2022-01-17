@@ -3,7 +3,6 @@ import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { KARELIA } from '../../utils/css'
-import MemberModal from '../MemberModal'
 import MemberOptions from '../MemberModal/MemberOptions'
 
 type Props = {
@@ -78,6 +77,7 @@ const DropDownList = styled.table`
     font-size: 14px;
     list-style-type: none;
     border-spacing: 0px;
+
     hr {
         border: 0;
         border-top: 1px solid #dee6ee;
@@ -89,63 +89,52 @@ const ListItem = styled.tr`
     padding: 10px 15px;
     background-clip: padding-box;
     display: flex;
+
     td {
         line-height: 13px;
         &:last-child {
             margin-left: 15px;
         }
     }
+
     &:first-child {
         padding-top: 15px;
         border-radius: 10px 10px 0 0;
     }
+
     &:last-child {
         padding-bottom: 15px;
         border-radius: 0 0 10px 10px;
     }
+
     :hover {
         background-color: #f1f4f7;
     }
 `
 
 const StyledModalContent = styled.div`
-    .contentContainer {
-        display: flex;
-        flex-direction: column;
-        padding: 0px 20px;
-    }
-    .closeButton {
-        background-color: transparent;
-        border: none;
-    }
-    .modalHeader {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    .memberList {
-        display: flex;
-        flex-direction: column;
-        overflow: auto;
-        height: 300px;
-    }
-    .walletOption {
-        background-color: #f1f4f7;
-        margin-top: 8px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        flex: 1;
-        padding: 0px 32px;
-        border-radius: 8px;
-        justify-content: space-between;
-        font-size: 16px;
-        font-family: IBM Plex Sans;
-        font-weight: bold;
-    }
-    .walletOption:hover {
-        background-color: #dfe3e8;
-    }
+    display: flex;
+    flex-direction: column;
+    padding: 0px 20px;
+`
+
+const ModalCloseButton = styled.button`
+    background-color: transparent;
+    border: none;
+`
+
+const ModalHeader = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`
+
+const MemberList = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
 `
 
 const RoomDropdown = ({ button }: Props) => {
@@ -310,43 +299,36 @@ const RoomDropdown = ({ button }: Props) => {
                 onRequestClose={closeModal}
             >
                 <StyledModalContent>
-                    <div className="contentContainer">
-                        <div className="modalHeader">
-                            <h2>Edit members</h2>
-                            <button
-                                className="closeButton"
-                                onClick={closeModal}
+                    <ModalHeader>
+                        <h2>Edit members</h2>
+                        <ModalCloseButton onClick={closeModal}>
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
                             >
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 16 16"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M15 1L0.999999 15"
-                                        stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
-                                    />
-                                    <path
-                                        d="M1 1L15 15"
-                                        stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                        <div className="memberList">
-                            {members.map((member) => {
-                                return (
-                                    <MemberOptions address={member.address} />
-                                )
-                            })}
-                        </div>
-                    </div>
+                                <path
+                                    d="M15 1L0.999999 15"
+                                    stroke="#59799C"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                />
+                                <path
+                                    d="M1 1L15 15"
+                                    stroke="#59799C"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                />
+                            </svg>
+                        </ModalCloseButton>
+                    </ModalHeader>
+                    <MemberList>
+                        {members.map((member) => {
+                            return <MemberOptions address={member.address} />
+                        })}
+                    </MemberList>
                 </StyledModalContent>
             </ReactModal>
         </>

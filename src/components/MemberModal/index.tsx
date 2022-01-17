@@ -3,10 +3,6 @@ import ReactModal from 'react-modal'
 import Modal from 'react-modal'
 import styled from 'styled-components'
 import { KARELIA } from '../../utils/css'
-import metamask from './Icons/metamask.png'
-import keystone from './Icons/keystone.png'
-import coinbase from './Icons/coinbase.png'
-import walletconnect from './Icons/walletconnect.png'
 import MemberOptions from './MemberOptions'
 
 const members = [
