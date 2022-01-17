@@ -7,6 +7,8 @@ import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
 import { useMessages, useStore } from '../../Store'
+import detectEthereumProvider from '@metamask/detect-provider'
+import { ChatRoomManager } from '../../../lib/ChatRoomManager'
 
 const Content = styled.div`
     height: 100vh;
@@ -24,9 +26,17 @@ type Props = {
     className?: string
 }
 
-const UnstyledChat = ({ className }: Props) => {
+const UnstyledChat = async async ({ className }: Props) => {
     const messages = useMessages()
-    const { roomId, rooms } = useStore()
+    const { roomId, rooms, session, metamaskAddress } = useStore()
+
+    const chatRoomManager = new ChatRoomManager(
+        metamaskAddress,
+        session.streamrClient!,
+        detectEthereumProvider()
+    )
+
+    await chatRoomManager.fetchRooms()
 
     return (
         <>

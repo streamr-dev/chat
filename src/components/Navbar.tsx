@@ -26,15 +26,6 @@ const UnstyledNavbar = ({ className }: Props) => {
             type: ActionType.SetSession,
             payload: access,
         })
-        // need to fetch the streamrClient before continuing
-        /*
-        const chatRoomManager = new ChatRoomManager(
-            access.metamask.address,
-            session.streamrClient!,
-            access.provider
-        )
-
-        await chatRoomManager.fetchRooms()*/
     }
 
     const disconnect = () => {
