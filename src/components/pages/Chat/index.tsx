@@ -33,18 +33,12 @@ const UnstyledChat = ({ className }: Props) => {
     const { roomId, rooms, metamaskAddress, session } = useStore()
     const dispatch = useDispatch()
 
-    const [isLoading, setIsLoading] = useState(false)
-
     useEffect(() => {
         if (!session.streamrClient) {
             // No streamr client. Skip.
             return
         }
-        setIsLoading(true)
         const fn = async () => {
-            if (isLoading) {
-                return
-            }
             // the callback allows for rooms to be rendered as soon as they're fetched
             // opposed to waiting for them all to arrive and then render
             await fetchRooms(
