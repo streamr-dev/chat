@@ -55,7 +55,7 @@ const UnstyledChat = ({ className }: Props) => {
         }
 
         fn()
-    }, [metamaskAddress, session])
+    }, [dispatch, metamaskAddress, session])
 
     return (
         <>
