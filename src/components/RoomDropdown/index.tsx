@@ -3,7 +3,7 @@ import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { KARELIA } from '../../utils/css'
-import MemberOptions from '../MemberModal/MemberOptions'
+import MemberOptions from './MemberOptions'
 
 type Props = {
     button?: any
