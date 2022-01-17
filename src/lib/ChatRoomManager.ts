@@ -62,6 +62,7 @@ export class ChatRoomManager {
 
     public async createRoom(
         roomName: string,
+        roomIds: Array<string>,
         requireEncryptedData = false
     ): Promise<ChatRoom> {
         const streamId = await this.getStreamIdFromRoomName(
@@ -82,16 +83,7 @@ export class ChatRoomManager {
         await this.sendInvitation(streamId, metamaskAddress)
 
         this.rooms[streamId] = await this.generateChatRoom(streamId, stream)
-        this.storeRoomIds()
-        return this.rooms[streamId]
-    }
-
-    public async getRoom(roomName: string): Promise<ChatRoom> {
-        const streamId = await this.getStreamIdFromRoomName(roomName)
-        if (!this.rooms[streamId]) {
-            const room = await this.createRoom(roomName)
-            this.rooms[streamId] = room
-        }
+        this.storeRoomIds(roomIds)
         return this.rooms[streamId]
     }
 
@@ -204,14 +196,13 @@ export class ChatRoomManager {
         )
     }
 
-    private storeRoomIds() {
-        localStorage.setItem(
-            this.LOCAL_STORAGE_KEY,
-            JSON.stringify(Object.keys(this.rooms))
-        )
+    public storeRoomIds(ids: Array<string>) {
+        localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(ids))
     }
 
-    public async fetchRooms(): Promise<Array<ChatRoom>> {
+    public async fetchRooms(
+        roomCallback?: (c: ChatRoom) => void
+    ): Promise<Array<ChatRoom>> {
         if (!this.provider) {
             throw new Error('Method `fetchRooms` requires a provider')
         }
@@ -221,12 +212,14 @@ export class ChatRoomManager {
         if (localStreamIds) {
             // build the room objects from the local ref
             const streamIds = JSON.parse(localStreamIds)
-            console.log('found local rooms', streamIds)
+
             for (let i = 0; i < streamIds.length; i++) {
                 try {
                     const streamId = streamIds[i]
                     const room = await this.generateChatRoom(streamId)
-                    console.log(room)
+                    if (roomCallback) {
+                        roomCallback(room)
+                    }
                     this.rooms[streamId] = room
                     rooms.push(room)
                 } catch (e) {
@@ -238,23 +231,40 @@ export class ChatRoomManager {
             const fetchClient = new StreamrClient({
                 auth: { ethereum: this.provider as any },
             })
-
             const streams = await fetchClient.listStreams({
                 search: 'streamr-chat/room',
                 operation: 'stream_subscribe' as StreamOperation,
             })
 
-            console.log('fetched streams', streams)
+            const clientAddress = await this.client.getAddress()
 
             for (let i = 0; i < streams.length; i++) {
                 try {
                     const stream = streams[i]
+                    const hasPermission = await stream.hasUserPermission(
+                        'stream_subscribe' as StreamOperation,
+                        clientAddress
+                    )
+                    if (!hasPermission) {
+                        await stream.grantUserPermissions(
+                            [
+                                'stream_subscribe' as StreamOperation,
+                                'stream_share' as StreamOperation,
+                                'stream_publish' as StreamOperation,
+                                'stream_get' as StreamOperation,
+                            ],
+                            clientAddress
+                        )
+                    }
                     if (stream.id.includes(this.ROOM_PREFIX)) {
                         const chatRoom = await this.generateChatRoom(
                             stream.id,
                             stream
                         )
                         this.rooms[stream.id] = chatRoom
+                        if (roomCallback) {
+                            roomCallback(chatRoom)
+                        }
                         rooms.push(chatRoom)
                     }
                 } catch (e) {
@@ -263,7 +273,7 @@ export class ChatRoomManager {
             }
 
             // save the streamIds to local storage
-            this.storeRoomIds()
+            this.storeRoomIds(streams.map((stream: Stream) => stream.id))
         }
 
         return rooms

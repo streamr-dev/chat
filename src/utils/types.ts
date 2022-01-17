@@ -1,3 +1,4 @@
+import { MetaMaskInpageProvider } from '@metamask/providers'
 import { Wallet } from 'ethers'
 import { StreamrClient, Stream } from 'streamr-client'
 
@@ -35,6 +36,7 @@ export interface ChatMessage {
 export interface StreamrSession {
     wallet: Wallet | undefined
     streamrClient: StreamrClient | undefined
+    provider: MetaMaskInpageProvider | undefined
 }
 
 export interface ChatRoom {

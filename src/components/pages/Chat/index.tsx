@@ -6,10 +6,11 @@ import Navbar from '../../Navbar'
 import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
-import { useMessages, useStore } from '../../Store'
+import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
 import { ChatRoomManager } from '../../../lib/ChatRoomManager'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { detectTypedEthereumProvider } from '../../../lib/MetamaskDelegatedAccess'
+import { ChatRoom } from '../../../utils/types'
 
 const Content = styled.div`
     height: 100vh;
@@ -30,31 +31,40 @@ type Props = {
 const UnstyledChat = ({ className }: Props) => {
     const messages = useMessages()
     const { roomId, rooms, metamaskAddress, session } = useStore()
+    const dispatch = useDispatch()
+
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         if (!session.streamrClient) {
             // No streamr client. Skip.
             return
         }
-
+        setIsLoading(true)
         const fn = async () => {
-            const provider = await detectTypedEthereumProvider()
+            if (isLoading) {
+                return
+            }
+
+            const provider = session.provider
 
             const chatRoomManager = new ChatRoomManager(
                 metamaskAddress,
                 session.streamrClient!,
                 provider
             )
-
-            const foundRooms = await chatRoomManager.fetchRooms()
-            for (const room of foundRooms) {
-                rooms.push(room)
-            }
-            console.log('rooms array', rooms)
+            // the callback allows for rooms to be rendered as soon as they're fetched
+            // opposed to waiting for them all to arrive and then render
+            await chatRoomManager.fetchRooms((chatRoom: ChatRoom) => {
+                dispatch({
+                    type: ActionType.AddRooms,
+                    payload: [chatRoom],
+                })
+            })
         }
 
         fn()
-    }, [metamaskAddress, session, rooms])
+    }, [metamaskAddress, session])
 
     return (
         <>

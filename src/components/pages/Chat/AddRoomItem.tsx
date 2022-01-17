@@ -4,26 +4,35 @@ import { v4 as uuidv4 } from 'uuid'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 import { ChatRoomManager } from '../../../lib/ChatRoomManager'
+import { useCallback } from 'react'
+import { ChatRoom } from '../../../utils/types'
 
-function UnstyledAddRoomItem(props: Props) {
+function useCreateRoom(): () => Promise<void> {
     const dispatch = useDispatch()
-    const { metamaskAddress, session } = useStore()
+    const { metamaskAddress, session, rooms } = useStore()
     const chatRoomManager = new ChatRoomManager(
         metamaskAddress,
         session.streamrClient!
     )
+    return useCallback(async () => {
+        const id = uuidv4()
+        const room = await chatRoomManager.createRoom(
+            id,
+            rooms.map((r) => r.id)
+        )
+        dispatch({
+            type: ActionType.AddRooms,
+            payload: [room],
+        })
+    }, [chatRoomManager])
+}
 
+function UnstyledAddRoomItem(props: Props) {
+    const createRoom = useCreateRoom()
     return (
         <SidebarItem
             {...props}
-            onClick={async () => {
-                const id = uuidv4()
-                const room = await chatRoomManager!.createRoom(id)
-                dispatch({
-                    type: ActionType.AddRooms,
-                    payload: [room],
-                })
-            }}
+            onClick={createRoom}
             icon={
                 <svg
                     width="22"

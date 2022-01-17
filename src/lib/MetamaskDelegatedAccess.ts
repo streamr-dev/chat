@@ -89,15 +89,6 @@ export class MetamaskDelegatedAccess {
     }
 }
 
-export const initializeMetamaskDelegatedAccess =
-    async (): Promise<MetamaskDelegatedAccess> => {
-        const provider =
-            (await detectEthereumProvider()) as MetaMaskInpageProvider
-        const accessManager = new MetamaskDelegatedAccess(provider)
-        await accessManager.connect()
-        return accessManager
-    }
-
 export const detectTypedEthereumProvider =
     async (): Promise<MetaMaskInpageProvider> => {
         const provider =
@@ -106,4 +97,12 @@ export const detectTypedEthereumProvider =
             throw new Error('MetaMask not detected')
         }
         return provider
+    }
+
+export const initializeMetamaskDelegatedAccess =
+    async (): Promise<MetamaskDelegatedAccess> => {
+        const provider = await detectTypedEthereumProvider()
+        const accessManager = new MetamaskDelegatedAccess(provider)
+        await accessManager.connect()
+        return accessManager
     }

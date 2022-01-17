@@ -183,20 +183,13 @@ function reducer(state: ChatState, action: A): ChatState {
                 },
             })
 
-            const chatRoomManager = new ChatRoomManager(
-                access.metamask.address,
-                streamrClient,
-                access.provider
-            )
-
-            chatRoomManager.fetchRooms()
-            console.log('called fetchRooms')
             return {
                 ...state,
                 metamaskAddress: access.metamask.address,
                 session: {
                     wallet: new Wallet(access.session.privateKey),
                     streamrClient,
+                    provider: access.provider,
                 },
             }
         default:
