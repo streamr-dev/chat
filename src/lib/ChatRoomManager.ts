@@ -3,9 +3,12 @@ import { StreamrClient, Stream, StreamOperation } from 'streamr-client'
 import { ChatMessage, ChatRoom } from '../utils/types'
 
 const ROOM_PREFIX: string = 'streamr-chat/room'
-const STREAM_PARTITION_MESSAGES = 0
-const STREAM_PARTITION_METADATA = 1
 const LOCAL_STORAGE_KEY = 'streamr-chat-rooms'
+
+export enum STREAM_PARTITION {
+    MESSAGES,
+    METADATA,
+}
 
 const publishMessage = async (
     client: StreamrClient,
@@ -19,7 +22,7 @@ const publishMessage = async (
             payload: message,
         },
         Date.now(),
-        STREAM_PARTITION_MESSAGES
+        STREAM_PARTITION.MESSAGES
     )
 }
 
@@ -36,7 +39,7 @@ const publishMetadata = async (
             payload: metadata,
         } as ChatMessage,
         Date.now(),
-        STREAM_PARTITION_METADATA
+        STREAM_PARTITION.METADATA
     )
 }
 
@@ -48,7 +51,7 @@ const subscribeMessages = async (
     client.subscribe(
         {
             streamId,
-            streamPartition: STREAM_PARTITION_MESSAGES,
+            streamPartition: STREAM_PARTITION.MESSAGES,
         },
         (message: any) => {
             //callback(JSON.parse(message))
@@ -65,7 +68,7 @@ const subscribeMetadata = async (
     client.subscribe(
         {
             streamId,
-            streamPartition: STREAM_PARTITION_METADATA,
+            streamPartition: STREAM_PARTITION.METADATA,
         },
         (message: any) => {
             callback(message)
