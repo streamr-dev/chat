@@ -1,5 +1,6 @@
 import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
+import EmptyFeed from './EmptyFeed'
 import MessageInput from './MessageInput'
 import RoomHeader from './RoomHeader'
 
@@ -64,7 +65,11 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
             <RoomHeader />
             <FeedWrap>
                 <div>
-                    <Feed ref={feedRef}>{children}</Feed>
+                    {React.Children.count(children) ? (
+                        <Feed ref={feedRef}>{children}</Feed>
+                    ) : (
+                        <EmptyFeed roomCreatedAt={Date.now()} />
+                    )}
                 </div>
             </FeedWrap>
             <MessageInput />

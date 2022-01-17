@@ -27,6 +27,7 @@ const CreateLink = styled(Link)`
     box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
     color: white;
     display: inline-flex;
+    height: auto;
     font-family: ${KARELIA};
     font-size: 22px;
     padding: 25px 50px;

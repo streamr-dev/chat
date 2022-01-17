@@ -1,14 +1,20 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import Button from './Button'
-import { KARELIA } from '../utils/css'
+import { KARELIA, SEMIBOLD } from '../utils/css'
 import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
-
-import { ActionType, useDispatch, useMessages, useStore } from './Store'
+import AddressButton from './AddressButton'
+import { ActionType, useDispatch, useStore } from './Store'
 
 type Props = {
     className?: string
 }
+
+const ConnectButton = styled(Button)`
+    color: #ff5924;
+    font-size: 15px;
+    padding: 0 30px;
+`
 
 const UnstyledNavbar = ({ className }: Props) => {
     const dispatch = useDispatch()
@@ -38,13 +44,11 @@ const UnstyledNavbar = ({ className }: Props) => {
                 <Link to="/">thechat.eth</Link>
             </h4>
             {store.metamaskAddress ? (
-                <Button type="button" onClick={disconnect}>
-                    {store.metamaskAddress}
-                </Button>
+                <AddressButton type="button" onClick={disconnect} address={store.metamaskAddress} />
             ) : (
-                <Button type="button" onClick={connect}>
-                    Connect a wallet
-                </Button>
+                <ConnectButton type="button" onClick={connect}>
+                    <span>Connect a wallet</span>
+                </ConnectButton>
             )}
         </nav>
     )
@@ -71,21 +75,25 @@ const Navbar = styled(UnstyledNavbar)`
     }
 
     ${Button} {
-        border-radius: 100px;
-        color: #ff5924;
+        align-items: center;
+        border-radius: 1.5rem;
+        display: flex;
         font-family: ${KARELIA};
-        font-size: 15px;
-        height: 100%;
-        padding: 10px 30px 13px;
+        font-weight: ${SEMIBOLD};
+
+        :hover,
+        :focus {
+            background-color: #fefefe;
+        }
+
+        :active {
+            background-color: #f7f7f7;
+        }
     }
 
-    ${Button}:hover,
-    ${Button}:focus {
-        background-color: #fefefe;
-    }
-
-    ${Button}:active {
-        background-color: #f7f7f7;
+    ${Button} > span {
+        display: block;
+        transform: translateY(-0.1em);
     }
 `
 

@@ -1,11 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
+import Button from '../../Button'
+
+const Root = styled(Button)`
+    background: transparent;
+    display: block;
+    width: 60px;
+    transform: translateY(0) !important;
+`
 
 const UnstyledSubmitButton = ({
     type = 'button',
     ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button {...props} type={type}>
+    <Root {...props} type={type}>
         <svg
             width="20"
             height="20"
@@ -18,16 +26,9 @@ const UnstyledSubmitButton = ({
                 fill="#FF5924"
             />
         </svg>
-    </button>
+    </Root>
 )
 
-const SubmitButton = styled(UnstyledSubmitButton)`
-    background: transparent;
-    border: 0;
-    display: block;
-    height: 48px;
-    transition: 0.3s opacity;
-    width: 60px;
-`
+const SubmitButton = styled(UnstyledSubmitButton)``
 
 export default SubmitButton

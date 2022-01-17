@@ -5,6 +5,7 @@ const Button = styled.button`
     background: #ffffff;
     border: 0;
     color: #323232;
+    height: 3rem;
     transition: all 0.3s ease-in-out;
 
     :hover,
