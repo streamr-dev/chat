@@ -28,8 +28,12 @@ export type ChatState = {
     session: StreamrSession
 }
 
+export enum MessageType {
+    TEXT = 'text',
+    METADATA = 'metadata',
+}
 export interface ChatMessage {
-    type: 'text' | 'metadata'
+    type: MessageType
     payload: string
 }
 
