@@ -5,7 +5,7 @@ import RoomName from './RoomName'
 import ModifyIcon from './modify.svg'
 import MoreIcon from './more.svg'
 import { ActionType, useDispatch, useStore } from './ChatStore'
-import Dropdown from '../../RoomDropdown'
+import Dropdown from './RoomDropdown'
 
 const Header = styled.div`
     align-items: center;

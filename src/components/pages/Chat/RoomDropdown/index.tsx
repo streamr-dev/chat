@@ -8,11 +8,11 @@ import {
     DownloadIcon,
     EditMembersIcon,
     SearchIcon,
-} from '../../icons'
-import { KARELIA } from '../../utils/css'
+} from '../../../../icons'
+import { KARELIA } from '../../../../utils/css'
 
 type Props = {
-    button?: any
+    button?: React.ReactElement
 }
 
 const DropDownContainer = styled.div`
@@ -111,7 +111,7 @@ const RoomDropdown = ({ button }: Props) => {
 
     return (
         <DropDownContainer>
-            {React.cloneElement(button, { onClick: toggleOpen }) || (
+            {React.cloneElement(button!, { onClick: toggleOpen }) || (
                 <DropDownHeader onClick={toggleOpen}>Mangoes</DropDownHeader>
             )}
             {isOpen && (
