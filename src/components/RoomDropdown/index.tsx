@@ -49,6 +49,7 @@ const members = [
 const DropDownContainer = styled.div`
     margin-left: 10px;
 `
+
 const DropDownHeader = styled.div`
     margin-bottom: 0.8em;
     padding: 0 2em 0 1em;
@@ -58,12 +59,14 @@ const DropDownHeader = styled.div`
     color: #3faffa;
     background: #ffffff;
 `
+
 const DropDownListContainer = styled.div`
     position: absolute;
     top: 75px;
     right: 35px;
     z-index: 100;
 `
+
 const DropDownList = styled.table`
     width: 250px;
     padding: 0;
@@ -85,6 +88,7 @@ const DropDownList = styled.table`
         margin: 0px;
     }
 `
+
 const ListItem = styled.tr`
     padding: 10px 15px;
     background-clip: padding-box;

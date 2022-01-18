@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import MoreIcon from './more.svg'
 import ModifyIcon from './modify.svg'
+import { KARELIA } from '../../utils/css'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -13,11 +14,13 @@ const Root = styled.div`
     display: flex;
     align-items: center;
     flex-direction: row;
+`
 
-    .subtitle {
-        font-size: 12px;
-        color: #59799c;
-    }
+const Subtitle = styled.span`
+    font-size: 12px;
+    color: #59799c;
+
+    cursor: pointer;
 `
 
 const MemberIcon = styled.div`
@@ -29,6 +32,7 @@ const MemberIcon = styled.div`
 `
 
 const EditButton = styled.div`
+    position: relative;
     height: 2.5rem;
     width: 2.5rem;
     background-color: white;
@@ -54,9 +58,99 @@ const MemberInput = styled.input`
     padding: 7px 12px;
 `
 
+const DropDownContainer = styled.div`
+    margin-left: 10px;
+`
+const DropDownHeader = styled.div`
+    margin-bottom: 0.8em;
+    padding: 0 2em 0 1em;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    font-weight: 500;
+    font-size: 1.3rem;
+    color: #3faffa;
+    background: #ffffff;
+`
+const DropDownListContainer = styled.div`
+    position: absolute;
+    top: 45px;
+    right: 0px;
+    z-index: 100;
+`
+
+const DropDownList = styled.div`
+    width: 250px;
+    padding: 0;
+    margin: 0;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    color: #59799c;
+    font-family: ${KARELIA};
+    font-size: 14px;
+    list-style-type: none;
+    border-spacing: 0px;
+
+    hr {
+        border: 0;
+        border-top: 1px solid #dee6ee;
+        padding: 0px;
+        margin: 0px;
+    }
+`
+
+const ListItem = styled.div`
+    padding: 10px 15px;
+    background-clip: padding-box;
+    display: flex;
+
+    td {
+        line-height: 13px;
+        &:last-child {
+            margin-left: 15px;
+        }
+    }
+
+    &:first-child {
+        padding-top: 15px;
+        border-radius: 10px 10px 0 0;
+    }
+
+    &:last-child {
+        padding-bottom: 15px;
+        border-radius: 0 0 10px 10px;
+    }
+
+    :hover {
+        background-color: #f1f4f7;
+    }
+`
+
 const UnstyledMemberOptions = ({ address }: any) => {
-    const [editing, setEditing] = useState(false)
-    const [nickname, setNickname] = useState('')
+    const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false)
+    const [editing, setEditing] = useState<boolean>(false)
+    const [nickname, setNickname] = useState<string>('')
+
+    const ref = useRef<HTMLDivElement>(null)
+    const buttonRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        function handleClickOutside(event: any) {
+            if (
+                buttonRef.current &&
+                !buttonRef.current.contains(event.target)
+            ) {
+                setDropdownOpen(false)
+            }
+        }
+
+        // Bind the event listener
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            // Unbind the event listener on clean up
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [ref, buttonRef])
     return (
         <Root>
             <MemberIcon />
@@ -72,13 +166,17 @@ const UnstyledMemberOptions = ({ address }: any) => {
                 ) : (
                     <MemberName>{nickname ? nickname : address}</MemberName>
                 )}
-                <span className="subtitle">
-                    {editing
-                        ? 'Nickname is only visible to you'
-                        : nickname
-                        ? 'Edit nickname'
-                        : 'Set nickname'}
-                </span>
+                {editing ? (
+                    <Subtitle>Nickname is only visible to you</Subtitle>
+                ) : (
+                    <Subtitle
+                        onClick={() => {
+                            setEditing(true)
+                        }}
+                    >
+                        {nickname ? 'Edit nickname' : 'Set nickname'}
+                    </Subtitle>
+                )}
             </div>
             {editing ? (
                 <EditButton
@@ -89,13 +187,24 @@ const UnstyledMemberOptions = ({ address }: any) => {
                     <img src={ModifyIcon} alt="" />
                 </EditButton>
             ) : (
-                <EditButton
-                    onClick={() => {
-                        setEditing(true)
-                    }}
-                >
-                    <img src={MoreIcon} alt="" />
-                </EditButton>
+                <>
+                    <EditButton
+                        onClick={() => {
+                            setDropdownOpen((isDropdownOpen) => !isDropdownOpen)
+                        }}
+                    >
+                        <img src={MoreIcon} alt="" />
+                        <DropDownContainer ref={ref}>
+                            {isDropdownOpen && (
+                                <DropDownListContainer>
+                                    <DropDownList>
+                                        <ListItem>Hello</ListItem>
+                                    </DropDownList>
+                                </DropDownListContainer>
+                            )}
+                        </DropDownContainer>
+                    </EditButton>
+                </>
             )}
         </Root>
     )
