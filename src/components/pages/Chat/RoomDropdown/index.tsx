@@ -53,18 +53,18 @@ const DropDownList = styled.div`
         margin: 0px;
     }
 `
-const ListItem = styled.div`
+const ListItem = styled.button`
+    appearance: none;
+    cursor: pointer;
+    border: none;
+    font-family: ${KARELIA};
+    color: #59799c;
+    background-color: white;
+    width: 100%;
     padding: 10px 15px;
     background-clip: padding-box;
     align-items: center;
     display: flex;
-
-    td {
-        line-height: 13px;
-        &:last-child {
-            margin-left: 15px;
-        }
-    }
 
     :first-child {
         padding-top: 15px;
@@ -92,18 +92,16 @@ const RoomDropdown = ({ button }: Props) => {
 
     useEffect(() => {
         function handleClickOutside(event: any) {
-            if (ref.current && !ref.current.contains(event.target)) {
-                setIsOpen(false)
-            }
+            setIsOpen(false)
         }
 
         // Bind the event listener
-        document.addEventListener('mousedown', handleClickOutside)
+        document.addEventListener('mouseup', handleClickOutside)
         return () => {
             // Unbind the event listener on clean up
-            document.removeEventListener('mousedown', handleClickOutside)
+            document.removeEventListener('mouseup', handleClickOutside)
         }
-    }, [ref])
+    })
 
     const toggleOpen = () => {
         setIsOpen((c) => !c)
