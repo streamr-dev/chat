@@ -2,10 +2,11 @@ import React, { ReactElement, useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { KARELIA } from '../../utils/css'
-import metamask from './icons/metamask.png'
-import keystone from './icons/keystone.png'
-import coinbase from './icons/coinbase.png'
-import walletconnect from './icons/walletconnect.png'
+import metamask from './icons/metamask.svg'
+import keystone from './icons/keystone.svg'
+import coinbase from './icons/coinbase.svg'
+import walletconnect from './icons/walletconnect.svg'
+import Button from '../Button'
 
 const customStyles = {
     overlay: {
@@ -25,56 +26,56 @@ const customStyles = {
     },
 }
 
-const StyledModalContent = styled.div`
-    .contentContainer {
-        display: flex;
-        flex-direction: column;
-        min-height: 100%;
-        height: 440px;
-        padding: 0px 20px;
-    }
+const StyledModalContent = styled.div``
 
-    .closeButton {
-        background-color: transparent;
-        border: none;
-    }
+const WalletOptions = styled.div`
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    min-height: 100%;
+`
 
-    .modalHeader {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
+const WalletOption = styled.div`
+    background-color: #f1f4f7;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    padding: 0px 32px;
+    border-radius: 8px;
+    justify-content: space-between;
+    font-size: 16px;
+    font-family: IBM Plex Sans;
+    font-weight: bold;
 
-    .walletOptions {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: auto;
-        min-height: 100%;
-    }
-
-    .walletOption {
-        background-color: #f1f4f7;
-        margin-top: 8px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        flex: 1;
-        padding: 0px 32px;
-        border-radius: 8px;
-        justify-content: space-between;
-        font-size: 16px;
-        font-family: IBM Plex Sans;
-        font-weight: bold;
-    }
-
-    .walletOption:hover {
+    :hover {
         background-color: #dfe3e8;
     }
 `
 
+const ModalContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    height: 440px;
+    padding: 0px 20px;
+`
+
+const ModalHeader = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`
+
+const ModalCloseButton = styled.button`
+    background-color: transparent;
+    border: none;
+`
+
 const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
-    const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
 
     const openModal = () => {
         setModalIsOpen(true)
@@ -86,13 +87,14 @@ const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
 
     return (
         <div>
-            {button ? (
-                React.cloneElement(button, { onClick: openModal })
-            ) : (
-                <button onClick={openModal} className="button">
-                    Connect a Wallet
-                </button>
-            )}
+            <ConnectButton
+                type="button"
+                onClick={() => {
+                    openModal()
+                }}
+            >
+                Connect a wallet
+            </ConnectButton>
             <ReactModal
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
@@ -100,13 +102,10 @@ const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
                 onRequestClose={closeModal}
             >
                 <StyledModalContent>
-                    <div className="contentContainer">
-                        <div className="modalHeader">
+                    <ModalContainer>
+                        <ModalHeader>
                             <h2>Select a wallet</h2>
-                            <button
-                                className="closeButton"
-                                onClick={closeModal}
-                            >
+                            <ModalCloseButton onClick={closeModal}>
                                 <svg
                                     width="16"
                                     height="16"
@@ -127,66 +126,67 @@ const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
                                         stroke-linecap="round"
                                     />
                                 </svg>
-                            </button>
-                        </div>
-                        <div className="walletOptions">
-                            <div className="walletOption">
+                            </ModalCloseButton>
+                        </ModalHeader>
+                        <WalletOptions>
+                            <WalletOption>
                                 Metamask
                                 <img
                                     src={metamask}
                                     width={40}
-                                    alt="Metamask Logo"
+                                    alt="Coinbase Logo"
                                 />
-                            </div>
-                            <div className="walletOption">
+                            </WalletOption>
+                            <WalletOption>
                                 WalletConnect
                                 <img
                                     src={walletconnect}
                                     width={40}
                                     alt="WalletConnect Logo"
                                 />
-                            </div>
-                            <div className="walletOption">
+                            </WalletOption>
+                            <WalletOption>
                                 Keystone
                                 <img
                                     src={keystone}
                                     width={40}
                                     alt="Keystone Logo"
                                 />
-                            </div>
-                            <div className="walletOption">
+                            </WalletOption>
+                            <WalletOption>
                                 Coinbase
                                 <img
                                     src={coinbase}
                                     width={40}
                                     alt="Coinbase Logo"
                                 />
-                            </div>
-                        </div>
-                    </div>
+                            </WalletOption>
+                        </WalletOptions>
+                    </ModalContainer>
                 </StyledModalContent>
             </ReactModal>
         </div>
     )
 }
 
-const WalletModal = styled(UnstyledWalletModal)`
-    button {
-        background: white;
-        border-radius: 100px;
-        border: none;
-        color: #ff5924;
-        font-family: ${KARELIA};
-        font-size: 15px;
-        height: 100%;
-        padding: 10px 30px 13px;
-        transition: all 0.3s ease-in-out;
+const ConnectButton = styled(Button)`
+    border-radius: 100px;
+    color: #ff5924;
+    font-family: ${KARELIA};
+    font-size: 15px;
+    height: 100%;
+    padding: 10px 30px 13px;
+
+    :hover,
+    :focus {
+        background-color: #fefefe;
     }
-    button:hover,
-    button:focus {
+
+    :active {
         background-color: #f7f7f7;
-        transform: translateY(5px);
     }
 `
+
+const WalletModal = styled(UnstyledWalletModal)``
 
 export default WalletModal

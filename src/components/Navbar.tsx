@@ -10,18 +10,7 @@ type Props = {
 const UnstyledNavbar = ({ className }: Props) => (
     <nav className={className}>
         <h4>thechat.eth</h4>
-        <WalletModal
-            button={
-                <Button
-                    type="button"
-                    onClick={() => {
-                        console.log('Connect!')
-                    }}
-                >
-                    Connect a wallet
-                </Button>
-            }
-        />
+        <WalletModal />
     </nav>
 )
 
@@ -43,24 +32,6 @@ const Navbar = styled(UnstyledNavbar)`
         flex-grow: 1;
         font-size: 22px;
         margin: 0px;
-    }
-
-    ${Button} {
-        border-radius: 100px;
-        color: #ff5924;
-        font-family: ${KARELIA};
-        font-size: 15px;
-        height: 100%;
-        padding: 10px 30px 13px;
-    }
-
-    ${Button}:hover,
-    ${Button}:focus {
-        background-color: #fefefe;
-    }
-
-    ${Button}:active {
-        background-color: #f7f7f7;
     }
 `
 
