@@ -2,18 +2,16 @@ import styled from 'styled-components'
 import { ActionType, useDispatch, useStore } from '../../Store'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
-import {
-    createRoom,
-    generateRandomRoomName,
-} from '../../../lib/ChatRoomManager'
+import { createRoom } from '../../../lib/ChatRoomManager'
 import { useCallback } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 function useCreateRoom(): () => Promise<void> {
     const dispatch = useDispatch()
     const { metamaskAddress, session, rooms } = useStore()
 
     return useCallback(async () => {
-        const id = generateRandomRoomName()
+        const id = uuidv4()
         const room = await createRoom(
             session.streamrClient!,
             session.wallet!.address,

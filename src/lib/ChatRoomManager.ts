@@ -11,7 +11,9 @@ import {
     adjectives,
     colors,
     animals,
+    names,
 } from 'unique-names-generator'
+import { shake256 } from 'js-sha3'
 
 const ROOM_PREFIX: string = 'streamr-chat/room'
 const LOCAL_STORAGE_KEY = 'streamr-chat-rooms'
@@ -88,7 +90,14 @@ const subscribeMetadata = async (
 }
 
 const getRoomNameFromStreamId = (streamId: string): string => {
-    return streamId.substring(streamId.lastIndexOf('/') + 1)
+    const stringSeed = shake256(streamId, 64)
+    const seed = parseInt(stringSeed, 16)
+    return uniqueNamesGenerator({
+        dictionaries: [adjectives, colors, animals, names],
+        separator: '-',
+        length: 3,
+        seed,
+    })
 }
 
 export const generateChatRoom = async (
@@ -245,12 +254,4 @@ export const fetchRooms = async (
     }
 
     return rooms
-}
-
-export const generateRandomRoomName = (): string => {
-    return uniqueNamesGenerator({
-        dictionaries: [adjectives, colors, animals],
-        separator: '-',
-        length: 3,
-    })
 }
