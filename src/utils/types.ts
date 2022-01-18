@@ -7,6 +7,7 @@ export type MessagePayload = {
     createdAt: number
     sender: string
     id: string
+    publish?: boolean
 }
 
 export type MessagesCollection = {
@@ -19,7 +20,6 @@ export type DraftCollection = {
 
 export type ChatState = {
     drafts: any
-    identity?: string
     messages: MessagesCollection
     roomId?: string
     roomNameEditable: boolean
@@ -47,8 +47,8 @@ export interface ChatRoom {
     id: string
     name: string
     stream: Stream
-    publishMessage: (message: string) => Promise<void>
+    publishMessage: (message: MessagePayload) => Promise<void>
     publishMetadata: (metadata: any) => Promise<void>
-    subscribeMessages: (callback: (message: ChatMessage) => void) => void
+    subscribeMessages: (callback: (message: MessagePayload) => void) => void
     subscribeMetadata: (callback: (metadata: any) => void) => void
 }

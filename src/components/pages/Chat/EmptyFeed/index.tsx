@@ -3,6 +3,9 @@ import { format } from 'date-fns'
 import { KARELIA, MEDIUM } from '../../../../utils/css'
 import Button from '../../../Button'
 import AddMemberIcon from './member.svg'
+import { useCallback, useEffect, useState } from 'react'
+import { sendChatRoomInvitation } from '../../../../lib/ChatRoomManager'
+import { useRoom, useStore } from '../../../Store'
 
 type Props = {
     className?: string
@@ -39,25 +42,49 @@ const CreatedAt = styled.span`
     margin-bottom: 2rem;
 `
 
-const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => (
-    <div className={className}>
-        <div>
-            {roomCreatedAt != null && (
-                <CreatedAt>
-                    You created this room on{' '}
-                    {format(roomCreatedAt, 'iiii, LLL do yyyy')}
-                </CreatedAt>
-            )}
-            <AddMemberButton
-                type="button"
-                onClick={() => console.log('Add member clicked.')}
-            >
-                <img src={AddMemberIcon} alt="" />
-                <span>Add member</span>
-            </AddMemberButton>
+function useInvite(address: string): () => Promise<void> {
+    const { session } = useStore()
+    const room = useRoom()
+
+    return useCallback(async () => {
+        console.log('invite address', address)
+        const invite = await sendChatRoomInvitation(
+            session.streamrClient!,
+            room!.id,
+            address
+        )
+        console.log('invite sent', invite)
+    }, [session, room, address])
+}
+
+const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
+    const [title, setTitle] = useState('0x0')
+    const sendInvite = useInvite(title)
+    useEffect(() => {}, [title])
+
+    return (
+        <div className={className}>
+            <div>
+                {roomCreatedAt != null && (
+                    <CreatedAt>
+                        You created this room on{' '}
+                        {format(roomCreatedAt, 'iiii, LLL do yyyy')}
+                    </CreatedAt>
+                )}
+                <input
+                    type="text"
+                    value={title}
+                    placeholder="Ethereum address"
+                    onChange={(event) => setTitle(event.target.value)}
+                ></input>
+                <AddMemberButton type="button" onClick={sendInvite}>
+                    <img src={AddMemberIcon} alt="" />
+                    <span>Add member</span>
+                </AddMemberButton>
+            </div>
         </div>
-    </div>
-)
+    )
+}
 
 const EmptyFeed = styled(UnstyledEmptyFeed)`
     align-items: center;

@@ -10,6 +10,7 @@ import {
 } from '../../Store'
 import SubmitButton from './SubmitButton'
 import focus from '../../../utils/focus'
+import { publishMessage } from '../../../lib/ChatRoomManager'
 
 type Props = {
     className?: string
@@ -48,25 +49,20 @@ function UnstyledMessageInput({ className }: Props) {
 
     const dispatch = useDispatch()
 
-    const { identity, roomId, roomNameEditable } = useStore()
+    const { metamaskAddress, roomId, roomNameEditable, session } = useStore()
 
     const room = useRoom()
 
     function onSubmit(body: string) {
-        if (identity == null) {
+        if (metamaskAddress == null) {
             return
         }
-
-        dispatch({
-            type: ActionType.AddMessages,
-            payload: [
-                {
-                    body,
-                    createdAt: Date.now(),
-                    sender: identity,
-                    id: uuidv4(),
-                },
-            ],
+        publishMessage(session.streamrClient!, roomId!, {
+            body,
+            createdAt: Date.now(),
+            sender: metamaskAddress,
+            id: uuidv4(),
+            publish: true,
         })
     }
 

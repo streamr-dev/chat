@@ -9,7 +9,7 @@ import Message from './Message'
 import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
 import { fetchRooms } from '../../../lib/ChatRoomManager'
 import { useEffect } from 'react'
-import { ChatRoom } from '../../../utils/types'
+import { ChatRoom, MessagePayload } from '../../../utils/types'
 
 const Content = styled.div`
     height: 100vh;
@@ -48,6 +48,12 @@ const UnstyledChat = ({ className }: Props) => {
                     dispatch({
                         type: ActionType.AddRooms,
                         payload: [chatRoom],
+                    })
+                },
+                (room: ChatRoom, message: MessagePayload) => {
+                    dispatch({
+                        type: ActionType.AddMessage,
+                        payload: message,
                     })
                 }
             )

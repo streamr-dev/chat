@@ -61,9 +61,9 @@ const UnstyledMessage = ({
     className,
     payload: { sender, body, createdAt },
 }: Props) => {
-    const { identity } = useStore()
+    const { metamaskAddress } = useStore()
 
-    const incoming = identity !== sender
+    const incoming = metamaskAddress !== sender
 
     return (
         <Root className={className} $incoming={incoming}>

@@ -10,11 +10,11 @@ import type {
 } from '../utils/types'
 import { Wallet } from 'ethers'
 import { MetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
+import { getLocalMessages, storeLocalMessages } from '../lib/ChatRoomManager'
 
 const initialState = {
     drafts: {},
-    identity: undefined,
-    messages: {},
+    messages: getLocalMessages(),
     roomId: undefined,
     roomNameEditable: false,
     rooms: [],
@@ -27,13 +27,14 @@ const initialState = {
 
 export enum ActionType {
     AddMessages = 'add messages',
+    PublishMessage = 'publish message',
     AddRooms = 'add rooms',
     EditRoomName = 'edit room name',
     RenameRoom = 'rename room',
     Reset = 'reset',
     SelectRoom = 'select room',
     SetDraft = 'set draft',
-    SetIdentity = 'set identity',
+    AddMessage = 'set message',
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
     SetSession = 'set session',
@@ -52,9 +53,11 @@ type SetRoomsAction = Action<ActionType.SetRooms, ChatRoom[]>
 
 type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
 
-type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
+type SetPublishMessage = Action<ActionType.PublishMessage, MessagePayload>
 
-type SetIdentityAction = Action<ActionType.SetIdentity, string | undefined>
+type AddMessageAction = Action<ActionType.AddMessage, MessagePayload>
+
+type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
 
 type ResetAction = Omit<Action<ActionType.Reset, undefined>, 'payload'>
 
@@ -71,8 +74,9 @@ type A =
     | AddRoomsAction
     | SetRoomsAction
     | AddMessagesAction
+    | SetPublishMessage
+    | AddMessageAction
     | SetMessagesAction
-    | SetIdentityAction
     | ResetAction
     | SetDraftAction
     | RenameRoomAction
@@ -109,11 +113,6 @@ function reducer(state: ChatState, action: A): ChatState {
                   }
         case ActionType.Reset:
             return initialState
-        case ActionType.SetIdentity:
-            return {
-                ...state,
-                identity: action.payload,
-            }
         case ActionType.SelectRoom:
             return {
                 ...state,
@@ -154,16 +153,33 @@ function reducer(state: ChatState, action: A): ChatState {
                 type: ActionType.SetRooms,
                 payload: [...state.rooms, ...action.payload],
             })
+        case ActionType.AddMessage:
+            const isMessageDuplicate = state.messages[state.roomId!].some(
+                (message: MessagePayload) => message.id === action.payload.id
+            )
+
+            if (isMessageDuplicate) {
+                return state
+            }
+
+            return reducer(state, {
+                type: ActionType.AddMessages,
+                payload: [action.payload],
+            })
         case ActionType.SetMessages:
-            return state.roomId == null
-                ? state
-                : {
-                      ...state,
-                      messages: {
-                          ...state.messages,
-                          [state.roomId]: action.payload,
-                      },
-                  }
+            const out =
+                state.roomId == null
+                    ? state
+                    : {
+                          ...state,
+                          messages: {
+                              ...state.messages,
+                              [state.roomId]: action.payload,
+                          },
+                      }
+            storeLocalMessages(out.messages)
+            return out
+
         case ActionType.AddMessages:
             return state.roomId == null
                 ? state

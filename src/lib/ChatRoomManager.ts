@@ -5,27 +5,31 @@ import {
     StreamOperation,
     StreamPermision,
 } from 'streamr-client'
-import { ChatMessage, ChatRoom, MessageType } from '../utils/types'
+import {
+    ChatMessage,
+    ChatRoom,
+    MessagePayload,
+    MessageType,
+} from '../utils/types'
 
 const ROOM_PREFIX: string = 'streamr-chat/room'
 const LOCAL_STORAGE_KEY = 'streamr-chat-rooms'
+const LOCAL_MESSAGES_KEY = 'streamr-chat-local-messages'
 
 export enum STREAM_PARTITION {
     MESSAGES,
     METADATA,
 }
 
-const publishMessage = async (
+export const publishMessage = async (
     client: StreamrClient,
     streamId: string,
-    message: string
+    message: MessagePayload
 ): Promise<any> => {
+    console.info(`publishing to stream ${streamId}`, message)
     return client.publish(
         streamId,
-        {
-            type: MessageType.TEXT,
-            payload: message,
-        },
+        message,
         Date.now(),
         STREAM_PARTITION.MESSAGES
     )
@@ -48,12 +52,12 @@ const publishMetadata = async (
     )
 }
 
-const subscribeMessages = async (
+export const subscribeMessages = async (
     client: StreamrClient,
     streamId: string,
-    callback: (message: ChatMessage) => void
+    callback: (message: MessagePayload) => void
 ): Promise<void> => {
-    client.subscribe(
+    const sub = await client.subscribe(
         {
             streamId,
             streamPartition: STREAM_PARTITION.MESSAGES,
@@ -63,6 +67,7 @@ const subscribeMessages = async (
             callback(message)
         }
     )
+    console.info('subscribed to stream', sub)
 }
 
 const subscribeMetadata = async (
@@ -94,11 +99,11 @@ export const generateChatRoom = async (
         id: streamId,
         name: getRoomNameFromStreamId(streamId),
         stream: stream || (await client.getStream(streamId)),
-        publishMessage: (message: string) =>
+        publishMessage: (message: MessagePayload) =>
             publishMessage(client, streamId, message),
         publishMetadata: (metadata: any) =>
             publishMetadata(client, streamId, metadata),
-        subscribeMessages: (callback: (message: ChatMessage) => void) =>
+        subscribeMessages: (callback: (message: MessagePayload) => void) =>
             subscribeMessages(client, streamId, callback),
         subscribeMetadata: (callback: (metadata: any) => void) =>
             subscribeMetadata(client, streamId, callback),
@@ -169,7 +174,8 @@ export const fetchRooms = async (
     client: StreamrClient,
     clientAddress: string,
     provider: MetaMaskInpageProvider,
-    roomCallback?: (c: ChatRoom) => void
+    roomCallback?: (c: ChatRoom) => void,
+    messageCallback?: (r: ChatRoom, m: MessagePayload) => void
 ): Promise<Array<ChatRoom>> => {
     const rooms: Array<ChatRoom> = []
 
@@ -182,6 +188,13 @@ export const fetchRooms = async (
             try {
                 const streamId = streamIds[i]
                 const room = await generateChatRoom(client, streamId)
+
+                if (messageCallback) {
+                    await subscribeMessages(client, streamId, (msg) => {
+                        messageCallback(room, msg)
+                    })
+                }
+
                 if (roomCallback) {
                     roomCallback(room)
                 }
@@ -224,6 +237,13 @@ export const fetchRooms = async (
                         stream.id,
                         stream
                     )
+
+                    if (messageCallback) {
+                        await subscribeMessages(client, stream.id, (msg) => {
+                            messageCallback(chatRoom, msg)
+                        })
+                    }
+
                     if (roomCallback) {
                         roomCallback(chatRoom)
                     }
@@ -239,4 +259,16 @@ export const fetchRooms = async (
     }
 
     return rooms
+}
+
+export const storeLocalMessages = (messages: any) => {
+    localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(messages))
+}
+
+export const getLocalMessages = (): any => {
+    const messages = localStorage.getItem(LOCAL_MESSAGES_KEY)
+    if (messages) {
+        return JSON.parse(messages)
+    }
+    return {}
 }
