@@ -1,9 +1,11 @@
 import styled from 'styled-components'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import { v4 as uuidv4 } from 'uuid'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
-import { createRoom } from '../../../lib/ChatRoomManager'
+import {
+    createRoom,
+    generateRandomRoomName,
+} from '../../../lib/ChatRoomManager'
 import { useCallback } from 'react'
 
 function useCreateRoom(): () => Promise<void> {
@@ -11,7 +13,7 @@ function useCreateRoom(): () => Promise<void> {
     const { metamaskAddress, session, rooms } = useStore()
 
     return useCallback(async () => {
-        const id = uuidv4()
+        const id = generateRandomRoomName()
         const room = await createRoom(
             session.streamrClient!,
             session.wallet!.address,
@@ -23,7 +25,7 @@ function useCreateRoom(): () => Promise<void> {
             type: ActionType.AddRooms,
             payload: [room],
         })
-    }, [metamaskAddress, session, rooms])
+    }, [metamaskAddress, session, rooms, dispatch])
 }
 
 function UnstyledAddRoomItem(props: Props) {

@@ -6,6 +6,12 @@ import {
     StreamPermision,
 } from 'streamr-client'
 import { ChatMessage, ChatRoom, MessageType } from '../utils/types'
+import {
+    uniqueNamesGenerator,
+    adjectives,
+    colors,
+    animals,
+} from 'unique-names-generator'
 
 const ROOM_PREFIX: string = 'streamr-chat/room'
 const LOCAL_STORAGE_KEY = 'streamr-chat-rooms'
@@ -239,4 +245,12 @@ export const fetchRooms = async (
     }
 
     return rooms
+}
+
+export const generateRandomRoomName = (): string => {
+    return uniqueNamesGenerator({
+        dictionaries: [adjectives, colors, animals],
+        separator: '-',
+        length: 3,
+    })
 }
