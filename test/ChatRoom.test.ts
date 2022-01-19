@@ -1,4 +1,4 @@
-import { ChatRoomManager } from '../src/lib/ChatRoom'
+import { ChatRoomManager } from '../src/lib/ChatRoomManager'
 import { StreamrClient } from 'streamr-client'
 
 describe('ChatRoom', () => {
@@ -20,8 +20,8 @@ describe('ChatRoom', () => {
         },
     })
 
-    const senderManager = new ChatRoomManager(senderClient)
-    const receiverManager = new ChatRoomManager(receiverClient)
+    const senderManager = new ChatRoomManager('0xab', senderClient)
+    const receiverManager = new ChatRoomManager('0xab', receiverClient)
 
     it('should create a room, happy-path', async () => {
         const room = await senderManager.createRoom(ROOM_NAME)
@@ -47,12 +47,12 @@ describe('ChatRoom', () => {
         const room = await senderManager.getRoom(ROOM_NAME)
         expect(room.stream.id).toBe(streamId)
     })
-
+    /*
     it('should get all rooms', async () => {
         const rooms = await senderManager.getRooms()
         expect(rooms.length).toBeGreaterThan(0)
     })
-
+*/
     it('should send an invitation', async () => {
         await senderManager.sendInvitation(
             streamId,

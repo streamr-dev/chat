@@ -1,7 +1,13 @@
 import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
-import { ActionType, useDispatch, useDraft, useStore } from '../../Store'
+import {
+    ActionType,
+    useDispatch,
+    useDraft,
+    useRoom,
+    useStore,
+} from '../../Store'
 import SubmitButton from './SubmitButton'
 import focus from '../../../utils/focus'
 
@@ -43,6 +49,8 @@ function UnstyledMessageInput({ className }: Props) {
     const dispatch = useDispatch()
 
     const { identity, roomId, roomNameEditable } = useStore()
+
+    const room = useRoom()
 
     function onSubmit(body: string) {
         if (identity == null) {
@@ -113,6 +121,7 @@ function UnstyledMessageInput({ className }: Props) {
                     }}
                     onKeyDown={onKeyDown}
                     placeholder="Type a message"
+                    readOnly={!room}
                     ref={inputRef}
                     type="text"
                     value={draft}
