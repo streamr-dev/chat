@@ -26,6 +26,8 @@ export type ChatState = {
     rooms: ChatRoom[]
     metamaskAddress: string
     session: StreamrSession
+    ethereumProvider: MetaMaskInpageProvider | undefined
+    ethereumProviderReady: boolean
 }
 
 export enum MessageType {

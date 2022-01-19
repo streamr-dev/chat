@@ -4,6 +4,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/pages/Home'
 import Chat from './components/pages/Chat'
 import Store from './components/Store'
+import EthereumProviderDetector from './components/EthereumProviderDetector'
 
 const Global = createGlobalStyle`
     html,
@@ -32,6 +33,7 @@ const Global = createGlobalStyle`
 export default function App() {
     return (
         <Store>
+            <EthereumProviderDetector />
             <Global />
             <HashRouter>
                 <Routes>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
-import { ChatRoom, StreamrSession } from '../utils/types'
+import { ChatRoom } from '../utils/types'
 
 import type {
     ChatState,
@@ -10,20 +10,8 @@ import type {
 } from '../utils/types'
 import { Wallet } from 'ethers'
 import { MetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
-
-const initialState = {
-    drafts: {},
-    identity: undefined,
-    messages: {},
-    roomId: undefined,
-    roomNameEditable: false,
-    rooms: [],
-    metamaskAddress: '',
-    session: {
-        wallet: undefined,
-        streamrClient: undefined,
-    } as StreamrSession,
-} as ChatState
+import { MetaMaskInpageProvider } from '@metamask/providers'
+import getInitialChatState from '../getters/getInitialStoreState'
 
 export enum ActionType {
     AddMessages = 'add messages',
@@ -37,6 +25,7 @@ export enum ActionType {
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
     SetSession = 'set session',
+    SetEthereumProvider = 'set ethereum provider',
 }
 
 type Action<A, B> = {
@@ -66,6 +55,11 @@ type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
 type SetSessionAction = Action<ActionType.SetSession, MetamaskDelegatedAccess>
 
+type SetEthereumProviderAction = Action<
+    ActionType.SetEthereumProvider,
+    MetaMaskInpageProvider | undefined
+>
+
 type A =
     | SelectRoomAction
     | AddRoomsAction
@@ -78,6 +72,7 @@ type A =
     | RenameRoomAction
     | EditRoomNameAction
     | SetSessionAction
+    | SetEthereumProviderAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -108,7 +103,13 @@ function reducer(state: ChatState, action: A): ChatState {
                       },
                   }
         case ActionType.Reset:
-            return initialState
+            return {
+                ...getInitialChatState(),
+                // Keep the provider. We may wanna extract it from "chat" state. It's actually more
+                // of a browser/app state piece.
+                ethereumProvider: state.ethereumProvider,
+                ethereumProviderReady: state.ethereumProviderReady,
+            }
         case ActionType.SetIdentity:
             return {
                 ...state,
@@ -192,6 +193,12 @@ function reducer(state: ChatState, action: A): ChatState {
                     provider: provider,
                 },
             }
+        case ActionType.SetEthereumProvider:
+            return {
+                ...state,
+                ethereumProvider: action.payload || undefined,
+                ethereumProviderReady: true,
+            }
         default:
             return state
     }
@@ -201,7 +208,7 @@ type Props = {
     children?: React.ReactNode
 }
 
-const StateContext = createContext<ChatState>(initialState)
+const StateContext = createContext<ChatState>(getInitialChatState())
 
 type DispatchFn = (arg0: A) => void
 
@@ -244,7 +251,7 @@ export function useDraft(): string {
 }
 
 export default function Store({ children }: Props) {
-    const [state, dispatch] = useReducer(reducer, initialState)
+    const [state, dispatch] = useReducer(reducer, getInitialChatState())
 
     return (
         <DispatchContext.Provider value={dispatch}>
