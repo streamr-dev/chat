@@ -176,7 +176,7 @@ function reducer(state: ChatState, action: A): ChatState {
                       ],
                   })
         case ActionType.SetSession:
-            const { session, metamask, provider } = action.payload
+            const { session, metamask } = action.payload
 
             const streamrClient = new StreamrClient({
                 auth: {
@@ -190,7 +190,6 @@ function reducer(state: ChatState, action: A): ChatState {
                 session: {
                     wallet: new Wallet(session.privateKey),
                     streamrClient,
-                    provider: provider,
                 },
             }
         case ActionType.SetEthereumProvider:

@@ -12,7 +12,6 @@ export default function getInitialChatState(): ChatState {
         roomNameEditable: false,
         rooms: [],
         session: {
-            provider: undefined,
             streamrClient: undefined,
             wallet: undefined,
         },
