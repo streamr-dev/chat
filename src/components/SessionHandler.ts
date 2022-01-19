@@ -13,7 +13,9 @@ export default function SessionHandler() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        let mounted = true
+        if (!ethereumProvider || !account) {
+            return
+        }
 
         async function fn() {
             const encryptedPrivateKey =
@@ -21,77 +23,77 @@ export default function SessionHandler() {
                 undefined
 
             try {
-                if (!encryptedPrivateKey) {
-                    throw new NewWalletRequiredError()
-                }
-
                 try {
-                    const decrypted = await ethereumProvider!.request({
-                        method: 'eth_decrypt',
-                        params: [encryptedPrivateKey, account],
-                    })
-
-                    if (!mounted) {
-                        return
-                    }
-
-                    dispatch({
-                        type: ActionType.SetSession,
-                        payload: JSON.parse(decrypted as string).privateKey,
-                    })
-                } catch (e: any) {
-                    if (e.code !== 4001) {
+                    if (!encryptedPrivateKey) {
+                        // No encrypted private key means there's nothing to retrieve. We gotta get
+                        // the user a new delegation wallet.
                         throw new NewWalletRequiredError()
                     }
 
-                    throw e
+                    try {
+                        const decrypted = await ethereumProvider!.request({
+                            method: 'eth_decrypt',
+                            params: [encryptedPrivateKey, account],
+                        })
+
+                        dispatch({
+                            type: ActionType.SetSession,
+                            payload: JSON.parse(decrypted as string).privateKey,
+                        })
+                    } catch (e: any) {
+                        if (e.code === 4001) {
+                            // User rejected the signing. Don't create a new wallet.
+                            throw e
+                        }
+
+                        throw new NewWalletRequiredError()
+                    }
+                } catch (e) {
+                    if (!(e instanceof NewWalletRequiredError)) {
+                        // Decryption failed and we don't want a fresh delegation wallet.
+                        throw e
+                    }
+
+                    const wallet = Wallet.createRandom()
+
+                    const encryptionPublicKey = await ethereumProvider!.request(
+                        {
+                            method: 'eth_getEncryptionPublicKey',
+                            params: [account!],
+                        }
+                    )
+
+                    localStorage.setItem(
+                        StorageKey.EncryptedSessionKey,
+                        Buffer.from(
+                            JSON.stringify(
+                                encrypt({
+                                    publicKey: encryptionPublicKey as string,
+                                    data: JSON.stringify({
+                                        privateKey: wallet!.privateKey,
+                                    }),
+                                    version: 'x25519-xsalsa20-poly1305',
+                                })
+                            ),
+                            'utf8'
+                        ).toString('hex')
+                    )
+
+                    dispatch({
+                        type: ActionType.SetSession,
+                        payload: wallet.privateKey,
+                    })
                 }
-            } catch (e: any) {
-                if (!(e instanceof NewWalletRequiredError)) {
-                    throw e
-                }
-
-                const wallet = Wallet.createRandom()
-
-                const encryptionPublicKey = await ethereumProvider!.request({
-                    method: 'eth_getEncryptionPublicKey',
-                    params: [account!],
-                })
-
-                if (!mounted) {
-                    return
-                }
-
-                localStorage.setItem(
-                    StorageKey.EncryptedSessionKey,
-                    Buffer.from(
-                        JSON.stringify(
-                            encrypt({
-                                publicKey: encryptionPublicKey as string,
-                                data: JSON.stringify({
-                                    privateKey: wallet!.privateKey,
-                                }),
-                                version: 'x25519-xsalsa20-poly1305',
-                            })
-                        ),
-                        'utf8'
-                    ).toString('hex')
-                )
-
+            } catch (e) {
                 dispatch({
-                    type: ActionType.SetSession,
-                    payload: wallet.privateKey,
+                    type: ActionType.Reset,
                 })
+
+                console.error(e)
             }
         }
 
-        if (ethereumProvider && account) {
-            fn()
-        }
-
-        return () => {
-            mounted = false
-        }
+        fn()
     }, [ethereumProvider, account, dispatch])
 
     return null
