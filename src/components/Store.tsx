@@ -24,7 +24,6 @@ export enum ActionType {
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
     SetSession = 'set session',
-    ResetSession = 'reset session',
     SetEthereumProvider = 'set ethereum provider',
     SetAccount = 'set provider account',
 }
@@ -58,8 +57,6 @@ type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
 type SetSessionAction = Action<ActionType.SetSession, string>
 
-type ResetSessionAction = PayloadlessAction<ActionType.ResetSession>
-
 type SetEthereumProviderAction = Action<
     ActionType.SetEthereumProvider,
     MetaMaskInpageProvider | undefined
@@ -79,7 +76,6 @@ type A =
     | RenameRoomAction
     | EditRoomNameAction
     | SetSessionAction
-    | ResetSessionAction
     | SetEthereumProviderAction
     | SetAccountAction
 
@@ -184,11 +180,6 @@ function reducer(state: ChatState, action: A): ChatState {
                           ...action.payload,
                       ],
                   })
-        case ActionType.ResetSession:
-            return {
-                ...state,
-                session: getInitialChatState().session,
-            }
         case ActionType.SetSession:
             return {
                 ...state,
