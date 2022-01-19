@@ -8,10 +8,7 @@ import { encrypt } from '@metamask/eth-sig-util'
 class NewWalletRequiredError extends Error {}
 
 export default function SessionHandler() {
-    const {
-        account,
-        ethereumProvider,
-    } = useStore()
+    const { account, ethereumProvider } = useStore()
 
     const dispatch = useDispatch()
 
@@ -20,7 +17,8 @@ export default function SessionHandler() {
 
         async function fn() {
             const encryptedPrivateKey =
-                localStorage.getItem(StorageKey.EncryptedSessionKey) || undefined
+                localStorage.getItem(StorageKey.EncryptedSessionKey) ||
+                undefined
 
             try {
                 if (!encryptedPrivateKey) {
@@ -69,7 +67,7 @@ export default function SessionHandler() {
                     Buffer.from(
                         JSON.stringify(
                             encrypt({
-                                publicKey: (encryptionPublicKey as string),
+                                publicKey: encryptionPublicKey as string,
                                 data: JSON.stringify({
                                     privateKey: wallet!.privateKey,
                                 }),

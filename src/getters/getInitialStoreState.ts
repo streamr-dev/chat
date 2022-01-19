@@ -1,4 +1,4 @@
-import { ChatState } from "../utils/types";
+import { ChatState } from '../utils/types'
 
 export default function getInitialChatState(): ChatState {
     return {

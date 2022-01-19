@@ -65,10 +65,7 @@ type SetEthereumProviderAction = Action<
     MetaMaskInpageProvider | undefined
 >
 
-type SetAccountAction = Action<
-    ActionType.SetAccount,
-    string | undefined
->
+type SetAccountAction = Action<ActionType.SetAccount, string | undefined>
 
 type A =
     | SelectRoomAction
@@ -202,7 +199,7 @@ function reducer(state: ChatState, action: A): ChatState {
                         },
                     }),
                     wallet: new Wallet(action.payload),
-                }
+                },
             }
         case ActionType.SetEthereumProvider:
             return {
