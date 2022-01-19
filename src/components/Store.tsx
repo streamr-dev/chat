@@ -26,6 +26,7 @@ export enum ActionType {
     SetRooms = 'set rooms',
     SetSession = 'set session',
     SetEthereumProvider = 'set ethereum provider',
+    SetAccount = 'set provider account',
 }
 
 type Action<A, B> = {
@@ -60,6 +61,11 @@ type SetEthereumProviderAction = Action<
     MetaMaskInpageProvider | undefined
 >
 
+type SetAccountAction = Action<
+    ActionType.SetAccount,
+    string | undefined
+>
+
 type A =
     | SelectRoomAction
     | AddRoomsAction
@@ -73,6 +79,7 @@ type A =
     | EditRoomNameAction
     | SetSessionAction
     | SetEthereumProviderAction
+    | SetAccountAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -197,6 +204,11 @@ function reducer(state: ChatState, action: A): ChatState {
                 ...state,
                 ethereumProvider: action.payload || undefined,
                 ethereumProviderReady: true,
+            }
+        case ActionType.SetAccount:
+            return {
+                ...state,
+                account: action.payload || undefined,
             }
         default:
             return state

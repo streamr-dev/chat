@@ -1,6 +1,5 @@
-import { useCallback } from "react"
-import { ActionType, useDispatch, useStore } from "../components/Store"
-import { MetamaskDelegatedAccess } from "../lib/MetamaskDelegatedAccess"
+import { useCallback } from 'react'
+import { ActionType, useDispatch, useStore } from '../components/Store'
 
 export default function useConnect(): () => Promise<void> {
     const { ethereumProvider } = useStore()
@@ -8,11 +7,25 @@ export default function useConnect(): () => Promise<void> {
     const dispatch = useDispatch()
 
     return useCallback(async () => {
-        const payload = await (new MetamaskDelegatedAccess(ethereumProvider!)).connect()
+        if (!ethereumProvider) {
+            return
+        }
 
-        dispatch({
-            type: ActionType.SetSession,
-            payload,
-        })
+        try {
+            const accounts = (await ethereumProvider.request({
+                method: 'eth_requestAccounts',
+            })) as string[]
+
+            dispatch({
+                type: ActionType.SetAccount,
+                payload: accounts[0],
+            })
+        } catch (e: any) {
+            if (e.code === 4001) {
+                console.warn('Please connect to MetaMask.')
+            } else {
+                console.error(e)
+            }
+        }
     }, [ethereumProvider, dispatch])
 }

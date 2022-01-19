@@ -18,16 +18,17 @@ export type DraftCollection = {
 }
 
 export type ChatState = {
+    account: string | undefined
     drafts: any
+    ethereumProvider: MetaMaskInpageProvider | undefined
+    ethereumProviderReady: boolean
     identity?: string
     messages: MessagesCollection
+    metamaskAddress: string
     roomId?: string
     roomNameEditable: boolean
     rooms: ChatRoom[]
-    metamaskAddress: string
     session: StreamrSession
-    ethereumProvider: MetaMaskInpageProvider | undefined
-    ethereumProviderReady: boolean
 }
 
 export enum MessageType {
