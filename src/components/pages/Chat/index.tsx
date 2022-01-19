@@ -1,13 +1,12 @@
 import Helmet from 'react-helmet'
 import styled from 'styled-components'
 import ChatWindow from './ChatWindow'
-import Sidebar from './Sidebar'
+import RoomList from './RoomList'
 import Navbar from '../../Navbar'
-import Room from './Room'
+import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
-import { useMessages, useStore } from './ChatStore'
-import usePopulate from './usePopulate'
+import { useMessages, useStore } from '../../Store'
 
 const Content = styled.div`
     height: 100vh;
@@ -26,10 +25,7 @@ type Props = {
 }
 
 const UnstyledChat = ({ className }: Props) => {
-    usePopulate('0x7da4e5e40c41f5ecbefb4fa59b2153888a11731')
-
     const messages = useMessages()
-
     const { roomId, rooms } = useStore()
 
     return (
@@ -39,9 +35,9 @@ const UnstyledChat = ({ className }: Props) => {
                 <Navbar />
                 <Content>
                     <div>
-                        <Sidebar>
+                        <RoomList>
                             {rooms.map((room) => (
-                                <Room
+                                <RoomItem
                                     key={room.id}
                                     id={room.id}
                                     active={room.id === roomId}
@@ -49,7 +45,7 @@ const UnstyledChat = ({ className }: Props) => {
                                     unread={false}
                                 />
                             ))}
-                        </Sidebar>
+                        </RoomList>
                         <ChatWindow>
                             {messages.map((message) => (
                                 <Message key={message.id} payload={message} />

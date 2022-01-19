@@ -1,10 +1,10 @@
 import styled from 'styled-components'
-import { ActionType, useDispatch } from './ChatStore'
+import { ActionType, useDispatch } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 
-function UnstyledAddRoom(props: Props) {
+function UnstyledAddRoomItem(props: Props) {
     const dispatch = useDispatch()
 
     return (
@@ -15,11 +15,13 @@ function UnstyledAddRoom(props: Props) {
 
                 dispatch({
                     type: ActionType.AddRooms,
-                    payload: [{
-                        id,
-                        name: '',
-                        readAt: Date.now(),
-                    }],
+                    payload: [
+                        {
+                            id,
+                            name: '',
+                            readAt: Date.now(),
+                        },
+                    ],
                 })
 
                 dispatch({
@@ -27,8 +29,14 @@ function UnstyledAddRoom(props: Props) {
                     payload: id,
                 })
             }}
-            icon={(
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            icon={
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 22 22"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
                     <path
                         fillRule="evenodd"
                         clipRule="evenodd"
@@ -36,14 +44,14 @@ function UnstyledAddRoom(props: Props) {
                         fill="black"
                     />
                 </svg>
-            )}
+            }
         >
             Add new room
         </SidebarItem>
     )
 }
 
-const AddRoom = styled(UnstyledAddRoom)`
+const AddRoomItem = styled(UnstyledAddRoomItem)`
     font-size: 1.125rem;
 
     svg {
@@ -51,4 +59,4 @@ const AddRoom = styled(UnstyledAddRoom)`
     }
 `
 
-export default AddRoom
+export default AddRoomItem

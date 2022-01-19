@@ -1,62 +1,7 @@
 import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
 import MessageInput from './MessageInput'
-import RoomName from './RoomName'
-import ModifyIcon from './modify.svg'
-import MoreIcon from './more.svg'
-import { ActionType, useDispatch, useStore } from './ChatStore'
-import Dropdown from './RoomDropdown'
-
-const Header = styled.div`
-    align-items: center;
-    box-shadow: inset 0 -1px 0 #dee6ee;
-    display: flex;
-    height: 92px;
-    padding: 0 2rem;
-    position: absolute;
-    top: 0;
-    width: 100%;
-`
-
-const RoomActions = styled.div`
-    display: flex;
-    margin-left: 1rem;
-`
-
-const RoomAction = styled.button`
-    appearance: none;
-    border-radius: 50%;
-    border: 0;
-    cursor: pointer;
-    display: block;
-    height: 2.5rem;
-    width: 2.5rem;
-    padding: 0;
-    transition: 300ms background-color;
-
-    &[disabled] {
-        cursor: default;
-        opacity: 0.5;
-    }
-
-    :hover {
-        background-color: #ebeff5;
-        transition-duration: 50ms;
-    }
-
-    &,
-    &[disabled] {
-        background-color: #f7f9fc;
-    }
-
-    & + & {
-        margin-left: 0.75rem;
-    }
-
-    img {
-        display: block;
-    }
-`
+import RoomHeader from './RoomHeader'
 
 const FeedWrap = styled.div`
     height: 100%;
@@ -114,35 +59,9 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
         }
     }, [children])
 
-    const dispatch = useDispatch()
-
-    const { roomNameEditable } = useStore()
-
     return (
         <div className={className}>
-            <Header>
-                <RoomName />
-                <RoomActions>
-                    <RoomAction
-                        onClick={() => {
-                            dispatch({
-                                type: ActionType.EditRoomName,
-                                payload: true,
-                            })
-                        }}
-                        disabled={roomNameEditable}
-                    >
-                        <img src={ModifyIcon} alt="" />
-                    </RoomAction>
-                    <Dropdown
-                        button={
-                            <RoomAction>
-                                <img src={MoreIcon} alt="" />
-                            </RoomAction>
-                        }
-                    />
-                </RoomActions>
-            </Header>
+            <RoomHeader />
             <FeedWrap>
                 <div>
                     <Feed ref={feedRef}>{children}</Feed>

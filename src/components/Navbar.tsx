@@ -1,24 +1,65 @@
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 import Button from './Button'
 import { KARELIA } from '../utils/css'
+import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
+
+import { ActionType, useDispatch, useStore } from './Store'
+import StreamrClient from 'streamr-client'
 
 type Props = {
     className?: string
 }
 
-const UnstyledNavbar = ({ className }: Props) => (
-    <nav className={className}>
-        <h4>thechat.eth</h4>
-        <Button
-            type="button"
-            onClick={() => {
-                console.log('Connect!')
-            }}
-        >
-            Connect a wallet
-        </Button>
-    </nav>
-)
+const UnstyledNavbar = ({ className }: Props) => {
+    const dispatch = useDispatch()
+    const store = useStore()
+    const connect = async () => {
+        const access = await initializeMetamaskDelegatedAccess()
+        console.log(
+            `connected with Metamask address: ${access.metamask.address}`
+        )
+        console.log(`connected with session address: ${access.session.address}`)
+        dispatch({
+            type: ActionType.SetMetamaskAddress,
+            payload: access.metamask.address,
+        })
+        dispatch({
+            type: ActionType.SetSessionAddress,
+            payload: access.session.address,
+        })
+
+        dispatch({
+            type: ActionType.SetStreamrClient,
+            payload: new StreamrClient({
+                auth: {
+                    privateKey: access.session.privateKey,
+                },
+            }),
+        })
+    }
+
+    const disconnect = () => {
+        localStorage.clear()
+        window.location.reload()
+    }
+    return (
+        <nav className={className}>
+            <h4>
+                <Link to="/">thechat.eth</Link>
+            </h4>
+            {store.metamaskAddress ? (
+                <Button type="button" onClick={disconnect}>
+                    {store.metamaskAddress}
+                </Button>
+            ) : (
+                <Button type="button" onClick={connect}>
+                    Connect a wallet
+                </Button>
+            )}
+        </nav>
+    )
+}
 
 const Navbar = styled(UnstyledNavbar)`
     align-items: center;
@@ -53,7 +94,7 @@ const Navbar = styled(UnstyledNavbar)`
     ${Button}:focus {
         background-color: #fefefe;
     }
-    
+
     ${Button}:active {
         background-color: #f7f7f7;
     }
