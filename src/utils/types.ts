@@ -24,7 +24,6 @@ export type ChatState = {
     ethereumProviderReady: boolean
     identity?: string
     messages: MessagesCollection
-    metamaskAddress: string
     roomId?: string
     roomNameEditable: boolean
     rooms: ChatRoom[]
@@ -53,4 +52,8 @@ export interface ChatRoom {
     publishMetadata: (metadata: any) => Promise<void>
     subscribeMessages: (callback: (message: ChatMessage) => void) => void
     subscribeMetadata: (callback: (metadata: any) => void) => void
+}
+
+export enum StorageKey {
+    EncryptedSessionKey = 'streamr-chat-encrypted-session-key',
 }

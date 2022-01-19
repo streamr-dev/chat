@@ -9,7 +9,6 @@ import type {
     DraftCollection,
 } from '../utils/types'
 import { Wallet } from 'ethers'
-import { MetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import getInitialChatState from '../getters/getInitialStoreState'
 
@@ -25,6 +24,7 @@ export enum ActionType {
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
     SetSession = 'set session',
+    ResetSession = 'reset session',
     SetEthereumProvider = 'set ethereum provider',
     SetAccount = 'set provider account',
 }
@@ -33,6 +33,8 @@ type Action<A, B> = {
     type: A
     payload: B
 }
+
+type PayloadlessAction<A> = Omit<Action<A, any>, 'payload'>
 
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
 
@@ -46,7 +48,7 @@ type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
 
 type SetIdentityAction = Action<ActionType.SetIdentity, string | undefined>
 
-type ResetAction = Omit<Action<ActionType.Reset, undefined>, 'payload'>
+type ResetAction = PayloadlessAction<ActionType.Reset>
 
 type SetDraftAction = Action<ActionType.SetDraft, string>
 
@@ -54,7 +56,9 @@ type RenameRoomAction = Action<ActionType.RenameRoom, string>
 
 type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
-type SetSessionAction = Action<ActionType.SetSession, MetamaskDelegatedAccess>
+type SetSessionAction = Action<ActionType.SetSession, string>
+
+type ResetSessionAction = PayloadlessAction<ActionType.ResetSession>
 
 type SetEthereumProviderAction = Action<
     ActionType.SetEthereumProvider,
@@ -78,6 +82,7 @@ type A =
     | RenameRoomAction
     | EditRoomNameAction
     | SetSessionAction
+    | ResetSessionAction
     | SetEthereumProviderAction
     | SetAccountAction
 
@@ -182,22 +187,22 @@ function reducer(state: ChatState, action: A): ChatState {
                           ...action.payload,
                       ],
                   })
-        case ActionType.SetSession:
-            const { session, metamask } = action.payload
-
-            const streamrClient = new StreamrClient({
-                auth: {
-                    privateKey: session.privateKey,
-                },
-            })
-
+        case ActionType.ResetSession:
             return {
                 ...state,
-                metamaskAddress: metamask.address,
+                session: getInitialChatState().session,
+            }
+        case ActionType.SetSession:
+            return {
+                ...state,
                 session: {
-                    wallet: new Wallet(session.privateKey),
-                    streamrClient,
-                },
+                    streamrClient: new StreamrClient({
+                        auth: {
+                            privateKey: action.payload,
+                        },
+                    }),
+                    wallet: new Wallet(action.payload),
+                }
             }
         case ActionType.SetEthereumProvider:
             return {

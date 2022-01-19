@@ -8,7 +8,6 @@ export default function getInitialChatState(): ChatState {
         ethereumProviderReady: false,
         identity: undefined,
         messages: {},
-        metamaskAddress: '',
         roomId: undefined,
         roomNameEditable: false,
         rooms: [],
