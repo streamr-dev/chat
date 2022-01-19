@@ -101,7 +101,7 @@ const RoomDropdown = ({ button }: Props) => {
             // Unbind the event listener on clean up
             document.removeEventListener('mouseup', handleClickOutside)
         }
-    })
+    }, [])
 
     const toggleOpen = () => {
         setIsOpen((c) => !c)
