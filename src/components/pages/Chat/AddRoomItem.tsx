@@ -23,7 +23,7 @@ function useCreateRoom(): () => Promise<void> {
             type: ActionType.AddRooms,
             payload: [room],
         })
-    }, [metamaskAddress, session, rooms])
+    }, [metamaskAddress, session, rooms, dispatch])
 }
 
 function UnstyledAddRoomItem(props: Props) {
