@@ -55,5 +55,5 @@ export interface ChatRoom {
 }
 
 export enum StorageKey {
-    EncryptedSessionKey = 'streamr-chat-encrypted-session-key',
+    EncryptedSession = 'chat/encrypted-session',
 }
