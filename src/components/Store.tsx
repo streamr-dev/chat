@@ -199,10 +199,14 @@ function reducer(state: ChatState, action: A): ChatState {
                 ethereumProviderReady: true,
             }
         case ActionType.SetAccount:
-            return {
-                ...state,
-                account: action.payload || undefined,
-            }
+            return action.payload === state.account
+                ? state
+                : {
+                      ...reducer(state, {
+                          type: ActionType.Reset,
+                      }),
+                      account: action.payload || undefined,
+                  }
         default:
             return state
     }
