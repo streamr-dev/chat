@@ -15,12 +15,12 @@ import {
 } from 'unique-names-generator'
 import { shake256 } from 'js-sha3'
 
-const ROOM_PREFIX: string = 'streamr-chat/room'
-const LOCAL_STORAGE_KEY = 'streamr-chat-rooms'
+const RoomPrefix: string = 'streamr-chat/room'
+const LocalStorageKey = 'streamr-chat-rooms'
 
-export enum STREAM_PARTITION {
-    MESSAGES,
-    METADATA,
+export enum StreamPartition {
+    Messages,
+    Metadata,
 }
 
 const publishMessage = async (
@@ -31,11 +31,11 @@ const publishMessage = async (
     return client.publish(
         streamId,
         {
-            type: MessageType.TEXT,
+            type: MessageType.Text,
             payload: message,
         },
         Date.now(),
-        STREAM_PARTITION.MESSAGES
+        StreamPartition.Messages
     )
 }
 
@@ -48,11 +48,11 @@ const publishMetadata = async (
     return client.publish(
         streamId,
         {
-            type: MessageType.METADATA,
+            type: MessageType.Metadata,
             payload: metadata,
         } as ChatMessage,
         Date.now(),
-        STREAM_PARTITION.METADATA
+        StreamPartition.Metadata
     )
 }
 
@@ -64,7 +64,7 @@ const subscribeMessages = async (
     client.subscribe(
         {
             streamId,
-            streamPartition: STREAM_PARTITION.MESSAGES,
+            streamPartition: StreamPartition.Messages,
         },
         (message: any) => {
             //callback(JSON.parse(message))
@@ -81,7 +81,7 @@ const subscribeMetadata = async (
     client.subscribe(
         {
             streamId,
-            streamPartition: STREAM_PARTITION.METADATA,
+            streamPartition: StreamPartition.Metadata,
         },
         (message: any) => {
             callback(message)
@@ -126,7 +126,7 @@ const getStreamIdFromRoomName = (
     requireEncryptedData = false
 ): string => {
     const encryptionPrefix = requireEncryptedData ? 'encrypted/' : ''
-    return `${clientAddress}/${ROOM_PREFIX}/${encryptionPrefix}${roomName}`.toLowerCase()
+    return `${clientAddress}/${RoomPrefix}/${encryptionPrefix}${roomName}`.toLowerCase()
 }
 
 export const sendChatRoomInvitation = async (
@@ -147,7 +147,7 @@ export const sendChatRoomInvitation = async (
 }
 
 const storeRoomIds = (ids: Array<string>) => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(ids))
+    localStorage.setItem(LocalStorageKey, JSON.stringify(ids))
 }
 
 export const createRoom = async (
@@ -188,7 +188,7 @@ export const fetchRooms = async (
 ): Promise<Array<ChatRoom>> => {
     const rooms: Array<ChatRoom> = []
 
-    const localStreamIds = localStorage.getItem(LOCAL_STORAGE_KEY)
+    const localStreamIds = localStorage.getItem(LocalStorageKey)
     if (localStreamIds) {
         // build the room objects from the local ref
         const streamIds = JSON.parse(localStreamIds)
@@ -233,7 +233,7 @@ export const fetchRooms = async (
                         clientAddress
                     )
                 }
-                if (stream.id.includes(ROOM_PREFIX)) {
+                if (stream.id.includes(RoomPrefix)) {
                     const chatRoom = await generateChatRoom(
                         client,
                         stream.id,

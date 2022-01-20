@@ -31,8 +31,8 @@ export type ChatState = {
 }
 
 export enum MessageType {
-    TEXT = 'text',
-    METADATA = 'metadata',
+    Text = 'text',
+    Metadata = 'metadata',
 }
 export interface ChatMessage {
     type: MessageType
