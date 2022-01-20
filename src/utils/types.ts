@@ -26,6 +26,8 @@ export type ChatState = {
     rooms: ChatRoom[]
     metamaskAddress: string
     session: StreamrSession
+    ethereumProvider: MetaMaskInpageProvider | undefined
+    ethereumProviderReady: boolean
 }
 
 export enum MessageType {
@@ -40,7 +42,6 @@ export interface ChatMessage {
 export interface StreamrSession {
     wallet: Wallet | undefined
     streamrClient: StreamrClient | undefined
-    provider: MetaMaskInpageProvider | undefined
 }
 
 export interface ChatRoom {

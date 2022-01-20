@@ -29,7 +29,7 @@ type Props = {
 
 const UnstyledChat = ({ className }: Props) => {
     const messages = useMessages()
-    const { roomId, rooms, metamaskAddress, session } = useStore()
+    const { roomId, rooms, metamaskAddress, session, ethereumProvider } = useStore()
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -43,7 +43,7 @@ const UnstyledChat = ({ className }: Props) => {
             await fetchRooms(
                 session.streamrClient!,
                 session.wallet!.address,
-                session.provider!,
+                ethereumProvider!,
                 (chatRoom: ChatRoom) => {
                     dispatch({
                         type: ActionType.AddRooms,
@@ -54,7 +54,7 @@ const UnstyledChat = ({ className }: Props) => {
         }
 
         fn()
-    }, [dispatch, metamaskAddress, session])
+    }, [dispatch, metamaskAddress, session, ethereumProvider])
 
     return (
         <>

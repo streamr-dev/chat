@@ -2,9 +2,10 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import Button from './Button'
 import { KARELIA, SEMIBOLD } from '../utils/css'
-import { initializeMetamaskDelegatedAccess } from '../lib/MetamaskDelegatedAccess'
 import AddressButton from './AddressButton'
-import { ActionType, useDispatch, useStore } from './Store'
+import { useStore } from './Store'
+import useConnect from '../hooks/useConnect'
+import useDisconnect from '../hooks/useDisconnect'
 
 type Props = {
     className?: string
@@ -17,37 +18,22 @@ const ConnectButton = styled(Button)`
 `
 
 const UnstyledNavbar = ({ className }: Props) => {
-    const dispatch = useDispatch()
-    const store = useStore()
-    const connect = async () => {
-        const access = await initializeMetamaskDelegatedAccess()
-        console.info(
-            `connected with Metamask address: ${access.metamask.address}`
-        )
-        console.info(
-            `connected with session address: ${access.session.address}`
-        )
+    const { metamaskAddress } = useStore()
 
-        dispatch({
-            type: ActionType.SetSession,
-            payload: access,
-        })
-    }
+    const connect = useConnect()
 
-    const disconnect = () => {
-        localStorage.clear()
-        window.location.reload()
-    }
+    const disconnect = useDisconnect()
+
     return (
         <nav className={className}>
             <h4>
                 <Link to="/">thechat.eth</Link>
             </h4>
-            {store.metamaskAddress ? (
+            {metamaskAddress ? (
                 <AddressButton
                     type="button"
                     onClick={disconnect}
-                    address={store.metamaskAddress}
+                    address={metamaskAddress}
                 />
             ) : (
                 <ConnectButton type="button" onClick={connect}>

@@ -26,7 +26,7 @@ export class MetamaskDelegatedAccess {
         }
     }
 
-    public async connect(): Promise<void> {
+    public async connect(): Promise<MetamaskDelegatedAccess> {
         // enable and fetch metamask account
         const providers = (await this.provider.request({
             method: 'eth_requestAccounts',
@@ -49,6 +49,8 @@ export class MetamaskDelegatedAccess {
 
         this.session.address = sessionWallet.address
         this.session.privateKey = sessionWallet.privateKey
+
+        return this
     }
 
     private async createAccount(): Promise<Wallet> {
@@ -97,12 +99,4 @@ export const detectTypedEthereumProvider =
             throw new Error('MetaMask not detected')
         }
         return provider
-    }
-
-export const initializeMetamaskDelegatedAccess =
-    async (): Promise<MetamaskDelegatedAccess> => {
-        const provider = await detectTypedEthereumProvider()
-        const accessManager = new MetamaskDelegatedAccess(provider)
-        await accessManager.connect()
-        return accessManager
     }
