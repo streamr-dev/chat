@@ -30,6 +30,7 @@
     "ethers": "^5.5.3",
     "identicon.js": "^2.3.3",
     "is-resolvable": "^1.1.0",
+    "js-sha3": "^0.8.0",
     "keccak": "^3.0.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -42,6 +43,7 @@
     "strip-hex-prefix": "^1.0.0",
     "styled-components": "^5.3.3",
     "typescript": "^4.5.4",
+    "unique-names-generator": "^4.6.0",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.3"
   },
