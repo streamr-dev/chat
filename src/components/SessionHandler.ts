@@ -19,8 +19,7 @@ export default function SessionHandler() {
 
         async function fn() {
             const encryptedPrivateKey =
-                localStorage.getItem(StorageKey.EncryptedSession) ||
-                undefined
+                localStorage.getItem(StorageKey.EncryptedSession) || undefined
 
             try {
                 try {

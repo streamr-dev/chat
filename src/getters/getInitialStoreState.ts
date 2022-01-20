@@ -9,6 +9,7 @@ export default function getInitialChatState(): ChatState {
         identity: undefined,
         messages: {},
         roomId: undefined,
+        roomIds: undefined,
         roomNameEditable: false,
         rooms: [],
         session: {

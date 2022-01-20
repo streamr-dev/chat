@@ -18,17 +18,14 @@ const RecentMessage = styled.div`
     font-size: 0.875rem;
 `
 
-function UnstyledRoomItem({
-    id,
-    name = 'Room',
-    icon = <div />,
-    ...props
-}: Props) {
+function UnstyledRoomItem({ id, name = id, icon = <div />, ...props }: Props) {
     const { roomId, messages } = useStore()
 
     const dispatch = useDispatch()
 
-    const recentMessage: MessagePayload | undefined = [...messages[id]].pop()
+    const recentMessage: MessagePayload | undefined = [
+        ...(messages[id] || []),
+    ].pop()
 
     const active = id === roomId
 

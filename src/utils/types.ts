@@ -25,6 +25,7 @@ export type ChatState = {
     identity?: string
     messages: MessagesCollection
     roomId?: string
+    roomIds: string[] | undefined
     roomNameEditable: boolean
     rooms: ChatRoom[]
     session: StreamrSession
@@ -56,4 +57,5 @@ export interface ChatRoom {
 
 export enum StorageKey {
     EncryptedSession = 'chat/encrypted-session',
+    RoomIds = 'chat/room-ids',
 }
