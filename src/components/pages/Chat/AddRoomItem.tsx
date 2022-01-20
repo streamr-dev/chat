@@ -8,14 +8,14 @@ import { v4 as uuidv4 } from 'uuid'
 
 function useCreateRoom(): () => Promise<void> {
     const dispatch = useDispatch()
-    const { metamaskAddress, session, rooms } = useStore()
+    const { account, session, rooms } = useStore()
 
     return useCallback(async () => {
         const id = uuidv4()
         const room = await createRoom(
             session.streamrClient!,
             session.wallet!.address,
-            metamaskAddress,
+            account!,
             id,
             rooms.map((r) => r.id)
         )
@@ -23,7 +23,7 @@ function useCreateRoom(): () => Promise<void> {
             type: ActionType.AddRooms,
             payload: [room],
         })
-    }, [metamaskAddress, session, rooms, dispatch])
+    }, [account, session, rooms, dispatch])
 }
 
 function UnstyledAddRoomItem(props: Props) {

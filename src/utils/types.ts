@@ -18,16 +18,16 @@ export type DraftCollection = {
 }
 
 export type ChatState = {
+    account: string | undefined
     drafts: any
+    ethereumProvider: MetaMaskInpageProvider | undefined
+    ethereumProviderReady: boolean
     identity?: string
     messages: MessagesCollection
     roomId?: string
     roomNameEditable: boolean
     rooms: ChatRoom[]
-    metamaskAddress: string
     session: StreamrSession
-    ethereumProvider: MetaMaskInpageProvider | undefined
-    ethereumProviderReady: boolean
 }
 
 export enum MessageType {
@@ -52,4 +52,8 @@ export interface ChatRoom {
     publishMetadata: (metadata: any) => Promise<void>
     subscribeMessages: (callback: (message: ChatMessage) => void) => void
     subscribeMetadata: (callback: (metadata: any) => void) => void
+}
+
+export enum StorageKey {
+    EncryptedSessionKey = 'streamr-chat-encrypted-session-key',
 }

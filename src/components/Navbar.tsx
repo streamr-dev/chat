@@ -18,7 +18,7 @@ const ConnectButton = styled(Button)`
 `
 
 const UnstyledNavbar = ({ className }: Props) => {
-    const { metamaskAddress } = useStore()
+    const { account } = useStore()
 
     const connect = useConnect()
 
@@ -29,11 +29,11 @@ const UnstyledNavbar = ({ className }: Props) => {
             <h4>
                 <Link to="/">thechat.eth</Link>
             </h4>
-            {metamaskAddress ? (
+            {account ? (
                 <AddressButton
                     type="button"
                     onClick={disconnect}
-                    address={metamaskAddress}
+                    address={account}
                 />
             ) : (
                 <ConnectButton type="button" onClick={connect}>

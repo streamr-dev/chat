@@ -10,6 +10,7 @@ import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
 import { fetchRooms } from '../../../lib/ChatRoomManager'
 import { useEffect } from 'react'
 import { ChatRoom } from '../../../utils/types'
+import { useNavigate } from 'react-router-dom'
 
 const Content = styled.div`
     height: 100vh;
@@ -29,7 +30,7 @@ type Props = {
 
 const UnstyledChat = ({ className }: Props) => {
     const messages = useMessages()
-    const { roomId, rooms, metamaskAddress, session, ethereumProvider } = useStore()
+    const { roomId, rooms, session, ethereumProvider } = useStore()
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -54,7 +55,17 @@ const UnstyledChat = ({ className }: Props) => {
         }
 
         fn()
-    }, [dispatch, metamaskAddress, session, ethereumProvider])
+    }, [dispatch, session, ethereumProvider])
+
+    const sessionAccount = session.wallet?.address
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!sessionAccount) {
+            navigate('/')
+        }
+    }, [sessionAccount, navigate])
 
     return (
         <>

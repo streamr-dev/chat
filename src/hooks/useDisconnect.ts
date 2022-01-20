@@ -1,5 +1,5 @@
-import { useCallback } from "react"
-import { ActionType, useDispatch } from "../components/Store"
+import { useCallback } from 'react'
+import { ActionType, useDispatch } from '../components/Store'
 
 export default function useDisconnect() {
     const dispatch = useDispatch()
