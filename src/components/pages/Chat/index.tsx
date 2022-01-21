@@ -11,6 +11,7 @@ import useExistingRooms from '../../../hooks/useExistingRooms'
 import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import MessageTransmitter from './MessageTransmitter'
 
 const Content = styled.div`
     height: 100vh;
@@ -29,10 +30,7 @@ type Props = {
 }
 
 const UnstyledChat = ({ className }: Props) => {
-    // Disable messages for now.
-    const messages: any[] = []
-
-    const { roomIds = [], session: { wallet } } = useStore()
+    const { roomIds = [], session: { wallet }, messages } = useStore()
 
     useRoomIdsStorage()
 
@@ -49,7 +47,7 @@ const UnstyledChat = ({ className }: Props) => {
     }, [sessionAccount, navigate])
 
     return (
-        <>
+        <MessageTransmitter>
             <Helmet title="Let's chat!" />
             <main className={className}>
                 <Navbar />
@@ -68,7 +66,7 @@ const UnstyledChat = ({ className }: Props) => {
                     </div>
                 </Content>
             </main>
-        </>
+        </MessageTransmitter>
     )
 }
 

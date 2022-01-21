@@ -51,7 +51,7 @@ export default function useExistingRooms() {
 
             const streams = await providerClient.listStreams({
                 search: ROOM_PREFIX,
-                operation: 'stream_share' as StreamOperation,
+                operation: 'stream_subscribe' as StreamOperation,
             })
 
             await Promise.allSettled(

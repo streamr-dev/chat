@@ -1,13 +1,11 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
-import { ChatRoom } from '../utils/types'
+import { ChatRoom, RoomId } from '../utils/types'
 import uniq from 'lodash/uniq'
 
 import type {
     ChatState,
     MessagePayload,
-    MessagesCollection,
-    DraftCollection,
 } from '../utils/types'
 import { Wallet } from 'ethers'
 import { MetaMaskInpageProvider } from '@metamask/providers'
@@ -21,7 +19,6 @@ export enum ActionType {
     Reset = 'reset',
     SelectRoom = 'select room',
     SetDraft = 'set draft',
-    SetIdentity = 'set identity',
     SetMessages = 'set messages',
     SetRooms = 'set rooms',
     SetSession = 'set session',
@@ -29,6 +26,8 @@ export enum ActionType {
     SetAccount = 'set provider account',
     AddRoomIds = 'add room ids',
     SetRoomIds = 'set room ids',
+    SetRecentMessage = 'set recent message',
+    RemoveRoomId = 'remove room id',
 }
 
 type Action<A, B> = {
@@ -47,8 +46,6 @@ type SetRoomsAction = Action<ActionType.SetRooms, ChatRoom[]>
 type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
 
 type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
-
-type SetIdentityAction = Action<ActionType.SetIdentity, string | undefined>
 
 type ResetAction = PayloadlessAction<ActionType.Reset>
 
@@ -71,13 +68,16 @@ type AddRoomIdsAction = Action<ActionType.AddRoomIds, string[]>
 
 type SetRoomIdsAction = Action<ActionType.SetRoomIds, string[] | undefined>
 
+type SetRecentMessageAction = Action<ActionType.SetRecentMessage, { [index: RoomId]: string }>
+
+type RemoveRoomIdAction = Action<ActionType.RemoveRoomId, RoomId>
+
 type A =
     | SelectRoomAction
     | AddRoomsAction
     | SetRoomsAction
     | AddMessagesAction
     | SetMessagesAction
-    | SetIdentityAction
     | ResetAction
     | SetDraftAction
     | RenameRoomAction
@@ -87,6 +87,8 @@ type A =
     | SetAccountAction
     | AddRoomIdsAction
     | SetRoomIdsAction
+    | SetRecentMessageAction
+    | RemoveRoomIdAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -124,71 +126,17 @@ function reducer(state: ChatState, action: A): ChatState {
                 ethereumProvider: state.ethereumProvider,
                 ethereumProviderReady: state.ethereumProviderReady,
             }
-        case ActionType.SetIdentity:
-            return {
-                ...state,
-                identity: action.payload,
-            }
         case ActionType.SelectRoom:
             return {
                 ...state,
                 roomId: action.payload,
                 roomNameEditable: false,
             }
-        case ActionType.SetRooms:
+        case ActionType.SetMessages:
             return {
                 ...state,
-                roomId:
-                    !state.roomId && action.payload.length
-                        ? action.payload[0].id
-                        : state.roomId,
-                rooms: action.payload,
-                messages: action.payload.reduce(
-                    (memo: MessagesCollection, { id }: ChatRoom) => {
-                        Object.assign(memo, {
-                            [id]: state.messages[id] || [],
-                        })
-
-                        return memo
-                    },
-                    {}
-                ),
-                drafts: action.payload.reduce(
-                    (memo: DraftCollection, { id }: ChatRoom) => {
-                        Object.assign(memo, {
-                            [id]: state.drafts[id] || '',
-                        })
-
-                        return memo
-                    },
-                    {}
-                ),
+                messages: state.roomId ? [...action.payload] : []
             }
-        case ActionType.AddRooms:
-            return reducer(state, {
-                type: ActionType.SetRooms,
-                payload: [...state.rooms, ...action.payload],
-            })
-        case ActionType.SetMessages:
-            return state.roomId == null
-                ? state
-                : {
-                      ...state,
-                      messages: {
-                          ...state.messages,
-                          [state.roomId]: action.payload,
-                      },
-                  }
-        case ActionType.AddMessages:
-            return state.roomId == null
-                ? state
-                : reducer(state, {
-                      type: ActionType.SetMessages,
-                      payload: [
-                          ...state.messages[state.roomId],
-                          ...action.payload,
-                      ],
-                  })
         case ActionType.SetSession:
             return {
                 ...state,
@@ -226,6 +174,20 @@ function reducer(state: ChatState, action: A): ChatState {
                 type: ActionType.SetRoomIds,
                 payload: [...(state.roomIds || []), ...action.payload],
             })
+        case ActionType.SetRecentMessage:
+            return {
+                ...state,
+                recentMessages: {
+                    ...state.recentMessages,
+                    ...action.payload,
+                },
+            }
+        case ActionType.RemoveRoomId:
+            return {
+                ...state,
+                roomId: state.roomId === action.payload ? undefined : state.roomId,
+                roomIds: state.roomIds != null ? state.roomIds.filter((id) => id !== action.payload) : state.roomIds,
+            }
         default:
             return state
     }
@@ -249,32 +211,10 @@ export function useDispatch() {
     return useContext(DispatchContext)
 }
 
-const NO_MESSAGES: MessagePayload[] = []
-
-export function useMessages(): MessagePayload[] {
-    const { roomId, messages } = useStore()
-
-    if (roomId == null) {
-        return NO_MESSAGES
-    }
-
-    return messages[roomId]
-}
-
-export function useRoom(): ChatRoom | undefined {
-    const { roomId, rooms } = useStore()
-
-    return rooms.find(({ id }) => roomId === id)
-}
-
 export function useDraft(): string {
     const { roomId, drafts } = useStore()
 
-    if (!roomId) {
-        return ''
-    }
-
-    return drafts[roomId]
+    return roomId ? drafts[roomId] : ''
 }
 
 export default function Store({ children }: Props) {

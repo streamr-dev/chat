@@ -1,15 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
-import { v4 as uuidv4 } from 'uuid'
-import {
-    ActionType,
-    useDispatch,
-    useDraft,
-    useRoom,
-    useStore,
-} from '../../Store'
+import { useStore } from '../../Store'
 import SubmitButton from './SubmitButton'
 import focus from '../../../utils/focus'
+import { useSend } from './MessageTransmitter'
 
 type Props = {
     className?: string
@@ -40,43 +34,26 @@ const Inner = styled.div<InnerProps>`
 `
 
 function UnstyledMessageInput({ className }: Props) {
-    const draft = useDraft()
+    const [value, setValue] = useState<string>('')
 
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const submittable = !/^\s*$/.test(draft)
+    const submittable = !/^\s*$/.test(value)
 
-    const dispatch = useDispatch()
+    const { roomId, roomNameEditable } = useStore()
 
-    const { identity, roomId, roomNameEditable } = useStore()
+    const send = useSend()
 
-    const room = useRoom()
-
-    function onSubmit(body: string) {
-        if (identity == null) {
-            return
-        }
-
-        dispatch({
-            type: ActionType.AddMessages,
-            payload: [
-                {
-                    body,
-                    createdAt: Date.now(),
-                    sender: identity,
-                    id: uuidv4(),
-                },
-            ],
+    function onSubmit() {
+        send(value, {
+            streamPartition: 0,
         })
     }
 
     function submit() {
         if (submittable && typeof onSubmit === 'function') {
-            onSubmit(draft)
-            dispatch({
-                type: ActionType.SetDraft,
-                payload: '',
-            })
+            onSubmit()
+            setValue('')
         }
     }
 
@@ -114,17 +91,14 @@ function UnstyledMessageInput({ className }: Props) {
                 <input
                     autoFocus
                     onChange={(e) => {
-                        dispatch({
-                            type: ActionType.SetDraft,
-                            payload: e.currentTarget.value,
-                        })
+                        setValue(e.currentTarget.value)
                     }}
                     onKeyDown={onKeyDown}
                     placeholder="Type a message"
-                    readOnly={!room}
+                    readOnly={!roomId}
                     ref={inputRef}
                     type="text"
-                    value={draft}
+                    value={value}
                 />
                 <SubmitButton onClick={onSubmitClick} />
             </Inner>

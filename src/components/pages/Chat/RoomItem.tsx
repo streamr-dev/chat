@@ -19,15 +19,13 @@ const RecentMessage = styled.div`
 `
 
 function UnstyledRoomItem({ id, name = id, icon = <div />, ...props }: Props) {
-    const { roomId, messages } = useStore()
+    const { roomId, recentMessages } = useStore()
 
     const dispatch = useDispatch()
 
-    const recentMessage: MessagePayload | undefined = [
-        ...(messages[id] || []),
-    ].pop()
-
     const active = id === roomId
+
+    const recentMessage = recentMessages[id]
 
     function onClick() {
         dispatch({
@@ -46,7 +44,7 @@ function UnstyledRoomItem({ id, name = id, icon = <div />, ...props }: Props) {
         >
             <Name>{name || <>Untitled room</>}</Name>
             <RecentMessage>
-                {(recentMessage && recentMessage.body) || 'Empty room'}
+                {recentMessage || 'Empty room'}
             </RecentMessage>
         </SidebarItem>
     )
