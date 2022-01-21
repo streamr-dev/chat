@@ -1,4 +1,3 @@
-import { MetaMaskInpageProvider } from '@metamask/providers'
 import {
     StreamrClient,
     Stream,
@@ -178,80 +177,4 @@ export const createRoom = async (
     roomIds.push(room.id)
     storeRoomIds(roomIds)
     return room
-}
-
-export const fetchRooms = async (
-    client: StreamrClient,
-    clientAddress: string,
-    provider: MetaMaskInpageProvider,
-    roomCallback?: (c: ChatRoom) => void
-): Promise<Array<ChatRoom>> => {
-    const rooms: Array<ChatRoom> = []
-
-    const localStreamIds = localStorage.getItem(LOCAL_STORAGE_KEY)
-    if (localStreamIds) {
-        // build the room objects from the local ref
-        const streamIds = JSON.parse(localStreamIds)
-
-        for (let i = 0; i < streamIds.length; i++) {
-            try {
-                const streamId = streamIds[i]
-                const room = await generateChatRoom(client, streamId)
-                if (roomCallback) {
-                    roomCallback(room)
-                }
-                rooms.push(room)
-            } catch (e) {
-                console.warn('failed to load room', e)
-            }
-        }
-    } else {
-        // create a metamask/streamr-client instance to fetch the parent identity's streams
-        const fetchClient = new StreamrClient({
-            auth: { ethereum: provider as any },
-        })
-        const streams = await fetchClient.listStreams({
-            search: 'streamr-chat/room',
-            operation: 'stream_subscribe' as StreamOperation,
-        })
-
-        for (let i = 0; i < streams.length; i++) {
-            try {
-                const stream = streams[i]
-                const hasPermission = await stream.hasUserPermission(
-                    'stream_subscribe' as StreamOperation,
-                    clientAddress
-                )
-                if (!hasPermission) {
-                    await stream.grantUserPermissions(
-                        [
-                            'stream_subscribe' as StreamOperation,
-                            'stream_share' as StreamOperation,
-                            'stream_publish' as StreamOperation,
-                            'stream_get' as StreamOperation,
-                        ],
-                        clientAddress
-                    )
-                }
-                if (stream.id.includes(ROOM_PREFIX)) {
-                    const chatRoom = await generateChatRoom(
-                        client,
-                        stream.id,
-                        stream
-                    )
-                    if (roomCallback) {
-                        roomCallback(chatRoom)
-                    }
-                    rooms.push(chatRoom)
-                }
-            } catch (e) {
-                console.warn('failed to fetch room', e)
-            }
-        }
-
-        // save the streamIds to local storage
-        storeRoomIds(streams.map((stream: Stream) => stream.id))
-    }
-
-    return rooms
 }

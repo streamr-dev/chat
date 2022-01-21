@@ -6,11 +6,11 @@ import Navbar from '../../Navbar'
 import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
-import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
-import { fetchRooms } from '../../../lib/ChatRoomManager'
-import { useEffect } from 'react'
-import { ChatRoom } from '../../../utils/types'
+import { useStore } from '../../Store'
+import useExistingRooms from '../../../hooks/useExistingRooms'
+import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
 import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const Content = styled.div`
     height: 100vh;
@@ -29,35 +29,16 @@ type Props = {
 }
 
 const UnstyledChat = ({ className }: Props) => {
-    const messages = useMessages()
-    const { roomId, rooms, session, ethereumProvider } = useStore()
-    const dispatch = useDispatch()
+    // Disable messages for now.
+    const messages: any[] = []
 
-    useEffect(() => {
-        if (!session.streamrClient) {
-            // No streamr client. Skip.
-            return
-        }
-        const fn = async () => {
-            // the callback allows for rooms to be rendered as soon as they're fetched
-            // opposed to waiting for them all to arrive and then render
-            await fetchRooms(
-                session.streamrClient!,
-                session.wallet!.address,
-                ethereumProvider!,
-                (chatRoom: ChatRoom) => {
-                    dispatch({
-                        type: ActionType.AddRooms,
-                        payload: [chatRoom],
-                    })
-                }
-            )
-        }
+    const { roomIds = [], session: { wallet } } = useStore()
 
-        fn()
-    }, [dispatch, session, ethereumProvider])
+    useRoomIdsStorage()
 
-    const sessionAccount = session.wallet?.address
+    useExistingRooms()
+
+    const sessionAccount = wallet?.address
 
     const navigate = useNavigate()
 
@@ -75,14 +56,8 @@ const UnstyledChat = ({ className }: Props) => {
                 <Content>
                     <div>
                         <RoomList>
-                            {rooms.map((room) => (
-                                <RoomItem
-                                    key={room.id}
-                                    id={room.id}
-                                    active={room.id === roomId}
-                                    name={room.name}
-                                    unread={false}
-                                />
+                            {roomIds.map((id) => (
+                                <RoomItem key={id} id={id} />
                             ))}
                         </RoomList>
                         <ChatWindow>

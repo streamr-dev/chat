@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
 import { ChatRoom } from '../utils/types'
+import uniq from 'lodash/uniq'
 
 import type {
     ChatState,
@@ -26,6 +27,8 @@ export enum ActionType {
     SetSession = 'set session',
     SetEthereumProvider = 'set ethereum provider',
     SetAccount = 'set provider account',
+    AddRoomIds = 'add room ids',
+    SetRoomIds = 'set room ids',
 }
 
 type Action<A, B> = {
@@ -64,6 +67,10 @@ type SetEthereumProviderAction = Action<
 
 type SetAccountAction = Action<ActionType.SetAccount, string | undefined>
 
+type AddRoomIdsAction = Action<ActionType.AddRoomIds, string[]>
+
+type SetRoomIdsAction = Action<ActionType.SetRoomIds, string[] | undefined>
+
 type A =
     | SelectRoomAction
     | AddRoomsAction
@@ -78,6 +85,8 @@ type A =
     | SetSessionAction
     | SetEthereumProviderAction
     | SetAccountAction
+    | AddRoomIdsAction
+    | SetRoomIdsAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -199,10 +208,24 @@ function reducer(state: ChatState, action: A): ChatState {
                 ethereumProviderReady: true,
             }
         case ActionType.SetAccount:
+            return action.payload === state.account
+                ? state
+                : {
+                      ...reducer(state, {
+                          type: ActionType.Reset,
+                      }),
+                      account: action.payload || undefined,
+                  }
+        case ActionType.SetRoomIds:
             return {
                 ...state,
-                account: action.payload || undefined,
+                roomIds: !action.payload ? undefined : uniq(action.payload),
             }
+        case ActionType.AddRoomIds:
+            return reducer(state, {
+                type: ActionType.SetRoomIds,
+                payload: [...(state.roomIds || []), ...action.payload],
+            })
         default:
             return state
     }
