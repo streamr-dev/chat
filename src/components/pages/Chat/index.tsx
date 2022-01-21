@@ -12,6 +12,7 @@ import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import MessageTransmitter from './MessageTransmitter'
+import RoomNameLoader from './RoomNameLoader'
 
 const Content = styled.div`
     height: 100vh;
@@ -52,6 +53,9 @@ const UnstyledChat = ({ className }: Props) => {
 
     return (
         <MessageTransmitter>
+            {roomIds.map((id) => (
+                <RoomNameLoader key={id} roomId={id} />
+            ))}
             <Helmet title="Let's chat!" />
             <main className={className}>
                 <Navbar />

@@ -6,6 +6,8 @@ import MoreIcon from './more.svg'
 import RoomNameDisplay from './RoomNameDisplay'
 import RoomNameEditor from './RoomNameEditor'
 import React, { useEffect, useState } from 'react'
+import { useRenameRoom } from './RoomRenameProvider'
+import useRoomName from '../../../hooks/useRoomName'
 
 type Props = {
     className?: string
@@ -19,25 +21,26 @@ const RoomName = styled.div`
 function UnstyledRoomHeader({ className }: Props) {
     const dispatch = useDispatch()
 
-    const { roomNameEditable } = useStore()
+    const { roomNameEditable, roomId } = useStore()
 
-    const room: any = undefined
+    const roomName = useRoomName()
 
-    const title = (room && room.name) || ''
-
-    const [value, setValue] = useState<string>(title)
+    const [value, setValue] = useState<string>(roomName)
 
     useEffect(() => {
-        setValue(title)
-    }, [title])
+        setValue(roomName)
+    }, [roomName])
+
+    const renameRoom = useRenameRoom()
 
     function submit(e: React.FormEvent) {
         e.preventDefault()
 
-        dispatch({
-            type: ActionType.RenameRoom,
-            payload: value,
-        })
+        if (!roomId) {
+            throw new Error('No room id')
+        }
+
+        renameRoom(roomId, value)
     }
 
     function reset() {
@@ -47,7 +50,7 @@ function UnstyledRoomHeader({ className }: Props) {
         })
 
         // We gotta manually revert the modded `value` to the original (current title).
-        setValue(title)
+        setValue(roomName)
     }
 
     return (

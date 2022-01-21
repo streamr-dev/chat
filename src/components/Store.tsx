@@ -7,6 +7,7 @@ import type { ChatState, MessagePayload } from '../utils/types'
 import { Wallet } from 'ethers'
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import getInitialChatState from '../getters/getInitialStoreState'
+import RoomRenameProvider from './pages/Chat/RoomRenameProvider'
 
 export enum ActionType {
     AddMessages = 'add messages',
@@ -48,7 +49,10 @@ type ResetAction = PayloadlessAction<ActionType.Reset>
 
 type SetDraftAction = Action<ActionType.SetDraft, string>
 
-type RenameRoomAction = Action<ActionType.RenameRoom, string>
+type RenameRoomAction = Action<
+    ActionType.RenameRoom,
+    { [index: RoomId]: string }
+>
 
 type EditRoomNameAction = Action<ActionType.EditRoomName, boolean>
 
@@ -98,14 +102,12 @@ function reducer(state: ChatState, action: A): ChatState {
                 roomNameEditable: action.payload,
             }
         case ActionType.RenameRoom:
-            ;((room: ChatRoom | undefined) => {
-                if (room) {
-                    room.name = action.payload
-                }
-            })(state.rooms.find(({ id }) => id === state.roomId))
-
             return {
                 ...state,
+                roomNames: {
+                    ...state.roomNames,
+                    ...action.payload,
+                },
                 roomNameEditable: false,
             }
         case ActionType.SetDraft:
@@ -227,7 +229,7 @@ export default function Store({ children }: Props) {
     return (
         <DispatchContext.Provider value={dispatch}>
             <StateContext.Provider value={state}>
-                {children}
+                <RoomRenameProvider>{children}</RoomRenameProvider>
             </StateContext.Provider>
         </DispatchContext.Provider>
     )

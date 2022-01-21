@@ -11,6 +11,7 @@ export default function getInitialChatState(): ChatState {
         roomId: undefined,
         roomIds: undefined,
         roomNameEditable: false,
+        roomNames: {},
         rooms: [],
         session: {
             streamrClient: undefined,

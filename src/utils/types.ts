@@ -23,6 +23,7 @@ export type ChatState = {
     roomId?: RoomId
     roomIds: RoomId[] | undefined
     roomNameEditable: boolean
+    roomNames: { [index: RoomId]: string }
     rooms: ChatRoom[]
     session: StreamrSession
 }
