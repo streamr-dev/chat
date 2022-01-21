@@ -2,9 +2,9 @@ import { createContext, useCallback, useContext } from 'react'
 import { RoomId } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 
-type RoomRenamer = (roomId: RoomId, newName: string) => void
+type RoomRenamer = (roomId: RoomId, newName: string) => Promise<void>
 
-const RenameContext = createContext<RoomRenamer>(() => {})
+const RenameContext = createContext<RoomRenamer>(async () => {})
 
 type Props = {
     children?: React.ReactNode

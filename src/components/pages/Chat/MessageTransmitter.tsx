@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import MessageAggregator from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
+import { useRenameRoom } from './RoomRenameProvider'
 
 type TransmitFn = (
     payload: string,
@@ -26,6 +27,7 @@ enum Command {
     Invite = 'invite',
     Delete = 'delete',
     New = 'new',
+    Rename = 'rename',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -41,19 +43,29 @@ export default function MessageTransmitter({ children }: Props) {
 
     const deleteRoom = useDeleteRoom()
 
+    const renameRoom = useRenameRoom()
+
     const send = useCallback<TransmitFn>(
         async (payload, { streamPartition = 0 }) => {
             if (!account || !roomId || !streamrClient) {
                 return
             }
 
-            const [command, address] = (
-                payload.match(/\/(invite|delete|new)\s*(\S+)?\s*$/) || []
+            const [command, arg] = (
+                payload.match(/\/(invite|delete|new|rename)\s*(.+)?\s*$/) || []
             ).slice(1)
 
             switch (command) {
+                case Command.Rename:
+                    if (!arg) {
+                        return
+                    }
+
+                    await renameRoom(roomId, arg)
+
+                    return
                 case Command.Invite:
-                    if (!address) {
+                    if (!arg) {
                         return
                     }
 
@@ -61,7 +73,7 @@ export default function MessageTransmitter({ children }: Props) {
                         const stream = await streamrClient.getStream(roomId)
 
                         await invite({
-                            invitee: address,
+                            invitee: arg,
                             stream,
                         })
                     })()
@@ -91,7 +103,15 @@ export default function MessageTransmitter({ children }: Props) {
                 streamPartition
             )
         },
-        [account, roomId, streamrClient, invite, createRoom, deleteRoom]
+        [
+            account,
+            roomId,
+            streamrClient,
+            invite,
+            createRoom,
+            deleteRoom,
+            renameRoom,
+        ]
     )
 
     return (
