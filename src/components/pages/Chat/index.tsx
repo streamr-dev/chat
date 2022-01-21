@@ -30,7 +30,11 @@ type Props = {
 }
 
 const UnstyledChat = ({ className }: Props) => {
-    const { roomIds = [], session: { wallet }, messages } = useStore()
+    const {
+        roomIds = [],
+        session: { wallet },
+        messages,
+    } = useStore()
 
     useRoomIdsStorage()
 

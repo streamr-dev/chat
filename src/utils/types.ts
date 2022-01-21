@@ -19,7 +19,7 @@ export type ChatState = {
     ethereumProviderReady: boolean
     identity?: string
     messages: MessagePayload[]
-    recentMessages: { [index: RoomId ]: string }
+    recentMessages: { [index: RoomId]: string }
     roomId?: RoomId
     roomIds: RoomId[] | undefined
     roomNameEditable: boolean
@@ -54,4 +54,9 @@ export interface ChatRoom {
 export enum StorageKey {
     EncryptedSession = 'chat/encrypted-session',
     RoomIds = 'chat/room-ids',
+}
+
+export enum Partition {
+    Messages,
+    Metadata,
 }

@@ -1,30 +1,8 @@
 import styled from 'styled-components'
+import useCreateRoom from '../../../hooks/useCreateRoom'
 import { ActionType, useDispatch, useStore } from '../../Store'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
-import { createRoom } from '../../../lib/ChatRoomManager'
-import { useCallback } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-
-function useCreateRoom(): () => Promise<void> {
-    const dispatch = useDispatch()
-    const { account, session, rooms } = useStore()
-
-    return useCallback(async () => {
-        const id = uuidv4()
-        const room = await createRoom(
-            session.streamrClient!,
-            session.wallet!.address,
-            account!,
-            id,
-            rooms.map((r) => r.id)
-        )
-        dispatch({
-            type: ActionType.AddRooms,
-            payload: [room],
-        })
-    }, [account, session, rooms, dispatch])
-}
 
 const IconWrap = styled.div`
     padding: 13px;
@@ -32,6 +10,7 @@ const IconWrap = styled.div`
 
 function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
+
     return (
         <SidebarItem
             {...props}

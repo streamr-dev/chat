@@ -56,7 +56,7 @@ function UnstyledRoomItem({ id, name = id, ...props }: Props) {
             {...props}
             afterContent={<></>}
             active={active}
-            icon={(
+            icon={
                 <AvatarWrap>
                     <Avatar
                         src={`data:image/png;base64,${new Identicon(
@@ -66,13 +66,11 @@ function UnstyledRoomItem({ id, name = id, ...props }: Props) {
                         alt={id}
                     />
                 </AvatarWrap>
-            )}
+            }
             onClick={onClick}
         >
             <Name>{name || <>Untitled room</>}</Name>
-            <RecentMessage>
-                {recentMessage || 'Empty room'}
-            </RecentMessage>
+            <RecentMessage>{recentMessage || 'Empty room'}</RecentMessage>
         </SidebarItem>
     )
 }

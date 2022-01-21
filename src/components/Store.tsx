@@ -3,10 +3,7 @@ import StreamrClient from 'streamr-client'
 import { ChatRoom, RoomId } from '../utils/types'
 import uniq from 'lodash/uniq'
 
-import type {
-    ChatState,
-    MessagePayload,
-} from '../utils/types'
+import type { ChatState, MessagePayload } from '../utils/types'
 import { Wallet } from 'ethers'
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import getInitialChatState from '../getters/getInitialStoreState'
@@ -68,7 +65,10 @@ type AddRoomIdsAction = Action<ActionType.AddRoomIds, string[]>
 
 type SetRoomIdsAction = Action<ActionType.SetRoomIds, string[] | undefined>
 
-type SetRecentMessageAction = Action<ActionType.SetRecentMessage, { [index: RoomId]: string }>
+type SetRecentMessageAction = Action<
+    ActionType.SetRecentMessage,
+    { [index: RoomId]: string }
+>
 
 type RemoveRoomIdAction = Action<ActionType.RemoveRoomId, RoomId>
 
@@ -135,7 +135,7 @@ function reducer(state: ChatState, action: A): ChatState {
         case ActionType.SetMessages:
             return {
                 ...state,
-                messages: state.roomId ? [...action.payload] : []
+                messages: state.roomId ? [...action.payload] : [],
             }
         case ActionType.SetSession:
             return {
@@ -185,8 +185,12 @@ function reducer(state: ChatState, action: A): ChatState {
         case ActionType.RemoveRoomId:
             return {
                 ...state,
-                roomId: state.roomId === action.payload ? undefined : state.roomId,
-                roomIds: state.roomIds != null ? state.roomIds.filter((id) => id !== action.payload) : state.roomIds,
+                roomId:
+                    state.roomId === action.payload ? undefined : state.roomId,
+                roomIds:
+                    state.roomIds != null
+                        ? state.roomIds.filter((id) => id !== action.payload)
+                        : state.roomIds,
             }
         default:
             return state

@@ -1,6 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
+import { Partition } from '../../../utils/types'
 
 function isMessagePayloadValid(data: any) {
     function hasPayloadField(fieldName: string) {
@@ -56,6 +57,11 @@ export default function MessageAggregator({ children }: Props) {
 
     const onMessage = useCallback(
         (data, raw) => {
+            if (raw.streamPartition === Partition.Metadata) {
+                // TODO
+                return
+            }
+
             if (!isMessagePayloadValid(data)) {
                 console.info('Filtering out garbage')
                 return
@@ -92,15 +98,14 @@ export default function MessageAggregator({ children }: Props) {
         <>
             {roomIds.map((id) => (
                 <Fragment key={id}>
-                    {/* 0 and 1 are partitions. FIXME. */}
                     <MessageInterceptor
                         streamId={id}
-                        streamPartition={0}
+                        streamPartition={Partition.Messages}
                         onMessage={onMessage}
                     />
                     <MessageInterceptor
                         streamId={id}
-                        streamPartition={1}
+                        streamPartition={Partition.Metadata}
                         onMessage={onMessage}
                     />
                 </Fragment>

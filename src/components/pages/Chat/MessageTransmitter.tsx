@@ -1,10 +1,11 @@
 import { createContext, useCallback, useContext } from 'react'
 import useInviter from '../../../hooks/useInviter'
 import { MessageType } from '../../../utils/types'
-import { ActionType, useDispatch, useStore } from '../../Store'
+import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import MessageAggregator from './MessageAggregator'
-import { StreamrClient } from 'streamr-client'
+import useCreateRoom from '../../../hooks/useCreateRoom'
+import useDeleteRoom from '../../../hooks/useDeleteRoom'
 
 type TransmitFn = (
     payload: string,
@@ -31,15 +32,14 @@ export default function MessageTransmitter({ children }: Props) {
     const {
         account,
         roomId,
-        session: { streamrClient, wallet },
-        ethereumProvider,
+        session: { streamrClient },
     } = useStore()
 
     const invite = useInviter()
 
-    const dispatch = useDispatch()
+    const createRoom = useCreateRoom()
 
-    const sessionAccount = wallet?.address
+    const deleteRoom = useDeleteRoom()
 
     const send = useCallback<TransmitFn>(
         async (payload, { streamPartition = 0 }) => {
@@ -47,7 +47,9 @@ export default function MessageTransmitter({ children }: Props) {
                 return
             }
 
-            const [command, address] = (payload.match(/\/(invite|delete|new)\s*(\S+)?\s*$/) || []).slice(1)
+            const [command, address] = (
+                payload.match(/\/(invite|delete|new)\s*(\S+)?\s*$/) || []
+            ).slice(1)
 
             switch (command) {
                 case Command.Invite:
@@ -66,44 +68,10 @@ export default function MessageTransmitter({ children }: Props) {
 
                     return
                 case Command.Delete:
-                    await (async () => {
-                        const providerClient = new StreamrClient({
-                            auth: {
-                                ethereum: ethereumProvider as any,
-                            }
-                        })
-                        const stream = await providerClient.getStream(roomId)
-
-                        await stream.delete()
-
-                        dispatch({
-                            type: ActionType.RemoveRoomId,
-                            payload: roomId,
-                        })
-                    })()
-
+                    await deleteRoom(roomId)
                     return
                 case Command.New:
-                    await (async () => {
-                        const id = `${sessionAccount}/streamr-chat/room/${uuidv4()}`.toLowerCase()
-
-                        const stream = await streamrClient.createStream({
-                            id,
-                            partitions: 2,
-                            requireEncryptedData: false,
-                        })
-
-                        await invite({
-                            invitee: account,
-                            stream,
-                        })
-
-                        dispatch({
-                            type: ActionType.AddRoomIds,
-                            payload: [id],
-                        })
-                    })()
-
+                    await createRoom()
                     return
                 default:
                     break
@@ -123,14 +91,12 @@ export default function MessageTransmitter({ children }: Props) {
                 streamPartition
             )
         },
-        [account, roomId, streamrClient, invite, ethereumProvider, dispatch, sessionAccount]
+        [account, roomId, streamrClient, invite, createRoom, deleteRoom]
     )
 
     return (
         <TransmitContext.Provider value={send}>
-            <MessageAggregator>
-                {children}
-            </MessageAggregator>
+            <MessageAggregator>{children}</MessageAggregator>
         </TransmitContext.Provider>
     )
 }
