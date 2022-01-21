@@ -3,6 +3,7 @@ import type { Props as SidebarItemProps } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 import type { MessagePayload } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
+import Identicon from 'identicon.js'
 
 type Props = SidebarItemProps & {
     id: string
@@ -18,7 +19,23 @@ const RecentMessage = styled.div`
     font-size: 0.875rem;
 `
 
-function UnstyledRoomItem({ id, name = id, icon = <div />, ...props }: Props) {
+const AvatarWrap = styled.div`
+    padding: 0.5rem;
+`
+
+const Avatar = styled.img`
+    background-color: #f1f4f7;
+    display: block;
+    height: 2rem;
+    width: 2rem;
+`
+
+const AVATAR_OPTIONS: any = {
+    size: 32,
+    background: [255, 255, 255, 255],
+}
+
+function UnstyledRoomItem({ id, name = id, ...props }: Props) {
     const { roomId, recentMessages } = useStore()
 
     const dispatch = useDispatch()
@@ -39,7 +56,17 @@ function UnstyledRoomItem({ id, name = id, icon = <div />, ...props }: Props) {
             {...props}
             afterContent={<></>}
             active={active}
-            icon={icon}
+            icon={(
+                <AvatarWrap>
+                    <Avatar
+                        src={`data:image/png;base64,${new Identicon(
+                            id,
+                            AVATAR_OPTIONS
+                        ).toString()}`}
+                        alt={id}
+                    />
+                </AvatarWrap>
+            )}
             onClick={onClick}
         >
             <Name>{name || <>Untitled room</>}</Name>
