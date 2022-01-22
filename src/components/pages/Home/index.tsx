@@ -65,7 +65,9 @@ type Props = {
 }
 
 const UnstyledHome = ({ className }: Props) => {
-    const { session: { wallet } } = useStore()
+    const {
+        session: { wallet },
+    } = useStore()
 
     const sessionAccount = wallet?.address
 

@@ -13,10 +13,12 @@ export default function useInviter(): Inviter {
         async ({ invitee, stream }: Options) =>
             await stream.grantPermissions(
                 [
-                    StreamOperation.STREAM_PUBLISH,
-                    StreamOperation.STREAM_SUBSCRIBE,
-                    StreamOperation.STREAM_SHARE,
+                    StreamOperation.STREAM_DELETE,
+                    StreamOperation.STREAM_EDIT,
                     StreamOperation.STREAM_GET,
+                    StreamOperation.STREAM_PUBLISH,
+                    StreamOperation.STREAM_SHARE,
+                    StreamOperation.STREAM_SUBSCRIBE,
                 ],
                 invitee
             ),

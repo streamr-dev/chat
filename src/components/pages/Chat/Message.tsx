@@ -61,9 +61,9 @@ const UnstyledMessage = ({
     className,
     payload: { sender, body, createdAt },
 }: Props) => {
-    const { identity } = useStore()
+    const { account } = useStore()
 
-    const incoming = identity !== sender
+    const incoming = account !== sender
 
     return (
         <Root className={className} $incoming={incoming}>

@@ -2,30 +2,26 @@ import { MetaMaskInpageProvider } from '@metamask/providers'
 import { Wallet } from 'ethers'
 import { StreamrClient, Stream } from 'streamr-client'
 
+export type RoomId = string
+
 export type MessagePayload = {
     body: string
     createdAt: number
-    sender: string
     id: string
-}
-
-export type MessagesCollection = {
-    [index: string]: Array<MessagePayload>
-}
-
-export type DraftCollection = {
-    [index: string]: string
+    sender: string
+    version: number
 }
 
 export type ChatState = {
     account: string | undefined
-    drafts: any
+    drafts: { [index: RoomId]: string }
     ethereumProvider: MetaMaskInpageProvider | undefined
     ethereumProviderReady: boolean
     identity?: string
-    messages: MessagesCollection
-    roomId?: string
-    roomIds: string[] | undefined
+    messages: MessagePayload[]
+    recentMessages: { [index: RoomId]: string }
+    roomId?: RoomId
+    roomIds: RoomId[] | undefined
     roomNameEditable: boolean
     rooms: ChatRoom[]
     session: StreamrSession
@@ -58,4 +54,9 @@ export interface ChatRoom {
 export enum StorageKey {
     EncryptedSession = 'chat/encrypted-session',
     RoomIds = 'chat/room-ids',
+}
+
+export enum Partition {
+    Messages,
+    Metadata,
 }

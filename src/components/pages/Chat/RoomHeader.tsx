@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { ActionType, useDispatch, useRoom, useStore } from '../../Store'
+import { ActionType, useDispatch, useStore } from '../../Store'
 import RoomAction, { Collection } from './RoomAction'
 import ModifyIcon from './modify.svg'
 import MoreIcon from './more.svg'
@@ -21,7 +21,7 @@ function UnstyledRoomHeader({ className }: Props) {
 
     const { roomNameEditable } = useStore()
 
-    const room = useRoom()
+    const room: any = undefined
 
     const title = (room && room.name) || ''
 
