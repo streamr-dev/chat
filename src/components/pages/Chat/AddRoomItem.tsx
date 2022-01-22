@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import useCreateRoom from '../../../hooks/useCreateRoom'
-import { ActionType, useDispatch, useStore } from '../../Store'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 
