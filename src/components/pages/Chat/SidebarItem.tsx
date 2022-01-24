@@ -21,7 +21,6 @@ const IconWrap = styled.div<IconWrapProps>`
     flex: 0 0 3rem;
     height: 3rem;
     margin-right: 1rem;
-    padding: 13px;
     transition: background-color 0.3s;
     width: 3rem;
 

@@ -1,10 +1,13 @@
 import Helmet from 'react-helmet'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../../Navbar'
 import { KARELIA } from '../../../utils/css'
 import Background from './background.png'
 import Button from '../../Button'
+import { useEffect } from 'react'
+import { useStore } from '../../Store'
+import useConnect from '../../../hooks/useConnect'
 
 const StreamrPlug = styled.span`
     background-color: white;
@@ -20,7 +23,7 @@ const StreamrPlug = styled.span`
     }
 `
 
-const CreateLink = styled(Link)`
+const CreateButton = styled(Button)`
     align-items: center;
     background: #ff5924;
     border-radius: 100px;
@@ -62,6 +65,22 @@ type Props = {
 }
 
 const UnstyledHome = ({ className }: Props) => {
+    const {
+        session: { wallet },
+    } = useStore()
+
+    const sessionAccount = wallet?.address
+
+    const navigate = useNavigate()
+
+    const connect = useConnect()
+
+    useEffect(() => {
+        if (sessionAccount) {
+            navigate('/chat')
+        }
+    }, [sessionAccount, navigate])
+
     return (
         <>
             <Helmet title="Streamr Chat dApp" />
@@ -70,7 +89,7 @@ const UnstyledHome = ({ className }: Props) => {
                 <Content>
                     <div>
                         <h1>Hello world.</h1>
-                        <Button as={CreateLink} to="/chat">
+                        <CreateButton type="button" onClick={connect}>
                             <div>Create new room</div>
                             <svg
                                 width="20"
@@ -88,7 +107,7 @@ const UnstyledHome = ({ className }: Props) => {
                                     fill="white"
                                 />
                             </svg>
-                        </Button>
+                        </CreateButton>
                     </div>
                 </Content>
                 <StreamrPlug>
