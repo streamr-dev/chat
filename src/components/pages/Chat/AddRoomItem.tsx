@@ -1,34 +1,45 @@
 import styled from 'styled-components'
-import { ActionType, useDispatch } from './ChatStore'
-import { v4 as uuidv4 } from 'uuid'
+import { ActionType, useDispatch, useStore } from '../../Store'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
+import { createRoom } from '../../../lib/ChatRoomManager'
+import { useCallback } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
-function UnstyledAddRoom(props: Props) {
+function useCreateRoom(): () => Promise<void> {
     const dispatch = useDispatch()
+    const { account, session, rooms } = useStore()
 
+    return useCallback(async () => {
+        const id = uuidv4()
+        const room = await createRoom(
+            session.streamrClient!,
+            session.wallet!.address,
+            account!,
+            id,
+            rooms.map((r) => r.id)
+        )
+        dispatch({
+            type: ActionType.AddRooms,
+            payload: [room],
+        })
+    }, [account, session, rooms, dispatch])
+}
+
+function UnstyledAddRoomItem(props: Props) {
+    const createRoom = useCreateRoom()
     return (
         <SidebarItem
             {...props}
-            onClick={() => {
-                const id = uuidv4()
-
-                dispatch({
-                    type: ActionType.AddRooms,
-                    payload: [{
-                        id,
-                        name: '',
-                        readAt: Date.now(),
-                    }],
-                })
-
-                dispatch({
-                    type: ActionType.SelectRoom,
-                    payload: id,
-                })
-            }}
-            icon={(
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            onClick={createRoom}
+            icon={
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 22 22"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
                     <path
                         fillRule="evenodd"
                         clipRule="evenodd"
@@ -36,14 +47,14 @@ function UnstyledAddRoom(props: Props) {
                         fill="black"
                     />
                 </svg>
-            )}
+            }
         >
             Add new room
         </SidebarItem>
     )
 }
 
-const AddRoom = styled(UnstyledAddRoom)`
+const AddRoomItem = styled(UnstyledAddRoomItem)`
     font-size: 1.125rem;
 
     svg {
@@ -51,4 +62,4 @@ const AddRoom = styled(UnstyledAddRoom)`
     }
 `
 
-export default AddRoom
+export default AddRoomItem

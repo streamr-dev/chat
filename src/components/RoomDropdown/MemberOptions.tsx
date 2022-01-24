@@ -78,7 +78,7 @@ const DropDownListContainer = styled.div`
 `
 
 const DropDownList = styled.div`
-    width: 250px;
+    width: 150px;
     padding: 0;
     margin: 0;
     background: #ffffff;
@@ -136,12 +136,7 @@ const UnstyledMemberOptions = ({ address }: any) => {
 
     useEffect(() => {
         function handleClickOutside(event: any) {
-            if (
-                buttonRef.current &&
-                !buttonRef.current.contains(event.target)
-            ) {
-                setDropdownOpen(false)
-            }
+            setDropdownOpen(false)
         }
 
         // Bind the event listener

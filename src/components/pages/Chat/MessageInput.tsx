@@ -1,20 +1,26 @@
 import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
-import { ActionType, useDispatch, useDraft, useStore } from './ChatStore'
+import {
+    ActionType,
+    useDispatch,
+    useDraft,
+    useRoom,
+    useStore,
+} from '../../Store'
 import SubmitButton from './SubmitButton'
 import focus from '../../../utils/focus'
 
 type Props = {
-    className?: string,
+    className?: string
 }
 
 type InnerProps = {
-    $submittable?: boolean,
+    $submittable?: boolean
 }
 
 const Inner = styled.div<InnerProps>`
-    background-color: #F7F9FC;
+    background-color: #f7f9fc;
     border-radius: 0.75rem;
     display: flex;
     height: 3rem;
@@ -24,11 +30,13 @@ const Inner = styled.div<InnerProps>`
         opacity: 0.3;
     }
 
-    ${({ $submittable }) => $submittable && css`
-        ${SubmitButton} {
-            opacity: 1;
-        }
-    `}
+    ${({ $submittable }) =>
+        $submittable &&
+        css`
+            ${SubmitButton} {
+                opacity: 1;
+            }
+        `}
 `
 
 function UnstyledMessageInput({ className }: Props) {
@@ -42,6 +50,8 @@ function UnstyledMessageInput({ className }: Props) {
 
     const { identity, roomId, roomNameEditable } = useStore()
 
+    const room = useRoom()
+
     function onSubmit(body: string) {
         if (identity == null) {
             return
@@ -49,12 +59,14 @@ function UnstyledMessageInput({ className }: Props) {
 
         dispatch({
             type: ActionType.AddMessages,
-            payload: [{
-                body,
-                createdAt: Date.now(),
-                sender: identity,
-                id: uuidv4(),
-            }],
+            payload: [
+                {
+                    body,
+                    createdAt: Date.now(),
+                    sender: identity,
+                    id: uuidv4(),
+                },
+            ],
         })
     }
 
@@ -91,7 +103,6 @@ function UnstyledMessageInput({ className }: Props) {
             return
         }
 
-
         if (!roomNameEditable) {
             focus(inputRef.current)
         }
@@ -110,6 +121,7 @@ function UnstyledMessageInput({ className }: Props) {
                     }}
                     onKeyDown={onKeyDown}
                     placeholder="Type a message"
+                    readOnly={!room}
                     ref={inputRef}
                     type="text"
                     value={draft}

@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
 type Props = {
-    className?: string,
-    timestamp: number,
+    className?: string
+    timestamp: number
 }
 
 function formatDate(timestamp: number) {
@@ -42,9 +42,7 @@ const Pointer = styled.div`
 const UnstyledDateTooltip = ({ className, timestamp }: Props) => (
     <div className={className}>
         <Pointer />
-        <Inner>
-            {formatDate(timestamp)}
-        </Inner>
+        <Inner>{formatDate(timestamp)}</Inner>
     </div>
 )
 
