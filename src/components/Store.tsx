@@ -48,7 +48,6 @@ type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
 
 type SetPublishMessage = Action<ActionType.PublishMessage, MessagePayload>
 
-
 type ResetAction = PayloadlessAction<ActionType.Reset>
 
 type SetDraftAction = Action<ActionType.SetDraft, string>

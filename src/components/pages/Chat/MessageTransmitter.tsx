@@ -76,6 +76,7 @@ export default function MessageTransmitter({ children }: Props) {
                             invitee: arg,
                             stream,
                         })
+                        console.info('invite sent', arg)
                     })()
 
                     return

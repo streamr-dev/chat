@@ -3,9 +3,8 @@ import { format } from 'date-fns'
 import { KARELIA, MEDIUM } from '../../../../utils/css'
 import Button from '../../../Button'
 import AddMemberIcon from './member.svg'
-import { useCallback, useEffect, useState } from 'react'
-import { sendChatRoomInvitation } from '../../../../lib/ChatRoomManager'
-import { useRoom, useStore } from '../../../Store'
+import { useEffect, useState } from 'react'
+import { useSend } from '../MessageTransmitter'
 
 type Props = {
     className?: string
@@ -42,25 +41,12 @@ const CreatedAt = styled.span`
     margin-bottom: 2rem;
 `
 
-function useInvite(address: string): () => Promise<void> {
-    const { session } = useStore()
-    const room = useRoom()
-
-    return useCallback(async () => {
-        console.log('invite address', address)
-        const invite = await sendChatRoomInvitation(
-            session.streamrClient!,
-            room!.id,
-            address
-        )
-        console.log('invite sent', invite)
-    }, [session, room, address])
-}
-
 const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
-    const [title, setTitle] = useState('0x0')
-    const sendInvite = useInvite(title)
-    useEffect(() => {}, [title])
+    const [invitee, setInvitee] = useState('0x0')
+
+    useEffect(() => {}, [invitee])
+
+    const send = useSend()
 
     return (
         <div className={className}>
@@ -73,11 +59,18 @@ const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
                 )}
                 <input
                     type="text"
-                    value={title}
+                    value={invitee}
                     placeholder="Ethereum address"
-                    onChange={(event) => setTitle(event.target.value)}
+                    onChange={(event) => setInvitee(event.target.value)}
                 ></input>
-                <AddMemberButton type="button" onClick={sendInvite}>
+                <AddMemberButton
+                    type="button"
+                    onClick={() => {
+                        send(`/invite ${invitee}`, {
+                            streamPartition: 0,
+                        })
+                    }}
+                >
                     <img src={AddMemberIcon} alt="" />
                     <span>Add member</span>
                 </AddMemberButton>
