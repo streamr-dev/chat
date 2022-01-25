@@ -6,6 +6,7 @@ import MoreIcon from './more.svg'
 import RoomNameDisplay from './RoomNameDisplay'
 import RoomNameEditor from './RoomNameEditor'
 import React, { useEffect, useState } from 'react'
+import RoomDropdown from '../../RoomDropdown'
 
 type Props = {
     className?: string
@@ -90,9 +91,13 @@ function UnstyledRoomHeader({ className }: Props) {
                         >
                             <img src={ModifyIcon} alt="" />
                         </RoomAction>
-                        <RoomAction type="button">
-                            <img src={MoreIcon} alt="" />
-                        </RoomAction>
+                        <RoomDropdown
+                            button={
+                                <RoomAction type="button">
+                                    <img src={MoreIcon} alt="" />
+                                </RoomAction>
+                            }
+                        />
                     </>
                 )}
             </Collection>

@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import MoreIcon from './more.svg'
 import ModifyIcon from './modify.svg'
 import { KARELIA } from '../../utils/css'
+import { CopyIcon, DeleteIcon } from '../../icons'
+import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -78,7 +80,7 @@ const DropDownListContainer = styled.div`
 `
 
 const DropDownList = styled.div`
-    width: 150px;
+    width: fit-content;
     padding: 0;
     margin: 0;
     background: #ffffff;
@@ -100,16 +102,11 @@ const DropDownList = styled.div`
 `
 
 const ListItem = styled.div`
+    white-space: nowrap;
     padding: 10px 15px;
     background-clip: padding-box;
     display: flex;
-
-    td {
-        line-height: 13px;
-        &:last-child {
-            margin-left: 15px;
-        }
-    }
+    align-items: center;
 
     &:first-child {
         padding-top: 15px;
@@ -123,6 +120,11 @@ const ListItem = styled.div`
 
     :hover {
         background-color: #f1f4f7;
+    }
+
+    svg {
+        width: 1rem;
+        margin-right: 0.75rem;
     }
 `
 
@@ -193,7 +195,18 @@ const UnstyledMemberOptions = ({ address }: any) => {
                             {isDropdownOpen && (
                                 <DropDownListContainer>
                                     <DropDownList>
-                                        <ListItem>Hello</ListItem>
+                                        <ListItem>
+                                            <ExternalLinkIcon />
+                                            View on explorer
+                                        </ListItem>
+                                        <ListItem>
+                                            <CopyIcon />
+                                            Copy address
+                                        </ListItem>
+                                        <ListItem>
+                                            <DeleteIcon />
+                                            Delete member
+                                        </ListItem>
                                     </DropDownList>
                                 </DropDownListContainer>
                             )}
