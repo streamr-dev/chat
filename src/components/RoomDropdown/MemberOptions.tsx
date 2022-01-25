@@ -9,7 +9,6 @@ import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
 const Root = styled.div`
     padding: 15px 0px;
     min-height: 85px;
-    width: 100%;
     background-color: #f1f4f7;
     margin: 5px;
     border-radius: 8px;
@@ -63,6 +62,12 @@ const MemberInput = styled.input`
 const DropDownContainer = styled.div`
     margin-left: 10px;
 `
+
+const MemberContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+
 const DropDownHeader = styled.div`
     margin-bottom: 0.8em;
     padding: 0 2em 0 1em;
@@ -151,7 +156,7 @@ const UnstyledMemberOptions = ({ address }: any) => {
     return (
         <Root>
             <MemberIcon />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <MemberContainer>
                 {editing ? (
                     <MemberInput
                         placeholder={address}
@@ -174,7 +179,7 @@ const UnstyledMemberOptions = ({ address }: any) => {
                         {nickname ? 'Edit nickname' : 'Set nickname'}
                     </Subtitle>
                 )}
-            </div>
+            </MemberContainer>
             {editing ? (
                 <EditButton
                     onClick={() => {
