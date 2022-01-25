@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext } from 'react'
 import useInviter from '../../../hooks/useInviter'
-import { MessageType } from '../../../utils/types'
+import { MessageType, Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import MessageAggregator from './MessageAggregator'
@@ -46,7 +46,7 @@ export default function MessageTransmitter({ children }: Props) {
     const renameRoom = useRenameRoom()
 
     const send = useCallback<TransmitFn>(
-        async (payload, { streamPartition = 0 }) => {
+        async (payload, { streamPartition = Partition.Messages }) => {
             if (!account || !roomId || !streamrClient) {
                 return
             }

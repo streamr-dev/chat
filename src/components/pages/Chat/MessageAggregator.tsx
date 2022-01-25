@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import { Partition } from '../../../utils/types'
+import { MessagePayload, Partition, RoomId } from '../../../utils/types'
 
 function isMessagePayloadValid(data: any) {
     function hasPayloadField(fieldName: string) {
@@ -23,12 +23,8 @@ function isMessagePayloadValid(data: any) {
     )
 }
 
-type Message = any
-
-type RoomId = string
-
 type Cache = {
-    [index: RoomId]: Message[]
+    [index: RoomId]: MessagePayload[]
 }
 
 type Props = {
@@ -55,44 +51,50 @@ export default function MessageAggregator({ children }: Props) {
         })
     }, [dispatch, roomId])
 
-    const onMessage = useCallback(
-        (data, raw) => {
-            if (raw.streamPartition === Partition.Metadata) {
-                // TODO
-                return
-            }
+    const onTextMessage = useCallback((data, { messageId }) => {
+        const { streamId, streamPartition } = messageId
 
-            if (!isMessagePayloadValid(data)) {
-                console.info('Filtering out garbage')
-                return
-            }
+        if (streamPartition !== Partition.Messages) {
+            throw new Error('Unexpected partition')
+        }
 
-            const { streamId } = raw.messageId
+        if (!isMessagePayloadValid(data)) {
+            console.warn('Filtering out garbage')
+            return
+        }
 
-            const { current: cache } = cacheRef
+        const { current: cache } = cacheRef
 
-            if (!cache[streamId]) {
-                cache[streamId] = []
-            }
+        if (!cache[streamId]) {
+            cache[streamId] = []
+        }
 
-            cache[streamId].push(data)
+        cache[streamId].push(data)
 
+        dispatch({
+            type: ActionType.SetRecentMessage,
+            payload: {
+                [streamId]: data.body,
+            },
+        })
+
+        if (streamId === roomId) {
             dispatch({
-                type: ActionType.SetRecentMessage,
-                payload: {
-                    [streamId]: data.body,
-                },
+                type: ActionType.SetMessages,
+                payload: cache[streamId],
             })
+        }
+    }, [dispatch, roomId])
 
-            if (streamId === roomId) {
-                dispatch({
-                    type: ActionType.SetMessages,
-                    payload: cache[streamId],
-                })
-            }
-        },
-        [dispatch, roomId]
-    )
+    const onMetadataMessage = useCallback((data, { messageId }) => {
+        const { streamPartition } = messageId
+
+        if (streamPartition !== Partition.Metadata) {
+            throw new Error('Unexpected partition')
+        }
+
+        console.log('Metadata', data)
+    }, [])
 
     return (
         <>
@@ -101,12 +103,12 @@ export default function MessageAggregator({ children }: Props) {
                     <MessageInterceptor
                         streamId={id}
                         streamPartition={Partition.Messages}
-                        onMessage={onMessage}
+                        onMessage={onTextMessage}
                     />
                     <MessageInterceptor
                         streamId={id}
                         streamPartition={Partition.Metadata}
-                        onMessage={onMessage}
+                        onMessage={onMetadataMessage}
                     />
                 </Fragment>
             ))}

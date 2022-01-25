@@ -1,10 +1,10 @@
 import { memo, useEffect, useRef } from 'react'
+import { Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 
 type Props = {
     streamId: string
-    // TODO: Type with Partition.*
-    streamPartition: number
+    streamPartition: Partition
     onMessage?: (data: any, raw: any) => void
 }
 

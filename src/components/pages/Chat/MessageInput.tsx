@@ -4,6 +4,7 @@ import { useStore } from '../../Store'
 import SubmitButton from './SubmitButton'
 import focus from '../../../utils/focus'
 import { useSend } from './MessageTransmitter'
+import { Partition } from '../../../utils/types'
 
 type Props = {
     className?: string
@@ -46,7 +47,7 @@ function UnstyledMessageInput({ className }: Props) {
 
     function onSubmit() {
         send(value, {
-            streamPartition: 0,
+            streamPartition: Partition.Messages,
         })
     }
 
