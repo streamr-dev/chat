@@ -91,13 +91,7 @@ function UnstyledRoomHeader({ className }: Props) {
                         >
                             <img src={ModifyIcon} alt="" />
                         </RoomAction>
-                        <RoomDropdown
-                            button={
-                                <RoomAction type="button">
-                                    <img src={MoreIcon} alt="" />
-                                </RoomAction>
-                            }
-                        />
+                        <RoomDropdown />
                     </>
                 )}
             </Collection>

@@ -9,10 +9,12 @@ import {
     DownloadIcon,
     CopyIcon,
     DeleteIcon,
+    MoreIcon,
 } from '../../icons'
 import { KARELIA } from '../../utils/css'
 import MemberOptions from './MemberOptions'
 import CloseIcon from '../../icons/CloseIcon'
+import RoomAction from '../pages/Chat/RoomAction'
 
 type Props = {
     button?: any
@@ -187,11 +189,9 @@ const RoomDropdown = ({ button }: Props) => {
     return (
         <>
             <DropDownContainer>
-                {React.cloneElement(button, { onClick: toggleOpen }) || (
-                    <DropDownHeader onClick={toggleOpen}>
-                        Mangoes
-                    </DropDownHeader>
-                )}
+                <RoomAction type="button" onClick={toggleOpen}>
+                    <MoreIcon />
+                </RoomAction>
                 {isOpen && (
                     <DropDownListContainer ref={ref}>
                         <DropDownList>
