@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
-import { ChatRoom, RoomId } from '../utils/types'
+import { RoomId } from '../utils/types'
 import uniq from 'lodash/uniq'
 
 import type { ChatState, MessagePayload } from '../utils/types'
@@ -11,7 +11,6 @@ import RoomRenameProvider from './pages/Chat/RoomRenameProvider'
 
 export enum ActionType {
     AddMessages = 'add messages',
-    PublishMessage = 'publish message',
     AddRooms = 'add rooms',
     EditRoomName = 'edit room name',
     RenameRoom = 'rename room',
@@ -38,15 +37,9 @@ type PayloadlessAction<A> = Omit<Action<A, any>, 'payload'>
 
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
 
-type AddRoomsAction = Action<ActionType.AddRooms, ChatRoom[]>
-
-type SetRoomsAction = Action<ActionType.SetRooms, ChatRoom[]>
-
 type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
 
 type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
-
-type SetPublishMessage = Action<ActionType.PublishMessage, MessagePayload>
 
 type ResetAction = PayloadlessAction<ActionType.Reset>
 
@@ -81,10 +74,7 @@ type RemoveRoomIdAction = Action<ActionType.RemoveRoomId, RoomId>
 
 type A =
     | SelectRoomAction
-    | AddRoomsAction
-    | SetRoomsAction
     | AddMessagesAction
-    | SetPublishMessage
     | SetMessagesAction
     | ResetAction
     | SetDraftAction

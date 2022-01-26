@@ -42,12 +42,6 @@ const CreatedAt = styled.span`
 `
 
 const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
-    const [invitee, setInvitee] = useState('0x0')
-
-    useEffect(() => {}, [invitee])
-
-    const send = useSend()
-
     return (
         <div className={className}>
             <div>
@@ -57,20 +51,7 @@ const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
                         {format(roomCreatedAt, 'iiii, LLL do yyyy')}
                     </CreatedAt>
                 )}
-                <input
-                    type="text"
-                    value={invitee}
-                    placeholder="Ethereum address"
-                    onChange={(event) => setInvitee(event.target.value)}
-                ></input>
-                <AddMemberButton
-                    type="button"
-                    onClick={() => {
-                        send(`/invite ${invitee}`, {
-                            streamPartition: 0,
-                        })
-                    }}
-                >
+                <AddMemberButton type="button">
                     <img src={AddMemberIcon} alt="" />
                     <span>Add member</span>
                 </AddMemberButton>
