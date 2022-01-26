@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer } from 'react'
 import StreamrClient from 'streamr-client'
-import { ChatRoom, RoomId } from '../utils/types'
+import { RoomId } from '../utils/types'
 import uniq from 'lodash/uniq'
 
 import type { ChatState, MessagePayload } from '../utils/types'
@@ -36,10 +36,6 @@ type Action<A, B> = {
 type PayloadlessAction<A> = Omit<Action<A, any>, 'payload'>
 
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
-
-type AddRoomsAction = Action<ActionType.AddRooms, ChatRoom[]>
-
-type SetRoomsAction = Action<ActionType.SetRooms, ChatRoom[]>
 
 type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
 
@@ -78,8 +74,6 @@ type RemoveRoomIdAction = Action<ActionType.RemoveRoomId, RoomId>
 
 type A =
     | SelectRoomAction
-    | AddRoomsAction
-    | SetRoomsAction
     | AddMessagesAction
     | SetMessagesAction
     | ResetAction

@@ -24,7 +24,6 @@ export type ChatState = {
     roomIds: RoomId[] | undefined
     roomNameEditable: boolean
     roomNames: { [index: RoomId]: string }
-    rooms: ChatRoom[]
     session: StreamrSession
 }
 
@@ -40,16 +39,6 @@ export interface ChatMessage {
 export interface StreamrSession {
     wallet: Wallet | undefined
     streamrClient: StreamrClient | undefined
-}
-
-export interface ChatRoom {
-    id: string
-    name: string
-    stream: Stream
-    publishMessage: (message: string) => Promise<void>
-    publishMetadata: (metadata: any) => Promise<void>
-    subscribeMessages: (callback: (message: ChatMessage) => void) => void
-    subscribeMetadata: (callback: (metadata: any) => void) => void
 }
 
 export enum StorageKey {

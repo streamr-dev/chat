@@ -45,6 +45,7 @@ const MessageInterceptor = memo(
                 if (sub) {
                     streamrClient!.unsubscribe(sub)
                     sub = undefined
+                    console.info('unsubscribed from stream', streamId)
                 }
             }
 
@@ -72,6 +73,12 @@ const MessageInterceptor = memo(
                             onMessage(data, raw)
                         }
                     }
+                )
+                console.info(
+                    'subscribed to stream',
+                    streamId,
+                    'on  partition',
+                    streamPartition
                 )
 
                 if (!mounted) {
