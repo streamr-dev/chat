@@ -34,7 +34,7 @@ export default function useCreateRoom(): () => Promise<void> {
         const stream = await streamrClient.createStream({
             id,
             partitions: 2,
-            requireEncryptedData: false,
+            // requireEncryptedData: false,
         })
 
         await invite({

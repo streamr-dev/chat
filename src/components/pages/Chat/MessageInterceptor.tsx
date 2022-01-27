@@ -53,7 +53,7 @@ const MessageInterceptor = memo(
                 sub = await streamrClient!.subscribe(
                     {
                         streamId,
-                        streamPartition,
+                        partition: streamPartition,
                     },
                     (data: any, raw: any) => {
                         if (!mounted) {
