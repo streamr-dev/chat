@@ -51,40 +51,43 @@ export default function MessageAggregator({ children }: Props) {
         })
     }, [dispatch, roomId])
 
-    const onTextMessage = useCallback((data, { messageId }) => {
-        const { streamId, streamPartition } = messageId
+    const onTextMessage = useCallback(
+        (data, { messageId }) => {
+            const { streamId, streamPartition } = messageId
 
-        if (streamPartition !== Partition.Messages) {
-            throw new Error('Unexpected partition')
-        }
+            if (streamPartition !== Partition.Messages) {
+                throw new Error('Unexpected partition')
+            }
 
-        if (!isMessagePayloadValid(data)) {
-            console.warn('Filtering out garbage')
-            return
-        }
+            if (!isMessagePayloadValid(data)) {
+                console.warn('Filtering out garbage')
+                return
+            }
 
-        const { current: cache } = cacheRef
+            const { current: cache } = cacheRef
 
-        if (!cache[streamId]) {
-            cache[streamId] = []
-        }
+            if (!cache[streamId]) {
+                cache[streamId] = []
+            }
 
-        cache[streamId].push(data)
+            cache[streamId].push(data)
 
-        dispatch({
-            type: ActionType.SetRecentMessage,
-            payload: {
-                [streamId]: data.body,
-            },
-        })
-
-        if (streamId === roomId) {
             dispatch({
-                type: ActionType.SetMessages,
-                payload: cache[streamId],
+                type: ActionType.SetRecentMessage,
+                payload: {
+                    [streamId]: data.body,
+                },
             })
-        }
-    }, [dispatch, roomId])
+
+            if (streamId === roomId) {
+                dispatch({
+                    type: ActionType.SetMessages,
+                    payload: cache[streamId],
+                })
+            }
+        },
+        [dispatch, roomId]
+    )
 
     const onMetadataMessage = useCallback((data, { messageId }) => {
         const { streamPartition } = messageId
