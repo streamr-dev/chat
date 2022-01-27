@@ -97,7 +97,7 @@ export default function MessageTransmitter({ children }: Props) {
                     createdAt: Date.now(),
                     id: uuidv4(),
                     sender: account,
-                    type: MessageType.TEXT,
+                    type: MessageType.Text,
                     version: 1,
                 },
                 Date.now(),
