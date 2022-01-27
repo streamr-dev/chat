@@ -10,10 +10,8 @@ export default function EthereumProviderDetector() {
         let mounted = true
 
         async function detect() {
-            let provider: MetaMaskInpageProvider
-
             try {
-                provider =
+                const provider =
                     (await detectEthereumProvider()) as MetaMaskInpageProvider
 
                 if (!mounted) {

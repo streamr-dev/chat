@@ -6,11 +6,13 @@ import Navbar from '../../Navbar'
 import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
-import { ActionType, useDispatch, useMessages, useStore } from '../../Store'
-import { fetchRooms } from '../../../lib/ChatRoomManager'
-import { useEffect } from 'react'
-import { ChatRoom } from '../../../utils/types'
+import { useStore } from '../../Store'
+import useExistingRooms from '../../../hooks/useExistingRooms'
+import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
 import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import MessageTransmitter from './MessageTransmitter'
+import RoomNameLoader from './RoomNameLoader'
 
 const Content = styled.div`
     height: 100vh;
@@ -29,35 +31,17 @@ type Props = {
 }
 
 const UnstyledChat = ({ className }: Props) => {
-    const messages = useMessages()
-    const { roomId, rooms, session, ethereumProvider } = useStore()
-    const dispatch = useDispatch()
+    const {
+        roomIds = [],
+        session: { wallet },
+        messages,
+    } = useStore()
 
-    useEffect(() => {
-        if (!session.streamrClient) {
-            // No streamr client. Skip.
-            return
-        }
-        const fn = async () => {
-            // the callback allows for rooms to be rendered as soon as they're fetched
-            // opposed to waiting for them all to arrive and then render
-            await fetchRooms(
-                session.streamrClient!,
-                session.wallet!.address,
-                ethereumProvider!,
-                (chatRoom: ChatRoom) => {
-                    dispatch({
-                        type: ActionType.AddRooms,
-                        payload: [chatRoom],
-                    })
-                }
-            )
-        }
+    useRoomIdsStorage()
 
-        fn()
-    }, [dispatch, session, ethereumProvider])
+    useExistingRooms()
 
-    const sessionAccount = session.wallet?.address
+    const sessionAccount = wallet?.address
 
     const navigate = useNavigate()
 
@@ -68,21 +52,18 @@ const UnstyledChat = ({ className }: Props) => {
     }, [sessionAccount, navigate])
 
     return (
-        <>
+        <MessageTransmitter>
+            {roomIds.map((id) => (
+                <RoomNameLoader key={id} roomId={id} />
+            ))}
             <Helmet title="Let's chat!" />
             <main className={className}>
                 <Navbar />
                 <Content>
                     <div>
                         <RoomList>
-                            {rooms.map((room) => (
-                                <RoomItem
-                                    key={room.id}
-                                    id={room.id}
-                                    active={room.id === roomId}
-                                    name={room.name}
-                                    unread={false}
-                                />
+                            {roomIds.map((id) => (
+                                <RoomItem key={id} id={id} />
                             ))}
                         </RoomList>
                         <ChatWindow>
@@ -93,7 +74,7 @@ const UnstyledChat = ({ className }: Props) => {
                     </div>
                 </Content>
             </main>
-        </>
+        </MessageTransmitter>
     )
 }
 
