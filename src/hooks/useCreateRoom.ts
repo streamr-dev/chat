@@ -8,7 +8,7 @@ export default function useCreateRoom(): () => Promise<void> {
     const {
         session: { wallet, streamrClient },
         account,
-        ethereumProvider
+        ethereumProvider,
     } = useStore()
 
     const sessionAccount = wallet?.address
@@ -30,11 +30,10 @@ export default function useCreateRoom(): () => Promise<void> {
             throw new Error('Missing account')
         }
 
-        const id =
-            `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
+        const id = `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
 
         const metamaskStreamrClient = new StreamrClient({
-            auth:{ ethereum: ethereumProvider as any}
+            auth: { ethereum: ethereumProvider as any },
         })
         const stream = await metamaskStreamrClient.createStream({
             id,
@@ -51,5 +50,12 @@ export default function useCreateRoom(): () => Promise<void> {
             type: ActionType.AddRoomIds,
             payload: [id],
         })
-    }, [sessionAccount, streamrClient, account, invite, dispatch])
+    }, [
+        sessionAccount,
+        ethereumProvider,
+        streamrClient,
+        account,
+        invite,
+        dispatch,
+    ])
 }

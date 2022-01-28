@@ -63,7 +63,11 @@ export default function useExistingRooms() {
                                 'canSubscribe' as StreamPermission,
                                 sessionAccount!
                             )
-                                console.log('hasSubPerm', hasSubscribePermission, sessionAccount)
+                        console.log(
+                            'hasSubPerm',
+                            hasSubscribePermission,
+                            sessionAccount
+                        )
                         if (!hasSubscribePermission) {
                             await invite({
                                 invitee: sessionAccount!,

@@ -73,10 +73,12 @@ export default function MessageTransmitter({ children }: Props) {
 
                     await (async () => {
                         const metamaskStreamrClient = new StreamrClient({
-                            auth:{ ethereum: ethereumProvider as any}
+                            auth: { ethereum: ethereumProvider as any },
                         })
 
-                        const stream = await metamaskStreamrClient.getStream(roomId)
+                        const stream = await metamaskStreamrClient.getStream(
+                            roomId
+                        )
 
                         await invite({
                             invitee: arg,

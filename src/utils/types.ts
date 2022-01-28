@@ -1,6 +1,6 @@
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import { Wallet } from 'ethers'
-import { StreamrClient, Stream } from 'streamr-client'
+import { StreamrClient } from 'streamr-client'
 
 export type RoomId = string
 
