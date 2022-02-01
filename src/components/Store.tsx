@@ -136,6 +136,9 @@ function reducer(state: ChatState, action: A): ChatState {
         case ActionType.SetSession:
             return {
                 ...state,
+                metamaskStreamrClient: new StreamrClient({
+                    auth: { ethereum: state.ethereumProvider as any },
+                }),
                 session: {
                     streamrClient: new StreamrClient({
                         auth: {
@@ -146,14 +149,10 @@ function reducer(state: ChatState, action: A): ChatState {
                 },
             }
         case ActionType.SetEthereumProvider:
-            const client = new StreamrClient({
-                auth: { ethereum: state.ethereumProvider as any },
-            })
             return {
                 ...state,
                 ethereumProvider: action.payload || undefined,
                 ethereumProviderReady: true,
-                metamaskStreamrClient: client,
             }
         case ActionType.SetAccount:
             return action.payload === state.account
