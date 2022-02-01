@@ -10,6 +10,8 @@ import {
     SearchIcon,
 } from '../../../../icons'
 import { KARELIA } from '../../../../utils/css'
+import RoomAction from '../RoomAction'
+import MoreIcon from '../more.svg'
 
 type Props = {
     button?: React.ReactElement
@@ -109,9 +111,9 @@ const RoomDropdown = ({ button }: Props) => {
 
     return (
         <DropDownContainer>
-            {React.cloneElement(button!, { onClick: toggleOpen }) || (
-                <DropDownHeader onClick={toggleOpen}>Mangoes</DropDownHeader>
-            )}
+            <RoomAction onClick={toggleOpen}>
+                <img src={MoreIcon} alt="" />
+            </RoomAction>
             {isOpen && (
                 <DropDownListContainer ref={ref}>
                     <DropDownList>

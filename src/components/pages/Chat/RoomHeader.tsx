@@ -2,12 +2,12 @@ import styled from 'styled-components'
 import { ActionType, useDispatch, useStore } from '../../Store'
 import RoomAction, { Collection } from './RoomAction'
 import ModifyIcon from './modify.svg'
-import MoreIcon from './more.svg'
 import RoomNameDisplay from './RoomNameDisplay'
 import RoomNameEditor from './RoomNameEditor'
 import React, { useEffect, useState } from 'react'
 import { useRenameRoom } from './RoomRenameProvider'
 import useRoomName from '../../../hooks/useRoomName'
+import RoomDropdown from './RoomDropdown'
 
 type Props = {
     className?: string
@@ -93,9 +93,7 @@ function UnstyledRoomHeader({ className }: Props) {
                         >
                             <img src={ModifyIcon} alt="" />
                         </RoomAction>
-                        <RoomAction type="button">
-                            <img src={MoreIcon} alt="" />
-                        </RoomAction>
+                        <RoomDropdown />
                     </>
                 )}
             </Collection>
