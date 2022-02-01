@@ -115,16 +115,12 @@ function reducer(state: ChatState, action: A): ChatState {
                       },
                   }
         case ActionType.Reset:
-            const client = new StreamrClient({
-                auth: { ethereum: state.ethereumProvider as any },
-            })
             return {
                 ...getInitialChatState(),
                 // Keep the provider. We may wanna extract it from "chat" state. It's actually more
                 // of a browser/app state piece.
                 ethereumProvider: state.ethereumProvider,
                 ethereumProviderReady: state.ethereumProviderReady,
-                metamaskStreamrClient: client,
             }
         case ActionType.SelectRoom:
             return {
@@ -150,10 +146,14 @@ function reducer(state: ChatState, action: A): ChatState {
                 },
             }
         case ActionType.SetEthereumProvider:
+            const client = new StreamrClient({
+                auth: { ethereum: state.ethereumProvider as any },
+            })
             return {
                 ...state,
                 ethereumProvider: action.payload || undefined,
                 ethereumProviderReady: true,
+                metamaskStreamrClient: client,
             }
         case ActionType.SetAccount:
             return action.payload === state.account

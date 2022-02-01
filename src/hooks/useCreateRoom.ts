@@ -5,7 +5,7 @@ import useInviter from './useInviter'
 
 export default function useCreateRoom(): () => Promise<void> {
     const {
-        session: { wallet, streamrClient },
+        session: { wallet },
         account,
         metamaskStreamrClient,
     } = useStore()
@@ -19,10 +19,6 @@ export default function useCreateRoom(): () => Promise<void> {
     return useCallback(async () => {
         if (!sessionAccount) {
             throw new Error('Missing session account')
-        }
-
-        if (!streamrClient) {
-            throw new Error('Missing session streamr client')
         }
 
         if (!metamaskStreamrClient) {
@@ -49,12 +45,5 @@ export default function useCreateRoom(): () => Promise<void> {
             type: ActionType.AddRoomIds,
             payload: [id],
         })
-    }, [
-        sessionAccount,
-        metamaskStreamrClient,
-        streamrClient,
-        account,
-        invite,
-        dispatch,
-    ])
+    }, [sessionAccount, metamaskStreamrClient, account, invite, dispatch])
 }
