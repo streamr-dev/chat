@@ -5,8 +5,9 @@ import useInviter from './useInviter'
 
 export default function useCreateRoom(): () => Promise<void> {
     const {
-        session: { wallet, streamrClient },
+        session: { wallet },
         account,
+        metamaskStreamrClient,
     } = useStore()
 
     const sessionAccount = wallet?.address
@@ -20,25 +21,23 @@ export default function useCreateRoom(): () => Promise<void> {
             throw new Error('Missing session account')
         }
 
-        if (!streamrClient) {
-            throw new Error('Missing session streamr client')
+        if (!metamaskStreamrClient) {
+            throw new Error('Missing metamask streamr client')
         }
 
         if (!account) {
             throw new Error('Missing account')
         }
 
-        const id =
-            `${sessionAccount}/streamr-chat/room/${uuidv4()}`.toLowerCase()
+        const id = `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
 
-        const stream = await streamrClient.createStream({
+        const stream = await metamaskStreamrClient.createStream({
             id,
             partitions: 2,
-            requireEncryptedData: false,
         })
 
         await invite({
-            invitee: account,
+            invitee: sessionAccount,
             stream,
         })
 
@@ -46,5 +45,5 @@ export default function useCreateRoom(): () => Promise<void> {
             type: ActionType.AddRoomIds,
             payload: [id],
         })
-    }, [sessionAccount, streamrClient, account, invite, dispatch])
+    }, [sessionAccount, metamaskStreamrClient, account, invite, dispatch])
 }

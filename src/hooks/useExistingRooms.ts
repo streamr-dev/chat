@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { StreamOperation, StreamrClient } from 'streamr-client'
+import { StreamPermission, StreamrClient } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import useInviter from './useInviter'
@@ -49,10 +49,7 @@ export default function useExistingRooms() {
         async function fn() {
             const remoteRoomIds: string[] = []
 
-            const streams = await providerClient.listStreams({
-                search: ROOM_PREFIX,
-                operation: 'stream_subscribe' as StreamOperation,
-            })
+            const streams = await providerClient.searchStreams(ROOM_PREFIX)
 
             await Promise.allSettled(
                 streams.map(async (stream) => {
@@ -63,10 +60,14 @@ export default function useExistingRooms() {
                     try {
                         const hasSubscribePermission =
                             await stream.hasUserPermission(
-                                'stream_subscribe' as StreamOperation,
+                                StreamPermission.SUBSCRIBE,
                                 sessionAccount!
                             )
-
+                        console.log(
+                            'hasSubPerm',
+                            hasSubscribePermission,
+                            sessionAccount
+                        )
                         if (!hasSubscribePermission) {
                             await invite({
                                 invitee: sessionAccount!,
