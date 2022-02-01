@@ -16,6 +16,7 @@ export type ChatState = {
     account: string | undefined
     drafts: { [index: RoomId]: string }
     ethereumProvider: MetaMaskInpageProvider | undefined
+    metamaskStreamrClient: StreamrClient | undefined
     ethereumProviderReady: boolean
     identity?: string
     messages: MessagePayload[]

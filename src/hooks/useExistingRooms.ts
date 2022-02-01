@@ -60,7 +60,7 @@ export default function useExistingRooms() {
                     try {
                         const hasSubscribePermission =
                             await stream.hasUserPermission(
-                                'canSubscribe' as StreamPermission,
+                                StreamPermission.SUBSCRIBE,
                                 sessionAccount!
                             )
                         console.log(

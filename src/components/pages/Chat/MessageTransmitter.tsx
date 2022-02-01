@@ -7,7 +7,6 @@ import MessageAggregator from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { useRenameRoom } from './RoomRenameProvider'
-import StreamrClient from 'streamr-client'
 
 type TransmitFn = (
     payload: string,
@@ -33,7 +32,7 @@ enum Command {
 
 export default function MessageTransmitter({ children }: Props) {
     const {
-        ethereumProvider,
+        metamaskStreamrClient,
         account,
         roomId,
         session: { streamrClient },
@@ -49,7 +48,12 @@ export default function MessageTransmitter({ children }: Props) {
 
     const send = useCallback<TransmitFn>(
         async (payload, { streamPartition = Partition.Messages }) => {
-            if (!account || !roomId || !streamrClient) {
+            if (
+                !account ||
+                !roomId ||
+                !streamrClient ||
+                !metamaskStreamrClient
+            ) {
                 return
             }
 
@@ -72,10 +76,6 @@ export default function MessageTransmitter({ children }: Props) {
                     }
 
                     await (async () => {
-                        const metamaskStreamrClient = new StreamrClient({
-                            auth: { ethereum: ethereumProvider as any },
-                        })
-
                         const stream = await metamaskStreamrClient.getStream(
                             roomId
                         )
@@ -113,7 +113,7 @@ export default function MessageTransmitter({ children }: Props) {
             )
         },
         [
-            ethereumProvider,
+            metamaskStreamrClient,
             account,
             roomId,
             streamrClient,
