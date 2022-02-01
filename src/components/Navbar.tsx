@@ -78,6 +78,7 @@ const ExternalLink = styled.a`
     font-family: ${KARELIA};
     vertical-align: middle;
     color: #ff5924;
+    cursor: pointer;
 
     svg {
         margin-right: 5px;
@@ -227,10 +228,20 @@ const UnstyledNavbar = ({ className }: Props) => {
                                     placeholder={trunc(account)}
                                 />
                                 <LinkContainer>
-                                    <ExternalLink>
+                                    <ExternalLink
+                                        href={`https://etherscan.io/address/${account}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
                                         <ExternalLinkIcon /> View on explorer
                                     </ExternalLink>
-                                    <ExternalLink>
+                                    <ExternalLink
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(
+                                                account
+                                            )
+                                        }}
+                                    >
                                         <CopyIcon />
                                         {` Copy Address`}
                                     </ExternalLink>
