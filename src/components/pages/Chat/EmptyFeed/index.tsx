@@ -5,6 +5,7 @@ import Button from '../../../Button'
 import AddMemberIcon from './member.svg'
 import { useEffect, useState } from 'react'
 import { useSend } from '../MessageTransmitter'
+import AddMemberModal from '../AddMemberModal'
 
 type Props = {
     className?: string
@@ -51,10 +52,14 @@ const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
                         {format(roomCreatedAt, 'iiii, LLL do yyyy')}
                     </CreatedAt>
                 )}
-                <AddMemberButton type="button">
-                    <img src={AddMemberIcon} alt="" />
-                    <span>Add member</span>
-                </AddMemberButton>
+                <AddMemberModal
+                    button={
+                        <AddMemberButton type="button">
+                            <img src={AddMemberIcon} alt="" />
+                            <span>Add member</span>
+                        </AddMemberButton>
+                    }
+                />
             </div>
         </div>
     )
