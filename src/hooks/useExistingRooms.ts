@@ -49,45 +49,43 @@ export default function useExistingRooms() {
         async function fn() {
             const remoteRoomIds: string[] = []
 
-            const streams = await providerClient.searchStreams(ROOM_PREFIX)
+            const streams = providerClient.searchStreams(ROOM_PREFIX, void 0)
 
-            await Promise.allSettled(
-                streams.map(async (stream) => {
-                    if (!stream.id.includes(ROOM_PREFIX)) {
-                        return
-                    }
+            for await (const stream of streams) {
+                if (!stream.id.includes(ROOM_PREFIX)) {
+                    continue
+                }
 
-                    try {
-                        const hasSubscribePermission =
-                            await stream.hasUserPermission(
-                                StreamPermission.SUBSCRIBE,
-                                sessionAccount!
-                            )
-                        console.log(
-                            'hasSubPerm',
-                            hasSubscribePermission,
-                            sessionAccount
+                try {
+                    const hasSubscribePermission =
+                        await stream.hasUserPermission(
+                            StreamPermission.SUBSCRIBE,
+                            sessionAccount!
                         )
-                        if (!hasSubscribePermission) {
-                            await invite({
-                                invitee: sessionAccount!,
-                                stream,
-                            })
-                        }
-
-                        // Collect up-to-date stream id for clean-up at the end.
-                        remoteRoomIds.push(stream.id)
-
-                        // Append the stream immediately so it shows up ASAP.
-                        dispatch({
-                            type: ActionType.AddRoomIds,
-                            payload: [stream.id],
+                    console.log(
+                        'hasSubPerm',
+                        hasSubscribePermission,
+                        sessionAccount
+                    )
+                    if (!hasSubscribePermission) {
+                        await invite({
+                            invitee: sessionAccount!,
+                            stream,
                         })
-                    } catch (e) {
-                        // noop
                     }
-                })
-            )
+
+                    // Collect up-to-date stream id for clean-up at the end.
+                    remoteRoomIds.push(stream.id)
+
+                    // Append the stream immediately so it shows up ASAP.
+                    dispatch({
+                        type: ActionType.AddRoomIds,
+                        payload: [stream.id],
+                    })
+                } catch (e) {
+                    // noop
+                }
+            }
 
             // Update the entire list. It's here mostly to eliminate stale rooms (ones that exist
             // in localStorage but are no longer available online).
