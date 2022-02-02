@@ -70,7 +70,7 @@ export default function useExistingRooms() {
                         )
                         if (!hasSubscribePermission) {
                             await invite({
-                                invitee: sessionAccount!,
+                                invitees: [sessionAccount!],
                                 stream,
                             })
                         }
