@@ -80,10 +80,26 @@ export default function MessageTransmitter({ children }: Props) {
                             roomId
                         )
 
-                        await invite({
-                            invitee: arg,
-                            stream,
-                        })
+                        if (arg.includes(' ')) {
+                            // multiple invites 
+                            const addresses = arg.split(' ')
+                            const promises = []
+                            console.log('arg', arg)
+                            console.log(addresses)
+                            for (const address of addresses) {
+                                promises.push(invite({
+                                    invitee: address,
+                                    stream
+                                }))
+                            }
+
+                            await Promise.all(promises)
+                        } else {
+                            await invite({
+                                invitee: arg,
+                                stream,
+                            })
+                        }
                         console.info('invite sent', arg)
                     })()
 
