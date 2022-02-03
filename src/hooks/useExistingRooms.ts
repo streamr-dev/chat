@@ -56,7 +56,7 @@ export default function useExistingRooms() {
 
             for await (const stream of streams) {
                 if (!stream.id.includes(ROOM_PREFIX)) {
-                    return
+                    continue
                 }
 
                 try {
