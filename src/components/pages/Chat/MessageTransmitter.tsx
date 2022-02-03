@@ -87,6 +87,16 @@ export default function MessageTransmitter({ children }: Props) {
                             stream,
                         })
 
+                        const metadataStream = await streamrClient.getStream(
+                            stream.id
+                        )
+
+                        await metadataStream.publish(
+                            { type: command, arguments: addresses },
+                            Date.now(),
+                            MessageType.Metadata
+                        )
+
                         console.info('invite sent', arg)
                     })()
 

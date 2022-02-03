@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { StorageKey } from '../utils/types'
+import { MessageType, StorageKey } from '../utils/types'
 import useInviter from './useInviter'
 import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
@@ -61,9 +61,16 @@ export default function useExistingRooms() {
                         sessionAccount!
                     )
 
+                    await stream.publish(
+                        { type: 'user-online', arguments: account },
+                        Date.now(),
+                        MessageType.Metadata
+                    )
+
                     if (hasPermission) {
                         continue
                     }
+
                     await invite({
                         invitees: [sessionAccount!],
                         stream,
