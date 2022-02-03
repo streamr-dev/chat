@@ -48,8 +48,11 @@ export default function useExistingRooms() {
 
         async function fn() {
             const remoteRoomIds: string[] = []
-
-            const streams = providerClient.searchStreams(ROOM_PREFIX, void 0)
+            const streams = providerClient.searchStreams(ROOM_PREFIX, {
+                user: account!,
+                anyOf: [StreamPermission.GRANT],
+                allowPublic: true,
+            })
 
             for await (const stream of streams) {
                 if (!stream.id.includes(ROOM_PREFIX)) {
@@ -57,22 +60,10 @@ export default function useExistingRooms() {
                 }
 
                 try {
-                    const hasSubscribePermission =
-                        await stream.hasUserPermission(
-                            StreamPermission.SUBSCRIBE,
-                            sessionAccount!
-                        )
-                    console.log(
-                        'hasSubPerm',
-                        hasSubscribePermission,
-                        sessionAccount
-                    )
-                    if (!hasSubscribePermission) {
-                        await invite({
-                            invitee: sessionAccount!,
-                            stream,
-                        })
-                    }
+                    await invite({
+                        invitee: sessionAccount!,
+                        stream,
+                    })
 
                     // Collect up-to-date stream id for clean-up at the end.
                     remoteRoomIds.push(stream.id)
