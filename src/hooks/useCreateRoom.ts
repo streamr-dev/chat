@@ -37,7 +37,7 @@ export default function useCreateRoom(): () => Promise<void> {
         })
 
         await invite({
-            invitee: sessionAccount,
+            invitees: [sessionAccount],
             stream,
         })
 

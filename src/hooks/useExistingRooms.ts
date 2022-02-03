@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { StreamPermission, StreamrClient } from 'streamr-client'
+import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import useInviter from './useInviter'
@@ -11,7 +11,7 @@ export default function useExistingRooms() {
     const {
         account,
         session: { wallet },
-        ethereumProvider,
+        metamaskStreamrClient,
     } = useStore()
 
     const dispatch = useDispatch()
@@ -21,7 +21,7 @@ export default function useExistingRooms() {
     const sessionAccount = wallet?.address
 
     useEffect(() => {
-        if (!ethereumProvider || !account || !sessionAccount) {
+        if (!metamaskStreamrClient || !account || !sessionAccount) {
             return
         }
 
@@ -39,16 +39,9 @@ export default function useExistingRooms() {
             payload: localRoomIds,
         })
 
-        // Create a metamask/streamr-client instance to fetch parent identity's streams
-        const providerClient = new StreamrClient({
-            auth: {
-                ethereum: ethereumProvider as any,
-            },
-        })
-
         async function fn() {
             const remoteRoomIds: string[] = []
-            const streams = providerClient.searchStreams(ROOM_PREFIX, {
+            const streams = metamaskStreamrClient!.searchStreams(ROOM_PREFIX, {
                 user: account!,
                 anyOf: [StreamPermission.GRANT],
                 allowPublic: true,
@@ -61,7 +54,7 @@ export default function useExistingRooms() {
 
                 try {
                     await invite({
-                        invitee: sessionAccount!,
+                        invitees: [sessionAccount!],
                         stream,
                     })
 
@@ -92,5 +85,5 @@ export default function useExistingRooms() {
         }
 
         fn()
-    }, [account, ethereumProvider, dispatch, invite, sessionAccount])
+    }, [account, dispatch, invite, sessionAccount, metamaskStreamrClient])
 }
