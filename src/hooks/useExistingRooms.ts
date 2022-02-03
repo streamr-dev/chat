@@ -41,48 +41,35 @@ export default function useExistingRooms() {
 
         async function fn() {
             const remoteRoomIds: string[] = []
+            const streams = metamaskStreamrClient!.searchStreams(ROOM_PREFIX, {
+                user: account!,
+                anyOf: [StreamPermission.GRANT],
+                allowPublic: true,
+            })
 
-            const streams = await metamaskStreamrClient!.searchStreams(
-                ROOM_PREFIX
-            )
+            for await (const stream of streams) {
+                if (!stream.id.includes(ROOM_PREFIX)) {
+                    continue
+                }
 
-            await Promise.allSettled(
-                streams.map(async (stream) => {
-                    if (!stream.id.includes(ROOM_PREFIX)) {
-                        return
-                    }
+                try {
+                    await invite({
+                        invitees: [sessionAccount!],
+                        stream,
+                    })
 
-                    try {
-                        const hasSubscribePermission =
-                            await stream.hasUserPermission(
-                                StreamPermission.SUBSCRIBE,
-                                sessionAccount!
-                            )
-                        console.log(
-                            'hasSubPerm',
-                            hasSubscribePermission,
-                            sessionAccount
-                        )
-                        if (!hasSubscribePermission) {
-                            await invite({
-                                invitees: [sessionAccount!],
-                                stream,
-                            })
-                        }
+                    // Collect up-to-date stream id for clean-up at the end.
+                    remoteRoomIds.push(stream.id)
 
-                        // Collect up-to-date stream id for clean-up at the end.
-                        remoteRoomIds.push(stream.id)
-
-                        // Append the stream immediately so it shows up ASAP.
-                        dispatch({
-                            type: ActionType.AddRoomIds,
-                            payload: [stream.id],
-                        })
-                    } catch (e) {
-                        // noop
-                    }
-                })
-            )
+                    // Append the stream immediately so it shows up ASAP.
+                    dispatch({
+                        type: ActionType.AddRoomIds,
+                        payload: [stream.id],
+                    })
+                } catch (e) {
+                    // noop
+                }
+            }
 
             // Update the entire list. It's here mostly to eliminate stale rooms (ones that exist
             // in localStorage but are no longer available online).
