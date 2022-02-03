@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { v4 as uuidv4 } from 'uuid'
 import useInviter from './useInviter'
+import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 
 export default function useCreateRoom(): () => Promise<void> {
     const {
@@ -21,19 +22,21 @@ export default function useCreateRoom(): () => Promise<void> {
             throw new Error('Missing session account')
         }
 
-        if (!metamaskStreamrClient) {
-            throw new Error('Missing metamask streamr client')
-        }
-
         if (!account) {
             throw new Error('Missing account')
         }
 
+        if (!metamaskStreamrClient) {
+            throw new Error('Missing metamask streamr client')
+        }
+
         const id = `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
+        const roomName = getRoomNameFromRoomId(id)
 
         const stream = await metamaskStreamrClient.createStream({
             id,
             partitions: 2,
+            description: roomName,
         })
 
         await invite({

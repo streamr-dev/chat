@@ -4,6 +4,7 @@ import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import useInviter from './useInviter'
 import intersection from 'lodash/intersection'
+import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 
 const ROOM_PREFIX = 'streamr-chat/room'
 
@@ -48,11 +49,21 @@ export default function useExistingRooms() {
             })
 
             for await (const stream of streams) {
-                if (!stream.id.includes(ROOM_PREFIX)) {
-                    continue
-                }
-
                 try {
+                    if (
+                        stream.description !== getRoomNameFromRoomId(stream.id)
+                    ) {
+                        continue
+                    }
+
+                    const hasPermission = await stream.hasUserPermission(
+                        StreamPermission.SUBSCRIBE,
+                        sessionAccount!
+                    )
+
+                    if (hasPermission) {
+                        continue
+                    }
                     await invite({
                         invitees: [sessionAccount!],
                         stream,
