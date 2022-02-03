@@ -80,7 +80,7 @@ export default function MessageTransmitter({ children }: Props) {
                             roomId
                         )
 
-                        const addresses = arg.split(' ')
+                        const addresses = arg.split(/[,\s]+/).filter(Boolean)
 
                         await invite({
                             invitees: addresses,

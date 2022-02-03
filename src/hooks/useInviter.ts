@@ -20,7 +20,7 @@ export default function useInviter(): Inviter {
 
         await stream.setPermissions(
             invitees,
-            new Array(invitees.length).fill(permissions)
+            invitees.map(() => permissions)
         )
     }, [])
 }
