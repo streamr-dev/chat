@@ -113,8 +113,11 @@ export default function MessageAggregator({ children }: Props) {
             console.info('sent invite to', data.to)
         }
 
-        console.info('Received Metadata', data)
-        console.info('Cache', cache)
+        if (data.type === 'accept-invite') {
+            console.info('accepted invite', data)
+        }
+
+        console.info('Cache updated', cache)
     }, [])
 
     return (
