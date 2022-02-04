@@ -1,11 +1,12 @@
 import { memo, useEffect, useRef } from 'react'
-import { Partition } from '../../../utils/types'
+import { MessageType, Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
+import { v4 as uuidv4 } from 'uuid'
 
 type Props = {
     streamId: string
     streamPartition: Partition
-    onMessage?: (data: any, raw: any) => void
+    onMessage: (data: any, raw: any) => void
 }
 
 type MessagePresenceMap = {
@@ -18,6 +19,7 @@ const MessageInterceptor = memo(
     ({ streamId, streamPartition, onMessage: onMessageProp }: Props) => {
         const {
             session: { streamrClient },
+            account,
         } = useStore()
 
         const messagesRef = useRef<MessagePresenceMap>(EmptyMessagePresenceMap)
@@ -74,6 +76,19 @@ const MessageInterceptor = memo(
                         }
                     }
                 )
+
+                await streamrClient!.publish(
+                    streamId,
+                    {
+                        id: uuidv4(),
+                        type: 'user-online',
+                        from: account,
+                        timestamp: Date.now(),
+                    },
+                    Date.now(),
+                    MessageType.Metadata
+                )
+
                 console.info(
                     'subscribed to stream',
                     streamId,
@@ -92,7 +107,7 @@ const MessageInterceptor = memo(
                 mounted = false
                 unsub()
             }
-        }, [streamId, streamPartition, streamrClient])
+        }, [streamId, streamPartition, streamrClient, account])
 
         return null
     }

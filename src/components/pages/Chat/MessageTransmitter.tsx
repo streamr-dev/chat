@@ -92,12 +92,14 @@ export default function MessageTransmitter({ children }: Props) {
                         )
 
                         await metadataStream.publish(
-                            { type: command, arguments: addresses },
+                            {
+                                type: command,
+                                to: addresses,
+                                from: account,
+                            },
                             Date.now(),
                             MessageType.Metadata
                         )
-
-                        console.info('invite sent', arg)
                     })()
 
                     return

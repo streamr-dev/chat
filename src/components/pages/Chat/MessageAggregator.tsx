@@ -27,6 +27,10 @@ type Cache = {
     [index: RoomId]: MessagePayload[]
 }
 
+type MetadataCache = {
+    lastOnline: { [address: string]: number }
+}
+
 type Props = {
     children?: React.ReactNode
 }
@@ -37,6 +41,9 @@ export default function MessageAggregator({ children }: Props) {
     const dispatch = useDispatch()
 
     const cacheRef = useRef<Cache>({})
+    const metadataCacheRef = useRef<MetadataCache>({
+        lastOnline: {},
+    })
 
     useEffect(() => {
         const { current: cache } = cacheRef
@@ -96,7 +103,18 @@ export default function MessageAggregator({ children }: Props) {
             throw new Error('Unexpected partition')
         }
 
-        console.log('Metadata', data)
+        const { current: cache } = metadataCacheRef
+
+        if (data.type === 'user-online') {
+            cache.lastOnline[data.from] = data.timestamp
+        }
+
+        if (data.type === 'invite') {
+            console.info('sent invite to', data.to)
+        }
+
+        console.info('Received Metadata', data)
+        console.info('Cache', cache)
     }, [])
 
     return (

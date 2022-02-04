@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { MessageType, StorageKey } from '../utils/types'
+import { StorageKey } from '../utils/types'
 import useInviter from './useInviter'
-import intersection from 'lodash/intersection'
+// import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 
 const ROOM_PREFIX = 'streamr-chat/room'
@@ -61,12 +61,6 @@ export default function useExistingRooms() {
                         sessionAccount!
                     )
 
-                    await stream.publish(
-                        { type: 'user-online', arguments: account },
-                        Date.now(),
-                        MessageType.Metadata
-                    )
-
                     if (hasPermission) {
                         continue
                     }
@@ -88,7 +82,7 @@ export default function useExistingRooms() {
                     // noop
                 }
             }
-
+            /*
             // Update the entire list. It's here mostly to eliminate stale rooms (ones that exist
             // in localStorage but are no longer available online).
             dispatch({
@@ -99,7 +93,7 @@ export default function useExistingRooms() {
                     ...intersection(localRoomIds, remoteRoomIds),
                     ...remoteRoomIds,
                 ],
-            })
+            })*/
         }
 
         fn()
