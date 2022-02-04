@@ -56,6 +56,9 @@ export default function useExistingRooms() {
                         continue
                     }
 
+                    // Collect up-to-date stream id for clean-up at the end.
+                    remoteRoomIds.push(stream.id)
+
                     const hasPermission = await stream.hasUserPermission(
                         StreamPermission.SUBSCRIBE,
                         sessionAccount!
@@ -69,9 +72,6 @@ export default function useExistingRooms() {
                         invitees: [sessionAccount!],
                         stream,
                     })
-
-                    // Collect up-to-date stream id for clean-up at the end.
-                    remoteRoomIds.push(stream.id)
 
                     // Append the stream immediately so it shows up ASAP.
                     dispatch({
