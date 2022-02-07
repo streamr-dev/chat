@@ -3,7 +3,7 @@ import useInviter from '../../../hooks/useInviter'
 import { MessageType, Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
-import MessageAggregator from './MessageAggregator'
+import MessageAggregator, { MetadataType } from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { useRenameRoom } from './RoomRenameProvider'
@@ -61,6 +61,8 @@ export default function MessageTransmitter({ children }: Props) {
                 payload.match(/\/(invite|delete|new|rename)\s*(.+)?\s*$/) || []
             ).slice(1)
 
+            console.log('sendCalled', command, arg, streamPartition)
+
             switch (command) {
                 case Command.Rename:
                     if (!arg) {
@@ -87,19 +89,7 @@ export default function MessageTransmitter({ children }: Props) {
                             stream,
                         })
 
-                        const metadataStream = await streamrClient.getStream(
-                            stream.id
-                        )
-
-                        await metadataStream.publish(
-                            {
-                                type: command,
-                                to: addresses,
-                                from: account,
-                            },
-                            Date.now(),
-                            MessageType.Metadata
-                        )
+                       
                     })()
 
                     return
@@ -108,6 +98,32 @@ export default function MessageTransmitter({ children }: Props) {
                     return
                 case Command.New:
                     await createRoom()
+                    return
+                case MetadataType.SendInvite:
+                    const metadataStream = await streamrClient.getStream(
+                        roomId
+                    )
+
+                    const addresses = arg.split(/[,\s]+/).filter(Boolean)
+
+                    await metadataStream.publish(
+                        {
+                            id: uuidv4(),
+                            type: MetadataType.SendInvite,
+                            to: addresses,
+                            from: account,
+                        },
+                        Date.now(),
+                        MessageType.Metadata
+                    )
+                    return
+                case MetadataType.UserOnline:
+                    streamrClient.publish(roomId, {
+                        id: uuidv4(),
+                        type: MetadataType.UserOnline,
+                        from: account,
+                        timestamp: Date.now(),
+                    }, Date.now(), MessageType.Metadata)
                     return
                 default:
                     break
