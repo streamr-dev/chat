@@ -35,6 +35,12 @@ type Props = {
     children?: React.ReactNode
 }
 
+export enum MetadataType {
+    UserOnline = 'user-online',
+    SendInvite = 'send-invite',
+    AcceptInvite = 'accept-invite',
+}
+
 export default function MessageAggregator({ children }: Props) {
     const { roomIds = [], roomId } = useStore()
 
@@ -103,16 +109,16 @@ export default function MessageAggregator({ children }: Props) {
 
         const { current: cache } = presenceCacheRef
 
-        if (data.type === 'user-online') {
-            cache[data.from] = data.timestamp
-        }
-
-        if (data.type === 'invite') {
-            console.info('sent invite to', data.to)
-        }
-
-        if (data.type === 'accept-invite') {
-            console.info('accepted invite', data)
+        switch (data.type) {
+            case MetadataType.UserOnline:
+                cache[data.from] = data.timestamp
+                break
+            case MetadataType.SendInvite:
+                console.info('sent invite to', data.to)
+                break
+            case MetadataType.AcceptInvite:
+                console.info('accepted invite', data)
+                break
         }
 
         console.info('Cache updated', cache)
