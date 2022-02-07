@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
 import { MessagePayload, Partition, RoomId } from '../../../utils/types'
+import useDeleteRoom from '../../../hooks/useDeleteRoom'
 
 function isMessagePayloadValid(data: any) {
     function hasPayloadField(fieldName: string) {
@@ -27,7 +28,7 @@ type Cache = {
     [index: RoomId]: MessagePayload[]
 }
 
-type PresenceCache = {
+export type PresenceCache = {
     [address: string]: number
 }
 
@@ -39,15 +40,18 @@ export enum MetadataType {
     UserOnline = 'user-online',
     SendInvite = 'send-invite',
     AcceptInvite = 'accept-invite',
+    RevokeInvite = 'revoke-invite',
 }
 
 export default function MessageAggregator({ children }: Props) {
-    const { roomIds = [], roomId } = useStore()
+    const { roomIds = [], roomId, account } = useStore()
 
     const dispatch = useDispatch()
 
     const cacheRef = useRef<Cache>({})
     const presenceCacheRef = useRef<PresenceCache>({})
+
+    const deleteRoom = useDeleteRoom()
 
     useEffect(() => {
         const { current: cache } = cacheRef
@@ -100,29 +104,48 @@ export default function MessageAggregator({ children }: Props) {
         [dispatch, roomId]
     )
 
-    const onMetadataMessage = useCallback((data, { messageId }) => {
-        const { streamPartition } = messageId
+    const onMetadataMessage = useCallback(
+        (data, { messageId }) => {
+            const { streamPartition } = messageId
 
-        if (streamPartition !== Partition.Metadata) {
-            throw new Error('Unexpected partition')
-        }
+            if (streamPartition !== Partition.Metadata) {
+                throw new Error('Unexpected partition')
+            }
+            const { current: cache } = presenceCacheRef
+            switch (data.body.type) {
+                case MetadataType.UserOnline:
+                    if (
+                        cache[data.sender] &&
+                        cache[data.sender] + 60 * 1000 > Date.now()
+                    ) {
+                        return
+                    }
+                    cache[data.sender] = data.createdAt
 
-        const { current: cache } = presenceCacheRef
+                    break
+                case MetadataType.SendInvite:
+                    console.info('sent invite to', data.body.payload)
+                    break
+                case MetadataType.AcceptInvite:
+                    console.info('accepted invite', data)
+                    break
+                case MetadataType.RevokeInvite:
+                    console.info('revoked invite', data)
 
-        switch (data.type) {
-            case MetadataType.UserOnline:
-                cache[data.from] = data.timestamp
-                break
-            case MetadataType.SendInvite:
-                console.info('sent invite to', data.to)
-                break
-            case MetadataType.AcceptInvite:
-                console.info('accepted invite', data)
-                break
-        }
+                    const target = data.body.payload
+                    if (target === account) {
+                        deleteRoom(target)
+                    }
+                    break
+                default:
+                    console.warn('Unknown metadata type', data)
+                    break
+            }
 
-        console.info('Cache updated', cache)
-    }, [])
+            console.info('Cache updated', cache)
+        },
+        [account, deleteRoom]
+    )
 
     return (
         <>

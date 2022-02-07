@@ -1,7 +1,6 @@
 import { memo, useEffect, useRef } from 'react'
-import { MessageType, Partition } from '../../../utils/types'
+import { Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
-import { v4 as uuidv4 } from 'uuid'
 import { useSend } from './MessageTransmitter'
 import { MetadataType } from './MessageAggregator'
 
@@ -79,20 +78,12 @@ const MessageInterceptor = memo(
                         }
                     }
                 )
-                    /*
-                await streamrClient!.publish(
-                    streamId,
-                    {
-                        id: uuidv4(),
-                        type: 'user-online',
-                        from: account,
-                        timestamp: Date.now(),
-                    },
-                    Date.now(),
-                    MessageType.Metadata
-                )*/
 
-                send(MetadataType.UserOnline, { streamPartition: Partition.Metadata})
+                send(MetadataType.UserOnline, {
+                    streamPartition: Partition.Metadata,
+                    streamId,
+                    data: account,
+                })
 
                 console.info(
                     'subscribed to stream',

@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { MessageType, StorageKey } from '../utils/types'
+import { Partition, StorageKey } from '../utils/types'
 import useInviter from './useInviter'
-import { v4 as uuidv4 } from 'uuid'
 import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import { useSend } from '../components/pages/Chat/MessageTransmitter'
+import { MetadataType } from '../components/pages/Chat/MessageAggregator'
 
 const ROOM_PREFIX = 'streamr-chat/room'
 
@@ -19,6 +20,8 @@ export default function useExistingRooms() {
     const dispatch = useDispatch()
 
     const invite = useInviter()
+
+    const send = useSend()
 
     const sessionAccount = wallet?.address
 
@@ -81,19 +84,28 @@ export default function useExistingRooms() {
 
                     // check for an invite-accept and notify the metadata partition
                     const streamAddress = stream.id.split('/')[0]
-
                     if (streamAddress !== account) {
-                        streamrClient!.publish(
-                            stream.id,
-                            {
-                                type: 'accept-invite',
-                                timestamp: Date.now(),
-                                id: uuidv4(),
-                                from: account,
-                            },
-                            Date.now(),
-                            MessageType.Metadata
+                        const hasPermission = await stream.hasUserPermission(
+                            StreamPermission.SUBSCRIBE,
+                            sessionAccount!
                         )
+
+                        if (hasPermission) {
+                            send(MetadataType.AcceptInvite, {
+                                streamPartition: Partition.Metadata,
+                                streamId: stream.id,
+                                data: account,
+                            })
+                            console.log(
+                                'called send with params',
+                                MetadataType.AcceptInvite,
+                                {
+                                    streamPartition: Partition.Metadata,
+                                    streamId: stream.id,
+                                    data: account,
+                                }
+                            )
+                        }
                     }
 
                     // Append the stream immediately so it shows up ASAP.
@@ -123,6 +135,7 @@ export default function useExistingRooms() {
         account,
         dispatch,
         invite,
+        send,
         sessionAccount,
         metamaskStreamrClient,
         streamrClient,
