@@ -5,6 +5,7 @@ import { StorageKey } from '../utils/types'
 import useInviter from './useInviter'
 import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import getRoomMembersFromStream from '../getters/getRoomMembersFromStream'
 
 const ROOM_PREFIX = 'streamr-chat/room'
 
@@ -61,18 +62,7 @@ export default function useExistingRooms() {
 
                     if (existingMembers.length === 0) {
                         // populate those members
-                        const members: string[] = []
-                        const memberPermissions = await stream.getPermissions()
-                        const addresses = Object.keys(memberPermissions)
-                        for (let i = 0; i < addresses.length; i++) {
-                            if (
-                                memberPermissions[addresses[i]].includes(
-                                    StreamPermission.SUBSCRIBE
-                                )
-                            ) {
-                                members.push(addresses[i])
-                            }
-                        }
+                        const members = await getRoomMembersFromStream(stream)
                         dispatch({
                             type: ActionType.SetRoomMembers,
                             payload: {

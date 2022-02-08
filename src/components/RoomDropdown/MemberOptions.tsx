@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import MoreIcon from './more.svg'
 import ModifyIcon from './modify.svg'
@@ -7,6 +7,9 @@ import { CopyIcon, DeleteIcon } from '../../icons'
 import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
+import useRevoker from '../../hooks/useRevoker'
+import { ActionType, useDispatch, useStore } from '../Store'
+import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -131,23 +134,34 @@ const UnstyledMemberOptions = ({ address }: any) => {
     const [editing, setEditing] = useState<boolean>(false)
 
     const ref = useRef<HTMLDivElement>(null)
-    const buttonRef = useRef<HTMLDivElement>(null)
 
     const [nickname, setNickname] = useLocalStorage(
         `nickname:${address}`,
         address
     )
 
-    useEffect(() => {
-        function handleClickOutside(event: any) {
-            //setDropdownOpen(false)
-        }
+    const { metamaskStreamrClient, roomId } = useStore()
 
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [ref, buttonRef])
+    const revoke = useRevoker()
+
+    const dispatch = useDispatch()
+
+    const deleteMember = async () => {
+        const stream = await metamaskStreamrClient!.getStream(roomId!)
+        await revoke({
+            revokee: address,
+            stream,
+        })
+
+        const members = await getRoomMembersFromStream(stream)
+        dispatch({
+            type: ActionType.SetRoomMembers,
+            payload: {
+                roomId: roomId!,
+                members,
+            },
+        })
+    }
     return (
         <Root>
             <MemberIcon />
@@ -214,13 +228,7 @@ const UnstyledMemberOptions = ({ address }: any) => {
                                                 </span>
                                             </CopyToClipboard>
                                         </ListItem>
-                                        <ListItem
-                                            onClick={() =>
-                                                alert(
-                                                    'requires NET-843 merged to be implemented'
-                                                )
-                                            }
-                                        >
+                                        <ListItem onClick={deleteMember}>
                                             <DeleteIcon />
                                             Delete member
                                         </ListItem>

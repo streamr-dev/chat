@@ -200,12 +200,8 @@ function reducer(state: ChatState, action: A): ChatState {
             }
 
         case ActionType.SetRoomMembers:
-            const members = state.roomMembers[action.payload.roomId] || []
             const roomMembers = state.roomMembers
-            roomMembers[action.payload.roomId] = [
-                ...members,
-                ...action.payload.members,
-            ]
+            roomMembers[action.payload.roomId] = [...action.payload.members]
 
             return {
                 ...state,
