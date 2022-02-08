@@ -68,15 +68,6 @@ const MemberContainer = styled.div`
     flex-direction: column;
 `
 
-const DropDownHeader = styled.div`
-    margin-bottom: 0.8em;
-    padding: 0 2em 0 1em;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    font-weight: 500;
-    font-size: 1.3rem;
-    color: #3faffa;
-    background: #ffffff;
-`
 const DropDownListContainer = styled.div`
     position: absolute;
     top: 45px;
@@ -146,10 +137,8 @@ const UnstyledMemberOptions = ({ address }: any) => {
             setDropdownOpen(false)
         }
 
-        // Bind the event listener
         document.addEventListener('mousedown', handleClickOutside)
         return () => {
-            // Unbind the event listener on clean up
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [ref, buttonRef])
