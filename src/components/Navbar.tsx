@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import Button from './Button'
 import { KARELIA, SEMIBOLD } from '../utils/css'
+import WalletModal from './WalletModal'
 import AddressButton from './AddressButton'
 import { useStore } from './Store'
 import useConnect from '../hooks/useConnect'
@@ -20,8 +21,6 @@ const ConnectButton = styled(Button)`
 const UnstyledNavbar = ({ className }: Props) => {
     const { account } = useStore()
 
-    const connect = useConnect()
-
     const disconnect = useDisconnect()
 
     return (
@@ -36,9 +35,7 @@ const UnstyledNavbar = ({ className }: Props) => {
                     address={account}
                 />
             ) : (
-                <ConnectButton type="button" onClick={connect}>
-                    <span>Connect a wallet</span>
-                </ConnectButton>
+                <WalletModal />
             )}
         </nav>
     )
