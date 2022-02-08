@@ -1,11 +1,9 @@
 import { useState, cloneElement } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
-import { KARELIA } from '../../../../utils/css'
-
-type Props = {
-    button: React.ReactElement
-}
+import { AddMemberIcon } from '../../../../icons'
+import { KARELIA, MEDIUM } from '../../../../utils/css'
+import Button from '../../../Button'
 
 const customStyles = {
     overlay: {
@@ -24,6 +22,30 @@ const customStyles = {
         fontFamily: `${KARELIA}`,
     },
 }
+
+const AddMemberButton = styled(Button)`
+    align-items: center;
+    background: rgba(255, 89, 36, 0.08);
+    border-radius: 1.5rem;
+    color: #ff5924;
+    cursor: pointer;
+    display: flex;
+    margin: 0 auto;
+    padding: 0 2rem;
+
+    span {
+        display: block;
+        font-family: ${KARELIA};
+        font-size: 1.125rem;
+        font-weight: ${MEDIUM};
+        transform: translateY(-0.1em);
+    }
+
+    svg {
+        display: block;
+        margin-right: 0.75rem;
+    }
+`
 
 const CreateButton = styled.button`
     align-items: center;
@@ -100,7 +122,7 @@ const ModalHeader = styled.div`
     justify-content: space-between;
 `
 
-const AddMemberModal = ({ button }: Props) => {
+const AddMemberModal = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
 
     const closeModal = () => {
@@ -113,7 +135,10 @@ const AddMemberModal = ({ button }: Props) => {
 
     return (
         <>
-            {cloneElement(button, { onClick: openModal })}
+            <AddMemberButton type="button" onClick={openModal}>
+                <AddMemberIcon />
+                <span>Add member</span>
+            </AddMemberButton>
             <ReactModal
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
@@ -148,10 +173,7 @@ const AddMemberModal = ({ button }: Props) => {
                         </ModalHeader>
                         <div>
                             <Subheading>Member Address</Subheading>
-                            <input
-                                disabled={false}
-                                placeholder="Member Address"
-                            />
+                            <input placeholder="Member Address" />
                             <CreateButton onClick={() => {}}>Add</CreateButton>
                         </div>
                     </ModalContainer>
