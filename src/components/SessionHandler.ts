@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { StorageKey } from '../utils/types'
 import { useDispatch, useStore, ActionType } from './Store'
 import { encrypt } from '@metamask/eth-sig-util'
+import useMaticNetworkChange from '../hooks/useMaticNetworkChange'
 
 class NewWalletRequiredError extends Error {}
 
@@ -11,6 +12,8 @@ export default function SessionHandler() {
     const { account, ethereumProvider } = useStore()
 
     const dispatch = useDispatch()
+
+    const maticNetworkChange = useMaticNetworkChange()
 
     useEffect(() => {
         if (!ethereumProvider || !account) {
@@ -83,6 +86,7 @@ export default function SessionHandler() {
                         payload: wallet.privateKey,
                     })
                 }
+                await maticNetworkChange()
             } catch (e) {
                 dispatch({
                     type: ActionType.Reset,
@@ -93,7 +97,7 @@ export default function SessionHandler() {
         }
 
         fn()
-    }, [ethereumProvider, account, dispatch])
+    }, [ethereumProvider, account, dispatch, maticNetworkChange])
 
     return null
 }

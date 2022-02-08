@@ -133,18 +133,18 @@ const ListItem = styled.div`
 const UnstyledMemberOptions = ({ address }: any) => {
     const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
+    const [isMetamask, setIsMetamask] = useState<boolean>(false)
 
     const ref = useRef<HTMLDivElement>(null)
-    const buttonRef = useRef<HTMLDivElement>(null)
 
     const { ethereumProvider } = useStore()
 
-    const test = async () => {
+    const getNonce = async () => {
         const nonce = await getAccountNonce(address, ethereumProvider!)
-        console.warn(address, nonce)
+        setIsMetamask(nonce !== 0)
     }
 
-    test()
+    getNonce()
 
     const [nickname, setNickname] = useLocalStorage(
         `nickname:${address}`,
@@ -173,10 +173,11 @@ const UnstyledMemberOptions = ({ address }: any) => {
             },
         })
     }
+
     return (
         <Root>
             <MemberIcon />
-            <MemberContainer>
+            <MemberContainer style={isMetamask ? {} : { opacity: 0.3 }}>
                 {editing ? (
                     <MemberInput
                         placeholder={address}
