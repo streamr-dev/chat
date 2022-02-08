@@ -118,14 +118,14 @@ const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
                                     <path
                                         d="M15 1L0.999999 15"
                                         stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
                                     />
                                     <path
                                         d="M1 1L15 15"
                                         stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
                                     />
                                 </svg>
                             </ModalCloseButton>
