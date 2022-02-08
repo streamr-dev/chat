@@ -1,4 +1,4 @@
-import { useState, cloneElement } from 'react'
+import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { AddMemberIcon } from '../../../../icons'
