@@ -1,11 +1,13 @@
 import styled from 'styled-components'
-import { ActionType, useDispatch, useRoom, useStore } from '../../Store'
+import { ActionType, useDispatch, useStore } from '../../Store'
 import RoomAction, { Collection } from './RoomAction'
 import ModifyIcon from './modify.svg'
 import RoomNameDisplay from './RoomNameDisplay'
 import RoomNameEditor from './RoomNameEditor'
 import React, { useEffect, useState } from 'react'
 import RoomDropdown from '../../RoomDropdown'
+import { useRenameRoom } from './RoomRenameProvider'
+import useRoomName from '../../../hooks/useRoomName'
 
 type Props = {
     className?: string
@@ -19,25 +21,26 @@ const RoomName = styled.div`
 function UnstyledRoomHeader({ className }: Props) {
     const dispatch = useDispatch()
 
-    const { roomNameEditable } = useStore()
+    const { roomNameEditable, roomId } = useStore()
 
-    const room = useRoom()
+    const roomName = useRoomName()
 
-    const title = (room && room.name) || ''
-
-    const [value, setValue] = useState<string>(title)
+    const [value, setValue] = useState<string>(roomName)
 
     useEffect(() => {
-        setValue(title)
-    }, [title])
+        setValue(roomName)
+    }, [roomName])
+
+    const renameRoom = useRenameRoom()
 
     function submit(e: React.FormEvent) {
         e.preventDefault()
 
-        dispatch({
-            type: ActionType.RenameRoom,
-            payload: value,
-        })
+        if (!roomId) {
+            throw new Error('No room id')
+        }
+
+        renameRoom(roomId, value)
     }
 
     function reset() {
@@ -47,7 +50,7 @@ function UnstyledRoomHeader({ className }: Props) {
         })
 
         // We gotta manually revert the modded `value` to the original (current title).
-        setValue(title)
+        setValue(roomName)
     }
 
     return (

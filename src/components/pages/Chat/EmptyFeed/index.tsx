@@ -39,25 +39,24 @@ const CreatedAt = styled.span`
     margin-bottom: 2rem;
 `
 
-const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => (
-    <div className={className}>
-        <div>
-            {roomCreatedAt != null && (
-                <CreatedAt>
-                    You created this room on{' '}
-                    {format(roomCreatedAt, 'iiii, LLL do yyyy')}
-                </CreatedAt>
-            )}
-            <AddMemberButton
-                type="button"
-                onClick={() => console.log('Add member clicked.')}
-            >
-                <img src={AddMemberIcon} alt="" />
-                <span>Add member</span>
-            </AddMemberButton>
+const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
+    return (
+        <div className={className}>
+            <div>
+                {roomCreatedAt != null && (
+                    <CreatedAt>
+                        You created this room on{' '}
+                        {format(roomCreatedAt, 'iiii, LLL do yyyy')}
+                    </CreatedAt>
+                )}
+                <AddMemberButton type="button">
+                    <img src={AddMemberIcon} alt="" />
+                    <span>Add member</span>
+                </AddMemberButton>
+            </div>
         </div>
-    </div>
-)
+    )
+}
 
 const EmptyFeed = styled(UnstyledEmptyFeed)`
     align-items: center;

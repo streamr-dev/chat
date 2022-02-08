@@ -19,8 +19,7 @@ export default function SessionHandler() {
 
         async function fn() {
             const encryptedPrivateKey =
-                localStorage.getItem(StorageKey.EncryptedSessionKey) ||
-                undefined
+                localStorage.getItem(StorageKey.EncryptedSession) || undefined
 
             try {
                 try {
@@ -64,7 +63,7 @@ export default function SessionHandler() {
                     )
 
                     localStorage.setItem(
-                        StorageKey.EncryptedSessionKey,
+                        StorageKey.EncryptedSession,
                         Buffer.from(
                             JSON.stringify(
                                 encrypt({

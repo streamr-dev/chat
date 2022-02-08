@@ -3,10 +3,11 @@ import type { Props as SidebarItemProps } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 import type { MessagePayload } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
+import Identicon from 'identicon.js'
+import getRoomNameFromRoomId from '../../../getters/getRoomNameFromRoomId'
 
 type Props = SidebarItemProps & {
     id: string
-    name?: string
     recentMessage?: MessagePayload
     unread?: boolean
 }
@@ -18,19 +19,32 @@ const RecentMessage = styled.div`
     font-size: 0.875rem;
 `
 
-function UnstyledRoomItem({
-    id,
-    name = 'Room',
-    icon = <div />,
-    ...props
-}: Props) {
-    const { roomId, messages } = useStore()
+const AvatarWrap = styled.div`
+    padding: 0.5rem;
+`
+
+const Avatar = styled.img`
+    background-color: #f1f4f7;
+    display: block;
+    height: 2rem;
+    width: 2rem;
+`
+
+const AVATAR_OPTIONS: any = {
+    size: 32,
+    background: [255, 255, 255, 255],
+}
+
+function UnstyledRoomItem({ id, ...props }: Props) {
+    const { roomId, recentMessages, roomNames } = useStore()
+
+    const name = roomNames[id] || getRoomNameFromRoomId(id)
 
     const dispatch = useDispatch()
 
-    const recentMessage: MessagePayload | undefined = [...messages[id]].pop()
-
     const active = id === roomId
+
+    const recentMessage = recentMessages[id]
 
     function onClick() {
         dispatch({
@@ -44,13 +58,21 @@ function UnstyledRoomItem({
             {...props}
             afterContent={<></>}
             active={active}
-            icon={icon}
+            icon={
+                <AvatarWrap>
+                    <Avatar
+                        src={`data:image/png;base64,${new Identicon(
+                            id,
+                            AVATAR_OPTIONS
+                        ).toString()}`}
+                        alt={id}
+                    />
+                </AvatarWrap>
+            }
             onClick={onClick}
         >
             <Name>{name || <>Untitled room</>}</Name>
-            <RecentMessage>
-                {(recentMessage && recentMessage.body) || 'Empty room'}
-            </RecentMessage>
+            <RecentMessage>{recentMessage || 'Empty room'}</RecentMessage>
         </SidebarItem>
     )
 }

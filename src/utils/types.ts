@@ -1,38 +1,36 @@
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import { Wallet } from 'ethers'
-import { StreamrClient, Stream } from 'streamr-client'
+import { StreamrClient } from 'streamr-client'
+
+export type RoomId = string
 
 export type MessagePayload = {
     body: string
     createdAt: number
-    sender: string
     id: string
-}
-
-export type MessagesCollection = {
-    [index: string]: Array<MessagePayload>
-}
-
-export type DraftCollection = {
-    [index: string]: string
+    sender: string
+    version: number
 }
 
 export type ChatState = {
     account: string | undefined
-    drafts: any
+    drafts: { [index: RoomId]: string }
     ethereumProvider: MetaMaskInpageProvider | undefined
+    metamaskStreamrClient: StreamrClient | undefined
     ethereumProviderReady: boolean
     identity?: string
-    messages: MessagesCollection
-    roomId?: string
+    messages: MessagePayload[]
+    recentMessages: { [index: RoomId]: string }
+    roomId?: RoomId
+    roomIds: RoomId[] | undefined
     roomNameEditable: boolean
-    rooms: ChatRoom[]
+    roomNames: { [index: RoomId]: string }
     session: StreamrSession
 }
 
 export enum MessageType {
-    TEXT = 'text',
-    METADATA = 'metadata',
+    Text = 'text',
+    Metadata = 'metadata',
 }
 export interface ChatMessage {
     type: MessageType
@@ -44,16 +42,12 @@ export interface StreamrSession {
     streamrClient: StreamrClient | undefined
 }
 
-export interface ChatRoom {
-    id: string
-    name: string
-    stream: Stream
-    publishMessage: (message: string) => Promise<void>
-    publishMetadata: (metadata: any) => Promise<void>
-    subscribeMessages: (callback: (message: ChatMessage) => void) => void
-    subscribeMetadata: (callback: (metadata: any) => void) => void
+export enum StorageKey {
+    EncryptedSession = 'chat/encrypted-session',
+    RoomIds = 'chat/room-ids',
 }
 
-export enum StorageKey {
-    EncryptedSessionKey = 'streamr-chat-encrypted-session-key',
+export enum Partition {
+    Messages,
+    Metadata,
 }
