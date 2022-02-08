@@ -17,5 +17,6 @@ export default function getInitialChatState(): ChatState {
             streamrClient: undefined,
             wallet: undefined,
         },
+        roomMembers: {},
     }
 }

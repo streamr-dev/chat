@@ -5,6 +5,7 @@ import { StorageKey } from '../utils/types'
 import useInviter from './useInviter'
 import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import getRoomMembersFromStream from '../getters/getRoomMembersFromStream'
 
 const ROOM_PREFIX = 'streamr-chat/room'
 
@@ -13,6 +14,7 @@ export default function useExistingRooms() {
         account,
         session: { wallet },
         metamaskStreamrClient,
+        roomMembers,
     } = useStore()
 
     const dispatch = useDispatch()
@@ -56,6 +58,20 @@ export default function useExistingRooms() {
                         continue
                     }
 
+                    const existingMembers = roomMembers[stream.id] || []
+
+                    if (existingMembers.length === 0) {
+                        // populate those members
+                        const members = await getRoomMembersFromStream(stream)
+                        dispatch({
+                            type: ActionType.SetRoomMembers,
+                            payload: {
+                                roomId: stream.id,
+                                members,
+                            },
+                        })
+                    }
+
                     // Collect up-to-date stream id for clean-up at the end.
                     remoteRoomIds.push(stream.id)
 
@@ -96,5 +112,12 @@ export default function useExistingRooms() {
         }
 
         fn()
-    }, [account, dispatch, invite, sessionAccount, metamaskStreamrClient])
+    }, [
+        account,
+        dispatch,
+        invite,
+        sessionAccount,
+        metamaskStreamrClient,
+        roomMembers,
+    ])
 }

@@ -26,6 +26,7 @@ export enum ActionType {
     SetRoomIds = 'set room ids',
     SetRecentMessage = 'set recent message',
     RemoveRoomId = 'remove room id',
+    SetRoomMembers = 'set room members',
 }
 
 type Action<A, B> = {
@@ -72,6 +73,11 @@ type SetRecentMessageAction = Action<
 
 type RemoveRoomIdAction = Action<ActionType.RemoveRoomId, RoomId>
 
+type SetRoomMembersAction = Action<
+    ActionType.SetRoomMembers,
+    { roomId: string; members: string[] }
+>
+
 type A =
     | SelectRoomAction
     | AddMessagesAction
@@ -87,6 +93,7 @@ type A =
     | SetRoomIdsAction
     | SetRecentMessageAction
     | RemoveRoomIdAction
+    | SetRoomMembersAction
 
 function reducer(state: ChatState, action: A): ChatState {
     switch (action.type) {
@@ -190,6 +197,15 @@ function reducer(state: ChatState, action: A): ChatState {
                     state.roomIds != null
                         ? state.roomIds.filter((id) => id !== action.payload)
                         : state.roomIds,
+            }
+
+        case ActionType.SetRoomMembers:
+            const roomMembers = state.roomMembers
+            roomMembers[action.payload.roomId] = [...action.payload.members]
+
+            return {
+                ...state,
+                roomMembers,
             }
         default:
             return state
