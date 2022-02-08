@@ -13,6 +13,7 @@ export default function useExistingRooms() {
         account,
         session: { wallet },
         metamaskStreamrClient,
+        roomMembers,
     } = useStore()
 
     const dispatch = useDispatch()
@@ -56,6 +57,31 @@ export default function useExistingRooms() {
                         continue
                     }
 
+                    const existingMembers = roomMembers[stream.id] || []
+
+                    if (existingMembers.length === 0) {
+                        // populate those members
+                        const members: string[] = []
+                        const memberPermissions = await stream.getPermissions()
+                        const addresses = Object.keys(memberPermissions)
+                        for (let i = 0; i < addresses.length; i++) {
+                            if (
+                                memberPermissions[addresses[i]].includes(
+                                    StreamPermission.SUBSCRIBE
+                                )
+                            ) {
+                                members.push(addresses[i])
+                            }
+                        }
+                        dispatch({
+                            type: ActionType.SetRoomMembers,
+                            payload: {
+                                roomId: stream.id,
+                                members,
+                            },
+                        })
+                    }
+
                     // Collect up-to-date stream id for clean-up at the end.
                     remoteRoomIds.push(stream.id)
 
@@ -96,5 +122,12 @@ export default function useExistingRooms() {
         }
 
         fn()
-    }, [account, dispatch, invite, sessionAccount, metamaskStreamrClient])
+    }, [
+        account,
+        dispatch,
+        invite,
+        sessionAccount,
+        metamaskStreamrClient,
+        roomMembers,
+    ])
 }

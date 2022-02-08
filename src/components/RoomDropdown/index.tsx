@@ -15,6 +15,7 @@ import { KARELIA } from '../../utils/css'
 import MemberOptions from './MemberOptions'
 import CloseIcon from '../../icons/CloseIcon'
 import RoomAction from '../pages/Chat/RoomAction'
+import { useStore } from '../Store'
 
 type Props = {
     button?: any
@@ -38,24 +39,6 @@ const customStyles = {
         fontFamily: `${KARELIA}`,
     },
 }
-
-const members = [
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-]
 
 const DropDownContainer = styled.div`
     margin-left: 10px;
@@ -146,6 +129,10 @@ const RoomDropdown = ({ button }: Props) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
+    const { roomMembers, roomId } = useStore()
+
+    const members = roomMembers[roomId!] || []
+
     useEffect(() => {
         function handleClickOutside(event: any) {
             if (ref.current && !ref.current.contains(event.target)) {
@@ -226,7 +213,7 @@ const RoomDropdown = ({ button }: Props) => {
                     </ModalHeader>
                     <MemberList>
                         {members.map((member) => {
-                            return <MemberOptions address={member.address} />
+                            return <MemberOptions address={member} />
                         })}
                     </MemberList>
                 </StyledModalContent>

@@ -5,6 +5,8 @@ import ModifyIcon from './modify.svg'
 import { KARELIA } from '../../utils/css'
 import { CopyIcon, DeleteIcon } from '../../icons'
 import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -127,14 +129,18 @@ const ListItem = styled.div`
 const UnstyledMemberOptions = ({ address }: any) => {
     const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
-    const [nickname, setNickname] = useState<string>('')
 
     const ref = useRef<HTMLDivElement>(null)
     const buttonRef = useRef<HTMLDivElement>(null)
 
+    const [nickname, setNickname] = useLocalStorage(
+        `nickname:${address}`,
+        address
+    )
+
     useEffect(() => {
         function handleClickOutside(event: any) {
-            setDropdownOpen(false)
+            //setDropdownOpen(false)
         }
 
         document.addEventListener('mousedown', handleClickOutside)
@@ -181,7 +187,7 @@ const UnstyledMemberOptions = ({ address }: any) => {
                 <>
                     <EditButton
                         onClick={() => {
-                            setDropdownOpen((isDropdownOpen) => !isDropdownOpen)
+                            setDropdownOpen(!isDropdownOpen)
                         }}
                     >
                         <img src={MoreIcon} alt="" />
@@ -190,14 +196,31 @@ const UnstyledMemberOptions = ({ address }: any) => {
                                 <DropDownListContainer>
                                     <DropDownList>
                                         <ListItem>
-                                            <ExternalLinkIcon />
-                                            View on explorer
+                                            <a
+                                                rel="noreferrer"
+                                                href={`https://polygonscan.com/address/${address}`}
+                                                target="_blank"
+                                            >
+                                                <ExternalLinkIcon />
+                                                View on explorer
+                                            </a>
                                         </ListItem>
+
                                         <ListItem>
-                                            <CopyIcon />
-                                            Copy address
+                                            <CopyToClipboard text={address}>
+                                                <span>
+                                                    <CopyIcon />
+                                                    Copy address
+                                                </span>
+                                            </CopyToClipboard>
                                         </ListItem>
-                                        <ListItem>
+                                        <ListItem
+                                            onClick={() =>
+                                                alert(
+                                                    'requires NET-843 merged to be implemented'
+                                                )
+                                            }
+                                        >
                                             <DeleteIcon />
                                             Delete member
                                         </ListItem>
