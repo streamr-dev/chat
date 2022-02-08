@@ -1,13 +1,18 @@
 import Helmet from 'react-helmet'
 import styled from 'styled-components'
 import ChatWindow from './ChatWindow'
-import Sidebar from './Sidebar'
+import RoomList from './RoomList'
 import Navbar from '../../Navbar'
-import Room from './Room'
+import RoomItem from './RoomItem'
 import Background from '../Home/background.png'
 import Message from './Message'
-import { useMessages, useStore } from './ChatStore'
-import usePopulate from './usePopulate'
+import { useStore } from '../../Store'
+import useExistingRooms from '../../../hooks/useExistingRooms'
+import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import MessageTransmitter from './MessageTransmitter'
+import RoomNameLoader from './RoomNameLoader'
 
 const Content = styled.div`
     height: 100vh;
@@ -26,30 +31,41 @@ type Props = {
 }
 
 const UnstyledChat = ({ className }: Props) => {
-    usePopulate('0x7da4e5e40c41f5ecbefb4fa59b2153888a11731')
+    const {
+        roomIds = [],
+        session: { wallet },
+        messages,
+    } = useStore()
 
-    const messages = useMessages()
+    useRoomIdsStorage()
 
-    const { roomId, rooms } = useStore()
+    useExistingRooms()
+
+    const sessionAccount = wallet?.address
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!sessionAccount) {
+            navigate('/')
+        }
+    }, [sessionAccount, navigate])
 
     return (
-        <>
+        <MessageTransmitter>
+            {roomIds.map((id) => (
+                <RoomNameLoader key={id} roomId={id} />
+            ))}
             <Helmet title="Let's chat!" />
             <main className={className}>
                 <Navbar />
                 <Content>
                     <div>
-                        <Sidebar>
-                            {rooms.map((room) => (
-                                <Room
-                                    key={room.id}
-                                    id={room.id}
-                                    active={room.id === roomId}
-                                    name={room.name}
-                                    unread={false}
-                                />
+                        <RoomList>
+                            {roomIds.map((id) => (
+                                <RoomItem key={id} id={id} />
                             ))}
-                        </Sidebar>
+                        </RoomList>
                         <ChatWindow>
                             {messages.map((message) => (
                                 <Message key={message.id} payload={message} />
@@ -58,7 +74,7 @@ const UnstyledChat = ({ className }: Props) => {
                     </div>
                 </Content>
             </main>
-        </>
+        </MessageTransmitter>
     )
 }
 

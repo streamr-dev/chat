@@ -7,6 +7,7 @@ import keystone from './icons/keystone.svg'
 import coinbase from './icons/coinbase.svg'
 import walletconnect from './icons/walletconnect.svg'
 import Button from '../Button'
+import useConnect from '../../hooks/useConnect'
 
 const customStyles = {
     overlay: {
@@ -76,6 +77,7 @@ const ModalCloseButton = styled.button`
 
 const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
+    const connect = useConnect()
 
     const openModal = () => {
         setModalIsOpen(true)
@@ -129,7 +131,12 @@ const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
                             </ModalCloseButton>
                         </ModalHeader>
                         <WalletOptions>
-                            <WalletOption>
+                            <WalletOption
+                                onClick={() => {
+                                    connect()
+                                    closeModal()
+                                }}
+                            >
                                 Metamask
                                 <img
                                     src={metamask}

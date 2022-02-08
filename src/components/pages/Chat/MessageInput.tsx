@@ -1,20 +1,21 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
-import { v4 as uuidv4 } from 'uuid'
-import { ActionType, useDispatch, useDraft, useStore } from './ChatStore'
+import { useStore } from '../../Store'
 import SubmitButton from './SubmitButton'
 import focus from '../../../utils/focus'
+import { useSend } from './MessageTransmitter'
+import { Partition } from '../../../utils/types'
 
 type Props = {
-    className?: string,
+    className?: string
 }
 
 type InnerProps = {
-    $submittable?: boolean,
+    $submittable?: boolean
 }
 
 const Inner = styled.div<InnerProps>`
-    background-color: #F7F9FC;
+    background-color: #f7f9fc;
     border-radius: 0.75rem;
     display: flex;
     height: 3rem;
@@ -24,47 +25,36 @@ const Inner = styled.div<InnerProps>`
         opacity: 0.3;
     }
 
-    ${({ $submittable }) => $submittable && css`
-        ${SubmitButton} {
-            opacity: 1;
-        }
-    `}
+    ${({ $submittable }) =>
+        $submittable &&
+        css`
+            ${SubmitButton} {
+                opacity: 1;
+            }
+        `}
 `
 
 function UnstyledMessageInput({ className }: Props) {
-    const draft = useDraft()
+    const [value, setValue] = useState<string>('')
 
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const submittable = !/^\s*$/.test(draft)
+    const submittable = !/^\s*$/.test(value)
 
-    const dispatch = useDispatch()
+    const { roomId, roomNameEditable } = useStore()
 
-    const { identity, roomId, roomNameEditable } = useStore()
+    const send = useSend()
 
-    function onSubmit(body: string) {
-        if (identity == null) {
-            return
-        }
-
-        dispatch({
-            type: ActionType.AddMessages,
-            payload: [{
-                body,
-                createdAt: Date.now(),
-                sender: identity,
-                id: uuidv4(),
-            }],
+    function onSubmit() {
+        send(value, {
+            streamPartition: Partition.Messages,
         })
     }
 
     function submit() {
         if (submittable && typeof onSubmit === 'function') {
-            onSubmit(draft)
-            dispatch({
-                type: ActionType.SetDraft,
-                payload: '',
-            })
+            onSubmit()
+            setValue('')
         }
     }
 
@@ -91,7 +81,6 @@ function UnstyledMessageInput({ className }: Props) {
             return
         }
 
-
         if (!roomNameEditable) {
             focus(inputRef.current)
         }
@@ -103,16 +92,14 @@ function UnstyledMessageInput({ className }: Props) {
                 <input
                     autoFocus
                     onChange={(e) => {
-                        dispatch({
-                            type: ActionType.SetDraft,
-                            payload: e.currentTarget.value,
-                        })
+                        setValue(e.currentTarget.value)
                     }}
                     onKeyDown={onKeyDown}
                     placeholder="Type a message"
+                    readOnly={!roomId}
                     ref={inputRef}
                     type="text"
-                    value={draft}
+                    value={value}
                 />
                 <SubmitButton onClick={onSubmitClick} />
             </Inner>

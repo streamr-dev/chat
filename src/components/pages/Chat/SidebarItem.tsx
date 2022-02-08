@@ -3,16 +3,16 @@ import styled, { css } from 'styled-components'
 import { KARELIA } from '../../../utils/css'
 
 export type Props = {
-    active?: boolean,
-    afterContent?: React.ReactNode,
-    children?: React.ReactNode,
-    className?: string,
-    icon?: React.ReactNode,
-    onClick?: () => void,
+    active?: boolean
+    afterContent?: React.ReactNode
+    children?: React.ReactNode
+    className?: string
+    icon?: React.ReactNode
+    onClick?: () => void
 }
 
 type IconWrapProps = {
-    $visible?: boolean,
+    $visible?: boolean
 }
 
 const IconWrap = styled.div<IconWrapProps>`
@@ -21,13 +21,14 @@ const IconWrap = styled.div<IconWrapProps>`
     flex: 0 0 3rem;
     height: 3rem;
     margin-right: 1rem;
-    padding: 13px;
     transition: background-color 0.3s;
     width: 3rem;
 
-    ${({ $visible }) => !$visible && css`
-        visibility: hidden;
-    `}
+    ${({ $visible }) =>
+        !$visible &&
+        css`
+            visibility: hidden;
+        `}
 `
 
 const Content = styled.div`
@@ -40,15 +41,11 @@ const UnstyledSidebarItem = ({
     children,
     onClick,
     className,
-    afterContent
+    afterContent,
 }: Props) => (
     <button type="button" onClick={onClick} className={className}>
-        <IconWrap $visible={!!icon}>
-            {icon}
-        </IconWrap>
-        <Content>
-            {children}
-        </Content>
+        <IconWrap $visible={!!icon}>{icon}</IconWrap>
+        <Content>{children}</Content>
         {afterContent}
     </button>
 )
@@ -73,10 +70,12 @@ const SidebarItem = styled(UnstyledSidebarItem)`
         margin-top: 1rem;
     }
 
-    ${({ active }) => !!active && css`
-        background-color: #ffffff !important;
-        transition-duration: 0.1s;
-    `}
+    ${({ active }) =>
+        !!active &&
+        css`
+            background-color: #ffffff !important;
+            transition-duration: 0.1s;
+        `}
 
     :hover {
         background-color: rgba(255, 255, 255, 0.8);
