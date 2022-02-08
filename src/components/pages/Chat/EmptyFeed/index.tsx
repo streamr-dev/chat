@@ -3,8 +3,6 @@ import { format } from 'date-fns'
 import { KARELIA, MEDIUM } from '../../../../utils/css'
 import Button from '../../../Button'
 import AddMemberIcon from './member.svg'
-import { useEffect, useState } from 'react'
-import { useSend } from '../MessageTransmitter'
 
 type Props = {
     className?: string

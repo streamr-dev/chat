@@ -5,7 +5,6 @@ import { KARELIA, SEMIBOLD } from '../utils/css'
 import AddressButton from './AddressButton'
 import { useStore } from './Store'
 import useConnect from '../hooks/useConnect'
-import useDisconnect from '../hooks/useDisconnect'
 import ReactModal from 'react-modal'
 import { useState } from 'react'
 import ExternalLinkIcon from '../icons/ExternalLinkIcon'
@@ -160,10 +159,9 @@ function trunc(address: string) {
 const UnstyledNavbar = ({ className }: Props) => {
     const { account } = useStore()
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [copiedText, setCopiedText] = useState(' Copy Address')
 
     const connect = useConnect()
-
-    const disconnect = useDisconnect()
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -171,6 +169,13 @@ const UnstyledNavbar = ({ className }: Props) => {
 
     const openModal = () => {
         setModalIsOpen(true)
+    }
+
+    const handleClick = () => {
+        setCopiedText(' Copied!')
+        setTimeout(() => {
+            setCopiedText(' Copy Address')
+        }, 2000)
     }
 
     return (
@@ -186,6 +191,9 @@ const UnstyledNavbar = ({ className }: Props) => {
                         address={account}
                     />
                     <ReactModal
+                        appElement={
+                            document.getElementById('root') as HTMLElement
+                        }
                         isOpen={modalIsOpen}
                         contentLabel="Connect a wallet"
                         style={customStyles}
@@ -204,14 +212,14 @@ const UnstyledNavbar = ({ className }: Props) => {
                                         <path
                                             d="M15 1L0.999999 15"
                                             stroke="#59799C"
-                                            stroke-width="1.5"
-                                            stroke-linecap="round"
+                                            strokeWidth="1.5"
+                                            strokeLinecap="round"
                                         />
                                         <path
                                             d="M1 1L15 15"
                                             stroke="#59799C"
-                                            stroke-width="1.5"
-                                            stroke-linecap="round"
+                                            strokeWidth="1.5"
+                                            strokeLinecap="round"
                                         />
                                     </svg>
                                 </CloseButton>
@@ -231,19 +239,20 @@ const UnstyledNavbar = ({ className }: Props) => {
                                     <ExternalLink
                                         href={`https://etherscan.io/address/${account}`}
                                         target="_blank"
-                                        rel="noreferrer"
+                                        rel="noopener noreferrer"
                                     >
                                         <ExternalLinkIcon /> View on explorer
                                     </ExternalLink>
                                     <ExternalLink
                                         onClick={() => {
+                                            handleClick()
                                             navigator.clipboard.writeText(
                                                 account
                                             )
                                         }}
                                     >
                                         <CopyIcon />
-                                        {` Copy Address`}
+                                        {copiedText}
                                     </ExternalLink>
                                 </LinkContainer>
                             </ContentContainer>

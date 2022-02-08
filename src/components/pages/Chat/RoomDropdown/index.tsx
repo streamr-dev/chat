@@ -20,21 +20,14 @@ type Props = {
 const DropDownContainer = styled.div`
     margin-left: 10px;
 `
-const DropDownHeader = styled.div`
-    margin-bottom: 0.8em;
-    padding: 0 2em 0 1em;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    font-weight: 500;
-    font-size: 1.3rem;
-    color: #3faffa;
-    background: #ffffff;
-`
+
 const DropDownListContainer = styled.div`
     position: absolute;
     top: 75px;
     right: 35px;
     z-index: 100;
 `
+
 const DropDownList = styled.div`
     width: 250px;
     padding: 0;
@@ -55,6 +48,7 @@ const DropDownList = styled.div`
         margin: 0px;
     }
 `
+
 const ListItem = styled.button`
     appearance: none;
     cursor: pointer;
@@ -97,10 +91,8 @@ const RoomDropdown = ({ button }: Props) => {
             setIsOpen(false)
         }
 
-        // Bind the event listener
         document.addEventListener('mouseup', handleClickOutside)
         return () => {
-            // Unbind the event listener on clean up
             document.removeEventListener('mouseup', handleClickOutside)
         }
     }, [])
