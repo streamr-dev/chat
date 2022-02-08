@@ -1,27 +1,26 @@
 import { useCallback } from 'react'
-import { Stream, StreamOperation, StreamPermision } from 'streamr-client'
+import { Stream } from 'streamr-client'
 
 type Options = {
-    invitee: string
+    invitees: string[]
     stream: Stream
 }
 
-type Inviter = ({ invitee, stream }: Options) => Promise<StreamPermision[]>
+type Inviter = ({ invitees, stream }: Options) => Promise<void>
 
 export default function useInviter(): Inviter {
-    return useCallback(
-        async ({ invitee, stream }: Options) =>
-            await stream.grantPermissions(
-                [
-                    StreamOperation.STREAM_DELETE,
-                    StreamOperation.STREAM_EDIT,
-                    StreamOperation.STREAM_GET,
-                    StreamOperation.STREAM_PUBLISH,
-                    StreamOperation.STREAM_SHARE,
-                    StreamOperation.STREAM_SUBSCRIBE,
-                ],
-                invitee
-            ),
-        []
-    )
+    return useCallback(async ({ invitees, stream }: Options) => {
+        const permissions = {
+            canEdit: false,
+            canDelete: false,
+            canPublish: true,
+            canSubscribe: true,
+            canGrant: true,
+        }
+
+        await stream.setPermissions(
+            invitees,
+            invitees.map(() => permissions)
+        )
+    }, [])
 }
