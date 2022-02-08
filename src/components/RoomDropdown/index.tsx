@@ -212,6 +212,7 @@ const RoomDropdown = ({ button }: Props) => {
             </DropDownContainer>
 
             <ReactModal
+                ariaHideApp={false}
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}
@@ -226,7 +227,12 @@ const RoomDropdown = ({ button }: Props) => {
                     </ModalHeader>
                     <MemberList>
                         {members.map((member) => {
-                            return <MemberOptions address={member.address} />
+                            return (
+                                <MemberOptions
+                                    key={member.address}
+                                    address={member.address}
+                                />
+                            )
                         })}
                     </MemberList>
                 </StyledModalContent>
