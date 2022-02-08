@@ -9,6 +9,7 @@
   "homepage": ".",
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@ethersproject/experimental": "^5.5.0",
     "@metamask/detect-provider": "^1.2.0",
     "@metamask/eth-sig-util": "^4.0.0",
     "@metamask/providers": "^8.1.1",

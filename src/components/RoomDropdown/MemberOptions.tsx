@@ -5,6 +5,8 @@ import ModifyIcon from './modify.svg'
 import { KARELIA } from '../../utils/css'
 import { CopyIcon, DeleteIcon } from '../../icons'
 import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
+import getAccountNonce from '../../getters/getAccountNonce'
+import { useStore } from '../Store'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -131,6 +133,15 @@ const UnstyledMemberOptions = ({ address }: any) => {
 
     const ref = useRef<HTMLDivElement>(null)
     const buttonRef = useRef<HTMLDivElement>(null)
+
+    const { ethereumProvider } = useStore()
+
+    const test = async () => {
+        const nonce = await getAccountNonce(address, ethereumProvider!)
+        console.warn(address, nonce)
+    }
+
+    test()
 
     useEffect(() => {
         function handleClickOutside(event: any) {
