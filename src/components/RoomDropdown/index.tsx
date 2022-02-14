@@ -215,10 +215,7 @@ const RoomDropdown = ({ button }: Props) => {
                     <MemberList>
                         {members.map((member) => {
                             return (
-                                <MemberOptions
-                                    key={member}
-                                    address={member}
-                                />
+                                <MemberOptions key={member} address={member} />
                             )
                         })}
                     </MemberList>
