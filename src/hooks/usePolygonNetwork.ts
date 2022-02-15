@@ -19,28 +19,43 @@ const PolygonNetworkInfo = {
 export const requestNetworkChange = async (
     ethereumProvider: MetaMaskInpageProvider
 ) => {
-    const chainId = PolygonNetworkInfo.chainId
-    const shouldRequestChange =
-        ethereumProvider.networkVersion !== PolygonNetworkInfo.chainIdHex
-
-    if (shouldRequestChange) {
+    if (ethereumProvider.networkVersion !== PolygonNetworkInfo.chainIdHex) {
         alert(
             'Looks like you are not connected to the Polygon Network. Approve your switch on Metamask'
         )
         try {
-            const requestSwitch = await requestSwitchNetwork(
-                chainId,
-                ethereumProvider
-            )
+            const requestSwitch = await ethereumProvider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [
+                    {
+                        chainId: PolygonNetworkInfo.chainIdHex,
+                    },
+                ],
+            })
             alert('Successfully connected to Polygon Network')
             return requestSwitch
         } catch (err: any) {
             if (err.code === 4902) {
                 try {
-                    const requestAdd = await requestAddNetwork(
-                        chainId,
-                        ethereumProvider
-                    )
+                    // takes in more parameters, see https://docs.metamask.io/guide/rpc-api.html#unrestricted-methods
+                    const requestAdd = await ethereumProvider.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [
+                            {
+                                chainId: PolygonNetworkInfo.chainIdHex,
+                                chainName: PolygonNetworkInfo.name,
+                                rpcUrls: [PolygonNetworkInfo.rpcUrl],
+                                blockExplorerUrls: [
+                                    PolygonNetworkInfo.blockExplorer,
+                                ],
+                                nativeCurrency: {
+                                    decimals: PolygonNetworkInfo.decimals,
+                                    name: PolygonNetworkInfo.symbol,
+                                    symbol: PolygonNetworkInfo.symbol,
+                                },
+                            },
+                        ],
+                    })
                     alert('Successfully connected to Polygon Network')
                     return requestAdd
                 } catch (err: any) {
@@ -56,54 +71,6 @@ export const requestNetworkChange = async (
             throw err
         }
     }
-}
-
-const requestSwitchNetwork = async (
-    chainIdHex: number,
-    ethereumProvider: MetaMaskInpageProvider
-) => {
-    return await ethereumProvider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [
-            {
-                chainId: `0x${chainIdHex.toString(16)}`,
-            },
-        ],
-    })
-}
-
-interface AddEthereumChainParameter {
-    chainId: string
-    chainName: string
-    nativeCurrency: {
-        name: string
-        symbol: string
-        decimals: number
-    }
-    rpcUrls: string[]
-    blockExplorerUrls?: string[]
-    iconUrls?: string[]
-}
-
-const requestAddNetwork = async (
-    chainId: number,
-    ethereumProvider: MetaMaskInpageProvider
-): Promise<string> => {
-    const params: AddEthereumChainParameter = {
-        chainId: `0x${chainId.toString(16)}`,
-        chainName: PolygonNetworkInfo.name,
-        rpcUrls: [PolygonNetworkInfo.rpcUrl],
-        blockExplorerUrls: [PolygonNetworkInfo.blockExplorer],
-        nativeCurrency: {
-            decimals: PolygonNetworkInfo.decimals,
-            name: PolygonNetworkInfo.symbol,
-            symbol: PolygonNetworkInfo.symbol,
-        },
-    }
-    return (await ethereumProvider.request({
-        method: 'wallet_addEthereumChain',
-        params: [params],
-    })) as string
 }
 
 export default function usePolygonNetwork() {
