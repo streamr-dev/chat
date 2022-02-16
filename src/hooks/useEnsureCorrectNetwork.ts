@@ -73,7 +73,7 @@ export const requestNetworkChange = async (
     }
 }
 
-export default function usePolygonNetwork() {
+export default function useEnsureCorrectNetwork() {
     const { ethereumProvider } = useStore()
 
     return useCallback(async () => {
