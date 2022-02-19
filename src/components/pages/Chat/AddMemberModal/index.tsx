@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
@@ -8,6 +9,7 @@ import Button from '../../../Button'
 const customStyles = {
     overlay: {
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        zIndex: '100000',
     },
     content: {
         border: 'none',
@@ -122,7 +124,7 @@ const ModalHeader = styled.div`
     justify-content: space-between;
 `
 
-const AddMemberModal = () => {
+const AddMemberModal = ({ button }: { button?: React.ReactElement<any> }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
 
     const closeModal = () => {
@@ -135,10 +137,14 @@ const AddMemberModal = () => {
 
     return (
         <>
-            <AddMemberButton type="button" onClick={openModal}>
-                <AddMemberIcon />
-                <span>Add member</span>
-            </AddMemberButton>
+            {button ? (
+                React.cloneElement(button!, { onClick: openModal })
+            ) : (
+                <AddMemberButton type="button" onClick={openModal}>
+                    <AddMemberIcon />
+                    <span>Add member</span>
+                </AddMemberButton>
+            )}
             <ReactModal
                 ariaHideApp={false}
                 isOpen={modalIsOpen}

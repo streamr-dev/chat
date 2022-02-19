@@ -15,6 +15,7 @@ import { KARELIA } from '../../utils/css'
 import MemberOptions from './MemberOptions'
 import CloseIcon from '../../icons/CloseIcon'
 import RoomAction from '../pages/Chat/RoomAction'
+import AddMemberModal from '../pages/Chat/AddMemberModal'
 
 type Props = {
     button?: any
@@ -144,6 +145,7 @@ const MemberList = styled.div`
 const RoomDropdown = ({ button }: Props) => {
     const [isOpen, setIsOpen] = useState(false)
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [memberModalIsOpen, setMemberModalIsOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -167,6 +169,10 @@ const RoomDropdown = ({ button }: Props) => {
         setModalIsOpen(false)
     }
 
+    const openMemberModal = () => {
+        setMemberModalIsOpen(true)
+    }
+
     const toggleOpen = () => {
         setIsOpen(!isOpen)
     }
@@ -180,10 +186,14 @@ const RoomDropdown = ({ button }: Props) => {
                 {isOpen && (
                     <DropDownListContainer ref={ref}>
                         <DropDownList>
-                            <ListItem>
-                                <AddMemberIcon />
-                                Add member
-                            </ListItem>
+                            <AddMemberModal
+                                button={
+                                    <ListItem onClick={openMemberModal}>
+                                        <AddMemberIcon />
+                                        Add member
+                                    </ListItem>
+                                }
+                            />
                             <ListItem onClick={openModal}>
                                 <EditMembersIcon />
                                 Edit members
