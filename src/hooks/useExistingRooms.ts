@@ -83,8 +83,8 @@ export default function useExistingRooms() {
                     })
 
                     // check for an invite-accept and notify the metadata partition
-                    const streamAddress = stream.id.split('/')[0]
-                    if (streamAddress !== account) {
+                    const streamOwner = stream.id.split('/')[0]
+                    if (streamOwner !== account) {
                         const hasPermission = await stream.hasUserPermission(
                             StreamPermission.SUBSCRIBE,
                             sessionAccount!
@@ -96,15 +96,6 @@ export default function useExistingRooms() {
                                 streamId: stream.id,
                                 data: account,
                             })
-                            console.log(
-                                'called send with params',
-                                MetadataType.AcceptInvite,
-                                {
-                                    streamPartition: Partition.Metadata,
-                                    streamId: stream.id,
-                                    data: account,
-                                }
-                            )
                         }
                     }
 
