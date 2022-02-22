@@ -1,6 +1,6 @@
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import { Wallet } from 'ethers'
-import { StreamrClient, Stream } from 'streamr-client'
+import { StreamrClient } from 'streamr-client'
 
 export type RoomId = string
 
@@ -16,6 +16,7 @@ export type ChatState = {
     account: string | undefined
     drafts: { [index: RoomId]: string }
     ethereumProvider: MetaMaskInpageProvider | undefined
+    metamaskStreamrClient: StreamrClient | undefined
     ethereumProviderReady: boolean
     identity?: string
     messages: MessagePayload[]

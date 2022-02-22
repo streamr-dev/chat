@@ -136,6 +136,9 @@ function reducer(state: ChatState, action: A): ChatState {
         case ActionType.SetSession:
             return {
                 ...state,
+                metamaskStreamrClient: new StreamrClient({
+                    auth: { ethereum: state.ethereumProvider as any },
+                }),
                 session: {
                     streamrClient: new StreamrClient({
                         auth: {
