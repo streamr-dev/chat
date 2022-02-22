@@ -200,12 +200,12 @@ function reducer(state: ChatState, action: A): ChatState {
             }
 
         case ActionType.SetRoomMembers:
-            const roomMembers = state.roomMembers
-            roomMembers[action.payload.roomId] = [...action.payload.members]
-
             return {
                 ...state,
-                roomMembers,
+                roomMembers: {
+                    ...state.roomMembers,
+                    [action.payload.roomId]: [...action.payload.members],
+                }
             }
         default:
             return state
