@@ -5,22 +5,14 @@ import { KARELIA, SEMIBOLD } from '../utils/css'
 import WalletModal from './WalletModal'
 import AddressButton from './AddressButton'
 import { useStore } from './Store'
-import useConnect from '../hooks/useConnect'
 import ReactModal from 'react-modal'
 import { useState } from 'react'
 import ExternalLinkIcon from '../icons/ExternalLinkIcon'
 import CopyIcon from '../icons/CopyIcon'
-import useDisconnect from '../hooks/useDisconnect'
 
 type Props = {
     className?: string
 }
-
-const ConnectButton = styled(Button)`
-    color: #ff5924;
-    font-size: 15px;
-    padding: 0 30px;
-`
 
 const customStyles = {
     overlay: {
@@ -163,8 +155,6 @@ const UnstyledNavbar = ({ className }: Props) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [copiedText, setCopiedText] = useState(' Copy Address')
 
-    const connect = useConnect()
-
     const closeModal = () => {
         setModalIsOpen(false)
     }
@@ -179,7 +169,6 @@ const UnstyledNavbar = ({ className }: Props) => {
             setCopiedText(' Copy Address')
         }, 2000)
     }
-    const disconnect = useDisconnect()
 
     return (
         <nav className={className}>
