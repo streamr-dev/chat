@@ -205,7 +205,7 @@ function reducer(state: ChatState, action: A): ChatState {
                 roomMembers: {
                     ...state.roomMembers,
                     [action.payload.roomId]: [...action.payload.members],
-                }
+                },
             }
         default:
             return state
