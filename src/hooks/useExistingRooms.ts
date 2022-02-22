@@ -58,11 +58,12 @@ export default function useExistingRooms() {
 
                     // Collect up-to-date stream id for clean-up at the end.
                     remoteRoomIds.push(stream.id)
-
-                    const hasPermission = await stream.hasUserPermission(
-                        StreamPermission.SUBSCRIBE,
-                        sessionAccount!
-                    )
+                    
+                    const hasPermission = await stream.hasPermission({
+                        user: sessionAccount!,
+                        permission: StreamPermission.SUBSCRIBE,
+                        allowPublic: true
+                    })
 
                     if (hasPermission) {
                         continue
