@@ -1,17 +1,19 @@
 import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { StorageKey } from '../utils/types'
+import { Partition, StorageKey } from '../utils/types'
 import useInviter from './useInviter'
 import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import { useSend } from '../components/pages/Chat/MessageTransmitter'
+import { MetadataType } from '../components/pages/Chat/MessageAggregator'
 
 const ROOM_PREFIX = 'streamr-chat/room'
 
 export default function useExistingRooms() {
     const {
         account,
-        session: { wallet },
+        session: { wallet, streamrClient },
         metamaskStreamrClient,
     } = useStore()
 
@@ -19,10 +21,17 @@ export default function useExistingRooms() {
 
     const invite = useInviter()
 
+    const send = useSend()
+
     const sessionAccount = wallet?.address
 
     useEffect(() => {
-        if (!metamaskStreamrClient || !account || !sessionAccount) {
+        if (
+            !metamaskStreamrClient ||
+            !account ||
+            !sessionAccount ||
+            !streamrClient
+        ) {
             return
         }
 
@@ -67,10 +76,28 @@ export default function useExistingRooms() {
                     if (hasPermission) {
                         continue
                     }
+
                     await invite({
                         invitees: [sessionAccount!],
                         stream,
                     })
+
+                    // check for an invite-accept and notify the metadata partition
+                    const streamOwner = stream.id.split('/')[0]
+                    if (streamOwner !== account) {
+                        const hasPermission = await stream.hasUserPermission(
+                            StreamPermission.SUBSCRIBE,
+                            sessionAccount!
+                        )
+
+                        if (hasPermission) {
+                            send(MetadataType.AcceptInvite, {
+                                streamPartition: Partition.Metadata,
+                                streamId: stream.id,
+                                data: account,
+                            })
+                        }
+                    }
 
                     // Append the stream immediately so it shows up ASAP.
                     dispatch({
@@ -81,7 +108,6 @@ export default function useExistingRooms() {
                     // noop
                 }
             }
-
             // Update the entire list. It's here mostly to eliminate stale rooms (ones that exist
             // in localStorage but are no longer available online).
             dispatch({
@@ -96,5 +122,13 @@ export default function useExistingRooms() {
         }
 
         fn()
-    }, [account, dispatch, invite, sessionAccount, metamaskStreamrClient])
+    }, [
+        account,
+        dispatch,
+        invite,
+        send,
+        sessionAccount,
+        metamaskStreamrClient,
+        streamrClient,
+    ])
 }

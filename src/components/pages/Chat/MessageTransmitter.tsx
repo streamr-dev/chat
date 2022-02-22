@@ -3,14 +3,16 @@ import useInviter from '../../../hooks/useInviter'
 import { MessageType, Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
-import MessageAggregator from './MessageAggregator'
+import MessageAggregator, { MetadataType } from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { useRenameRoom } from './RoomRenameProvider'
+import { StreamPermission } from 'streamr-client'
+import useRevoker from '../../../hooks/useRevoker'
 
 type TransmitFn = (
     payload: string,
-    options: { streamPartition?: number }
+    options: { streamPartition?: number; streamId?: string; data?: any }
 ) => void
 
 const TransmitContext = createContext<TransmitFn>(() => {})
@@ -28,6 +30,9 @@ enum Command {
     Delete = 'delete',
     New = 'new',
     Rename = 'rename',
+    Members = 'members',
+    Revoke = 'revoke',
+    IsMember = 'isMember',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -40,6 +45,8 @@ export default function MessageTransmitter({ children }: Props) {
 
     const invite = useInviter()
 
+    const revoke = useRevoker()
+
     const createRoom = useCreateRoom()
 
     const deleteRoom = useDeleteRoom()
@@ -47,73 +54,176 @@ export default function MessageTransmitter({ children }: Props) {
     const renameRoom = useRenameRoom()
 
     const send = useCallback<TransmitFn>(
-        async (payload, { streamPartition = Partition.Messages }) => {
-            if (
-                !account ||
-                !roomId ||
-                !streamrClient ||
-                !metamaskStreamrClient
-            ) {
+        async (payload, { streamPartition, streamId, data }) => {
+            if (streamPartition === Partition.Messages) {
+                if (
+                    !account ||
+                    !roomId ||
+                    !streamrClient ||
+                    !metamaskStreamrClient
+                ) {
+                    return
+                }
+
+                const [command, arg] = (
+                    payload.match(
+                        /\/(invite|delete|new|rename|members|revoke|isMember)\s*(.+)?\s*$/
+                    ) || []
+                ).slice(1)
+
+                switch (command) {
+                    case Command.Rename:
+                        if (!arg) {
+                            return
+                        }
+
+                        await renameRoom(roomId, arg)
+
+                        return
+                    case Command.Invite:
+                        if (!arg) {
+                            return
+                        }
+
+                        await (async () => {
+                            const stream =
+                                await metamaskStreamrClient.getStream(roomId)
+
+                            const addresses = arg
+                                .split(/[,\s]+/)
+                                .filter(Boolean)
+
+                            await invite({
+                                invitees: addresses,
+                                stream,
+                            })
+
+                            for (let i = 0; i < addresses.length; i++) {
+                                const address = addresses[i]
+                                send(MetadataType.SendInvite, {
+                                    streamPartition: Partition.Metadata,
+                                    streamId: roomId,
+                                    data: address,
+                                })
+                            }
+                        })()
+
+                        return
+                    case Command.Revoke:
+                        if (!arg) {
+                            return
+                        }
+                        await (async () => {
+                            const stream =
+                                await metamaskStreamrClient.getStream(roomId)
+
+                            const addresses = arg
+                                .split(/[,\s]+/)
+                                .filter(Boolean)
+
+                            for (let i = 0; i < addresses.length; i++) {
+                                const address = addresses[i]
+
+                                send(MetadataType.RevokeInvite, {
+                                    streamPartition: Partition.Metadata,
+                                    streamId: roomId,
+                                    data: address,
+                                })
+                                await revoke({
+                                    revokee: address,
+                                    stream,
+                                })
+                            }
+                        })()
+
+                        return
+                    case Command.Delete:
+                        await deleteRoom(roomId)
+                        return
+                    case Command.New:
+                        await createRoom()
+                        return
+                    case Command.Members:
+                        const members: string[] = []
+                        const membersStream = await streamrClient.getStream(
+                            roomId
+                        )
+                        const memberPermissions =
+                            await membersStream.getPermissions()
+                        const addresses = Object.keys(memberPermissions)
+                        for (let i = 0; i < addresses.length; i++) {
+                            if (
+                                memberPermissions[addresses[i]].includes(
+                                    StreamPermission.SUBSCRIBE
+                                )
+                            ) {
+                                members.push(addresses[i])
+                            }
+                        }
+                        console.info(`room ${roomId} has members:`, members)
+                        return
+                    case Command.IsMember:
+                        const isMemberStream = await streamrClient.getStream(
+                            roomId
+                        )
+                        const permissions =
+                            await isMemberStream.hasUserPermission(
+                                StreamPermission.SUBSCRIBE,
+                                arg
+                            )
+                        console.info(
+                            `user ${arg} is member of room ${roomId}:`,
+                            permissions
+                        )
+                        return
+                    default:
+                        break
+                }
+
+                await streamrClient.publish(
+                    roomId,
+                    {
+                        body: payload,
+                        createdAt: Date.now(),
+                        id: uuidv4(),
+                        sender: account,
+                        type: MessageType.Text,
+                        version: 1,
+                    },
+                    Date.now(),
+                    streamPartition
+                )
                 return
             }
 
-            const [command, arg] = (
-                payload.match(/\/(invite|delete|new|rename)\s*(.+)?\s*$/) || []
-            ).slice(1)
+            if (streamPartition === Partition.Metadata) {
+                console.log('send called', {
+                    type: payload,
+                    data,
+                    streamPartition,
+                })
 
-            switch (command) {
-                case Command.Rename:
-                    if (!arg) {
-                        return
-                    }
-
-                    await renameRoom(roomId, arg)
-
+                if (!account || !streamrClient || !streamId || !data) {
                     return
-                case Command.Invite:
-                    if (!arg) {
-                        return
-                    }
+                }
 
-                    await (async () => {
-                        const stream = await metamaskStreamrClient.getStream(
-                            roomId
-                        )
-
-                        const addresses = arg.split(/[,\s]+/).filter(Boolean)
-
-                        await invite({
-                            invitees: addresses,
-                            stream,
-                        })
-
-                        console.info('invite sent', arg)
-                    })()
-
-                    return
-                case Command.Delete:
-                    await deleteRoom(roomId)
-                    return
-                case Command.New:
-                    await createRoom()
-                    return
-                default:
-                    break
+                await streamrClient.publish(
+                    streamId,
+                    {
+                        body: {
+                            type: payload,
+                            payload: data,
+                        },
+                        createdAt: Date.now(),
+                        id: uuidv4(),
+                        sender: account,
+                        type: MessageType.Metadata,
+                        version: 1,
+                    },
+                    Date.now(),
+                    streamPartition
+                )
             }
-
-            await streamrClient.publish(
-                roomId,
-                {
-                    body: payload,
-                    createdAt: Date.now(),
-                    id: uuidv4(),
-                    sender: account,
-                    type: MessageType.Text,
-                    version: 1,
-                },
-                Date.now(),
-                streamPartition
-            )
         },
         [
             metamaskStreamrClient,
@@ -124,6 +234,7 @@ export default function MessageTransmitter({ children }: Props) {
             createRoom,
             deleteRoom,
             renameRoom,
+            revoke,
         ]
     )
 
