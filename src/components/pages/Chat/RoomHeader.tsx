@@ -5,9 +5,9 @@ import ModifyIcon from './modify.svg'
 import RoomNameDisplay from './RoomNameDisplay'
 import RoomNameEditor from './RoomNameEditor'
 import React, { useEffect, useState } from 'react'
+import RoomDropdown from '../../RoomDropdown'
 import { useRenameRoom } from './RoomRenameProvider'
 import useRoomName from '../../../hooks/useRoomName'
-import RoomDropdown from './RoomDropdown'
 
 type Props = {
     className?: string

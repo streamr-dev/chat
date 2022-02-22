@@ -5,6 +5,7 @@ export default function getInitialChatState(): ChatState {
         account: undefined,
         drafts: {},
         ethereumProvider: undefined,
+        metamaskStreamrClient: undefined,
         ethereumProviderReady: false,
         messages: [],
         recentMessages: {},

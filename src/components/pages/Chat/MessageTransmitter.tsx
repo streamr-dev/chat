@@ -32,6 +32,7 @@ enum Command {
 
 export default function MessageTransmitter({ children }: Props) {
     const {
+        metamaskStreamrClient,
         account,
         roomId,
         session: { streamrClient },
@@ -47,7 +48,12 @@ export default function MessageTransmitter({ children }: Props) {
 
     const send = useCallback<TransmitFn>(
         async (payload, { streamPartition = Partition.Messages }) => {
-            if (!account || !roomId || !streamrClient) {
+            if (
+                !account ||
+                !roomId ||
+                !streamrClient ||
+                !metamaskStreamrClient
+            ) {
                 return
             }
 
@@ -70,12 +76,17 @@ export default function MessageTransmitter({ children }: Props) {
                     }
 
                     await (async () => {
-                        const stream = await streamrClient.getStream(roomId)
+                        const stream = await metamaskStreamrClient.getStream(
+                            roomId
+                        )
+
+                        const addresses = arg.split(/[,\s]+/).filter(Boolean)
 
                         await invite({
-                            invitee: arg,
+                            invitees: addresses,
                             stream,
                         })
+
                         console.info('invite sent', arg)
                     })()
 
@@ -105,6 +116,7 @@ export default function MessageTransmitter({ children }: Props) {
             )
         },
         [
+            metamaskStreamrClient,
             account,
             roomId,
             streamrClient,

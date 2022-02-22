@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import Button from './Button'
 import { KARELIA, SEMIBOLD } from '../utils/css'
+import WalletModal from './WalletModal'
 import AddressButton from './AddressButton'
 import { useStore } from './Store'
 import useConnect from '../hooks/useConnect'
@@ -9,6 +10,7 @@ import ReactModal from 'react-modal'
 import { useState } from 'react'
 import ExternalLinkIcon from '../icons/ExternalLinkIcon'
 import CopyIcon from '../icons/CopyIcon'
+import useDisconnect from '../hooks/useDisconnect'
 
 type Props = {
     className?: string
@@ -177,6 +179,7 @@ const UnstyledNavbar = ({ className }: Props) => {
             setCopiedText(' Copy Address')
         }, 2000)
     }
+    const disconnect = useDisconnect()
 
     return (
         <nav className={className}>
@@ -260,9 +263,7 @@ const UnstyledNavbar = ({ className }: Props) => {
                     </ReactModal>
                 </>
             ) : (
-                <ConnectButton type="button" onClick={connect}>
-                    <span>Connect a wallet</span>
-                </ConnectButton>
+                <WalletModal />
             )}
         </nav>
     )
