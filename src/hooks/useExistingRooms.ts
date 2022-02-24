@@ -2,29 +2,32 @@ import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
-import useInviter from './useInviter'
 import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
-import getRoomMembersFromStream from '../getters/getRoomMembersFromStream'
+import useInviterSelf from './useInviterSelf'
 
 const ROOM_PREFIX = 'streamr-chat/room'
 
 export default function useExistingRooms() {
     const {
         account,
-        session: { wallet },
+        session: { wallet, streamrClient },
         metamaskStreamrClient,
-        roomMembers,
     } = useStore()
 
     const dispatch = useDispatch()
 
-    const invite = useInviter()
+    const inviteSelf = useInviterSelf()
 
     const sessionAccount = wallet?.address
 
     useEffect(() => {
-        if (!metamaskStreamrClient || !account || !sessionAccount) {
+        if (
+            !metamaskStreamrClient ||
+            !account ||
+            !sessionAccount ||
+            !streamrClient
+        ) {
             return
         }
 
@@ -50,6 +53,7 @@ export default function useExistingRooms() {
                 allowPublic: true,
             })
 
+            const selfInviteStreams = []
             for await (const stream of streams) {
                 try {
                     if (
@@ -58,44 +62,31 @@ export default function useExistingRooms() {
                         continue
                     }
 
-                    const existingMembers = roomMembers[stream.id] || []
+                    const hasPermission = await stream.hasPermission({
+                        user: sessionAccount!,
+                        permission: StreamPermission.SUBSCRIBE,
+                        allowPublic: true,
+                    })
 
-                    if (existingMembers.length === 0) {
-                        // populate those members
-                        const members = await getRoomMembersFromStream(stream)
+                    if (!hasPermission) {
+                        selfInviteStreams.push(stream)
+                    } else {
+                        remoteRoomIds.push(stream.id)
                         dispatch({
-                            type: ActionType.SetRoomMembers,
-                            payload: {
-                                roomId: stream.id,
-                                members,
-                            },
+                            type: ActionType.AddRoomIds,
+                            payload: [stream.id],
                         })
                     }
-
-                    // Collect up-to-date stream id for clean-up at the end.
-                    remoteRoomIds.push(stream.id)
-
-                    const hasPermission = await stream.hasUserPermission(
-                        StreamPermission.SUBSCRIBE,
-                        sessionAccount!
-                    )
-
-                    if (hasPermission) {
-                        continue
-                    }
-                    await invite({
-                        invitees: [sessionAccount!],
-                        stream,
-                    })
-
-                    // Append the stream immediately so it shows up ASAP.
-                    dispatch({
-                        type: ActionType.AddRoomIds,
-                        payload: [stream.id],
-                    })
                 } catch (e) {
                     // noop
                 }
+            }
+
+            if (selfInviteStreams.length > 0) {
+                await inviteSelf({
+                    invitee: sessionAccount!,
+                    streams: selfInviteStreams,
+                })
             }
 
             // Update the entire list. It's here mostly to eliminate stale rooms (ones that exist
@@ -115,9 +106,9 @@ export default function useExistingRooms() {
     }, [
         account,
         dispatch,
-        invite,
+        inviteSelf,
         sessionAccount,
+        streamrClient,
         metamaskStreamrClient,
-        roomMembers,
     ])
 }
