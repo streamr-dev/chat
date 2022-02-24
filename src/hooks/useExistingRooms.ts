@@ -11,7 +11,7 @@ const ROOM_PREFIX = 'streamr-chat/room'
 export default function useExistingRooms() {
     const {
         account,
-        session: { wallet },
+        session: { wallet, streamrClient },
         metamaskStreamrClient,
     } = useStore()
 
@@ -22,7 +22,12 @@ export default function useExistingRooms() {
     const sessionAccount = wallet?.address
 
     useEffect(() => {
-        if (!metamaskStreamrClient || !account || !sessionAccount) {
+        if (
+            !metamaskStreamrClient ||
+            !account ||
+            !sessionAccount ||
+            !streamrClient
+        ) {
             return
         }
 
@@ -57,20 +62,19 @@ export default function useExistingRooms() {
                         continue
                     }
 
+                    // Collect up-to-date stream id for clean-up at the end.
+                    remoteRoomIds.push(stream.id)
+
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,
                         allowPublic: true,
                     })
 
-                    console.log('hasPermission', hasPermission)
-
                     if (!hasPermission) {
                         selfInviteStreams.push(stream)
                     }
 
-                    // Collect up-to-date stream id for clean-up at the end.
-                    remoteRoomIds.push(stream.id)
                     // Append the stream immediately so it shows up ASAP.
                     dispatch({
                         type: ActionType.AddRoomIds,
