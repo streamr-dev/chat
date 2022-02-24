@@ -1,18 +1,17 @@
-import StreamrClient, {
+import {
     PermissionAssignment,
+    Stream,
     StreamPermission,
     UserPermissionQuery,
 } from 'streamr-client'
 
 export default async function getRoomMembersFromStream(
-    streamrClient: StreamrClient,
-    streamId: string
+    stream: Stream
 ): Promise<string[]> {
     console.info('calling getRoomMembersFromStream')
     const members: string[] = []
-    const membersStream = await streamrClient.getStream(streamId)
     const memberPermissions: PermissionAssignment[] =
-        await membersStream.getPermissions()
+        await stream.getPermissions()
 
     const isUserPermissionQuery = (
         assignment: any

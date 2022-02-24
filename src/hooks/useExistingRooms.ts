@@ -70,13 +70,12 @@ export default function useExistingRooms() {
 
                     if (!hasPermission) {
                         selfInviteStreams.push(stream)
-                    } else {
-                        remoteRoomIds.push(stream.id)
-                        dispatch({
-                            type: ActionType.AddRoomIds,
-                            payload: [stream.id],
-                        })
                     }
+                    remoteRoomIds.push(stream.id)
+                    dispatch({
+                        type: ActionType.AddRoomIds,
+                        payload: [stream.id],
+                    })
                 } catch (e) {
                     // noop
                 }

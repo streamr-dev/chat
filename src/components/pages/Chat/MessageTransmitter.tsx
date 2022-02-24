@@ -145,10 +145,8 @@ export default function MessageTransmitter({ children }: Props) {
                         await createRoom()
                         return
                     case Command.Members:
-                        const members = await getRoomMembersFromStream(
-                            streamrClient,
-                            roomId
-                        )
+                        const stream = await streamrClient.getStream(roomId)
+                        const members = await getRoomMembersFromStream(stream)
                         console.info(`room ${roomId} has members:`, members)
                         return
                     case Command.IsMember:

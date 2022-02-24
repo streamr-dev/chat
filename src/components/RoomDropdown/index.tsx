@@ -16,6 +16,7 @@ import MemberOptions from './MemberOptions'
 import CloseIcon from '../../icons/CloseIcon'
 import RoomAction from '../pages/Chat/RoomAction'
 import { useStore } from '../Store'
+import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 
 type Props = {
     button?: any
@@ -129,9 +130,24 @@ const RoomDropdown = ({ button }: Props) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
-    const { roomMembers, roomId } = useStore()
+    const {
+        roomId,
+        session: { streamrClient },
+    } = useStore()
 
-    const members = roomMembers[roomId!] || []
+    const [members, setMembers] = useState(Array<string>())
+
+    useEffect(() => {
+        const fn = async () => {
+            if (!streamrClient || !roomId || members.length > 0) {
+                return
+            }
+            const stream = await streamrClient.getStream(roomId)
+            setMembers(await getRoomMembersFromStream(stream))
+        }
+
+        fn()
+    })
 
     useEffect(() => {
         function handleClickOutside(event: any) {
