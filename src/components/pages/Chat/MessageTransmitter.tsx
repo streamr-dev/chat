@@ -7,7 +7,11 @@ import MessageAggregator, { MetadataType } from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { useRenameRoom } from './RoomRenameProvider'
-import { StreamPermission } from 'streamr-client'
+import {
+    PermissionAssignment,
+    StreamPermission,
+    UserPermissionQuery,
+} from 'streamr-client'
 import useRevoker from '../../../hooks/useRevoker'
 
 type TransmitFn = (
@@ -148,16 +152,23 @@ export default function MessageTransmitter({ children }: Props) {
                         const membersStream = await streamrClient.getStream(
                             roomId
                         )
-                        const memberPermissions =
+                        const memberPermissions: PermissionAssignment[] =
                             await membersStream.getPermissions()
-                        const addresses = Object.keys(memberPermissions)
-                        for (let i = 0; i < addresses.length; i++) {
+
+                        const isUserPermissionQuery = (
+                            assignment: any
+                        ): assignment is UserPermissionQuery => {
+                            return assignment.user
+                        }
+
+                        for (const assignment of memberPermissions) {
                             if (
-                                memberPermissions[addresses[i]].includes(
+                                isUserPermissionQuery(assignment) &&
+                                assignment.permissions.includes(
                                     StreamPermission.SUBSCRIBE
                                 )
                             ) {
-                                members.push(addresses[i])
+                                members.push(assignment.user)
                             }
                         }
                         console.info(`room ${roomId} has members:`, members)
@@ -166,11 +177,11 @@ export default function MessageTransmitter({ children }: Props) {
                         const isMemberStream = await streamrClient.getStream(
                             roomId
                         )
-                        const permissions =
-                            await isMemberStream.hasUserPermission(
-                                StreamPermission.SUBSCRIBE,
-                                arg
-                            )
+                        const permissions = await isMemberStream.hasPermission({
+                            permission: StreamPermission.SUBSCRIBE,
+                            user: arg,
+                            allowPublic: true,
+                        })
                         console.info(
                             `user ${arg} is member of room ${roomId}:`,
                             permissions

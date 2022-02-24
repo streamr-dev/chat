@@ -62,9 +62,6 @@ export default function useExistingRooms() {
                         continue
                     }
 
-                    // Collect up-to-date stream id for clean-up at the end.
-                    remoteRoomIds.push(stream.id)
-
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,
@@ -73,22 +70,24 @@ export default function useExistingRooms() {
 
                     if (!hasPermission) {
                         selfInviteStreams.push(stream)
+                    } else {
+                        remoteRoomIds.push(stream.id)
+                        dispatch({
+                            type: ActionType.AddRoomIds,
+                            payload: [stream.id],
+                        })
                     }
-
-                    // Append the stream immediately so it shows up ASAP.
-                    dispatch({
-                        type: ActionType.AddRoomIds,
-                        payload: [stream.id],
-                    })
                 } catch (e) {
                     // noop
                 }
             }
 
-            await inviteSelf({
-                invitee: sessionAccount!,
-                streams: selfInviteStreams,
-            })
+            if (selfInviteStreams.length > 0) {
+                await inviteSelf({
+                    invitee: sessionAccount!,
+                    streams: selfInviteStreams,
+                })
+            }
 
             // Update the entire list. It's here mostly to eliminate stale rooms (ones that exist
             // in localStorage but are no longer available online).
@@ -104,5 +103,12 @@ export default function useExistingRooms() {
         }
 
         fn()
-    }, [account, dispatch, inviteSelf, sessionAccount, metamaskStreamrClient])
+    }, [
+        account,
+        dispatch,
+        inviteSelf,
+        sessionAccount,
+        streamrClient,
+        metamaskStreamrClient,
+    ])
 }
