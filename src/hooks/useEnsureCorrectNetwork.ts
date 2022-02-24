@@ -19,7 +19,10 @@ const PolygonNetworkInfo = {
 export const requestNetworkChange = async (
     ethereumProvider: MetaMaskInpageProvider
 ) => {
-    if (ethereumProvider.networkVersion !== PolygonNetworkInfo.chainId.toString()) {
+    if (
+        ethereumProvider.networkVersion !==
+        PolygonNetworkInfo.chainId.toString()
+    ) {
         alert(
             'Looks like you are not connected to the Polygon Network. Approve your switch on Metamask'
         )

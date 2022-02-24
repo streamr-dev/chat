@@ -8,7 +8,6 @@ import {
 export default async function getRoomMembersFromStream(
     stream: Stream
 ): Promise<string[]> {
-    console.info('calling getRoomMembersFromStream')
     const members: string[] = []
     const memberPermissions: PermissionAssignment[] =
         await stream.getPermissions()
@@ -27,6 +26,5 @@ export default async function getRoomMembersFromStream(
             members.push(assignment.user)
         }
     }
-    console.log('found members', members)
     return members
 }
