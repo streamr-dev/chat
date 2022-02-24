@@ -15,8 +15,7 @@ export default function useInviter(): Inviter {
             tasks.push({
                 user: invitees[i],
                 permissions: [
-                    StreamPermission.SUBSCRIBE,
-                    StreamPermission.PUBLISH,
+                    StreamPermission.GRANT
                 ],
             })
         }
