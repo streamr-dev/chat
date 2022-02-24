@@ -140,7 +140,11 @@ const UnstyledMemberOptions = ({ address }: any) => {
         address
     )
 
-    const { metamaskStreamrClient, roomId, session: { streamrClient }  } = useStore()
+    const {
+        metamaskStreamrClient,
+        roomId,
+        session: { streamrClient },
+    } = useStore()
 
     const revoke = useRevoker()
 
@@ -153,7 +157,10 @@ const UnstyledMemberOptions = ({ address }: any) => {
             stream,
         })
 
-        const members = await getRoomMembersFromStream(streamrClient!, stream.id)
+        const members = await getRoomMembersFromStream(
+            streamrClient!,
+            stream.id
+        )
         console.info('members', members)
         dispatch({
             type: ActionType.SetRoomMembers,

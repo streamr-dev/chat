@@ -7,9 +7,7 @@ import MessageAggregator, { MetadataType } from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { useRenameRoom } from './RoomRenameProvider'
-import {
-    StreamPermission,
-} from 'streamr-client'
+import { StreamPermission } from 'streamr-client'
 import useRevoker from '../../../hooks/useRevoker'
 import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
 
@@ -150,7 +148,7 @@ export default function MessageTransmitter({ children }: Props) {
                         const members = await getRoomMembersFromStream(
                             streamrClient,
                             roomId
-                        )                        
+                        )
                         console.info(`room ${roomId} has members:`, members)
                         return
                     case Command.IsMember:

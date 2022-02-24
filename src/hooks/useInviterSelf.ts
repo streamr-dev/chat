@@ -17,7 +17,10 @@ export default function useInviterSelf(): Inviter {
                 return
             }
 
-            console.info('calling inviteSelf for streams', streams.map(s => s.id))
+            console.info(
+                'calling inviteSelf for streams',
+                streams.map((s) => s.id)
+            )
 
             const tasks = streams.map((stream) => {
                 return {
