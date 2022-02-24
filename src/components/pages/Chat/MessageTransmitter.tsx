@@ -7,12 +7,9 @@ import MessageAggregator, { MetadataType } from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { useRenameRoom } from './RoomRenameProvider'
-import {
-    PermissionAssignment,
-    StreamPermission,
-    UserPermissionQuery,
-} from 'streamr-client'
+import { StreamPermission } from 'streamr-client'
 import useRevoker from '../../../hooks/useRevoker'
+import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
 
 type TransmitFn = (
     payload: string,
@@ -148,29 +145,8 @@ export default function MessageTransmitter({ children }: Props) {
                         await createRoom()
                         return
                     case Command.Members:
-                        const members: string[] = []
-                        const membersStream = await streamrClient.getStream(
-                            roomId
-                        )
-                        const memberPermissions: PermissionAssignment[] =
-                            await membersStream.getPermissions()
-
-                        const isUserPermissionQuery = (
-                            assignment: any
-                        ): assignment is UserPermissionQuery => {
-                            return assignment.user
-                        }
-
-                        for (const assignment of memberPermissions) {
-                            if (
-                                isUserPermissionQuery(assignment) &&
-                                assignment.permissions.includes(
-                                    StreamPermission.SUBSCRIBE
-                                )
-                            ) {
-                                members.push(assignment.user)
-                            }
-                        }
+                        const stream = await streamrClient.getStream(roomId)
+                        const members = await getRoomMembersFromStream(stream)
                         console.info(`room ${roomId} has members:`, members)
                         return
                     case Command.IsMember:
