@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { StorageKey } from '../utils/types'
 import { useDispatch, useStore, ActionType } from './Store'
 import { encrypt } from '@metamask/eth-sig-util'
+import useEnsureCorrectNetwork from '../hooks/useEnsureCorrectNetwork'
 
 class NewWalletRequiredError extends Error {}
 
@@ -12,8 +13,10 @@ export default function SessionHandler() {
 
     const dispatch = useDispatch()
 
+    const ensureCorrectNetwork = useEnsureCorrectNetwork()
+
     useEffect(() => {
-        if (!ethereumProvider || !account) {
+        if (!ethereumProvider || !account || !ensureCorrectNetwork) {
             return
         }
 
@@ -22,6 +25,8 @@ export default function SessionHandler() {
                 localStorage.getItem(StorageKey.EncryptedSession) || undefined
 
             try {
+                // trigger the network adder/switcher
+                await ensureCorrectNetwork()
                 try {
                     if (!encryptedPrivateKey) {
                         // No encrypted private key means there's nothing to retrieve. We gotta get
@@ -93,7 +98,7 @@ export default function SessionHandler() {
         }
 
         fn()
-    }, [ethereumProvider, account, dispatch])
+    }, [ethereumProvider, account, dispatch, ensureCorrectNetwork])
 
     return null
 }
