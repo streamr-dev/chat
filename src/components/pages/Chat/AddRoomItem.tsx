@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
-import Modal from 'react-modal'
 import { KARELIA } from '../../../utils/css'
 import ReactModal from 'react-modal'
 

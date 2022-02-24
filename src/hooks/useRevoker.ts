@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Stream } from 'streamr-client'
+import { Stream, StreamPermission } from 'streamr-client'
 
 type Options = {
     revokee: string
@@ -11,7 +11,14 @@ type Revoker = ({ revokee, stream }: Options) => Promise<void>
 export default function useRevoker(): Revoker {
     return useCallback(
         async ({ revokee, stream }: Options) =>
-            await stream.revokeAllUserPermissions(revokee),
+            await stream.revokePermissions({
+                user: revokee,
+                permissions: [
+                    StreamPermission.SUBSCRIBE,
+                    StreamPermission.PUBLISH,
+                    StreamPermission.GRANT,
+                ],
+            }),
         []
     )
 }
