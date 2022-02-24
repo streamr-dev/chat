@@ -14,9 +14,7 @@ export default function useInviter(): Inviter {
         for (let i = 0; i < invitees.length; i++) {
             tasks.push({
                 user: invitees[i],
-                permissions: [
-                    StreamPermission.GRANT
-                ],
+                permissions: [StreamPermission.GRANT],
             })
         }
         await stream.grantPermissions(...tasks)

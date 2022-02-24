@@ -2,9 +2,9 @@ import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
-import useInviter from './useInviter'
 import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import useInviterSelf from './useInviterSelf'
 
 const ROOM_PREFIX = 'streamr-chat/room'
 
@@ -17,7 +17,7 @@ export default function useExistingRooms() {
 
     const dispatch = useDispatch()
 
-    const invite = useInviter()
+    const inviteSelf = useInviterSelf()
 
     const sessionAccount = wallet?.address
 
@@ -48,6 +48,7 @@ export default function useExistingRooms() {
                 allowPublic: true,
             })
 
+            const selfInviteStreams = []
             for await (const stream of streams) {
                 try {
                     if (
@@ -56,23 +57,20 @@ export default function useExistingRooms() {
                         continue
                     }
 
-                    // Collect up-to-date stream id for clean-up at the end.
-                    remoteRoomIds.push(stream.id)
-
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,
                         allowPublic: true,
                     })
 
-                    if (hasPermission) {
-                        continue
-                    }
-                    await invite({
-                        invitees: [sessionAccount!],
-                        stream,
-                    })
+                    console.log('hasPermission', hasPermission)
 
+                    if (!hasPermission) {
+                        selfInviteStreams.push(stream)
+                    }
+
+                    // Collect up-to-date stream id for clean-up at the end.
+                    remoteRoomIds.push(stream.id)
                     // Append the stream immediately so it shows up ASAP.
                     dispatch({
                         type: ActionType.AddRoomIds,
@@ -82,6 +80,11 @@ export default function useExistingRooms() {
                     // noop
                 }
             }
+
+            await inviteSelf({
+                invitee: sessionAccount!,
+                streams: selfInviteStreams,
+            })
 
             // Update the entire list. It's here mostly to eliminate stale rooms (ones that exist
             // in localStorage but are no longer available online).
@@ -97,5 +100,5 @@ export default function useExistingRooms() {
         }
 
         fn()
-    }, [account, dispatch, invite, sessionAccount, metamaskStreamrClient])
+    }, [account, dispatch, inviteSelf, sessionAccount, metamaskStreamrClient])
 }
