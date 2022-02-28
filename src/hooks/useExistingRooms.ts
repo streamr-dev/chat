@@ -6,7 +6,7 @@ import intersection from 'lodash/intersection'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 import useInviterSelf from './useInviterSelf'
 
-const ROOM_PREFIX = 'streamr-chat/room'
+export const ROOM_PREFIX = 'streamr-chat/room'
 
 export default function useExistingRooms() {
     const {
