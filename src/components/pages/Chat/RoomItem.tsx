@@ -4,7 +4,7 @@ import SidebarItem from './SidebarItem'
 import type { MessagePayload } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 import Identicon from 'identicon.js'
-import getRoomNameFromRoomId from '../../../getters/getRoomNameFromRoomId'
+import useRoomName from '../../../hooks/useRoomName'
 
 type Props = SidebarItemProps & {
     id: string
@@ -38,8 +38,8 @@ const AVATAR_OPTIONS: any = {
 function UnstyledRoomItem({ id, ...props }: Props) {
     const { roomId, recentMessages, roomNames } = useStore()
 
-    const name = roomNames[id] || getRoomNameFromRoomId(id)
-
+    const name = useRoomName()
+    
     const dispatch = useDispatch()
 
     const active = id === roomId

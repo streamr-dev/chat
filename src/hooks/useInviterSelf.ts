@@ -3,23 +3,23 @@ import { Stream, StreamPermission } from 'streamr-client'
 import { useStore } from '../components/Store'
 
 type Options = {
-    invitee: string
     streams: Stream[]
 }
 
-type Inviter = ({ invitee, streams }: Options) => Promise<void>
+type Inviter = ({ streams }: Options) => Promise<void>
 
 export default function useInviterSelf(): Inviter {
-    const { metamaskStreamrClient } = useStore()
+    const { metamaskStreamrClient, session: { wallet } } = useStore()
     return useCallback(
-        async ({ invitee, streams }: Options) => {
-            if (!metamaskStreamrClient) {
+        async ({ streams }: Options) => {
+            if (!metamaskStreamrClient || !wallet) {
                 return
             }
 
             console.info(
                 'calling inviteSelf for streams',
-                streams.map((s) => s.id)
+                streams.map((s) => s.id),
+                `on account ${wallet.address}`
             )
 
             const tasks = streams.map((stream) => {
@@ -27,7 +27,7 @@ export default function useInviterSelf(): Inviter {
                     streamId: stream.id,
                     assignments: [
                         {
-                            user: invitee,
+                            user: wallet.address,
                             permissions: [
                                 StreamPermission.SUBSCRIBE,
                                 StreamPermission.PUBLISH,

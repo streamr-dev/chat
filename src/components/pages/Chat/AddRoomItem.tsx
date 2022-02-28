@@ -5,6 +5,7 @@ import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 import { KARELIA } from '../../../utils/css'
 import ReactModal from 'react-modal'
+import getRandomRoomName from '../../../getters/getRandomRoomName'
 
 const IconWrap = styled.div`
     padding: 13px;
@@ -111,9 +112,17 @@ const ModalHeader = styled.div`
 function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [roomName, setRoomName] = useState(getRandomRoomName())
 
     const closeModal = () => {
         setModalIsOpen(false)
+        // replace the random name after modal closes
+        setRoomName(getRandomRoomName())
+    }
+
+    const initCreateRoom = () => {
+        createRoom(roomName)
+        closeModal()
     }
 
     return (
@@ -164,14 +173,14 @@ function UnstyledAddRoomItem(props: Props) {
                                     <path
                                         d="M15 1L0.999999 15"
                                         stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
                                     />
                                     <path
                                         d="M1 1L15 15"
                                         stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
                                     />
                                 </svg>
                             </CloseButton>
@@ -179,19 +188,14 @@ function UnstyledAddRoomItem(props: Props) {
                         <div>
                             <Subheading>Name</Subheading>
                             <input
-                                disabled={true}
-                                placeholder="random-name-abc"
+                                defaultValue={roomName}
                             />
                             <Subtitle>
-                                Room name is generated randomly, you will be
-                                able to change the name later. The room name
-                                will be publicly visible.{' '}
+                                Room name is generated randomly but you can provide your own, as long as it's unique in your account. 
+                                The room name will be publicly visible.{' '}
                             </Subtitle>
                             <CreateButton
-                                onClick={() => {
-                                    createRoom()
-                                    closeModal()
-                                }}
+                                onClick={initCreateRoom}
                             >
                                 Create
                             </CreateButton>
