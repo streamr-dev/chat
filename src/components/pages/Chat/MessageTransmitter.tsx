@@ -211,19 +211,23 @@ export default function MessageTransmitter({ children }: Props) {
                         break
                 }
 
-                await streamrClient.publish(
-                    roomId,
-                    {
-                        body: payload,
-                        createdAt: Date.now(),
-                        id: uuidv4(),
-                        sender: account,
-                        type: MessageType.Text,
-                        version: 1,
-                    },
-                    Date.now(),
-                    streamPartition
-                )
+                try {
+                    await streamrClient.publish(
+                        roomId,
+                        {
+                            body: payload,
+                            createdAt: Date.now(),
+                            id: uuidv4(),
+                            sender: account,
+                            type: MessageType.Text,
+                            version: 1,
+                        },
+                        Date.now(),
+                        streamPartition
+                    )
+                } catch (e: any) {
+                    console.warn(`Failed to publish to stream ${roomId}`)
+                }
                 return
             }
 
@@ -231,23 +235,26 @@ export default function MessageTransmitter({ children }: Props) {
                 if (!account || !streamrClient || !streamId || !data) {
                     return
                 }
-
-                await streamrClient.publish(
-                    streamId,
-                    {
-                        body: {
-                            type: payload,
-                            payload: data,
+                try {
+                    await streamrClient.publish(
+                        streamId,
+                        {
+                            body: {
+                                type: payload,
+                                payload: data,
+                            },
+                            createdAt: Date.now(),
+                            id: uuidv4(),
+                            sender: account,
+                            type: MessageType.Metadata,
+                            version: 1,
                         },
-                        createdAt: Date.now(),
-                        id: uuidv4(),
-                        sender: account,
-                        type: MessageType.Metadata,
-                        version: 1,
-                    },
-                    Date.now(),
-                    streamPartition
-                )
+                        Date.now(),
+                        streamPartition
+                    )
+                } catch (e: any) {
+                    console.warn(`Failed to publish to stream ${roomId}`)
+                }
             }
         },
         [
