@@ -10,6 +10,7 @@ import { useRenameRoom } from './RoomRenameProvider'
 import { StreamPermission } from 'streamr-client'
 import useRevoker from '../../../hooks/useRevoker'
 import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
+import { ROOM_PREFIX } from '../../../hooks/useExistingRooms'
 
 type TransmitFn = (
     payload: string,
@@ -34,6 +35,7 @@ enum Command {
     Members = 'members',
     Revoke = 'revoke',
     IsMember = 'isMember',
+    Purge = 'purge',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -68,7 +70,7 @@ export default function MessageTransmitter({ children }: Props) {
 
                 const [command, arg] = (
                     payload.match(
-                        /\/(invite|delete|new|rename|members|revoke|isMember)\s*(.+)?\s*$/
+                        /\/(invite|delete|new|rename|members|revoke|isMember|purge)\s*(.+)?\s*$/
                     ) || []
                 ).slice(1)
 
@@ -163,6 +165,48 @@ export default function MessageTransmitter({ children }: Props) {
                             permissions
                         )
                         return
+                    case Command.Purge:
+                        const didConfirm = window.confirm(
+                            `You are about to delete all your streams and reset your account:\n${account}\nAre you sure you want to continue?`
+                        )
+
+                        if (didConfirm) {
+                            const streams =
+                                metamaskStreamrClient!.searchStreams(
+                                    ROOM_PREFIX,
+                                    {
+                                        user: account!,
+                                        anyOf: [StreamPermission.GRANT],
+                                        allowPublic: true,
+                                    }
+                                )
+
+                            for await (const stream of streams) {
+                                try {
+                                    await stream.revokePermissions({
+                                        user: account!,
+                                        permissions: [StreamPermission.GRANT],
+                                    })
+                                    console.info(
+                                        `revoked permissions for ${stream.id}`
+                                    )
+                                    await stream.delete()
+                                    console.info(`deleted stream ${stream.id}`)
+                                } catch (e) {
+                                    console.warn(
+                                        'Purge failed to delete stream, moving on',
+                                        e
+                                    )
+                                }
+                            }
+
+                            localStorage.clear()
+                            console.info('Purge finished, reloading page')
+
+                            window.location.reload()
+                        }
+
+                        return
                     default:
                         break
                 }
@@ -184,12 +228,6 @@ export default function MessageTransmitter({ children }: Props) {
             }
 
             if (streamPartition === Partition.Metadata) {
-                console.log('send called', {
-                    type: payload,
-                    data,
-                    streamPartition,
-                })
-
                 if (!account || !streamrClient || !streamId || !data) {
                     return
                 }
