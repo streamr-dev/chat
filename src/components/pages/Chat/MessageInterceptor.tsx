@@ -54,30 +54,34 @@ const MessageInterceptor = memo(
             }
 
             async function fn() {
-                sub = await streamrClient!.subscribe(
-                    {
-                        streamId,
-                        partition: streamPartition,
-                    },
-                    (data: any, raw: any) => {
-                        if (!mounted) {
-                            return
+                try {
+                    sub = await streamrClient!.subscribe(
+                        {
+                            streamId,
+                            partition: streamPartition,
+                        },
+                        (data: any, raw: any) => {
+                            if (!mounted) {
+                                return
+                            }
+
+                            if (messagesRef.current[data.id]) {
+                                // Message with such id already exists. Suppress.
+                                return
+                            }
+
+                            messagesRef.current[data.id] = true
+
+                            const { current: onMessage } = onMessageRef
+
+                            if (typeof onMessage === 'function') {
+                                onMessage(data, raw)
+                            }
                         }
-
-                        if (messagesRef.current[data.id]) {
-                            // Message with such id already exists. Suppress.
-                            return
-                        }
-
-                        messagesRef.current[data.id] = true
-
-                        const { current: onMessage } = onMessageRef
-
-                        if (typeof onMessage === 'function') {
-                            onMessage(data, raw)
-                        }
-                    }
-                )
+                    )
+                } catch (e: any) {
+                    console.warn(`Error subscribing to stream ${streamId}:`)
+                }
 
                 send(MetadataType.UserOnline, {
                     streamPartition: Partition.Metadata,
