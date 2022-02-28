@@ -145,6 +145,7 @@ function UnstyledAddRoomItem(props: Props) {
                 Add new room
             </SidebarItem>
             <ReactModal
+                appElement={document.getElementById('root') || undefined}
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}
@@ -164,14 +165,14 @@ function UnstyledAddRoomItem(props: Props) {
                                     <path
                                         d="M15 1L0.999999 15"
                                         stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
                                     />
                                     <path
                                         d="M1 1L15 15"
                                         stroke="#59799C"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
                                     />
                                 </svg>
                             </CloseButton>
