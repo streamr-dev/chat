@@ -23,7 +23,7 @@ function UnstyledRoomHeader({ className }: Props) {
 
     const { roomNameEditable, roomId } = useStore()
 
-    const roomName = useRoomName()
+    const roomName = useRoomName(roomId!)
 
     const [value, setValue] = useState<string>(roomName)
 

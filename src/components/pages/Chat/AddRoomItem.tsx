@@ -187,16 +187,13 @@ function UnstyledAddRoomItem(props: Props) {
                         </ModalHeader>
                         <div>
                             <Subheading>Name</Subheading>
-                            <input
-                                defaultValue={roomName}
-                            />
+                            <input defaultValue={roomName} />
                             <Subtitle>
-                                Room name is generated randomly but you can provide your own, as long as it's unique in your account. 
-                                The room name will be publicly visible.{' '}
+                                Room name is generated randomly but you can
+                                provide your own, as long as it's unique in your
+                                account. The room name will be publicly visible.{' '}
                             </Subtitle>
-                            <CreateButton
-                                onClick={initCreateRoom}
-                            >
+                            <CreateButton onClick={initCreateRoom}>
                                 Create
                             </CreateButton>
                         </div>

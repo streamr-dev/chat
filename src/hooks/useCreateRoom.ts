@@ -15,36 +15,41 @@ export default function useCreateRoom(): (roomName: string) => Promise<void> {
 
     const dispatch = useDispatch()
 
-    return useCallback(async (roomName: string) => {
-        if (!sessionAccount) {
-            throw new Error('Missing session account')
-        }
+    return useCallback(
+        async (roomName: string) => {
+            if (!sessionAccount) {
+                throw new Error('Missing session account')
+            }
 
-        if (!account) {
-            throw new Error('Missing account')
-        }
+            if (!account) {
+                throw new Error('Missing account')
+            }
 
-        if (!metamaskStreamrClient) {
-            throw new Error('Missing metamask streamr client')
-        }
+            if (!metamaskStreamrClient) {
+                throw new Error('Missing metamask streamr client')
+            }
 
-        const stream = await metamaskStreamrClient.createStream({
-            id: `/streamr-chat/room/${roomName}`.toLowerCase(),
-            partitions: 2,
-            description: roomName,
-        })
+            const stream = await metamaskStreamrClient.createStream({
+                id: `/streamr-chat/room/${roomName}`.toLowerCase(),
+                partitions: 2,
+                description: roomName,
+            })
 
-        console.info(`Created stream ${stream.id}`)
+            console.info(`Created stream ${stream.id}`)
 
-        await inviteSelf({
-            streams: [stream],
-        })
+            await inviteSelf({
+                streamIds: [stream.id],
+            })
 
-        console.info(`Invited session account ${sessionAccount} to stream ${stream.id}`)
+            console.info(
+                `Invited session account ${sessionAccount} to stream ${stream.id}`
+            )
 
-        dispatch({
-            type: ActionType.AddRoomIds,
-            payload: [stream.id],
-        })
-    }, [sessionAccount, metamaskStreamrClient, account, inviteSelf, dispatch])
+            dispatch({
+                type: ActionType.AddRoomIds,
+                payload: [stream.id],
+            })
+        },
+        [sessionAccount, metamaskStreamrClient, account, inviteSelf, dispatch]
+    )
 }

@@ -184,12 +184,6 @@ export default function MessageTransmitter({ children }: Props) {
             }
 
             if (streamPartition === Partition.Metadata) {
-                console.log('send called', {
-                    type: payload,
-                    data,
-                    streamPartition,
-                })
-
                 if (!account || !streamrClient || !streamId || !data) {
                     return
                 }

@@ -1,6 +1,10 @@
 import { useStore } from '../components/Store'
+import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import { RoomId } from '../utils/types'
 
-export default function useRoomName(): string {
-    const { roomId, roomNames } = useStore()
-    return roomId ? /*roomNames[roomId] ||*/ roomId?.split('/')[3] : ''
+export default function useRoomName(roomId: RoomId): string {
+    const { roomNames } = useStore()
+    return roomNames[roomId]
+        ? roomNames[roomId] || getRoomNameFromRoomId(roomId)
+        : ''
 }

@@ -5,6 +5,7 @@ import type { MessagePayload } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 import Identicon from 'identicon.js'
 import useRoomName from '../../../hooks/useRoomName'
+import { keccak256 } from 'js-sha3'
 
 type Props = SidebarItemProps & {
     id: string
@@ -36,10 +37,10 @@ const AVATAR_OPTIONS: any = {
 }
 
 function UnstyledRoomItem({ id, ...props }: Props) {
-    const { roomId, recentMessages, roomNames } = useStore()
+    const { roomId, recentMessages } = useStore()
 
-    const name = useRoomName()
-    
+    const name = useRoomName(id)
+
     const dispatch = useDispatch()
 
     const active = id === roomId
@@ -62,7 +63,7 @@ function UnstyledRoomItem({ id, ...props }: Props) {
                 <AvatarWrap>
                     <Avatar
                         src={`data:image/png;base64,${new Identicon(
-                            id,
+                            keccak256(id),
                             AVATAR_OPTIONS
                         ).toString()}`}
                         alt={id}
