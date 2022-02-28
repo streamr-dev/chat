@@ -28,9 +28,12 @@ export default function RoomRenameProvider({ children }: Props) {
             }
 
             const stream = await streamrClient.getStream(roomId)
-
-            stream.description = newName
-
+            const oldDescription = JSON.parse(stream.description!)
+            const newDescription = {
+                ...oldDescription,
+                name: newName,
+            }
+            stream.description = JSON.stringify(newDescription)
             await stream.update()
 
             dispatch({

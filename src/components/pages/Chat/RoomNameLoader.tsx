@@ -20,13 +20,26 @@ export default function RoomNameLoader({ roomId }: Props) {
             }
 
             const stream = await streamrClient.getStream(roomId)
-
-            dispatch({
-                type: ActionType.RenameRoom,
-                payload: {
-                    [roomId]: stream.description || '',
-                },
-            })
+            if (stream.description){
+                const description = JSON.parse(stream.description)
+                console.log('stream description', description)
+                dispatch({
+                    type: ActionType.RenameRoom,
+                    payload: {
+                        [roomId]: description.name || '',
+                    },
+                })
+            } else {
+                console.log('stream id', stream.id)
+                dispatch({
+                    type: ActionType.RenameRoom,
+                    payload: {
+                        [roomId]: stream.id || '',
+                    },
+                })
+                
+            }
+            
         }
 
         fn()

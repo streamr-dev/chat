@@ -31,12 +31,15 @@ export default function useCreateRoom(): () => Promise<void> {
         }
 
         const id = `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
-        const roomName = getRoomNameFromRoomId(id)
+        const description = {
+            name: getRoomNameFromRoomId(id),
+            creationTimestamp: Date.now()
+        }
 
         const stream = await metamaskStreamrClient.createStream({
             id,
             partitions: 2,
-            description: roomName,
+            description: JSON.stringify(description),
         })
 
         await invite({
