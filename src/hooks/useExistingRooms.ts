@@ -3,7 +3,6 @@ import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import intersection from 'lodash/intersection'
-import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 import useInviterSelf from './useInviterSelf'
 
 export const ROOM_PREFIX = 'streamr-chat/room'
@@ -56,12 +55,6 @@ export default function useExistingRooms() {
             const selfInviteStreams = []
             for await (const stream of streams) {
                 try {
-                    if (
-                        stream.description !== getRoomNameFromRoomId(stream.id)
-                    ) {
-                        continue
-                    }
-
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,

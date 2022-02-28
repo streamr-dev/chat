@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import getRoomDescription from '../../../getters/getRoomDescription'
 import { RoomId } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 
@@ -20,26 +21,22 @@ export default function RoomNameLoader({ roomId }: Props) {
             }
 
             const stream = await streamrClient.getStream(roomId)
-            if (stream.description){
-                const description = JSON.parse(stream.description)
-                console.log('stream description', description)
+            try {
+                const description = getRoomDescription(stream)
                 dispatch({
                     type: ActionType.RenameRoom,
                     payload: {
                         [roomId]: description.name || '',
                     },
                 })
-            } else {
-                console.log('stream id', stream.id)
+            } catch (e) {
                 dispatch({
                     type: ActionType.RenameRoom,
                     payload: {
                         [roomId]: stream.id || '',
                     },
                 })
-                
             }
-            
         }
 
         fn()

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext } from 'react'
-import { RoomId } from '../../../utils/types'
+import getRoomDescription from '../../../getters/getRoomDescription'
+import { RoomId, RoomMetadata } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 
 type RoomRenamer = (roomId: RoomId, newName: string) => Promise<void>
@@ -28,8 +29,8 @@ export default function RoomRenameProvider({ children }: Props) {
             }
 
             const stream = await streamrClient.getStream(roomId)
-            const oldDescription = JSON.parse(stream.description!)
-            const newDescription = {
+            const oldDescription = getRoomDescription(stream)
+            const newDescription: RoomMetadata = {
                 ...oldDescription,
                 name: newName,
             }

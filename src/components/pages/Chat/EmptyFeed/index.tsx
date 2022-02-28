@@ -1,10 +1,12 @@
 import styled from 'styled-components'
 import { format } from 'date-fns'
 import AddMemberModal from '../AddMemberModal'
+import { useEffect, useState } from 'react'
+import { useStore } from '../../../Store'
+import getRoomDescription from '../../../../getters/getRoomDescription'
 
 type Props = {
     className?: string
-    roomCreatedAt?: number
 }
 
 const CreatedAt = styled.span`
@@ -13,16 +15,34 @@ const CreatedAt = styled.span`
     margin-bottom: 2rem;
 `
 
-const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
+const UnstyledEmptyFeed = ({ className }: Props) => {
+    const [roomCreatedAt, setRoomCreatedAt] = useState(0)
+
+    const {
+        roomId,
+        session: { streamrClient },
+    } = useStore()
+
+    useEffect(() => {
+        const fn = async () => {
+            if (!streamrClient || !roomId || roomCreatedAt !== 0) {
+                return
+            }
+            const stream = await streamrClient.getStream(roomId)
+            const description = getRoomDescription(stream)
+            setRoomCreatedAt(description.creationTimestamp)
+        }
+
+        fn()
+    }, [roomId, streamrClient, roomCreatedAt, setRoomCreatedAt])
+
     return (
         <div className={className}>
             <div>
-                {roomCreatedAt != null && (
-                    <CreatedAt>
-                        You created this room on{' '}
-                        {format(roomCreatedAt, 'iiii, LLL do yyyy')}
-                    </CreatedAt>
-                )}
+                <CreatedAt>
+                    You created this room on{' '}
+                    {format(roomCreatedAt, 'iiii, LLL do yyyy')}
+                </CreatedAt>
                 <AddMemberModal />
             </div>
         </div>

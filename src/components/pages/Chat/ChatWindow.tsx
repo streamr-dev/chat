@@ -1,9 +1,8 @@
-import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
 import MessageInput from './MessageInput'
 import RoomHeader from './RoomHeader'
 import EmptyFeed from './EmptyFeed/index'
-import { useStore } from '../../Store'
 
 const FeedWrap = styled.div`
     height: 100%;
@@ -53,24 +52,6 @@ type Props = {
 const UnstyledChatWindow = ({ className, children }: Props) => {
     const feedRef = useRef<HTMLDivElement>(null)
 
-    const [roomCreatedAt, setRoomCreatedAt] = useState(0)
-
-    const { roomId, session: { streamrClient } } = useStore()
-
-    useEffect(() => {
-        const fn = async () => {
-            if (!streamrClient || !roomId){
-                return
-            }
-            const stream = await streamrClient.getStream(roomId)
-            const description = JSON.parse(stream.description!)
-            console.log('stream description', description)
-            setRoomCreatedAt(description.createdAt)
-        }
-
-        fn()
-    }, [roomId, streamrClient])
-
     useLayoutEffect(() => {
         const { current: feed } = feedRef
 
@@ -87,7 +68,7 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
                     {React.Children.count(children) ? (
                         <Feed ref={feedRef}>{children}</Feed>
                     ) : (
-                        <EmptyFeed roomCreatedAt={roomCreatedAt} />
+                        <EmptyFeed />
                     )}
                 </div>
             </FeedWrap>
