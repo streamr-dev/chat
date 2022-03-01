@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import { AddMemberIcon } from '../../../../icons'
 import { KARELIA, MEDIUM } from '../../../../utils/css'
 import Button from '../../../Button'
+import useInviter from '../../../../hooks/useInviter'
+import { useStore } from '../../../Store'
 
 const customStyles = {
     overlay: {
@@ -22,6 +24,7 @@ const customStyles = {
         borderRadius: '20px',
         transform: 'translate(-50%, -50%)',
         fontFamily: `${KARELIA}`,
+        overflow: 'hidden',
     },
 }
 
@@ -126,6 +129,11 @@ const ModalHeader = styled.div`
 
 const AddMemberModal = ({ button }: { button?: React.ReactElement<any> }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [memberAddress, setMemberAddress] = useState('')
+
+    const { metamaskStreamrClient, roomId } = useStore()
+
+    const invite = useInviter()
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -180,8 +188,27 @@ const AddMemberModal = ({ button }: { button?: React.ReactElement<any> }) => {
                         </ModalHeader>
                         <div>
                             <Subheading>Member Address</Subheading>
-                            <input placeholder="Member Address" />
-                            <CreateButton onClick={() => {}}>Add</CreateButton>
+                            <input
+                                placeholder="Member Address"
+                                onChange={(e) => {
+                                    setMemberAddress(e.target.value)
+                                }}
+                                value={memberAddress}
+                            />
+                            <CreateButton
+                                onClick={async () => {
+                                    const stream =
+                                        await metamaskStreamrClient!.getStream(
+                                            roomId!
+                                        )
+                                    await invite({
+                                        invitees: [memberAddress],
+                                        stream: stream,
+                                    })
+                                }}
+                            >
+                                Add
+                            </CreateButton>
                         </div>
                     </ModalContainer>
                 </StyledModalContent>
