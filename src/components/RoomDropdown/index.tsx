@@ -17,6 +17,8 @@ import CloseIcon from '../../icons/CloseIcon'
 import RoomAction from '../pages/Chat/RoomAction'
 import { useStore } from '../Store'
 import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import useDeleteRoom from '../../hooks/useDeleteRoom'
 
 type Props = {
     button?: any
@@ -137,6 +139,10 @@ const RoomDropdown = ({ button }: Props) => {
 
     const [members, setMembers] = useState(Array<string>())
 
+    const toggleOpen = () => {
+        setIsOpen(!isOpen)
+    }
+
     useEffect(() => {
         const fn = async () => {
             if (!streamrClient || !roomId || members.length > 0) {
@@ -152,7 +158,7 @@ const RoomDropdown = ({ button }: Props) => {
     useEffect(() => {
         function handleClickOutside(event: any) {
             if (ref.current && !ref.current.contains(event.target)) {
-                setIsOpen(false)
+                toggleOpen()
             }
         }
 
@@ -170,8 +176,14 @@ const RoomDropdown = ({ button }: Props) => {
         setModalIsOpen(false)
     }
 
-    const toggleOpen = () => {
-        setIsOpen(!isOpen)
+    const deleteRoom = useDeleteRoom()
+
+    const clickDeleteRoom = () => {
+        if (!roomId) {
+            return
+        }
+        deleteRoom(roomId)
+        closeModal()
     }
 
     return (
@@ -182,7 +194,7 @@ const RoomDropdown = ({ button }: Props) => {
                 </RoomAction>
                 {isOpen && (
                     <DropDownListContainer ref={ref}>
-                        <DropDownList>
+                        <DropDownList onClick={toggleOpen}>
                             <ListItem>
                                 <AddMemberIcon />
                                 Add member
@@ -193,19 +205,15 @@ const RoomDropdown = ({ button }: Props) => {
                             </ListItem>
                             <hr></hr>
                             <ListItem>
-                                <SearchIcon />
-                                Search in conversation
-                            </ListItem>
-                            <ListItem>
-                                <DownloadIcon />
-                                Save to local
-                            </ListItem>
-                            <ListItem>
-                                <CopyIcon />
-                                Copy room id
+                                <CopyToClipboard text={roomId!}>
+                                    <div>
+                                        <CopyIcon />
+                                        Copy room id
+                                    </div>
+                                </CopyToClipboard>
                             </ListItem>
                             <hr></hr>
-                            <ListItem>
+                            <ListItem onClick={clickDeleteRoom}>
                                 <DeleteIcon />
                                 Delete room
                             </ListItem>
