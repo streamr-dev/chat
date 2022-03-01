@@ -11,6 +11,7 @@ import RoomRenameProvider from './pages/Chat/RoomRenameProvider'
 
 export enum ActionType {
     AddMessages = 'add messages',
+    PrependMessages = 'prepend messages',
     AddRooms = 'add rooms',
     EditRoomName = 'edit room name',
     RenameRoom = 'rename room',
@@ -39,6 +40,11 @@ type PayloadlessAction<A> = Omit<Action<A, any>, 'payload'>
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
 
 type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
+
+type PrependMessagesAction = Action<
+    ActionType.PrependMessages,
+    MessagePayload[]
+>
 
 type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
 
@@ -81,6 +87,7 @@ type SetRoomMembersAction = Action<
 type A =
     | SelectRoomAction
     | AddMessagesAction
+    | PrependMessagesAction
     | SetMessagesAction
     | ResetAction
     | SetDraftAction
@@ -140,6 +147,28 @@ function reducer(state: ChatState, action: A): ChatState {
                 ...state,
                 messages: state.roomId ? [...action.payload] : [],
             }
+        case ActionType.AddMessages:
+            const addMessagesIds = new Set(state.messages.map((d) => d.id))
+            return {
+                ...state,
+                messages: [
+                    ...state.messages,
+                    ...action.payload.filter((d) => !addMessagesIds.has(d.id)),
+                ],
+            }
+        case ActionType.PrependMessages:
+            const prependMessagesIds = new Set(state.messages.map((d) => d.id))
+
+            return {
+                ...state,
+                messages: [
+                    ...action.payload.filter(
+                        (d) => !prependMessagesIds.has(d.id)
+                    ),
+                    ...state.messages,
+                ],
+            }
+
         case ActionType.SetSession:
             return {
                 ...state,

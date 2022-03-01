@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import MessageTransmitter from './MessageTransmitter'
 import RoomNameLoader from './RoomNameLoader'
+import useLoadLocalMessages from '../../../hooks/useLoadLocalMessages'
 
 const Content = styled.div`
     height: 100vh;
@@ -33,6 +34,7 @@ type Props = {
 const UnstyledChat = ({ className }: Props) => {
     const {
         roomIds = [],
+        roomId,
         session: { wallet },
         messages,
     } = useStore()
@@ -40,6 +42,11 @@ const UnstyledChat = ({ className }: Props) => {
     useRoomIdsStorage()
 
     useExistingRooms()
+    const localMessageLoader = useLoadLocalMessages()
+
+    useEffect(() => {
+        localMessageLoader()
+    }, [roomId, localMessageLoader])
 
     const sessionAccount = wallet?.address
 

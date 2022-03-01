@@ -96,7 +96,7 @@ export default function MessageAggregator({ children }: Props) {
 
             if (streamId === roomId) {
                 dispatch({
-                    type: ActionType.SetMessages,
+                    type: ActionType.AddMessages,
                     payload: cache[streamId],
                 })
             }

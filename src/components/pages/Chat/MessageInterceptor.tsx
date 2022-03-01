@@ -1,8 +1,10 @@
 import { memo, useEffect, useRef } from 'react'
-import { Partition } from '../../../utils/types'
+import { MessageType, Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { useSend } from './MessageTransmitter'
 import { MetadataType } from './MessageAggregator'
+import { db } from '../../../utils/db'
+import { StreamMessage } from 'streamr-client-protocol'
 
 type Props = {
     streamId: string
@@ -60,7 +62,7 @@ const MessageInterceptor = memo(
                             streamId,
                             partition: streamPartition,
                         },
-                        (data: any, raw: any) => {
+                        async (data: any, raw: StreamMessage) => {
                             if (!mounted) {
                                 return
                             }
@@ -71,6 +73,13 @@ const MessageInterceptor = memo(
                             }
 
                             messagesRef.current[data.id] = true
+                            if (data.type === MessageType.Text) {
+                                data.roomId = streamId
+                                await db.messages.add({
+                                    roomId: streamId,
+                                    serialized: JSON.stringify(data),
+                                })
+                            }
 
                             const { current: onMessage } = onMessageRef
 
