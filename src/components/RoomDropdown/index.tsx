@@ -169,8 +169,8 @@ const RoomDropdown = ({ button }: Props) => {
         setModalIsOpen(false)
     }
 
-    const openMemberModal = () => {
-        setMemberModalIsOpen(true)
+    const handleMemberModal = (state: boolean) => {
+        setMemberModalIsOpen(state)
     }
 
     const toggleOpen = () => {
@@ -186,14 +186,14 @@ const RoomDropdown = ({ button }: Props) => {
                 {isOpen && (
                     <DropDownListContainer ref={ref}>
                         <DropDownList>
-                            <AddMemberModal
-                                button={
-                                    <ListItem onClick={openMemberModal}>
-                                        <AddMemberIcon />
-                                        Add member
-                                    </ListItem>
-                                }
-                            />
+                            <ListItem
+                                onClick={() => {
+                                    handleMemberModal(true)
+                                }}
+                            >
+                                <AddMemberIcon />
+                                Add member
+                            </ListItem>
                             <ListItem onClick={openModal}>
                                 <EditMembersIcon />
                                 Edit members
@@ -220,6 +220,11 @@ const RoomDropdown = ({ button }: Props) => {
                     </DropDownListContainer>
                 )}
             </DropDownContainer>
+
+            <AddMemberModal
+                isOpen={memberModalIsOpen}
+                handleModal={handleMemberModal}
+            />
 
             <ReactModal
                 ariaHideApp={false}

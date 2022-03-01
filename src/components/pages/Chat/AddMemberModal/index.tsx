@@ -28,30 +28,6 @@ const customStyles = {
     },
 }
 
-const AddMemberButton = styled(Button)`
-    align-items: center;
-    background: rgba(255, 89, 36, 0.08);
-    border-radius: 1.5rem;
-    color: #ff5924;
-    cursor: pointer;
-    display: flex;
-    margin: 0 auto;
-    padding: 0 2rem;
-
-    span {
-        display: block;
-        font-family: ${KARELIA};
-        font-size: 1.125rem;
-        font-weight: ${MEDIUM};
-        transform: translateY(-0.1em);
-    }
-
-    svg {
-        display: block;
-        margin-right: 0.75rem;
-    }
-`
-
 const CreateButton = styled.button`
     align-items: center;
     background: #ff5924;
@@ -127,7 +103,15 @@ const ModalHeader = styled.div`
     justify-content: space-between;
 `
 
-const AddMemberModal = ({ button }: { button?: React.ReactElement<any> }) => {
+const AddMemberModal = ({
+    button,
+    isOpen = false,
+    handleModal,
+}: {
+    button?: React.ReactElement<any>
+    isOpen?: boolean
+    handleModal?: (state: boolean) => void
+}) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [memberAddress, setMemberAddress] = useState('')
 
@@ -137,6 +121,7 @@ const AddMemberModal = ({ button }: { button?: React.ReactElement<any> }) => {
 
     const closeModal = () => {
         setModalIsOpen(false)
+        handleModal && handleModal(false)
     }
 
     const openModal = () => {
@@ -148,14 +133,11 @@ const AddMemberModal = ({ button }: { button?: React.ReactElement<any> }) => {
             {button ? (
                 React.cloneElement(button!, { onClick: openModal })
             ) : (
-                <AddMemberButton type="button" onClick={openModal}>
-                    <AddMemberIcon />
-                    <span>Add member</span>
-                </AddMemberButton>
+                <></>
             )}
             <ReactModal
                 ariaHideApp={false}
-                isOpen={modalIsOpen}
+                isOpen={modalIsOpen || isOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}
             >
