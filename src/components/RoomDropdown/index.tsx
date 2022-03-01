@@ -16,6 +16,8 @@ import MemberOptions from './MemberOptions'
 import CloseIcon from '../../icons/CloseIcon'
 import RoomAction from '../pages/Chat/RoomAction'
 import AddMemberModal from '../pages/Chat/AddMemberModal'
+import { useStore } from '../Store'
+import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 
 type Props = {
     button?: any
@@ -39,24 +41,6 @@ const customStyles = {
         fontFamily: `${KARELIA}`,
     },
 }
-
-const members = [
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-    {
-        address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    },
-]
 
 const DropDownContainer = styled.div`
     margin-left: 10px;
@@ -148,6 +132,25 @@ const RoomDropdown = ({ button }: Props) => {
     const [memberModalIsOpen, setMemberModalIsOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
+    const {
+        roomId,
+        session: { streamrClient },
+    } = useStore()
+
+    const [members, setMembers] = useState(Array<string>())
+
+    useEffect(() => {
+        const fn = async () => {
+            if (!streamrClient || !roomId || members.length > 0) {
+                return
+            }
+            const stream = await streamrClient.getStream(roomId)
+            setMembers(await getRoomMembersFromStream(stream))
+        }
+
+        fn()
+    })
+
     useEffect(() => {
         function handleClickOutside(event: any) {
             if (ref.current && !ref.current.contains(event.target)) {
@@ -227,11 +230,11 @@ const RoomDropdown = ({ button }: Props) => {
             />
 
             <ReactModal
-                ariaHideApp={false}
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}
                 onRequestClose={closeModal}
+                appElement={document.getElementById('root') as HTMLElement}
             >
                 <StyledModalContent>
                     <ModalHeader>
@@ -243,10 +246,7 @@ const RoomDropdown = ({ button }: Props) => {
                     <MemberList>
                         {members.map((member) => {
                             return (
-                                <MemberOptions
-                                    key={member.address}
-                                    address={member.address}
-                                />
+                                <MemberOptions key={member} address={member} />
                             )
                         })}
                     </MemberList>

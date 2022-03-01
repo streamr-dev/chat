@@ -1,8 +1,8 @@
 import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
-import EmptyFeed from './EmptyFeed'
 import MessageInput from './MessageInput'
 import RoomHeader from './RoomHeader'
+import EmptyFeed from './EmptyFeed/index'
 
 const FeedWrap = styled.div`
     height: 100%;

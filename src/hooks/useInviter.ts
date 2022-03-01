@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Stream } from 'streamr-client'
+import { Stream, StreamPermission } from 'streamr-client'
 
 type Options = {
     invitees: string[]
@@ -10,17 +10,13 @@ type Inviter = ({ invitees, stream }: Options) => Promise<void>
 
 export default function useInviter(): Inviter {
     return useCallback(async ({ invitees, stream }: Options) => {
-        const permissions = {
-            canEdit: false,
-            canDelete: false,
-            canPublish: true,
-            canSubscribe: true,
-            canGrant: true,
+        const tasks = []
+        for (let i = 0; i < invitees.length; i++) {
+            tasks.push({
+                user: invitees[i],
+                permissions: [StreamPermission.GRANT],
+            })
         }
-
-        await stream.setPermissions(
-            invitees,
-            invitees.map(() => permissions)
-        )
+        await stream.grantPermissions(...tasks)
     }, [])
 }

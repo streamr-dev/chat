@@ -1,10 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import MoreIcon from './more.svg'
 import ModifyIcon from './modify.svg'
 import { KARELIA } from '../../utils/css'
 import { CopyIcon, DeleteIcon } from '../../icons'
 import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
+import useRevoker from '../../hooks/useRevoker'
+import { ActionType, useDispatch, useStore } from '../Store'
+import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -127,21 +132,35 @@ const ListItem = styled.div`
 const UnstyledMemberOptions = ({ address }: any) => {
     const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
-    const [nickname, setNickname] = useState<string>('')
 
     const ref = useRef<HTMLDivElement>(null)
-    const buttonRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        function handleClickOutside(event: any) {
-            setDropdownOpen(false)
-        }
+    const [nickname, setNickname] = useLocalStorage(
+        `nickname:${address}`,
+        address
+    )
 
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [ref, buttonRef])
+    const { metamaskStreamrClient, roomId } = useStore()
+
+    const revoke = useRevoker()
+
+    const dispatch = useDispatch()
+
+    const deleteMember = async () => {
+        const stream = await metamaskStreamrClient!.getStream(roomId!)
+        await revoke({
+            revokee: address,
+            stream,
+        })
+        const members = await getRoomMembersFromStream(stream)
+        dispatch({
+            type: ActionType.SetRoomMembers,
+            payload: {
+                roomId: roomId!,
+                members,
+            },
+        })
+    }
     return (
         <Root>
             <MemberIcon />
@@ -181,7 +200,7 @@ const UnstyledMemberOptions = ({ address }: any) => {
                 <>
                     <EditButton
                         onClick={() => {
-                            setDropdownOpen((isDropdownOpen) => !isDropdownOpen)
+                            setDropdownOpen(!isDropdownOpen)
                         }}
                     >
                         <img src={MoreIcon} alt="" />
@@ -190,14 +209,25 @@ const UnstyledMemberOptions = ({ address }: any) => {
                                 <DropDownListContainer>
                                     <DropDownList>
                                         <ListItem>
-                                            <ExternalLinkIcon />
-                                            View on explorer
+                                            <a
+                                                rel="noreferrer"
+                                                href={`https://polygonscan.com/address/${address}`}
+                                                target="_blank"
+                                            >
+                                                <ExternalLinkIcon />
+                                                View on explorer
+                                            </a>
                                         </ListItem>
+
                                         <ListItem>
-                                            <CopyIcon />
-                                            Copy address
+                                            <CopyToClipboard text={address}>
+                                                <span>
+                                                    <CopyIcon />
+                                                    Copy address
+                                                </span>
+                                            </CopyToClipboard>
                                         </ListItem>
-                                        <ListItem>
+                                        <ListItem onClick={deleteMember}>
                                             <DeleteIcon />
                                             Delete member
                                         </ListItem>

@@ -26,6 +26,7 @@ export type ChatState = {
     roomNameEditable: boolean
     roomNames: { [index: RoomId]: string }
     session: StreamrSession
+    roomMembers: { [index: string]: string[] }
 }
 
 export enum MessageType {

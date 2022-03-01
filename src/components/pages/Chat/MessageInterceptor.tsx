@@ -1,11 +1,13 @@
 import { memo, useEffect, useRef } from 'react'
 import { Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
+import { useSend } from './MessageTransmitter'
+import { MetadataType } from './MessageAggregator'
 
 type Props = {
     streamId: string
     streamPartition: Partition
-    onMessage?: (data: any, raw: any) => void
+    onMessage: (data: any, raw: any) => void
 }
 
 type MessagePresenceMap = {
@@ -18,9 +20,11 @@ const MessageInterceptor = memo(
     ({ streamId, streamPartition, onMessage: onMessageProp }: Props) => {
         const {
             session: { streamrClient },
+            account,
         } = useStore()
 
         const messagesRef = useRef<MessagePresenceMap>(EmptyMessagePresenceMap)
+        const send = useSend()
 
         useEffect(() => {
             messagesRef.current = EmptyMessagePresenceMap
@@ -50,30 +54,41 @@ const MessageInterceptor = memo(
             }
 
             async function fn() {
-                sub = await streamrClient!.subscribe(
-                    {
-                        streamId,
-                        partition: streamPartition,
-                    },
-                    (data: any, raw: any) => {
-                        if (!mounted) {
-                            return
+                try {
+                    sub = await streamrClient!.subscribe(
+                        {
+                            streamId,
+                            partition: streamPartition,
+                        },
+                        (data: any, raw: any) => {
+                            if (!mounted) {
+                                return
+                            }
+
+                            if (messagesRef.current[data.id]) {
+                                // Message with such id already exists. Suppress.
+                                return
+                            }
+
+                            messagesRef.current[data.id] = true
+
+                            const { current: onMessage } = onMessageRef
+
+                            if (typeof onMessage === 'function') {
+                                onMessage(data, raw)
+                            }
                         }
+                    )
+                } catch (e: any) {
+                    console.warn(`Error subscribing to stream ${streamId}:`)
+                }
 
-                        if (messagesRef.current[data.id]) {
-                            // Message with such id already exists. Suppress.
-                            return
-                        }
+                send(MetadataType.UserOnline, {
+                    streamPartition: Partition.Metadata,
+                    streamId,
+                    data: account,
+                })
 
-                        messagesRef.current[data.id] = true
-
-                        const { current: onMessage } = onMessageRef
-
-                        if (typeof onMessage === 'function') {
-                            onMessage(data, raw)
-                        }
-                    }
-                )
                 console.info(
                     'subscribed to stream',
                     streamId,
@@ -92,7 +107,7 @@ const MessageInterceptor = memo(
                 mounted = false
                 unsub()
             }
-        }, [streamId, streamPartition, streamrClient])
+        }, [streamId, streamPartition, streamrClient, account, send])
 
         return null
     }

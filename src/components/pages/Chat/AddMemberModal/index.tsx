@@ -138,6 +138,7 @@ const AddMemberModal = ({
             <ReactModal
                 ariaHideApp={false}
                 isOpen={modalIsOpen || isOpen}
+                appElement={document.getElementById('root') as HTMLElement}
                 contentLabel="Connect a wallet"
                 style={customStyles}
             >
