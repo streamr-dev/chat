@@ -140,7 +140,7 @@ const AddMemberModal = () => {
                 <span>Add member</span>
             </AddMemberButton>
             <ReactModal
-                ariaHideApp={false}
+                appElement={document.getElementById('root') as HTMLElement}
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}

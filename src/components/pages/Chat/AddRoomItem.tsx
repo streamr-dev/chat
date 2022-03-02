@@ -154,6 +154,7 @@ function UnstyledAddRoomItem(props: Props) {
                 Add new room
             </SidebarItem>
             <ReactModal
+                appElement={document.getElementById('root') as HTMLElement}
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}

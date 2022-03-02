@@ -215,11 +215,11 @@ const RoomDropdown = ({ button }: Props) => {
             </DropDownContainer>
 
             <ReactModal
-                ariaHideApp={false}
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}
                 onRequestClose={closeModal}
+                appElement={document.getElementById('root') as HTMLElement}
             >
                 <StyledModalContent>
                     <ModalHeader>

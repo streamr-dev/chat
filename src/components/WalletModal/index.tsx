@@ -102,7 +102,7 @@ const UnstyledWalletModal = ({ button }: { button?: ReactElement }) => {
                 contentLabel="Connect a wallet"
                 style={customStyles}
                 onRequestClose={closeModal}
-                ariaHideApp={false}
+                appElement={document.getElementById('root') as HTMLElement}
             >
                 <StyledModalContent>
                     <ModalContainer>
