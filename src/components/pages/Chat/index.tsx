@@ -57,7 +57,7 @@ const UnstyledChat = ({ className }: Props) => {
             {roomIds.map((id) => (
                 <Fragment key={id}>
                     <RoomNameLoader roomId={id} />
-                    <PresenceEmitter roomId={id}></PresenceEmitter>
+                    <PresenceEmitter roomId={id} />
                 </Fragment>
             ))}
             <Helmet title="Let's chat!" />

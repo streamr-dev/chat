@@ -24,7 +24,7 @@ const PresenceEmitter = ({ roomId }: Props) => {
         return () => clearInterval(interval)
     }, [roomId, account, send])
 
-    return <></>
+    return null
 }
 
 export default PresenceEmitter
