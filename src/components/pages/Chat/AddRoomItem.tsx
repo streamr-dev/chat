@@ -125,6 +125,10 @@ function UnstyledAddRoomItem(props: Props) {
         closeModal()
     }
 
+    const handleChangeRoomName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRoomName(e.target.value)
+    }
+
     return (
         <>
             <SidebarItem
@@ -188,11 +192,17 @@ function UnstyledAddRoomItem(props: Props) {
                         </ModalHeader>
                         <div>
                             <Subheading>Name</Subheading>
-                            <input defaultValue={roomName} />
+                            <input
+                                defaultValue={roomName}
+                                onChange={handleChangeRoomName}
+                            />
                             <Subtitle>
                                 Room name is generated randomly but you can
                                 provide your own, as long as it's unique in your
-                                account. The room name will be publicly visible.{' '}
+                                account. The room name will be publicly visible.
+                                <br />
+                                You may use alphanumeric characters, as well as
+                                dashes (-) and underscores (_) for room names.{' '}
                             </Subtitle>
                             <CreateButton onClick={initCreateRoom}>
                                 Create
