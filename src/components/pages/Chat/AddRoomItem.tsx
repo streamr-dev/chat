@@ -5,6 +5,7 @@ import type { Props } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 import { KARELIA } from '../../../utils/css'
 import ReactModal from 'react-modal'
+import getRandomRoomName from '../../../getters/getRandomRoomName'
 
 const IconWrap = styled.div`
     padding: 13px;
@@ -111,9 +112,21 @@ const ModalHeader = styled.div`
 function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [roomName, setRoomName] = useState(getRandomRoomName())
 
     const closeModal = () => {
         setModalIsOpen(false)
+        // replace the random name after modal closes
+        setRoomName(getRandomRoomName())
+    }
+
+    const initCreateRoom = () => {
+        createRoom(roomName)
+        closeModal()
+    }
+
+    const handleChangeRoomName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRoomName(e.target.value)
     }
 
     return (
@@ -180,20 +193,18 @@ function UnstyledAddRoomItem(props: Props) {
                         <div>
                             <Subheading>Name</Subheading>
                             <input
-                                disabled={true}
-                                placeholder="random-name-abc"
+                                value={roomName}
+                                onChange={handleChangeRoomName}
                             />
                             <Subtitle>
-                                Room name is generated randomly, you will be
-                                able to change the name later. The room name
-                                will be publicly visible.{' '}
+                                Room name is generated randomly but you can
+                                provide your own, as long as it's unique in your
+                                account. The room name will be publicly visible.
+                                <br />
+                                You may use alphanumeric characters, as well as
+                                dashes (-) and underscores (_) for room names.{' '}
                             </Subtitle>
-                            <CreateButton
-                                onClick={() => {
-                                    createRoom()
-                                    closeModal()
-                                }}
-                            >
+                            <CreateButton onClick={initCreateRoom}>
                                 Create
                             </CreateButton>
                         </div>
