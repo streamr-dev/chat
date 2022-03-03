@@ -1,12 +1,10 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import {
     AddMemberIcon,
     EditMembersIcon,
-    SearchIcon,
-    DownloadIcon,
     CopyIcon,
     DeleteIcon,
     MoreIcon,
@@ -128,7 +126,8 @@ const MemberList = styled.div`
 `
 
 const RoomDropdown = ({ button }: Props) => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, toggleOpen] = useReducer((current) => !current, false)
+
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
@@ -138,10 +137,6 @@ const RoomDropdown = ({ button }: Props) => {
     } = useStore()
 
     const [members, setMembers] = useState(Array<string>())
-
-    const toggleOpen = () => {
-        setIsOpen(!isOpen)
-    }
 
     useEffect(() => {
         const fn = async () => {
