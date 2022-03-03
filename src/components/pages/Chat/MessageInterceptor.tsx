@@ -20,7 +20,6 @@ const MessageInterceptor = memo(
     ({ streamId, streamPartition, onMessage: onMessageProp }: Props) => {
         const {
             session: { streamrClient },
-            roomId,
             account,
         } = useStore()
 
@@ -36,17 +35,6 @@ const MessageInterceptor = memo(
         useEffect(() => {
             onMessageRef.current = onMessageProp
         }, [onMessageProp])
-
-        useEffect(() => {
-            const interval = setInterval(() => {
-                send(MetadataType.UserOnline, {
-                    streamPartition: Partition.Metadata,
-                    streamId: roomId,
-                    data: account,
-                })
-            }, 60 * 1000)
-            return () => clearInterval(interval)
-        }, [roomId, account, send])
 
         useEffect(() => {
             let mounted = true
