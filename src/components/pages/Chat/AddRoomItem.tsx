@@ -193,7 +193,7 @@ function UnstyledAddRoomItem(props: Props) {
                         <div>
                             <Subheading>Name</Subheading>
                             <input
-                                defaultValue={roomName}
+                                value={roomName}
                                 onChange={handleChangeRoomName}
                             />
                             <Subtitle>
