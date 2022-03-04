@@ -144,7 +144,7 @@ export default function MessageTransmitter({ children }: Props) {
                         await deleteRoom(roomId)
                         return
                     case Command.New:
-                        await createRoom()
+                        await createRoom(arg)
                         return
                     case Command.Members:
                         const stream = await streamrClient.getStream(roomId)

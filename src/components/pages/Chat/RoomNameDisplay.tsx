@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import useRoomName from '../../../hooks/useRoomName'
 import { KARELIA, MEDIUM } from '../../../utils/css'
-import { ActionType, useDispatch } from '../../Store'
+import { ActionType, useDispatch, useStore } from '../../Store'
 
 type Props = {
     className?: string
@@ -9,8 +9,9 @@ type Props = {
 
 function UnstyledRoomNameDisplay({ className }: Props) {
     const dispatch = useDispatch()
+    const { roomId } = useStore()
 
-    const roomName = useRoomName()
+    const roomName = useRoomName(roomId!)
 
     function onDoubleClick() {
         dispatch({

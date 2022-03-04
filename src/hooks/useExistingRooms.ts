@@ -52,7 +52,7 @@ export default function useExistingRooms() {
                 allowPublic: true,
             })
 
-            const selfInviteStreams = []
+            const selfInviteStreams: string[] = []
             for await (const stream of streams) {
                 try {
                     const hasPermission = await stream.hasPermission({
@@ -62,7 +62,7 @@ export default function useExistingRooms() {
                     })
 
                     if (!hasPermission) {
-                        selfInviteStreams.push(stream)
+                        selfInviteStreams.push(stream.id)
                     }
                     remoteRoomIds.push(stream.id)
                     dispatch({
@@ -76,8 +76,7 @@ export default function useExistingRooms() {
 
             if (selfInviteStreams.length > 0) {
                 await inviteSelf({
-                    invitee: sessionAccount!,
-                    streams: selfInviteStreams,
+                    streamIds: selfInviteStreams,
                 })
             }
 

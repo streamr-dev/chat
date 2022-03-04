@@ -10,9 +10,10 @@ import { useStore } from '../../Store'
 import useExistingRooms from '../../../hooks/useExistingRooms'
 import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import MessageTransmitter from './MessageTransmitter'
 import RoomNameLoader from './RoomNameLoader'
+import PresenceEmitter from './PresenceEmitter'
 
 const Content = styled.div`
     height: 100vh;
@@ -54,7 +55,10 @@ const UnstyledChat = ({ className }: Props) => {
     return (
         <MessageTransmitter>
             {roomIds.map((id) => (
-                <RoomNameLoader key={id} roomId={id} />
+                <Fragment key={id}>
+                    <RoomNameLoader roomId={id} />
+                    <PresenceEmitter roomId={id} />
+                </Fragment>
             ))}
             <Helmet title="Let's chat!" />
             <main className={className}>
