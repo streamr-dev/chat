@@ -1,17 +1,16 @@
 import { useCallback } from 'react'
-import { ActionType, useDispatch, useStore } from '../components/Store'
+import { useStore } from '../components/Store'
 import { db } from '../utils/db'
 import { MessagePayload } from '../utils/types'
 
-type MessageLoader = () => Promise<void>
+type MessageLoader = () => Promise<MessagePayload[]>
 
 export default function useLoadLocalMessages(): MessageLoader {
     const { roomId } = useStore()
-    const dispatch = useDispatch()
 
     return useCallback(async () => {
         if (!roomId) {
-            return
+            return []
         }
 
         const messages = await db.messages
@@ -22,9 +21,6 @@ export default function useLoadLocalMessages(): MessageLoader {
             (m) => JSON.parse(m.serialized) as MessagePayload
         )
 
-        dispatch({
-            type: ActionType.PrependMessages,
-            payload: roomMessages,
-        })
-    }, [roomId, dispatch])
+        return roomMessages
+    }, [roomId])
 }

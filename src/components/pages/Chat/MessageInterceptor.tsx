@@ -1,9 +1,8 @@
 import { memo, useEffect, useRef } from 'react'
-import { MessageType, Partition } from '../../../utils/types'
+import { Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { useSend } from './MessageTransmitter'
 import { MetadataType } from './MessageAggregator'
-import { db } from '../../../utils/db'
 import { StreamMessage } from 'streamr-client-protocol'
 
 type Props = {
@@ -73,13 +72,6 @@ const MessageInterceptor = memo(
                             }
 
                             messagesRef.current[data.id] = true
-                            if (data.type === MessageType.Text) {
-                                data.roomId = streamId
-                                await db.messages.add({
-                                    roomId: streamId,
-                                    serialized: JSON.stringify(data),
-                                })
-                            }
 
                             const { current: onMessage } = onMessageRef
 

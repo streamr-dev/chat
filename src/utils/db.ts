@@ -1,6 +1,5 @@
 import Dexie, { Table } from 'dexie'
-import { StreamMessage } from 'streamr-client-protocol'
-import { MessagePayload, RoomId } from './types'
+import { RoomId } from './types'
 
 export type LocalMessage = {
     roomId: RoomId

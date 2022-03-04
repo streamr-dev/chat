@@ -3,6 +3,8 @@ import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
 import { MessagePayload, Partition, RoomId } from '../../../utils/types'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
+import { db } from '../../../utils/db'
+import useLoadLocalMessages from '../../../hooks/useLoadLocalMessages'
 
 function isMessagePayloadValid(data: any) {
     function hasPayloadField(fieldName: string) {
@@ -53,18 +55,24 @@ export default function MessageAggregator({ children }: Props) {
 
     const deleteRoom = useDeleteRoom()
 
+    const loadLocalMessages = useLoadLocalMessages()
+
     useEffect(() => {
         const { current: cache } = cacheRef
 
-        if (!roomId) {
-            return
-        }
+        ;(async () => {
+            if (!roomId) {
+                return
+            }
 
-        dispatch({
-            type: ActionType.SetMessages,
-            payload: cache[roomId] || [],
-        })
-    }, [dispatch, roomId])
+            cache[roomId] = await loadLocalMessages()
+
+            dispatch({
+                type: ActionType.SetMessages,
+                payload: cache[roomId] || [],
+            })
+        })()
+    }, [dispatch, roomId, loadLocalMessages])
 
     const onTextMessage = useCallback(
         (data, { messageId }) => {
@@ -86,6 +94,14 @@ export default function MessageAggregator({ children }: Props) {
             }
 
             cache[streamId].push(data)
+
+            db.messages.add({
+                roomId: streamId,
+                serialized: JSON.stringify({
+                    ...data,
+                    roomId,
+                }),
+            })
 
             dispatch({
                 type: ActionType.SetRecentMessage,
