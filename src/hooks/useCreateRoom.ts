@@ -1,10 +1,8 @@
 import { useCallback } from 'react'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { v4 as uuidv4 } from 'uuid'
-import useInviter from './useInviter'
-import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import useInviterSelf from './useInviterSelf'
 
-export default function useCreateRoom(): () => Promise<void> {
+export default function useCreateRoom(): (roomName: string) => Promise<void> {
     const {
         session: { wallet },
         account,
@@ -13,40 +11,51 @@ export default function useCreateRoom(): () => Promise<void> {
 
     const sessionAccount = wallet?.address
 
-    const invite = useInviter()
+    const inviteSelf = useInviterSelf()
 
     const dispatch = useDispatch()
 
-    return useCallback(async () => {
-        if (!sessionAccount) {
-            throw new Error('Missing session account')
-        }
+    return useCallback(
+        async (roomName: string) => {
+            if (!sessionAccount) {
+                throw new Error('Missing session account')
+            }
 
-        if (!account) {
-            throw new Error('Missing account')
-        }
+            if (!account) {
+                throw new Error('Missing account')
+            }
 
-        if (!metamaskStreamrClient) {
-            throw new Error('Missing metamask streamr client')
-        }
+            if (!metamaskStreamrClient) {
+                throw new Error('Missing metamask streamr client')
+            }
 
-        const id = `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
-        const roomName = getRoomNameFromRoomId(id)
+            const normalizedRoomName = roomName.toLowerCase()
 
-        const stream = await metamaskStreamrClient.createStream({
-            id,
-            partitions: 2,
-            description: roomName,
-        })
+            if (!/^[a-zA-Z0-9-_]+$/.test(normalizedRoomName)) {
+                throw new Error('Invalid room name')
+            }
 
-        await invite({
-            invitees: [sessionAccount],
-            stream,
-        })
+            const stream = await metamaskStreamrClient.createStream({
+                id: `/streamr-chat/room/${normalizedRoomName}`,
+                partitions: 2,
+                description: normalizedRoomName,
+            })
 
-        dispatch({
-            type: ActionType.AddRoomIds,
-            payload: [id],
-        })
-    }, [sessionAccount, metamaskStreamrClient, account, invite, dispatch])
+            console.info(`Created stream ${stream.id}`)
+
+            await inviteSelf({
+                streamIds: [stream.id],
+            })
+
+            console.info(
+                `Invited session account ${sessionAccount} to stream ${stream.id}`
+            )
+
+            dispatch({
+                type: ActionType.AddRoomIds,
+                payload: [stream.id],
+            })
+        },
+        [sessionAccount, metamaskStreamrClient, account, inviteSelf, dispatch]
+    )
 }
