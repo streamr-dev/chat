@@ -10,7 +10,6 @@ export type MessagePayload = {
     id: string
     sender: string
     version: number
-    roomId?: RoomId
 }
 
 export type ChatState = {

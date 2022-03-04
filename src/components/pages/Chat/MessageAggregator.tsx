@@ -97,10 +97,7 @@ export default function MessageAggregator({ children }: Props) {
 
             db.messages.add({
                 roomId: streamId,
-                serialized: JSON.stringify({
-                    ...data,
-                    roomId,
-                }),
+                serialized: JSON.stringify(data),
             })
 
             dispatch({
