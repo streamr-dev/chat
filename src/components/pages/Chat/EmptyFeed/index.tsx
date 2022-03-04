@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import AddMemberModal from '../AddMemberModal'
 import { useEffect, useState } from 'react'
 import { useStore } from '../../../Store'
-import getRoomDescription from '../../../../getters/getRoomDescription'
+import getRoomMetadata from '../../../../getters/getRoomMetadata'
 
 type Props = {
     className?: string
@@ -24,16 +24,27 @@ const UnstyledEmptyFeed = ({ className }: Props) => {
     } = useStore()
 
     useEffect(() => {
+        let mounted = true
+
         const fn = async () => {
             if (!streamrClient || !roomId || roomCreatedAt !== 0) {
                 return
             }
             const stream = await streamrClient.getStream(roomId)
-            const description = getRoomDescription(stream)
-            setRoomCreatedAt(description.creationTimestamp)
+            const description = getRoomMetadata(stream.description)
+            setRoomCreatedAt(description.createdAt)
         }
 
-        fn()
+        ;(async () => {
+            await fn()
+            if (!mounted) {
+                return
+            }
+        })()
+
+        return () => {
+            mounted = false
+        }
     }, [roomId, streamrClient, roomCreatedAt, setRoomCreatedAt])
 
     return (

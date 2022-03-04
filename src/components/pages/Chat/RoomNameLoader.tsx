@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import getRoomDescription from '../../../getters/getRoomDescription'
+import getRoomMetadata from '../../../getters/getRoomMetadata'
 import { RoomId } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 
@@ -22,7 +22,7 @@ export default function RoomNameLoader({ roomId }: Props) {
 
             const stream = await streamrClient.getStream(roomId)
             try {
-                const description = getRoomDescription(stream)
+                const description = getRoomMetadata(stream.description)
                 dispatch({
                     type: ActionType.RenameRoom,
                     payload: {

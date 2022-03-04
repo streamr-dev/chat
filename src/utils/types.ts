@@ -14,7 +14,7 @@ export type MessagePayload = {
 
 export type RoomMetadata = {
     name: string
-    creationTimestamp: number
+    createdAt: number
 }
 
 export type ChatState = {

@@ -34,7 +34,7 @@ export default function useCreateRoom(): () => Promise<void> {
         const id = `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
         const description: RoomMetadata = {
             name: getRoomNameFromRoomId(id),
-            creationTimestamp: Date.now(),
+            createdAt: Date.now(),
         }
 
         const stream = await metamaskStreamrClient.createStream({
