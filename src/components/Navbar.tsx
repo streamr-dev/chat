@@ -150,20 +150,22 @@ const BetaBadge = styled.div`
     font-size: 14px;
     top: -25px;
     right: 5px;
-    padding: 5px;
+    padding-left: 8px;
+    padding-bottom: 5px;
+    padding-top: 5px;
     padding-right: 0px;
 `
 
 const BetaBadgeTail = styled.div`
     display: inline-block;
     background-color: white;
-    height: 10px;
-    width: 10px;
+    height: 7.9px;
+    width: 10.5px;
     position: relative;
-    transform: rotate(65deg);
+    transform: rotate(-35deg);
     top: 11px;
     right: 25px;
-    border-radius: 2px;
+    border-radius: 1px;
 `
 
 function trunc(address: string) {
