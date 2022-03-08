@@ -142,6 +142,30 @@ const LinkContainer = styled.div`
     gap: 10px;
 `
 
+const BetaBadge = styled.div`
+    display: inline-block;
+    background-color: #ffffff;
+    position: relative;
+    border-radius: 10%;
+    font-size: 14px;
+    top: -25px;
+    right: 5px;
+    padding: 5px;
+    padding-right: 0px;
+`
+
+const BetaBadgeTail = styled.div`
+    display: inline-block;
+    background-color: white;
+    height: 10px;
+    width: 10px;
+    position: relative;
+    transform: rotate(65deg);
+    top: 11px;
+    right: 25px;
+    border-radius: 2px;
+`
+
 function trunc(address: string) {
     if (/^0x[a-f\d]{40}$/i.test(address)) {
         return `${address.slice(0, 6)}...${address.slice(-4)}`
@@ -173,7 +197,13 @@ const UnstyledNavbar = ({ className }: Props) => {
     return (
         <nav className={className}>
             <h4>
-                <Link to="/">thechat.eth</Link>
+                <Link to="/">
+                    thechat.eth
+                    <BetaBadge>
+                        Beta
+                        <BetaBadgeTail />
+                    </BetaBadge>
+                </Link>
             </h4>
             {account ? (
                 <>
@@ -267,7 +297,7 @@ const Navbar = styled(UnstyledNavbar)`
     padding-bottom: 24px;
     padding-left: 40px;
     padding-right: 40px;
-    padding-top: 24px;
+    padding-top: 35px;
     position: absolute;
     top: 0px;
     width: 100%;
