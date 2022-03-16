@@ -79,6 +79,6 @@
     "@types/lodash": "^4.14.180",
     "@types/react-copy-to-clipboard": "^5.0.2",
     "@types/uuid": "^8.3.4",
-    "prettier": "2.5.1"
+    "prettier": "2.6.0"
   }
 }
