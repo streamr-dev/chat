@@ -9,8 +9,10 @@ import Message from './Message'
 import { useStore } from '../../Store'
 import useExistingRooms from '../../../hooks/useExistingRooms'
 import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
+import useErc20JoinPolicy from '../../../hooks/useErc20JoinPolicy'
+
 import { useNavigate } from 'react-router-dom'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import MessageTransmitter from './MessageTransmitter'
 import RoomNameLoader from './RoomNameLoader'
 import PresenceEmitter from './PresenceEmitter'
@@ -51,6 +53,17 @@ const UnstyledChat = ({ className }: Props) => {
             navigate('/')
         }
     }, [sessionAccount, navigate])
+
+    const erc20Join = useErc20JoinPolicy()
+    const [isMount, setIsMount] = useState(false)
+    useEffect(() => {
+        if (isMount){
+            return
+        }
+        setIsMount(true)
+        //erc20Join({})
+    })
+
 
     return (
         <MessageTransmitter>
