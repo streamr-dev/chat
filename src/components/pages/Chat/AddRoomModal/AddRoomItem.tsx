@@ -131,6 +131,7 @@ function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [roomName, setRoomName] = useState(getRandomRoomName())
+    const [privacy, setPrivacy] = useState('')
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -145,6 +146,11 @@ function UnstyledAddRoomItem(props: Props) {
 
     const handleChangeRoomName = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRoomName(e.target.value)
+    }
+
+    const handleDropdownChange = (e: any) => {
+        console.log(e.value)
+        setPrivacy(e.value)
     }
 
     return (
@@ -226,8 +232,16 @@ function UnstyledAddRoomItem(props: Props) {
                                     names.{' '}
                                 </Subtitle>
                                 <Subheading>Choose privacy</Subheading>
-                                <PrivacySelect />
-                                <CreateButton onClick={initCreateRoom}>
+                                <PrivacySelect
+                                    handleChange={handleDropdownChange}
+                                />
+                                <CreateButton
+                                    onClick={initCreateRoom}
+                                    disabled={
+                                        roomName.length === 0 ||
+                                        privacy.length === 0
+                                    }
+                                >
                                     Create
                                 </CreateButton>
                             </form>

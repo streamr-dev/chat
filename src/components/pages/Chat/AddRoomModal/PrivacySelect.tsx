@@ -177,6 +177,7 @@ const PrivacySelect = (props: any) => {
             backspaceRemovesValue={false}
             menuPortalTarget={document.querySelector('body')}
             menuShouldBlockScroll={true}
+            onChange={props.handleChange}
         />
     )
 }
