@@ -142,16 +142,18 @@ function reducer(state: ChatState, action: A): ChatState {
                 messages: state.roomId ? [...action.payload] : [],
             }
         case ActionType.SetSession:
+            const {StreamrClientConfig} = getEnvironmentConfig()
+
             return {
                 ...state,
                 metamaskStreamrClient: new StreamrClient({
-                    ...getEnvironmentConfig().StreamrClientConfig,
+                    ...StreamrClientConfig,
                     auth: { ethereum: state.ethereumProvider as any },
                     
                 }),
                 session: {
                     streamrClient: new StreamrClient({
-                        ...getEnvironmentConfig().StreamrClientConfig,
+                        ...StreamrClientConfig,
                         auth: {
                             privateKey: action.payload,
                         },

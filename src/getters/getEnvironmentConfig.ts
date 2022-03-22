@@ -32,18 +32,9 @@ const DevConfig: EnvironmentConfig = {
         blockExplorer: 'https://polygonscan.com/',
         rpcUrl: 'https://localhost:8545',
         decimals: 18,
-        symbol: 'GAS',
+        symbol: 'ETH',
     },
-    StreamrClientConfig: {
-        ...Config,
-        streamRegistryChainRPCs: {
-            name: 'streamr',
-            rpcs: [{
-                url: `http://10.200.10.18546`,
-                timeout: 30 * 1000,
-            }]
-        }
-    },
+    StreamrClientConfig: ConfigTest,
     DelegatedAccessRegistryAddress: '0x56e57Bf7422eDe1ED75520D4387829feEe8a8319'
 }
 

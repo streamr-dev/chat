@@ -1,31 +1,29 @@
 import { useCallback } from 'react'
 import { ActionType, useDispatch, useStore } from '../components/Store'
+import { Contract, providers } from 'ethers'
+import getEnvironmentConfig from '../getters/getEnvironmentConfig'
+import * as DelegatedAccessRegistryArtifact from '../artifacts/DelegatedAccessRegistry.json'
 
-export default function useAuthorizeAccount(): (account: string) => Promise<void> {
+const DelegatedAccessRegistryAbi = (DelegatedAccessRegistryArtifact as any)
+export default function useAuthorizeAccount(): (delegatedAddress: string) => Promise<void> {
     const { ethereumProvider } = useStore()
-
+    const { DelegatedAccessRegistryAddress } = getEnvironmentConfig()
     const dispatch = useDispatch()
+    
 
-    return useCallback(async (account: string) => {
+    return useCallback(async (delegatedAddress: string) => {
         if (!ethereumProvider) {
             return
         }
 
-        try {
-            const accounts = (await ethereumProvider.request({
-                method: 'eth_requestAccounts',
-            })) as string[]
-
-            dispatch({
-                type: ActionType.SetAccount,
-                payload: accounts[0],
-            })
-        } catch (e: any) {
-            if (e.code === 4001) {
-                console.warn('Please connect to MetaMask.')
-            } else {
-                console.error(e)
-            }
-        }
+        const contract = new Contract(
+            DelegatedAccessRegistryAddress,
+            DelegatedAccessRegistryAbi.abi,
+            new providers.Web3Provider(ethereumProvider as any)
+        )
+        console.log('useAuthorizeAccount contract', contract)
+            console.info(ethereumProvider.selectedAddress,  delegatedAddress)
+        const isAuthorized = await contract.isUserAuthorized(ethereumProvider.selectedAddress, delegatedAddress)
+        console.log('isAuthorized', isAuthorized)
     }, [ethereumProvider, dispatch])
 }
