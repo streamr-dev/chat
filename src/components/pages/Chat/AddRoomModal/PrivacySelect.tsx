@@ -39,6 +39,7 @@ const customStyles = {
         alignItems: 'center',
         paddingLeft: '20px',
         paddingRight: '10px',
+        marginBottom: '15px',
     }),
     indicatorSeparator: () => ({ display: 'none' }),
     menu: (provided: any) => ({
@@ -81,6 +82,10 @@ const CheckIcon = styled.img`
     width: 12px;
     height: 9px;
     margin-left: auto;
+`
+
+const ControlIcon = styled.div`
+    color: #59799C:
 `
 
 const Option = (props: any) => {
@@ -127,8 +132,17 @@ const Option = (props: any) => {
 }
 
 const Control = ({ children, ...props }: any) => {
-    console.log(props.selectProps)
-    return <components.Control {...props}>{children}</components.Control>
+    console.log(props.selectProps.value)
+    return (
+        <components.Control {...props}>
+            <ControlIcon>
+                {props.selectProps.value && props.selectProps.value.icon && (
+                    <img src={props.selectProps.value.icon} />
+                )}
+            </ControlIcon>
+            {children}
+        </components.Control>
+    )
 }
 
 const DropdownIndicator = (props: any) => {
@@ -161,6 +175,8 @@ const PrivacySelect = (props: any) => {
             isSearchable={false} // Magic words to make the Select Read Only``
             isClearable={false}
             backspaceRemovesValue={false}
+            menuPortalTarget={document.querySelector('body')}
+            menuShouldBlockScroll={true}
         />
     )
 }

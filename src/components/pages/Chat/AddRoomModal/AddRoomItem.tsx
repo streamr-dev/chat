@@ -22,7 +22,6 @@ const customStyles = {
     content: {
         border: 'none',
         width: '528px',
-        height: '361px',
         top: '50%',
         left: '50%',
         right: 'auto',
