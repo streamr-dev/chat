@@ -43,6 +43,7 @@
     "react-router": "^6.2.1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.0",
+    "react-select": "^5.2.2",
     "streamr-client": "^6.0.2",
     "strip-hex-prefix": "^1.0.0",
     "styled-components": "^5.3.5",
@@ -80,6 +81,7 @@
     "@types/identicon.js": "^2.3.1",
     "@types/lodash": "^4.14.181",
     "@types/react-copy-to-clipboard": "^5.0.2",
+    "@types/react-select": "^5.0.1",
     "@types/uuid": "^8.3.4",
     "prettier": "2.6.2"
   }

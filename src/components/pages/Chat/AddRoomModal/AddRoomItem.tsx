@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import styled from 'styled-components'
-import useCreateRoom from '../../../hooks/useCreateRoom'
-import type { Props } from './SidebarItem'
-import SidebarItem from './SidebarItem'
-import { KARELIA } from '../../../utils/css'
+import useCreateRoom from '../../../../hooks/useCreateRoom'
+import type { Props } from '../SidebarItem'
+import SidebarItem from '../SidebarItem'
+import { KARELIA } from '../../../../utils/css'
 import ReactModal from 'react-modal'
-import getRandomRoomName from '../../../getters/getRandomRoomName'
+import PrivacySelect from './PrivacySelect'
+
+import getRandomRoomName from '../../../../getters/getRandomRoomName'
+
+import dropdown from '../dropdown.svg'
 
 const IconWrap = styled.div`
     padding: 13px;
@@ -109,6 +113,21 @@ const ModalHeader = styled.div`
     justify-content: space-between;
 `
 
+const PrivacyDropdown = styled.select`
+    appearance: none;
+    background: #dee6ee;
+    border: 0;
+    outline: 0;
+    width: 100%;
+    padding: 13px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    background-image: url(${dropdown});
+    background-repeat: no-repeat;
+    background-position: calc(100% - 20px) center;
+    background-size: 10px;
+`
+
 function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -191,22 +210,28 @@ function UnstyledAddRoomItem(props: Props) {
                             </CloseButton>
                         </ModalHeader>
                         <div>
-                            <Subheading>Name</Subheading>
-                            <input
-                                value={roomName}
-                                onChange={handleChangeRoomName}
-                            />
-                            <Subtitle>
-                                Room name is generated randomly but you can
-                                provide your own, as long as it's unique in your
-                                account. The room name will be publicly visible.
-                                <br />
-                                You may use alphanumeric characters, as well as
-                                dashes (-) and underscores (_) for room names.{' '}
-                            </Subtitle>
-                            <CreateButton onClick={initCreateRoom}>
-                                Create
-                            </CreateButton>
+                            <form>
+                                <Subheading>Name</Subheading>
+                                <input
+                                    value={roomName}
+                                    onChange={handleChangeRoomName}
+                                />
+                                <Subtitle>
+                                    Room name is generated randomly but you can
+                                    provide your own, as long as it's unique in
+                                    your account. The room name will be publicly
+                                    visible.
+                                    <br />
+                                    You may use alphanumeric characters, as well
+                                    as dashes (-) and underscores (_) for room
+                                    names.{' '}
+                                </Subtitle>
+                                <Subheading>Choose privacy</Subheading>
+                                <PrivacySelect />
+                                <CreateButton onClick={initCreateRoom}>
+                                    Create
+                                </CreateButton>
+                            </form>
                         </div>
                     </ModalContainer>
                 </StyledModalContent>
