@@ -1,7 +1,8 @@
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import { useCallback } from 'react'
 import { useStore } from '../components/Store'
-
+import getEnvironmentConfig from '../getters/getEnvironmentConfig'
+/*
 const PolygonChainId = 137
 const PUBLIC_INFURA_PROJECT_ID = ''
 
@@ -14,17 +15,18 @@ const PolygonNetworkInfo = {
     rpcUrl: 'https://polygon-rpc.com/',
     decimals: 18,
     symbol: 'MATIC',
-}
+}*/
 
 export const requestNetworkChange = async (
     ethereumProvider: MetaMaskInpageProvider
 ) => {
+    const {PolygonNetworkInfo} = getEnvironmentConfig()
     if (
         ethereumProvider.networkVersion !==
         PolygonNetworkInfo.chainId.toString()
     ) {
         alert(
-            'Looks like you are not connected to the Polygon Network. Approve your switch on Metamask'
+            `Looks like you are not connected to the ${PolygonNetworkInfo.name} Network. Approve your switch on Metamask`
         )
         try {
             const requestSwitch = await ethereumProvider.request({
@@ -38,7 +40,9 @@ export const requestNetworkChange = async (
             alert('Successfully connected to Polygon Network')
             return requestSwitch
         } catch (err: any) {
+            console.warn('01', err)
             if (err.code === 4902) {
+                console.log('requesting add')
                 try {
                     // takes in more parameters, see https://docs.metamask.io/guide/rpc-api.html#unrestricted-methods
                     const requestAdd = await ethereumProvider.request({
@@ -62,6 +66,7 @@ export const requestNetworkChange = async (
                     alert('Successfully connected to Polygon Network')
                     return requestAdd
                 } catch (err: any) {
+                    console.warn('02', err)
                     if (err.code === 4001 || err.code === 4902) {
                         throw new Error('chainIdRejected')
                     }

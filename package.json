@@ -50,7 +50,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "REACT_APP_ENVIRONMENT=PROD craco start",
+    "dev": "REACT_APP_ENVIRONMENT=DEV craco start",
     "build": "NODE_OPTIONS=\"--max_old_space_size=4096\" craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
