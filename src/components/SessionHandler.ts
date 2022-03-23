@@ -5,6 +5,7 @@ import { StorageKey } from '../utils/types'
 import { useDispatch, useStore, ActionType } from './Store'
 import { encrypt } from '@metamask/eth-sig-util'
 import useEnsureCorrectNetwork from '../hooks/useEnsureCorrectNetwork'
+import useAuthorizeAccount from '../hooks/useAuthorizeAccount'
 
 class NewWalletRequiredError extends Error {}
 
@@ -14,7 +15,7 @@ export default function SessionHandler() {
     const dispatch = useDispatch()
 
     const ensureCorrectNetwork = useEnsureCorrectNetwork()
-
+    const authorizeAccount = useAuthorizeAccount()
     useEffect(() => {
         if (!ethereumProvider || !account || !ensureCorrectNetwork) {
             return
@@ -82,6 +83,8 @@ export default function SessionHandler() {
                             'utf8'
                         ).toString('hex')
                     )
+
+                    await authorizeAccount(wallet!.address)
 
                     dispatch({
                         type: ActionType.SetSession,
