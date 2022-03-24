@@ -21,22 +21,16 @@ export default function RoomNameLoader({ roomId }: Props) {
             }
 
             const stream = await streamrClient.getStream(roomId)
+            let roomName = stream.id as string
             try {
-                const description = getRoomMetadata(stream.description)
-                dispatch({
-                    type: ActionType.RenameRoom,
-                    payload: {
-                        [roomId]: description.name || '',
-                    },
-                })
-            } catch (e) {
-                dispatch({
-                    type: ActionType.RenameRoom,
-                    payload: {
-                        [roomId]: stream.id || '',
-                    },
-                })
-            }
+                roomName = getRoomMetadata(stream.description!).name
+            } catch (e) {}
+            dispatch({
+                type: ActionType.RenameRoom,
+                payload: {
+                    [roomId]: roomName || '',
+                },
+            })
         }
 
         fn()

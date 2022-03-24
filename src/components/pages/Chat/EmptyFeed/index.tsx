@@ -29,14 +29,11 @@ const UnstyledEmptyFeed = ({ className }: Props) => {
         let mounted = true
 
         const fn = async () => {
-            if (!streamrClient || !roomId || roomCreatedAt) {
+            if (!streamrClient || !roomId || !mounted) {
                 return
             }
             const stream = await streamrClient.getStream(roomId)
-            if (!mounted) {
-                return
-            }
-            const description = getRoomMetadata(stream.description)
+            const description = getRoomMetadata(stream.description!)
             setRoomCreatedAt(description.createdAt)
         }
 
@@ -45,7 +42,7 @@ const UnstyledEmptyFeed = ({ className }: Props) => {
         return () => {
             mounted = false
         }
-    }, [roomId, streamrClient, roomCreatedAt, setRoomCreatedAt])
+    }, [roomId, streamrClient, roomCreatedAt])
 
     return (
         <div className={className}>
