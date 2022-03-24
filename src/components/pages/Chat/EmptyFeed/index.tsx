@@ -16,7 +16,9 @@ const CreatedAt = styled.span`
 `
 
 const UnstyledEmptyFeed = ({ className }: Props) => {
-    const [roomCreatedAt, setRoomCreatedAt] = useState(0)
+    const [roomCreatedAt, setRoomCreatedAt] = useState<number | undefined>(
+        undefined
+    )
 
     const {
         roomId,
@@ -27,7 +29,7 @@ const UnstyledEmptyFeed = ({ className }: Props) => {
         let mounted = true
 
         const fn = async () => {
-            if (!streamrClient || !roomId || roomCreatedAt !== 0) {
+            if (!streamrClient || !roomId || roomCreatedAt) {
                 return
             }
             const stream = await streamrClient.getStream(roomId)
@@ -47,13 +49,15 @@ const UnstyledEmptyFeed = ({ className }: Props) => {
 
     return (
         <div className={className}>
-            <div>
-                <CreatedAt>
-                    You created this room on{' '}
-                    {format(roomCreatedAt, 'iiii, LLL do yyyy')}
-                </CreatedAt>
+            <>
+                {roomCreatedAt ? (
+                    <CreatedAt>
+                        You created this room on{' '}
+                        {format(roomCreatedAt, 'iiii, LLL do yyyy')}
+                    </CreatedAt>
+                ) : null}
                 <AddMemberModal />
-            </div>
+            </>
         </div>
     )
 }
