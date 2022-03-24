@@ -61,7 +61,7 @@ const MessageInterceptor = memo(
                             streamId,
                             partition: streamPartition,
                         },
-                        async (data: any, raw: StreamMessage) => {
+                        (data: any, raw: StreamMessage) => {
                             if (!mounted) {
                                 return
                             }
