@@ -1,8 +1,10 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import { MessagePayload, Partition, RoomId } from '../../../utils/types'
+import { MessagePayload, Partition } from '../../../utils/types'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
+import { db } from '../../../utils/db'
+import getLocalMessagesForRoom from '../../../getters/getLocalMessagesForRoom'
 
 function isMessagePayloadValid(data: any) {
     function hasPayloadField(fieldName: string) {
@@ -24,9 +26,7 @@ function isMessagePayloadValid(data: any) {
     )
 }
 
-type Cache = {
-    [index: RoomId]: MessagePayload[]
-}
+type Cache = MessagePayload[]
 
 export type PresenceCache = {
     [address: string]: number
@@ -48,22 +48,24 @@ export default function MessageAggregator({ children }: Props) {
 
     const dispatch = useDispatch()
 
-    const cacheRef = useRef<Cache>({})
+    const cacheRef = useRef<Cache>([])
     const presenceCacheRef = useRef<PresenceCache>({})
 
     const deleteRoom = useDeleteRoom()
 
     useEffect(() => {
-        const { current: cache } = cacheRef
+        ;(async () => {
+            if (!roomId) {
+                return
+            }
 
-        if (!roomId) {
-            return
-        }
+            cacheRef.current = await getLocalMessagesForRoom(roomId)
 
-        dispatch({
-            type: ActionType.SetMessages,
-            payload: cache[roomId] || [],
-        })
+            dispatch({
+                type: ActionType.SetMessages,
+                payload: cacheRef.current || [],
+            })
+        })()
     }, [dispatch, roomId])
 
     const onTextMessage = useCallback(
@@ -81,11 +83,12 @@ export default function MessageAggregator({ children }: Props) {
 
             const { current: cache } = cacheRef
 
-            if (!cache[streamId]) {
-                cache[streamId] = []
-            }
+            cache.push(data)
 
-            cache[streamId].push(data)
+            db.messages.add({
+                roomId: streamId,
+                serialized: JSON.stringify(data),
+            })
 
             dispatch({
                 type: ActionType.SetRecentMessage,
@@ -97,7 +100,7 @@ export default function MessageAggregator({ children }: Props) {
             if (streamId === roomId) {
                 dispatch({
                     type: ActionType.SetMessages,
-                    payload: cache[streamId],
+                    payload: cache,
                 })
             }
         },

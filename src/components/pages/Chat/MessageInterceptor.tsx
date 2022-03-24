@@ -3,6 +3,7 @@ import { Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { useSend } from './MessageTransmitter'
 import { MetadataType } from './MessageAggregator'
+import { StreamMessage } from 'streamr-client-protocol'
 
 type Props = {
     streamId: string
@@ -60,7 +61,7 @@ const MessageInterceptor = memo(
                             streamId,
                             partition: streamPartition,
                         },
-                        (data: any, raw: any) => {
+                        (data: any, raw: StreamMessage) => {
                             if (!mounted) {
                                 return
                             }
