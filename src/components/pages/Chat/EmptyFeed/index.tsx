@@ -33,6 +33,9 @@ const UnstyledEmptyFeed = ({ className }: Props) => {
                 return
             }
             const stream = await streamrClient.getStream(roomId)
+            if (!mounted) {
+                return
+            }
             const description = getRoomMetadata(stream.description!)
             setRoomCreatedAt(description.createdAt)
         }
@@ -42,7 +45,7 @@ const UnstyledEmptyFeed = ({ className }: Props) => {
         return () => {
             mounted = false
         }
-    }, [roomId, streamrClient, roomCreatedAt])
+    }, [roomId, streamrClient])
 
     return (
         <div className={className}>
