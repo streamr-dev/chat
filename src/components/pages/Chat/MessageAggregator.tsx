@@ -4,7 +4,7 @@ import { ActionType, useDispatch, useStore } from '../../Store'
 import { MessagePayload, Partition, RoomId } from '../../../utils/types'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { db } from '../../../utils/db'
-import useLoadLocalMessages from '../../../hooks/useLoadLocalMessages'
+import getLocalMessagesForRoom from '../../../getters/getLocalMessagesForRoom'
 
 function isMessagePayloadValid(data: any) {
     function hasPayloadField(fieldName: string) {
@@ -55,8 +55,6 @@ export default function MessageAggregator({ children }: Props) {
 
     const deleteRoom = useDeleteRoom()
 
-    const loadLocalMessages = useLoadLocalMessages()
-
     useEffect(() => {
         const { current: cache } = cacheRef
 
@@ -65,14 +63,14 @@ export default function MessageAggregator({ children }: Props) {
                 return
             }
 
-            cache[roomId] = await loadLocalMessages()
+            cache[roomId] = await getLocalMessagesForRoom(roomId)
 
             dispatch({
                 type: ActionType.SetMessages,
                 payload: cache[roomId] || [],
             })
         })()
-    }, [dispatch, roomId, loadLocalMessages])
+    }, [dispatch, roomId])
 
     const onTextMessage = useCallback(
         (data, { messageId }) => {
