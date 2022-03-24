@@ -8,7 +8,7 @@ import { Wallet } from 'ethers'
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import getInitialChatState from '../getters/getInitialStoreState'
 import RoomRenameProvider from './pages/Chat/RoomRenameProvider'
-import  getEnvironmentConfig from '../getters/getEnvironmentConfig'
+import getEnvironmentConfig from '../getters/getEnvironmentConfig'
 
 export enum ActionType {
     AddMessages = 'add messages',
@@ -142,14 +142,13 @@ function reducer(state: ChatState, action: A): ChatState {
                 messages: state.roomId ? [...action.payload] : [],
             }
         case ActionType.SetSession:
-            const {StreamrClientConfig} = getEnvironmentConfig()
+            const { StreamrClientConfig } = getEnvironmentConfig()
 
             return {
                 ...state,
                 metamaskStreamrClient: new StreamrClient({
                     ...StreamrClientConfig,
                     auth: { ethereum: state.ethereumProvider as any },
-                    
                 }),
                 session: {
                     streamrClient: new StreamrClient({

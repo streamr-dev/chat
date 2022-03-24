@@ -9,7 +9,7 @@ import Message from './Message'
 import { useStore } from '../../Store'
 import useExistingRooms from '../../../hooks/useExistingRooms'
 import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
-import useErc20JoinPolicy from '../../../hooks/useErc20JoinPolicy'
+import useEJPRequestDelegatedJoin from '../../../hooks/erc20JoinPolicy/useEJPRequestDelegatedJoin'
 
 import { useNavigate } from 'react-router-dom'
 import { Fragment, useEffect, useState } from 'react'
@@ -54,16 +54,15 @@ const UnstyledChat = ({ className }: Props) => {
         }
     }, [sessionAccount, navigate])
 
-    const erc20Join = useErc20JoinPolicy()
+    const erc20RequestDelegatedJoin = useEJPRequestDelegatedJoin()
     const [isMount, setIsMount] = useState(false)
     useEffect(() => {
-        if (isMount){
+        if (isMount) {
             return
         }
         setIsMount(true)
-        //erc20Join({})
+        erc20RequestDelegatedJoin({})
     })
-
 
     return (
         <MessageTransmitter>

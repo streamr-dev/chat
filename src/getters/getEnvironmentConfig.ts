@@ -2,11 +2,10 @@ import { ChatState } from '../utils/types'
 import { StreamrClient, ConfigTest, Config } from 'streamr-client'
 
 type EnvironmentConfig = {
-    PolygonNetworkInfo: any 
+    PolygonNetworkInfo: any
     StreamrClientConfig: any
     DelegatedAccessRegistryAddress: string
 }
-
 
 const ProductionConfig: EnvironmentConfig = {
     PolygonNetworkInfo: {
@@ -20,7 +19,7 @@ const ProductionConfig: EnvironmentConfig = {
         symbol: 'MATIC',
     },
     StreamrClientConfig: Config,
-    DelegatedAccessRegistryAddress: ''
+    DelegatedAccessRegistryAddress: '',
 }
 
 const DevConfig: EnvironmentConfig = {
@@ -30,18 +29,33 @@ const DevConfig: EnvironmentConfig = {
         name: 'Streamr Local',
         endpoint: 'http://10.200.10.1:8545',
         blockExplorer: 'https://polygonscan.com/',
-        rpcUrl: 'https://localhost:8545',
+        rpcUrl: 'http://10.200.10.1:8545',
         decimals: 18,
         symbol: 'ETH',
     },
-    StreamrClientConfig: ConfigTest,
-    DelegatedAccessRegistryAddress: '0x56e57Bf7422eDe1ED75520D4387829feEe8a8319'
+    DelegatedAccessRegistryAddress:
+        '0x0A35Ca5e9A205096dBBC8f547ffD39f159dac2d5',
+    StreamrClientConfig: {
+        ...ConfigTest,
+        streamRegistryChainRPCs: {
+            chainId: 8995,
+            name: 'streamr',
+            rpcs: [
+                {
+                    url:
+                        process.env.SIDECHAIN_URL ||
+                        `http://${
+                            process.env.STREAMR_DOCKER_DEV_HOST || '10.200.10.1'
+                        }:8546`,
+                    timeout: 30 * 1000,
+                },
+            ],
+        },
+    },
 }
 
 export default function getEnvironmentConfig(): EnvironmentConfig {
-    console.info('environment', process.env.REACT_APP_ENVIRONMENT)
-
-    if (process.env.REACT_APP_ENVIRONMENT === 'DEV'){
+    if (process.env.REACT_APP_ENVIRONMENT === 'DEV') {
         return DevConfig
     }
 

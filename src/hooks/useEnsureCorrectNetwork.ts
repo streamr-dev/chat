@@ -2,25 +2,11 @@ import { MetaMaskInpageProvider } from '@metamask/providers'
 import { useCallback } from 'react'
 import { useStore } from '../components/Store'
 import getEnvironmentConfig from '../getters/getEnvironmentConfig'
-/*
-const PolygonChainId = 137
-const PUBLIC_INFURA_PROJECT_ID = ''
-
-const PolygonNetworkInfo = {
-    chainId: PolygonChainId,
-    chainIdHex: `0x${PolygonChainId.toString(16)}`,
-    name: 'Polygon Mainnet',
-    endpoint: `https://polygon-mainnet.infura.io/v3/${PUBLIC_INFURA_PROJECT_ID}`,
-    blockExplorer: 'https://polygonscan.com/',
-    rpcUrl: 'https://polygon-rpc.com/',
-    decimals: 18,
-    symbol: 'MATIC',
-}*/
 
 export const requestNetworkChange = async (
     ethereumProvider: MetaMaskInpageProvider
 ) => {
-    const {PolygonNetworkInfo} = getEnvironmentConfig()
+    const { PolygonNetworkInfo } = getEnvironmentConfig()
     if (
         ethereumProvider.networkVersion !==
         PolygonNetworkInfo.chainId.toString()
@@ -37,7 +23,9 @@ export const requestNetworkChange = async (
                     },
                 ],
             })
-            alert('Successfully connected to Polygon Network')
+            alert(
+                `Successfully connected to ${PolygonNetworkInfo.name} Network`
+            )
             return requestSwitch
         } catch (err: any) {
             console.warn('01', err)
