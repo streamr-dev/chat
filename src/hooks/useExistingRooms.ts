@@ -55,13 +55,6 @@ export default function useExistingRooms() {
             const selfInviteStreams: string[] = []
             for await (const stream of streams) {
                 try {
-                    /*
-                    if (
-                        stream.description !== getRoomNameFromRoomId(stream.id)
-                    ) {
-                        continue
-                    }*/
-
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext } from 'react'
+import getRoomMetadata from '../../../getters/getRoomMetadata'
 import { RoomId } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
 
@@ -28,8 +29,10 @@ export default function RoomRenameProvider({ children }: Props) {
             }
 
             const stream = await streamrClient.getStream(roomId)
-
-            stream.description = newName
+            stream.description = JSON.stringify({
+                ...getRoomMetadata(stream.description!),
+                name: newName,
+            })
 
             await stream.update()
 

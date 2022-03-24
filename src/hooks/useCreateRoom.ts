@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { ActionType, useDispatch, useStore } from '../components/Store'
+import { RoomMetadata } from '../utils/types'
 import useInviterSelf from './useInviterSelf'
 
 export default function useCreateRoom(): (roomName: string) => Promise<void> {
@@ -35,10 +36,15 @@ export default function useCreateRoom(): (roomName: string) => Promise<void> {
                 throw new Error('Invalid room name')
             }
 
+            const description: RoomMetadata = {
+                name: normalizedRoomName,
+                createdAt: Date.now(),
+            }
+
             const stream = await metamaskStreamrClient.createStream({
                 id: `/streamr-chat/room/${normalizedRoomName}`,
                 partitions: 2,
-                description: normalizedRoomName,
+                description: JSON.stringify(description),
             })
 
             console.info(`Created stream ${stream.id}`)

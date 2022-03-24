@@ -12,6 +12,11 @@ export type MessagePayload = {
     version: number
 }
 
+export type RoomMetadata = {
+    name: string
+    createdAt: number
+}
+
 export type ChatState = {
     account: string | undefined
     drafts: { [index: RoomId]: string }
