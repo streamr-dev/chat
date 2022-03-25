@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { StreamPermission } from 'streamr-client'
+import { PublicPermissionAssignment, StreamPermission, UserPermissionAssignment } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import intersection from 'lodash/intersection'
@@ -48,22 +48,45 @@ export default function useExistingRooms() {
             const remoteRoomIds: string[] = []
             const streams = metamaskStreamrClient!.searchStreams(ROOM_PREFIX, {
                 user: account!,
-                anyOf: [StreamPermission.GRANT],
+                anyOf: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
                 allowPublic: true,
             })
 
             const selfInviteStreams: string[] = []
             for await (const stream of streams) {
                 try {
+                    /*
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,
                         allowPublic: true,
-                    })
+                    })*/
+                    const permissions = await stream.getPermissions()
 
-                    if (!hasPermission) {
+                    let hasUserPermission = false 
+                    //let hasPublicPermission = false
+
+                    for (let i = 0; i < permissions.length; i++){
+                        const permission = permissions[i]
+                        if ((permission as UserPermissionAssignment).user === sessionAccount && permission.permissions.includes(StreamPermission.PUBLISH)){
+                            hasUserPermission = true
+                        }
+/*
+                        if ((permission as PublicPermissionAssignment).public){
+                            hasPublicPermission = true
+                        }*/
+                    }
+
+                    if (
+                        !hasUserPermission){
                         selfInviteStreams.push(stream.id)
                     }
+
+                    /*
+                    console.log('hasPermission',stream.id,  hasPermission, permissions)
+                    if (!hasPermission) {
+                        selfInviteStreams.push(stream.id)
+                    }*/
                     remoteRoomIds.push(stream.id)
                     dispatch({
                         type: ActionType.AddRoomIds,

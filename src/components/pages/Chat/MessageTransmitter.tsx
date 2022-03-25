@@ -146,7 +146,10 @@ export default function MessageTransmitter({ children }: Props) {
                         await deleteRoom(roomId)
                         return
                     case Command.New:
-                        await createRoom(arg)
+                        await createRoom({
+                            roomName: arg,
+                            privacy: 'private',
+                        })
                         return
                     case Command.Members:
                         const stream = await streamrClient.getStream(roomId)
@@ -178,7 +181,7 @@ export default function MessageTransmitter({ children }: Props) {
                                     ROOM_PREFIX,
                                     {
                                         user: account!,
-                                        anyOf: [StreamPermission.GRANT],
+                                        anyOf: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
                                         allowPublic: true,
                                     }
                                 )
@@ -187,7 +190,7 @@ export default function MessageTransmitter({ children }: Props) {
                                 try {
                                     await stream.revokePermissions({
                                         user: account!,
-                                        permissions: [StreamPermission.GRANT],
+                                        permissions: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
                                     })
                                     console.info(
                                         `revoked permissions for ${stream.id}`

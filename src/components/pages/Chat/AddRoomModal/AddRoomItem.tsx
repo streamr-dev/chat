@@ -119,7 +119,9 @@ function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [roomName, setRoomName] = useState(getRandomRoomName())
-    const [privacy, setPrivacy] = useState()
+    const [privacy, setPrivacy] = useState<any>()
+
+    const { value: privacyValue } = privacy || {}
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -204,7 +206,11 @@ function UnstyledAddRoomItem(props: Props) {
                         <div>
                             <form
                                 onSubmit={(e) => {
-                                    createRoom(roomName)
+                                    if (!privacyValue) {
+                                        throw new Error('Privacy cannot be blank')
+                                    }
+
+                                    createRoom({ roomName, privacy: privacyValue as any })
                                     closeModal()
                                     e.preventDefault()
                                 }}

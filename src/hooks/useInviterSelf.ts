@@ -4,9 +4,13 @@ import { useStore } from '../components/Store'
 
 type Options = {
     streamIds: string[]
+    includePublicPermissions?: boolean
 }
 
-type Inviter = ({ streamIds }: Options) => Promise<void>
+type Inviter = ({
+    streamIds,
+    includePublicPermissions,
+}: Options) => Promise<void>
 
 export default function useInviterSelf(): Inviter {
     const {
@@ -14,7 +18,7 @@ export default function useInviterSelf(): Inviter {
         session: { wallet },
     } = useStore()
     return useCallback(
-        async ({ streamIds }: Options) => {
+        async ({ streamIds, includePublicPermissions }: Options) => {
             if (!metamaskStreamrClient || !wallet) {
                 return
             }
@@ -22,21 +26,34 @@ export default function useInviterSelf(): Inviter {
             console.info(
                 'calling inviteSelf for streams',
                 streamIds,
-                `on account ${wallet.address}`
+                `on account ${wallet.address}`,
+                includePublicPermissions
+                    ? 'with public permissions'
+                    : 'without public permissions'
             )
 
             const tasks = streamIds.map((streamId) => {
+                const assignments: any[] = [
+                    {
+                        user: wallet.address,
+                        permissions: [
+                            StreamPermission.SUBSCRIBE,
+                            StreamPermission.PUBLISH,
+                        ],
+                    },
+                ]
+
+                if (includePublicPermissions) {
+                    assignments.push({
+                        public: true as true,
+                        permissions: [
+                            StreamPermission.SUBSCRIBE
+                        ],
+                    })
+                }
                 return {
                     streamId: streamId,
-                    assignments: [
-                        {
-                            user: wallet.address,
-                            permissions: [
-                                StreamPermission.SUBSCRIBE,
-                                StreamPermission.PUBLISH,
-                            ],
-                        },
-                    ],
+                    assignments,
                 }
             })
 
