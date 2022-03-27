@@ -21,6 +21,13 @@ const StreamrPlug = styled.span`
     a {
         color: #ff5924 !important;
     }
+
+    @media only screen and (max-width: 768px) {
+        width: 90%;
+        text-align: center;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 `
 
 const CreateButton = styled(Button)`

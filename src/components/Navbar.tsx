@@ -331,6 +331,20 @@ const Navbar = styled(UnstyledNavbar)`
         display: block;
         transform: translateY(-0.1em);
     }
+
+    @media (max-width: 768px) {
+        padding-top: 40px;
+        padding-right: 20px;
+        padding-left: 20px;
+        ${Button} {
+            font-size: 14px;
+            padding: 10px 15px 10px 15px;
+        }
+
+        h4 {
+            font-size: 20px;
+        }
+    }
 `
 
 export default Navbar
