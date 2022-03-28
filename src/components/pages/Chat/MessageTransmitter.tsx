@@ -11,6 +11,7 @@ import { StreamPermission } from 'streamr-client'
 import useRevoker from '../../../hooks/useRevoker'
 import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
 import { ROOM_PREFIX } from '../../../hooks/useExistingRooms'
+import getRoomMetadata from '../../../getters/getRoomMetadata'
 
 type TransmitFn = (
     payload: string,
@@ -250,22 +251,26 @@ export default function MessageTransmitter({ children }: Props) {
                     return
                 }
                 try {
-                    await streamrClient.publish(
-                        streamId,
-                        {
-                            body: {
-                                type: payload,
-                                payload: data,
+                    const stream = await streamrClient.getStream(streamId)
+                    const { privacy } = getRoomMetadata(stream.description!)
+                    if (privacy === 'private'){
+                        await streamrClient.publish(
+                            streamId,
+                            {
+                                body: {
+                                    type: payload,
+                                    payload: data,
+                                },
+                                createdAt: Date.now(),
+                                id: uuidv4(),
+                                sender: account,
+                                type: MessageType.Metadata,
+                                version: 1,
                             },
-                            createdAt: Date.now(),
-                            id: uuidv4(),
-                            sender: account,
-                            type: MessageType.Metadata,
-                            version: 1,
-                        },
-                        Date.now(),
-                        streamPartition
-                    )
+                            Date.now(),
+                            streamPartition
+                        )
+                    }
                 } catch (e: any) {
                     console.warn(`Failed to publish to stream ${roomId}`)
                 }
