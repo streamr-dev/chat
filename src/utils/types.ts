@@ -15,6 +15,7 @@ export type MessagePayload = {
 export type RoomMetadata = {
     name: string
     createdAt: number
+    privacy: 'private' | 'viewonly' | 'public'
 }
 
 export type ChatState = {

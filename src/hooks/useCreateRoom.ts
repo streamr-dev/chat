@@ -49,6 +49,7 @@ export default function useCreateRoom(): ({
             const description: RoomMetadata = {
                 name: normalizedRoomName,
                 createdAt: Date.now(),
+                privacy
             }
 
             const stream = await metamaskStreamrClient.createStream({

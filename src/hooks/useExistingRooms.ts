@@ -4,6 +4,7 @@ import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import intersection from 'lodash/intersection'
 import useInviterSelf from './useInviterSelf'
+import getRoomMetadata from '../getters/getRoomMetadata'
 
 export const ROOM_PREFIX = 'streamr-chat/room'
 
@@ -55,38 +56,17 @@ export default function useExistingRooms() {
             const selfInviteStreams: string[] = []
             for await (const stream of streams) {
                 try {
-                    /*
+                    const metadata = getRoomMetadata(stream.description!)
+
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,
                         allowPublic: true,
-                    })*/
-                    const permissions = await stream.getPermissions()
-
-                    let hasUserPermission = false 
-                    //let hasPublicPermission = false
-
-                    for (let i = 0; i < permissions.length; i++){
-                        const permission = permissions[i]
-                        if ((permission as UserPermissionAssignment).user === sessionAccount && permission.permissions.includes(StreamPermission.PUBLISH)){
-                            hasUserPermission = true
-                        }
-/*
-                        if ((permission as PublicPermissionAssignment).public){
-                            hasPublicPermission = true
-                        }*/
-                    }
-
-                    if (
-                        !hasUserPermission){
+                    })
+                    
+                    if (!hasPermission && metadata.privacy !== 'public' ) {
                         selfInviteStreams.push(stream.id)
                     }
-
-                    /*
-                    console.log('hasPermission',stream.id,  hasPermission, permissions)
-                    if (!hasPermission) {
-                        selfInviteStreams.push(stream.id)
-                    }*/
                     remoteRoomIds.push(stream.id)
                     dispatch({
                         type: ActionType.AddRoomIds,

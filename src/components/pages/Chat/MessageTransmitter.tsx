@@ -37,6 +37,7 @@ enum Command {
     IsMember = 'isMember',
     Purge = 'purge',
     Export = 'export',
+    Join = 'join',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -72,7 +73,7 @@ export default function MessageTransmitter({ children }: Props) {
 
                 const [command, arg] = (
                     payload.match(
-                        /\/(invite|delete|new|rename|members|revoke|isMember|purge|export)\s*(.+)?\s*$/
+                        /\/(invite|delete|new|rename|members|revoke|isMember|purge|export|join)\s*(.+)?\s*$/
                     ) || []
                 ).slice(1)
 
@@ -217,6 +218,8 @@ export default function MessageTransmitter({ children }: Props) {
                         alert(
                             `This is your session's private key:\n${privateKey}`
                         )
+                        return
+                    case Command.Join:
                         return
                     default:
                         break
