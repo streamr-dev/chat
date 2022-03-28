@@ -46,9 +46,7 @@ export default function useInviterSelf(): Inviter {
                 if (includePublicPermissions) {
                     assignments.push({
                         public: true as true,
-                        permissions: [
-                            StreamPermission.SUBSCRIBE
-                        ],
+                        permissions: [StreamPermission.SUBSCRIBE],
                     })
                 }
                 return {

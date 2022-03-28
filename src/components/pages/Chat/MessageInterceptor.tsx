@@ -59,7 +59,10 @@ const MessageInterceptor = memo(
                 const stream = await streamrClient!.getStream(streamId)
                 const { privacy } = getRoomMetadata(stream.description!)
                 // prevent subscribing on metadata for public and view-only rooms
-                if (privacy !== 'private' && streamPartition !== Partition.Messages){
+                if (
+                    privacy !== 'private' &&
+                    streamPartition !== Partition.Messages
+                ) {
                     return
                 }
                 try {
@@ -69,7 +72,6 @@ const MessageInterceptor = memo(
                             partition: streamPartition,
                         },
                         (data: any, raw: StreamMessage) => {
-                            console.warn('msg', data)
                             if (!mounted) {
                                 return
                             }

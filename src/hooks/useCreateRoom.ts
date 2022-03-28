@@ -49,7 +49,7 @@ export default function useCreateRoom(): ({
             const description: RoomMetadata = {
                 name: normalizedRoomName,
                 createdAt: Date.now(),
-                privacy
+                privacy,
             }
 
             const stream = await metamaskStreamrClient.createStream({
@@ -70,7 +70,7 @@ export default function useCreateRoom(): ({
                 case 'viewonly':
                     await inviteSelf({
                         streamIds: [stream.id],
-                        includePublicPermissions: true
+                        includePublicPermissions: true,
                     })
                     break
                 case 'public':
@@ -93,6 +93,13 @@ export default function useCreateRoom(): ({
                 payload: [stream.id],
             })
         },
-        [sessionAccount, metamaskStreamrClient, account, inviteSelf, dispatch]
+        [
+            sessionAccount,
+            metamaskStreamrClient,
+            account,
+            inviteSelf,
+            dispatch,
+            setPublicPermissions,
+        ]
     )
 }

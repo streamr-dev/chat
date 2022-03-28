@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { PublicPermissionAssignment, StreamPermission, UserPermissionAssignment } from 'streamr-client'
+import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import intersection from 'lodash/intersection'
@@ -63,8 +63,8 @@ export default function useExistingRooms() {
                         permission: StreamPermission.SUBSCRIBE,
                         allowPublic: true,
                     })
-                    
-                    if (!hasPermission && metadata.privacy !== 'public' ) {
+
+                    if (!hasPermission && metadata.privacy !== 'public') {
                         selfInviteStreams.push(stream.id)
                     }
                     remoteRoomIds.push(stream.id)
