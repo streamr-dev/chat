@@ -85,6 +85,10 @@ const SidebarItem = styled(UnstyledSidebarItem)`
     :hover ${IconWrap} {
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
     }
+
+    @media only screen and (max-width: 768px) {
+        height: 60px;
+    }
 `
 
 export default SidebarItem

@@ -85,6 +85,15 @@ const ChatWindow = styled(UnstyledChatWindow)`
     top: 0;
     left: 24rem;
     right: 0;
+
+    @media only screen and (max-width: 768px) {
+        height: 100vh !important;
+        background-color: red;
+        position: static;
+        left: 0;
+        right: 0;
+        margin-top: 20px;
+    }
 `
 
 export default ChatWindow

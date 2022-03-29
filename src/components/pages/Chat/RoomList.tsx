@@ -17,6 +17,10 @@ const RoomList = styled(UnstyledRoomList)`
     height: 100%;
     overflow: auto;
     width: 22rem;
+
+    @media only screen and (max-width: 768px) {
+        width: 100%;
+    }
 `
 
 export default RoomList
