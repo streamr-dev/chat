@@ -11,6 +11,14 @@ const FeedWrap = styled.div`
     > div {
         height: 100%;
     }
+
+    @media only screen and (max-width: 768px) {
+        padding: 0px 0 180px;
+
+        > div {
+            height: 100%;
+        }
+    }
 `
 
 const FeedFlex = styled.div`
@@ -87,8 +95,7 @@ const ChatWindow = styled(UnstyledChatWindow)`
     right: 0;
 
     @media only screen and (max-width: 768px) {
-        height: 100vh !important;
-        background-color: red;
+        height: 60vh !important;
         position: static;
         left: 0;
         right: 0;
