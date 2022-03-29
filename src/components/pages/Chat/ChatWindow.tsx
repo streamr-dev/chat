@@ -13,7 +13,9 @@ const FeedWrap = styled.div`
     }
 
     @media only screen and (max-width: 768px) {
-        padding: 0px 0 180px;
+        padding: 0px 0 0px;
+        overflow: hidden;
+        height: 65%;
 
         > div {
             height: 100%;
