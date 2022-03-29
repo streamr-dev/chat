@@ -15,7 +15,7 @@ const customStyles = {
     },
     content: {
         border: 'none',
-        width: '528px',
+        width: window.innerWidth < 768 ? '90vw' : '512px',
         height: '558px',
         top: '50%',
         left: '50%',
