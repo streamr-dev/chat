@@ -1,5 +1,4 @@
-import { ChatState } from '../utils/types'
-import { StreamrClient, ConfigTest, Config } from 'streamr-client'
+import { ConfigTest } from 'streamr-client'
 
 type EnvironmentConfig = {
     PolygonNetworkInfo: any
@@ -18,8 +17,9 @@ const ProductionConfig: EnvironmentConfig = {
         decimals: 18,
         symbol: 'MATIC',
     },
-    StreamrClientConfig: Config,
-    DelegatedAccessRegistryAddress: '',
+    StreamrClientConfig: {},
+    DelegatedAccessRegistryAddress:
+        '0x52278782360728dC8516253fF0415B5c66f2abd7',
 }
 
 const DevConfig: EnvironmentConfig = {

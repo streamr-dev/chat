@@ -11,6 +11,7 @@ import { StreamPermission } from 'streamr-client'
 import useRevoker from '../../../hooks/useRevoker'
 import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
 import { ROOM_PREFIX } from '../../../hooks/useExistingRooms'
+import useAuthorizeDelegatedWallet from '../../../hooks/useAuthorizeDelegatedWallet'
 
 type TransmitFn = (
     payload: string,
@@ -36,6 +37,8 @@ enum Command {
     Revoke = 'revoke',
     IsMember = 'isMember',
     Purge = 'purge',
+    Authorize = 'authorize',
+    Join = 'join',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -43,7 +46,7 @@ export default function MessageTransmitter({ children }: Props) {
         metamaskStreamrClient,
         account,
         roomId,
-        session: { streamrClient },
+        session: { streamrClient, wallet },
     } = useStore()
 
     const invite = useInviter()
@@ -55,6 +58,8 @@ export default function MessageTransmitter({ children }: Props) {
     const deleteRoom = useDeleteRoom()
 
     const renameRoom = useRenameRoom()
+
+    const authorizeDelegatedWallet = useAuthorizeDelegatedWallet()
 
     const send = useCallback<TransmitFn>(
         async (payload, { streamPartition, streamId, data }) => {
@@ -70,7 +75,7 @@ export default function MessageTransmitter({ children }: Props) {
 
                 const [command, arg] = (
                     payload.match(
-                        /\/(invite|delete|new|rename|members|revoke|isMember|purge)\s*(.+)?\s*$/
+                        /\/(invite|delete|new|rename|members|revoke|isMember|purge|authorize|join)\s*(.+)?\s*$/
                     ) || []
                 ).slice(1)
 
@@ -176,24 +181,36 @@ export default function MessageTransmitter({ children }: Props) {
                                     ROOM_PREFIX,
                                     {
                                         user: account!,
-                                        anyOf: [StreamPermission.GRANT],
+                                        anyOf: [
+                                            StreamPermission.GRANT,
+                                            StreamPermission.PUBLISH,
+                                            StreamPermission.SUBSCRIBE,
+                                        ],
                                         allowPublic: true,
                                     }
                                 )
 
                             for await (const stream of streams) {
                                 try {
-                                    await stream.revokePermissions({
-                                        user: account!,
-                                        permissions: [StreamPermission.GRANT],
-                                    })
-                                    console.info(
-                                        `revoked permissions for ${stream.id}`
-                                    )
-                                    await stream.delete()
-                                    console.info(`deleted stream ${stream.id}`)
+                                    if (stream.id.includes(account!)) {
+                                        await stream.delete()
+                                        console.info(
+                                            `deleted stream ${stream.id}`
+                                        )
+                                    } else {
+                                        await stream.revokePermissions({
+                                            user: account!,
+                                            permissions: [
+                                                StreamPermission.GRANT,
+                                                StreamPermission.SUBSCRIBE,
+                                            ],
+                                        })
+                                        console.info(
+                                            `revoked permissions for ${stream.id}`
+                                        )
+                                    }
                                 } catch (e) {
-                                    console.warn(
+                                    console.info(
                                         'Purge failed to delete stream, moving on',
                                         e
                                     )
@@ -206,6 +223,23 @@ export default function MessageTransmitter({ children }: Props) {
                             window.location.reload()
                         }
 
+                        return
+                    case Command.Authorize:
+                        await authorizeDelegatedWallet({
+                            delegatedAddress: wallet!.address,
+                            displayAlerts: true,
+                        })
+
+                        return
+                    case Command.Join:
+                        // verify that the delegated wallet is authorized
+                        // if not, ask the user to authorize it
+                        await authorizeDelegatedWallet({
+                            delegatedAddress: wallet!.address,
+                        })
+                        // try to load the indicated contract as an ERC20JoinPolicy
+
+                        // now, go and make the join request
                         return
                     default:
                         break
@@ -267,6 +301,8 @@ export default function MessageTransmitter({ children }: Props) {
             deleteRoom,
             renameRoom,
             revoke,
+            authorizeDelegatedWallet,
+            wallet,
         ]
     )
 

@@ -48,7 +48,7 @@ export default function useExistingRooms() {
             const remoteRoomIds: string[] = []
             const streams = metamaskStreamrClient!.searchStreams(ROOM_PREFIX, {
                 user: account!,
-                //anyOf: [StreamPermission.GRANT],
+                anyOf: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
                 allowPublic: true,
             })
 
@@ -57,12 +57,6 @@ export default function useExistingRooms() {
             const selfInviteStreams: string[] = []
             for await (const stream of streams) {
                 try {
-                    /*
-                    if (
-                        stream.description !== getRoomNameFromRoomId(stream.id)
-                    ) {
-                        continue
-                    }*/
 
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
