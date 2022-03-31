@@ -64,8 +64,6 @@ export default function useExistingRooms() {
                         continue
                     }*/
 
-                    console.warn('found stream', stream.id)
-
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,

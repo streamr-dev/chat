@@ -11,7 +11,6 @@ import RoomRenameProvider from './pages/Chat/RoomRenameProvider'
 import getEnvironmentConfig from '../getters/getEnvironmentConfig'
 
 export enum ActionType {
-    AddMessages = 'add messages',
     AddRooms = 'add rooms',
     EditRoomName = 'edit room name',
     RenameRoom = 'rename room',
@@ -38,8 +37,6 @@ type Action<A, B> = {
 type PayloadlessAction<A> = Omit<Action<A, any>, 'payload'>
 
 type SelectRoomAction = Action<ActionType.SelectRoom, string>
-
-type AddMessagesAction = Action<ActionType.AddMessages, MessagePayload[]>
 
 type SetMessagesAction = Action<ActionType.SetMessages, MessagePayload[]>
 
@@ -81,7 +78,6 @@ type SetRoomMembersAction = Action<
 
 type A =
     | SelectRoomAction
-    | AddMessagesAction
     | SetMessagesAction
     | ResetAction
     | SetDraftAction
@@ -141,6 +137,7 @@ function reducer(state: ChatState, action: A): ChatState {
                 ...state,
                 messages: state.roomId ? [...action.payload] : [],
             }
+
         case ActionType.SetSession:
             const { StreamrClientConfig } = getEnvironmentConfig()
 
