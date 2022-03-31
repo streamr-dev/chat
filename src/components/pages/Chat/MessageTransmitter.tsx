@@ -12,6 +12,7 @@ import useRevoker from '../../../hooks/useRevoker'
 import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
 import { ROOM_PREFIX } from '../../../hooks/useExistingRooms'
 import useAuthorizeDelegatedWallet from '../../../hooks/useAuthorizeDelegatedWallet'
+import getContractAt from '../../../getters/getContractAt'
 
 type TransmitFn = (
     payload: string,
@@ -44,6 +45,7 @@ enum Command {
 export default function MessageTransmitter({ children }: Props) {
     const {
         metamaskStreamrClient,
+        ethereumProvider,
         account,
         roomId,
         session: { streamrClient, wallet },
@@ -68,7 +70,8 @@ export default function MessageTransmitter({ children }: Props) {
                     !account ||
                     !roomId ||
                     !streamrClient ||
-                    !metamaskStreamrClient
+                    !metamaskStreamrClient ||
+                    !wallet
                 ) {
                     return
                 }
@@ -226,20 +229,39 @@ export default function MessageTransmitter({ children }: Props) {
                         return
                     case Command.Authorize:
                         await authorizeDelegatedWallet({
-                            delegatedAddress: wallet!.address,
+                            delegatedAddress: wallet.address,
                             displayAlerts: true,
                         })
 
                         return
                     case Command.Join:
-                        // verify that the delegated wallet is authorized
-                        // if not, ask the user to authorize it
-                        await authorizeDelegatedWallet({
-                            delegatedAddress: wallet!.address,
-                        })
-                        // try to load the indicated contract as an ERC20JoinPolicy
+                        try {
+                            await authorizeDelegatedWallet({
+                                delegatedAddress: wallet.address,
+                            })
+                            // try to load the indicated contract as an ERC20JoinPolicy
+                            const ercJoinPolicy = getContractAt({
+                                address: arg,
+                                artifact: 'ERC20JoinPolicy',
+                                provider: ethereumProvider as any,
+                            })
 
-                        // now, go and make the join request
+                            const [canJoin] =
+                                await ercJoinPolicy.functions.canJoin(account)
+                            if (canJoin) {
+                                const res =
+                                    await ercJoinPolicy.functions.requestDelegatedJoin(
+                                        wallet.address
+                                    )
+                                console.log('request join res', res)
+                            } else {
+                                alert(
+                                    "You don't have enough balance to join the room"
+                                )
+                            }
+                        } catch (e) {
+                            console.error(e)
+                        }
                         return
                     default:
                         break
@@ -303,6 +325,7 @@ export default function MessageTransmitter({ children }: Props) {
             revoke,
             authorizeDelegatedWallet,
             wallet,
+            ethereumProvider,
         ]
     )
 

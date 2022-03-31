@@ -5,7 +5,6 @@ import { StorageKey } from '../utils/types'
 import { useDispatch, useStore, ActionType } from './Store'
 import { encrypt } from '@metamask/eth-sig-util'
 import useEnsureCorrectNetwork from '../hooks/useEnsureCorrectNetwork'
-import useAuthorizeAccount from '../hooks/useAuthorizeAccount'
 
 class NewWalletRequiredError extends Error {}
 

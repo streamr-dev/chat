@@ -52,12 +52,9 @@ export default function useExistingRooms() {
                 allowPublic: true,
             })
 
-            console.warn('found streams', account!, streams)
-
             const selfInviteStreams: string[] = []
             for await (const stream of streams) {
                 try {
-
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
                         permission: StreamPermission.SUBSCRIBE,
