@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { RoomMetadata } from '../utils/types'
 import useInviterSelf from './useInviterSelf'
@@ -8,10 +8,12 @@ import useSetPublicPermissions from './useSetPublicPermissions'
 type Options = {
     roomName: string
     privacy: 'private' | 'viewonly' | 'public'
+    storageEnabled?: boolean
 }
 export default function useCreateRoom(): ({
     roomName,
     privacy,
+    storageEnabled
 }: Options) => Promise<void> {
     const {
         session: { wallet },
@@ -27,7 +29,7 @@ export default function useCreateRoom(): ({
     const dispatch = useDispatch()
 
     return useCallback(
-        async ({ roomName, privacy }) => {
+        async ({ roomName, privacy, storageEnabled }) => {
             if (!sessionAccount) {
                 throw new Error('Missing session account')
             }
@@ -57,6 +59,11 @@ export default function useCreateRoom(): ({
                 partitions: 2,
                 description: JSON.stringify(description),
             })
+
+            if (storageEnabled) {
+                await stream.addToStorageNode(STREAMR_STORAGE_NODE_GERMANY)
+                console.info(`Storage enabled on stream ${stream.id}`)
+            }
 
             console.info(`Created stream ${stream.id}`)
 
