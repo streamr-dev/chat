@@ -131,13 +131,16 @@ const Option = (props: any) => {
     )
 }
 
-const Control = ({ children, ...props }: any) => {
-    console.log(props.selectProps.value)
+function Control({ children, ...props }: any) {
+    const { selectProps: { value } } = props
+
+    const { icon } = value || {}
+
     return (
         <components.Control {...props}>
             <ControlIcon>
-                {props.selectProps.value && props.selectProps.value.icon && (
-                    <img src={props.selectProps.value.icon} alt="" />
+                {!!icon && (
+                    <img src={icon} alt="" />
                 )}
             </ControlIcon>
             {children}
