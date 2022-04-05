@@ -9,8 +9,6 @@ import PrivacySelect from './PrivacySelect'
 
 import getRandomRoomName from '../../../../getters/getRandomRoomName'
 
-import dropdown from '../dropdown.svg'
-
 const IconWrap = styled.div`
     padding: 13px;
 `
@@ -110,21 +108,6 @@ const ModalHeader = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-`
-
-const PrivacyDropdown = styled.select`
-    appearance: none;
-    background: #dee6ee;
-    border: 0;
-    outline: 0;
-    width: 100%;
-    padding: 13px 16px;
-    font-size: 16px;
-    border-radius: 8px;
-    background-image: url(${dropdown});
-    background-repeat: no-repeat;
-    background-position: calc(100% - 20px) center;
-    background-size: 10px;
 `
 
 function UnstyledAddRoomItem(props: Props) {
