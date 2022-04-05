@@ -220,10 +220,7 @@ function UnstyledAddRoomItem(props: Props) {
                                 />
                                 <CreateButton
                                     onClick={initCreateRoom}
-                                    disabled={
-                                        roomName.length === 0 ||
-                                        privacy.length === 0
-                                    }
+                                    disabled={!roomName || !privacy}
                                 >
                                     Create
                                 </CreateButton>
