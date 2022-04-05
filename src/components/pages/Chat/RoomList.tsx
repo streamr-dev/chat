@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import AddRoom from './AddRoomItem'
+import AddRoom from './AddRoomModal/AddRoomItem'
 
 type Props = {
     className?: string

@@ -61,6 +61,7 @@ const SidebarItem = styled(UnstyledSidebarItem)`
     font-size: 1rem;
     font-family: ${KARELIA};
     height: 5.75rem;
+    outline: 0 !important;
     padding: 0 1.5rem;
     text-align: left;
     width: 100%;
