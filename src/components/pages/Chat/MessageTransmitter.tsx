@@ -36,6 +36,7 @@ enum Command {
     Revoke = 'revoke',
     IsMember = 'isMember',
     Purge = 'purge',
+    Export = 'export',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -43,7 +44,7 @@ export default function MessageTransmitter({ children }: Props) {
         metamaskStreamrClient,
         account,
         roomId,
-        session: { streamrClient },
+        session: { streamrClient, wallet },
     } = useStore()
 
     const invite = useInviter()
@@ -63,14 +64,15 @@ export default function MessageTransmitter({ children }: Props) {
                     !account ||
                     !roomId ||
                     !streamrClient ||
-                    !metamaskStreamrClient
+                    !metamaskStreamrClient ||
+                    !wallet
                 ) {
                     return
                 }
 
                 const [command, arg] = (
                     payload.match(
-                        /\/(invite|delete|new|rename|members|revoke|isMember|purge)\s*(.+)?\s*$/
+                        /\/(invite|delete|new|rename|members|revoke|isMember|purge|export)\s*(.+)?\s*$/
                     ) || []
                 ).slice(1)
 
@@ -207,6 +209,12 @@ export default function MessageTransmitter({ children }: Props) {
                         }
 
                         return
+                    case Command.Export:
+                        const { privateKey } = wallet
+                        alert(
+                            `This is your session's private key:\n${privateKey}`
+                        )
+                        return
                     default:
                         break
                 }
@@ -262,6 +270,7 @@ export default function MessageTransmitter({ children }: Props) {
             account,
             roomId,
             streamrClient,
+            wallet,
             invite,
             createRoom,
             deleteRoom,
