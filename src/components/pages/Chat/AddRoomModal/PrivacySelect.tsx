@@ -86,6 +86,10 @@ const CheckIcon = styled.img`
 
 const ControlIcon = styled.div`
     color: #59799C;
+
+    img {
+        display: block;
+    }
 `
 
 const Option = (props: any) => {
