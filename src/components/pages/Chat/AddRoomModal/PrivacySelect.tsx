@@ -93,7 +93,7 @@ const Option = (props: any) => {
         <components.Option {...props}>
             <OptionContainer>
                 <IconContainer>
-                    <img src={props.data.icon} />
+                    <img src={props.data.icon} alt="" />
                 </IconContainer>
                 <div
                     style={{
@@ -137,7 +137,7 @@ const Control = ({ children, ...props }: any) => {
         <components.Control {...props}>
             <ControlIcon>
                 {props.selectProps.value && props.selectProps.value.icon && (
-                    <img src={props.selectProps.value.icon} />
+                    <img src={props.selectProps.value.icon} alt="" />
                 )}
             </ControlIcon>
             {children}
