@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import useCreateRoom from '../../../../hooks/useCreateRoom'
 import type { Props } from '../SidebarItem'
@@ -55,6 +55,11 @@ const CreateButton = styled.button`
 
     svg {
         display: block;
+    }
+
+    :disabled {
+        background: #ff5924;
+        opacity: 0.5;
     }
 `
 
@@ -114,7 +119,7 @@ function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [roomName, setRoomName] = useState(getRandomRoomName())
-    const [privacy, setPrivacy] = useState('')
+    const [privacy, setPrivacy] = useState()
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -122,19 +127,15 @@ function UnstyledAddRoomItem(props: Props) {
         setRoomName(getRandomRoomName())
     }
 
-    const initCreateRoom = () => {
-        createRoom(roomName)
-        closeModal()
-    }
-
     const handleChangeRoomName = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRoomName(e.target.value)
     }
 
-    const handleDropdownChange = (e: any) => {
-        console.log(e.value)
-        setPrivacy(e.value)
-    }
+    useEffect(() => {
+        if (!modalIsOpen) {
+            setPrivacy(undefined)
+        }
+    }, [modalIsOpen])
 
     return (
         <>
@@ -174,7 +175,10 @@ function UnstyledAddRoomItem(props: Props) {
                     <ModalContainer>
                         <ModalHeader>
                             <h2>Create new room</h2>
-                            <CloseButton onClick={closeModal}>
+                            <CloseButton
+                                onClick={closeModal}
+                                type="button"
+                            >
                                 <svg
                                     width="16"
                                     height="16"
@@ -198,7 +202,13 @@ function UnstyledAddRoomItem(props: Props) {
                             </CloseButton>
                         </ModalHeader>
                         <div>
-                            <form>
+                            <form
+                                onSubmit={(e) => {
+                                    createRoom(roomName)
+                                    closeModal()
+                                    e.preventDefault()
+                                }}
+                            >
                                 <Subheading>Name</Subheading>
                                 <input
                                     value={roomName}
@@ -216,10 +226,11 @@ function UnstyledAddRoomItem(props: Props) {
                                 </Subtitle>
                                 <Subheading>Choose privacy</Subheading>
                                 <PrivacySelect
-                                    handleChange={handleDropdownChange}
+                                    value={privacy}
+                                    onChange={(option: any) => void setPrivacy(option)}
                                 />
                                 <CreateButton
-                                    onClick={initCreateRoom}
+                                    type="submit"
                                     disabled={!roomName || !privacy}
                                 >
                                     Create
