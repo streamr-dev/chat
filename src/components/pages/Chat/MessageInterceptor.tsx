@@ -1,8 +1,7 @@
 import { memo, useEffect, useRef } from 'react'
-import { Partition } from '../../../utils/types'
+import { MetadataType, Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { useSend } from './MessageTransmitter'
-import { MetadataType } from './MessageAggregator'
 import { StreamMessage } from 'streamr-client-protocol'
 import getRoomMetadata from '../../../getters/getRoomMetadata'
 
@@ -93,12 +92,12 @@ const MessageInterceptor = memo(
                 } catch (e: any) {
                     console.warn(`Error subscribing to stream ${streamId}:`)
                 }
-
+                /*
                 send(MetadataType.UserOnline, {
                     streamPartition: Partition.Metadata,
                     streamId,
                     data: account,
-                })
+                })*/
 
                 console.info(
                     'subscribed to stream',

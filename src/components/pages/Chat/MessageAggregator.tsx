@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import { MessagePayload, Partition } from '../../../utils/types'
+import { MessagePayload, MetadataType, Partition } from '../../../utils/types'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { db } from '../../../utils/db'
 import getLocalMessagesForRoom from '../../../getters/getLocalMessagesForRoom'
@@ -36,12 +36,7 @@ type Props = {
     children?: React.ReactNode
 }
 
-export enum MetadataType {
-    UserOnline = 'user-online',
-    SendInvite = 'send-invite',
-    AcceptInvite = 'accept-invite',
-    RevokeInvite = 'revoke-invite',
-}
+
 
 export default function MessageAggregator({ children }: Props) {
     const { roomIds = [], roomId, account } = useStore()
@@ -115,7 +110,7 @@ export default function MessageAggregator({ children }: Props) {
                 throw new Error('Unexpected partition')
             }
             const { current: cache } = presenceCacheRef
-            switch (data.body.type) {
+            switch (data.body.type) {/*
                 case MetadataType.UserOnline:
                     if (
                         cache[data.sender] &&
@@ -125,7 +120,7 @@ export default function MessageAggregator({ children }: Props) {
                     }
                     cache[data.sender] = data.createdAt
 
-                    break
+                    break*/
                 case MetadataType.SendInvite:
                     console.info('sent invite to', data.body.payload)
                     break

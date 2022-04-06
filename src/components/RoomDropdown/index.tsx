@@ -17,6 +17,7 @@ import { useStore } from '../Store'
 import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import useDeleteRoom from '../../hooks/useDeleteRoom'
+import useGetOnlineRoomMembers from '../../hooks/useGetOnlineRoomMembers'
 
 type Props = {
     button?: any
@@ -137,7 +138,8 @@ const RoomDropdown = ({ button }: Props) => {
     } = useStore()
 
     const [members, setMembers] = useState(Array<string>())
-
+    const getOnlineRoomMembers = useGetOnlineRoomMembers()
+    const [onlineMembers, setOnlineMembers] = useState(Array<string>())
     useEffect(() => {
         const fn = async () => {
             if (!streamrClient || !roomId || members.length > 0) {
@@ -145,10 +147,24 @@ const RoomDropdown = ({ button }: Props) => {
             }
             const stream = await streamrClient.getStream(roomId)
             setMembers(await getRoomMembersFromStream(stream))
+            setOnlineMembers(await getOnlineRoomMembers({streamId: stream.id}))
         }
 
         fn()
     })
+
+
+    useEffect(() => {
+        const fn = async () => {
+            if (!roomId){
+                return
+            }
+            const online = await getOnlineRoomMembers({streamId: roomId as any})
+            console.log('online!', online)
+        }
+
+        fn()
+    }, [roomId])
 
     useEffect(() => {
         function handleClickOutside(event: any) {
@@ -234,7 +250,7 @@ const RoomDropdown = ({ button }: Props) => {
                     <MemberList>
                         {members.map((member) => {
                             return (
-                                <MemberOptions key={member} address={member} />
+                                <MemberOptions key={member} address={member} isOnline={onlineMembers.includes(member)}/>
                             )
                         })}
                     </MemberList>

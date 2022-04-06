@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import MoreIcon from './more.svg'
 import ModifyIcon from './modify.svg'
@@ -10,6 +10,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage'
 import useRevoker from '../../hooks/useRevoker'
 import { ActionType, useDispatch, useStore } from '../Store'
 import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
+import useGetOnlineRoomMembers from '../../hooks/useGetOnlineRoomMembers'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -129,7 +130,11 @@ const ListItem = styled.div`
     }
 `
 
-const UnstyledMemberOptions = ({ address }: any) => {
+type Props = {
+    address: string,
+    isOnline?: boolean
+}
+const UnstyledMemberOptions = ({ address, isOnline }: Props) => {
     const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
 
@@ -145,6 +150,8 @@ const UnstyledMemberOptions = ({ address }: any) => {
     const revoke = useRevoker()
 
     const dispatch = useDispatch()
+
+
 
     const deleteMember = async () => {
         const stream = await metamaskStreamrClient!.getStream(roomId!)
@@ -174,7 +181,10 @@ const UnstyledMemberOptions = ({ address }: any) => {
                         }}
                     />
                 ) : (
-                    <MemberName>{nickname ? nickname : address}</MemberName>
+                    <MemberName>
+                        {isOnline ? '🟢 ' : '◯ '}
+                        {nickname ? nickname : address}
+                    </MemberName>
                 )}
                 {editing ? (
                     <Subtitle>Nickname is only visible to you</Subtitle>
