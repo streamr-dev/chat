@@ -2,7 +2,6 @@ import { memo, useEffect, useRef } from 'react'
 import { useStore } from '../../Store'
 import { useSend } from './MessageTransmitter'
 import { StreamMessage } from 'streamr-client-protocol'
-import getRoomMetadata from '../../../getters/getRoomMetadata'
 import { MessageType } from '../../../utils/types'
 
 type Props = {
@@ -55,19 +54,10 @@ const MessageInterceptor = memo(
             }
 
             async function fn() {
-                const stream = await streamrClient!.getStream(streamId)
-                const { privacy } = getRoomMetadata(stream.description!)
-                // prevent subscribing on metadata for public and view-only rooms
-                if (
-                    privacy !== 'private' &&
-                    messageType !== MessageType.Text
-                ) {
-                    return
-                }
                 try {
                     sub = await streamrClient!.subscribe(
                         {
-                            streamId
+                            streamId,
                         },
                         (data: any, raw: StreamMessage) => {
                             if (!mounted) {
@@ -83,7 +73,10 @@ const MessageInterceptor = memo(
 
                             const { current: onMessage } = onMessageRef
 
-                            if (typeof onMessage === 'function') {
+                            if (
+                                typeof onMessage === 'function' &&
+                                data.type === messageType
+                            ) {
                                 onMessage(data, raw)
                             }
                         }
@@ -92,9 +85,7 @@ const MessageInterceptor = memo(
                     console.warn(`Error subscribing to stream ${streamId}:`)
                 }
 
-                console.info(
-                    'subscribed to stream',
-                    streamId )
+                console.info('subscribed to stream', streamId)
 
                 if (!mounted) {
                     unsub()

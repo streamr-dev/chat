@@ -130,7 +130,7 @@ const ListItem = styled.div`
 `
 
 type Props = {
-    address: string,
+    address: string
     isOnline?: boolean
 }
 const UnstyledMemberOptions = ({ address, isOnline }: Props) => {
@@ -149,8 +149,6 @@ const UnstyledMemberOptions = ({ address, isOnline }: Props) => {
     const revoke = useRevoker()
 
     const dispatch = useDispatch()
-
-
 
     const deleteMember = async () => {
         const stream = await metamaskStreamrClient!.getStream(roomId!)

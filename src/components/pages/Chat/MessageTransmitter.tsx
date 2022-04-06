@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext } from 'react'
 import useInviter from '../../../hooks/useInviter'
-import { MessageType, MetadataType } from '../../../utils/types'
+import { MessageType } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import MessageAggregator from './MessageAggregator'
@@ -38,7 +38,6 @@ enum Command {
     IsMember = 'isMember',
     Purge = 'purge',
     Export = 'export',
-    Join = 'join',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -104,16 +103,6 @@ export default function MessageTransmitter({ children }: Props) {
                                 invitees: addresses,
                                 stream,
                             })
-
-                            for (let i = 0; i < addresses.length; i++) {
-                                const address = addresses[i]
-                                send(MetadataType.SendInvite, {
-                                    //streamPartition: Partition.Metadata,
-                                    messageType: MessageType.Metadata,
-                                    streamId: roomId,
-                                    data: address,
-                                })
-                            }
                         })()
 
                         return
@@ -132,12 +121,6 @@ export default function MessageTransmitter({ children }: Props) {
                             for (let i = 0; i < addresses.length; i++) {
                                 const address = addresses[i]
 
-                                send(MetadataType.RevokeInvite, {
-//streamPartition: Partition.Metadata,
-messageType: MessageType.Metadata,
-                                    streamId: roomId,
-                                    data: address,
-                                })
                                 await revoke({
                                     revokee: address,
                                     stream,
@@ -234,8 +217,6 @@ messageType: MessageType.Metadata,
                             `This is your session's private key:\n${privateKey}`
                         )
                         return
-                    case Command.Join:
-                        return
                     default:
                         break
                 }
@@ -252,7 +233,7 @@ messageType: MessageType.Metadata,
                             version: 1,
                         },
                         Date.now()
-                        )
+                    )
                 } catch (e: any) {
                     console.warn(`Failed to publish to stream ${roomId}`)
                 }
@@ -280,7 +261,8 @@ messageType: MessageType.Metadata,
                                 type: MessageType.Metadata,
                                 version: 1,
                             },
-                            Date.now() )
+                            Date.now()
+                        )
                     }
                 } catch (e: any) {
                     console.warn(`Failed to publish to stream ${roomId}`)

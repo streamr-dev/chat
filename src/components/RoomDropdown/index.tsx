@@ -147,7 +147,9 @@ const RoomDropdown = ({ button }: Props) => {
             }
             const stream = await streamrClient.getStream(roomId)
             setMembers(await getRoomMembersFromStream(stream))
-            setOnlineMembers(await getOnlineRoomMembers({streamId: stream.id}))
+            setOnlineMembers(
+                await getOnlineRoomMembers({ streamId: stream.id })
+            )
         }
 
         fn()
@@ -237,7 +239,11 @@ const RoomDropdown = ({ button }: Props) => {
                     <MemberList>
                         {members.map((member) => {
                             return (
-                                <MemberOptions key={member} address={member} isOnline={onlineMembers.includes(member)}/>
+                                <MemberOptions
+                                    key={member}
+                                    address={member}
+                                    isOnline={onlineMembers.includes(member)}
+                                />
                             )
                         })}
                     </MemberList>

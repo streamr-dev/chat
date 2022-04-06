@@ -46,7 +46,7 @@ function UnstyledMessageInput({ className }: Props) {
     const send = useSend()
 
     function onSubmit() {
-        send(value, {messageType: MessageType.Text})
+        send(value, { messageType: MessageType.Text })
     }
 
     function submit() {

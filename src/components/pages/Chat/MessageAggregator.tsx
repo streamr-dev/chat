@@ -36,15 +36,12 @@ type Props = {
     children?: React.ReactNode
 }
 
-
-
 export default function MessageAggregator({ children }: Props) {
     const { roomIds = [], roomId, account } = useStore()
 
     const dispatch = useDispatch()
 
     const cacheRef = useRef<Cache>([])
-    const presenceCacheRef = useRef<PresenceCache>({})
 
     const deleteRoom = useDeleteRoom()
 
@@ -66,7 +63,6 @@ export default function MessageAggregator({ children }: Props) {
     const onTextMessage = useCallback(
         (data, { messageId }) => {
             const { streamId } = messageId
-            console.log('found', messageId, data)
             if (data.type !== MessageType.Text) {
                 throw new Error('Unexpected message type')
             }
@@ -103,12 +99,11 @@ export default function MessageAggregator({ children }: Props) {
     )
 
     const onMetadataMessage = useCallback(
-        (data, { messageId }) => {
-
+        (data) => {
+            console.log('onMetadataMessage', data)
             if (data.type !== MessageType.Metadata) {
                 throw new Error('Unexpected message type')
             }
-            const { current: cache } = presenceCacheRef
             switch (data.body.type) {
                 case MetadataType.SendInvite:
                     console.info('sent invite to', data.body.payload)
@@ -128,8 +123,6 @@ export default function MessageAggregator({ children }: Props) {
                     console.warn('Unknown metadata type', data)
                     break
             }
-
-            console.info('Cache updated', cache)
         },
         [account, deleteRoom]
     )
