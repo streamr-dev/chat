@@ -153,19 +153,6 @@ const RoomDropdown = ({ button }: Props) => {
         fn()
     })
 
-
-    useEffect(() => {
-        const fn = async () => {
-            if (!roomId){
-                return
-            }
-            const online = await getOnlineRoomMembers({streamId: roomId as any})
-            console.log('online!', online)
-        }
-
-        fn()
-    }, [roomId])
-
     useEffect(() => {
         function handleClickOutside(event: any) {
             if (ref.current && !ref.current.contains(event.target)) {

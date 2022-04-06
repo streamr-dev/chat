@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import { MessagePayload, MetadataType, Partition } from '../../../utils/types'
+import { MessagePayload, MessageType, MetadataType } from '../../../utils/types'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { db } from '../../../utils/db'
 import getLocalMessagesForRoom from '../../../getters/getLocalMessagesForRoom'
@@ -65,10 +65,10 @@ export default function MessageAggregator({ children }: Props) {
 
     const onTextMessage = useCallback(
         (data, { messageId }) => {
-            const { streamId, streamPartition } = messageId
-
-            if (streamPartition !== Partition.Messages) {
-                throw new Error('Unexpected partition')
+            const { streamId } = messageId
+            console.log('found', messageId, data)
+            if (data.type !== MessageType.Text) {
+                throw new Error('Unexpected message type')
             }
 
             if (!isMessagePayloadValid(data)) {
@@ -104,23 +104,12 @@ export default function MessageAggregator({ children }: Props) {
 
     const onMetadataMessage = useCallback(
         (data, { messageId }) => {
-            const { streamPartition } = messageId
 
-            if (streamPartition !== Partition.Metadata) {
-                throw new Error('Unexpected partition')
+            if (data.type !== MessageType.Metadata) {
+                throw new Error('Unexpected message type')
             }
             const { current: cache } = presenceCacheRef
-            switch (data.body.type) {/*
-                case MetadataType.UserOnline:
-                    if (
-                        cache[data.sender] &&
-                        cache[data.sender] + 60 * 1000 > Date.now()
-                    ) {
-                        return
-                    }
-                    cache[data.sender] = data.createdAt
-
-                    break*/
+            switch (data.body.type) {
                 case MetadataType.SendInvite:
                     console.info('sent invite to', data.body.payload)
                     break
@@ -151,12 +140,12 @@ export default function MessageAggregator({ children }: Props) {
                 <Fragment key={id}>
                     <MessageInterceptor
                         streamId={id}
-                        streamPartition={Partition.Messages}
+                        messageType={MessageType.Text}
                         onMessage={onTextMessage}
                     />
                     <MessageInterceptor
                         streamId={id}
-                        streamPartition={Partition.Metadata}
+                        messageType={MessageType.Metadata}
                         onMessage={onMetadataMessage}
                     />
                 </Fragment>

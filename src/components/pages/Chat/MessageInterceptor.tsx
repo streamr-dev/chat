@@ -1,13 +1,13 @@
 import { memo, useEffect, useRef } from 'react'
-import { MetadataType, Partition } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { useSend } from './MessageTransmitter'
 import { StreamMessage } from 'streamr-client-protocol'
 import getRoomMetadata from '../../../getters/getRoomMetadata'
+import { MessageType } from '../../../utils/types'
 
 type Props = {
     streamId: string
-    streamPartition: Partition
+    messageType: MessageType
     onMessage: (data: any, raw: any) => void
 }
 
@@ -18,7 +18,7 @@ type MessagePresenceMap = {
 const EmptyMessagePresenceMap = {}
 
 const MessageInterceptor = memo(
-    ({ streamId, streamPartition, onMessage: onMessageProp }: Props) => {
+    ({ streamId, messageType, onMessage: onMessageProp }: Props) => {
         const {
             session: { streamrClient },
             account,
@@ -60,15 +60,14 @@ const MessageInterceptor = memo(
                 // prevent subscribing on metadata for public and view-only rooms
                 if (
                     privacy !== 'private' &&
-                    streamPartition !== Partition.Messages
+                    messageType !== MessageType.Text
                 ) {
                     return
                 }
                 try {
                     sub = await streamrClient!.subscribe(
                         {
-                            streamId,
-                            partition: streamPartition,
+                            streamId
                         },
                         (data: any, raw: StreamMessage) => {
                             if (!mounted) {
@@ -92,19 +91,10 @@ const MessageInterceptor = memo(
                 } catch (e: any) {
                     console.warn(`Error subscribing to stream ${streamId}:`)
                 }
-                /*
-                send(MetadataType.UserOnline, {
-                    streamPartition: Partition.Metadata,
-                    streamId,
-                    data: account,
-                })*/
 
                 console.info(
                     'subscribed to stream',
-                    streamId,
-                    'on  partition',
-                    streamPartition
-                )
+                    streamId )
 
                 if (!mounted) {
                     unsub()
@@ -117,7 +107,7 @@ const MessageInterceptor = memo(
                 mounted = false
                 unsub()
             }
-        }, [streamId, streamPartition, streamrClient, account, send])
+        }, [streamId, messageType, streamrClient, account, send])
 
         return null
     }

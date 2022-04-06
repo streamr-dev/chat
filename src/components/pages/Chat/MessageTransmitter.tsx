@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext } from 'react'
 import useInviter from '../../../hooks/useInviter'
-import { MessageType, MetadataType, Partition } from '../../../utils/types'
+import { MessageType, MetadataType } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import MessageAggregator from './MessageAggregator'
@@ -15,7 +15,7 @@ import getRoomMetadata from '../../../getters/getRoomMetadata'
 
 type TransmitFn = (
     payload: string,
-    options: { streamPartition?: number; streamId?: string; data?: any }
+    options: { messageType: MessageType; streamId?: string; data?: any }
 ) => void
 
 const TransmitContext = createContext<TransmitFn>(() => {})
@@ -60,8 +60,8 @@ export default function MessageTransmitter({ children }: Props) {
     const renameRoom = useRenameRoom()
 
     const send = useCallback<TransmitFn>(
-        async (payload, { streamPartition, streamId, data }) => {
-            if (streamPartition === Partition.Messages) {
+        async (payload, { messageType, streamId, data }) => {
+            if (messageType === MessageType.Text) {
                 if (
                     !account ||
                     !roomId ||
@@ -108,7 +108,8 @@ export default function MessageTransmitter({ children }: Props) {
                             for (let i = 0; i < addresses.length; i++) {
                                 const address = addresses[i]
                                 send(MetadataType.SendInvite, {
-                                    streamPartition: Partition.Metadata,
+                                    //streamPartition: Partition.Metadata,
+                                    messageType: MessageType.Metadata,
                                     streamId: roomId,
                                     data: address,
                                 })
@@ -132,7 +133,8 @@ export default function MessageTransmitter({ children }: Props) {
                                 const address = addresses[i]
 
                                 send(MetadataType.RevokeInvite, {
-                                    streamPartition: Partition.Metadata,
+//streamPartition: Partition.Metadata,
+messageType: MessageType.Metadata,
                                     streamId: roomId,
                                     data: address,
                                 })
@@ -243,16 +245,15 @@ export default function MessageTransmitter({ children }: Props) {
                             type: MessageType.Text,
                             version: 1,
                         },
-                        Date.now(),
-                        streamPartition
-                    )
+                        Date.now()
+                        )
                 } catch (e: any) {
                     console.warn(`Failed to publish to stream ${roomId}`)
                 }
                 return
             }
 
-            if (streamPartition === Partition.Metadata) {
+            if (messageType === MessageType.Metadata) {
                 if (!account || !streamrClient || !streamId || !data) {
                     return
                 }
@@ -273,9 +274,7 @@ export default function MessageTransmitter({ children }: Props) {
                                 type: MessageType.Metadata,
                                 version: 1,
                             },
-                            Date.now(),
-                            streamPartition
-                        )
+                            Date.now() )
                     }
                 } catch (e: any) {
                     console.warn(`Failed to publish to stream ${roomId}`)

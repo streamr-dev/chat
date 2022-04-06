@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import MoreIcon from './more.svg'
 import ModifyIcon from './modify.svg'
@@ -10,7 +10,6 @@ import { useLocalStorage } from '../../hooks/useLocalStorage'
 import useRevoker from '../../hooks/useRevoker'
 import { ActionType, useDispatch, useStore } from '../Store'
 import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
-import useGetOnlineRoomMembers from '../../hooks/useGetOnlineRoomMembers'
 
 const Root = styled.div`
     padding: 15px 0px;
