@@ -12,7 +12,7 @@
     "@metamask/detect-provider": "^1.2.0",
     "@metamask/eth-sig-util": "^4.0.0",
     "@metamask/providers": "^8.1.1",
-    "@testing-library/jest-dom": "^5.16.3",
+    "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^14.0.4",
     "@types/jest": "^27.4.1",
