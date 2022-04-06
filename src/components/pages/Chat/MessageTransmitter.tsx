@@ -187,6 +187,7 @@ messageType: MessageType.Metadata,
                                         user: account!,
                                         anyOf: [
                                             StreamPermission.GRANT,
+                                            StreamPermission.PUBLISH,
                                             StreamPermission.SUBSCRIBE,
                                         ],
                                         allowPublic: true,
@@ -195,20 +196,25 @@ messageType: MessageType.Metadata,
 
                             for await (const stream of streams) {
                                 try {
-                                    await stream.revokePermissions({
-                                        user: account!,
-                                        permissions: [
-                                            StreamPermission.GRANT,
-                                            StreamPermission.SUBSCRIBE,
-                                        ],
-                                    })
-                                    console.info(
-                                        `revoked permissions for ${stream.id}`
-                                    )
-                                    await stream.delete()
-                                    console.info(`deleted stream ${stream.id}`)
+                                    if (stream.id.includes(account!)) {
+                                        await stream.delete()
+                                        console.info(
+                                            `deleted stream ${stream.id}`
+                                        )
+                                    } else {
+                                        await stream.revokePermissions({
+                                            user: account!,
+                                            permissions: [
+                                                StreamPermission.GRANT,
+                                                StreamPermission.SUBSCRIBE,
+                                            ],
+                                        })
+                                        console.info(
+                                            `revoked permissions for ${stream.id}`
+                                        )
+                                    }
                                 } catch (e) {
-                                    console.warn(
+                                    console.info(
                                         'Purge failed to delete stream, moving on',
                                         e
                                     )
