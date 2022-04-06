@@ -142,7 +142,7 @@ const RoomDropdown = ({ button }: Props) => {
 
     useEffect(() => {
         const fn = async () => {
-            if (!streamrClient || !roomId || members.length > 0) {
+            if (!streamrClient || !roomId) {
                 return
             }
             const stream = await streamrClient.getStream(roomId)
@@ -150,7 +150,7 @@ const RoomDropdown = ({ button }: Props) => {
         }
 
         fn()
-    })
+    }, [roomId, streamrClient])
 
     useEffect(() => {
         function handleClickOutside(event: any) {
@@ -176,7 +176,7 @@ const RoomDropdown = ({ button }: Props) => {
     const handleMemberModal = (state: boolean) => {
         setMemberModalIsOpen(state)
     }
-/*
+    /*
     const toggleOpen = () => {
         setIsOpen(!isOpen)*/
     const deleteRoom = useDeleteRoom()

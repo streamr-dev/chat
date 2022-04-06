@@ -2,11 +2,12 @@ import React from 'react'
 import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
-import { AddMemberIcon } from '../../../../icons'
-import { KARELIA, MEDIUM } from '../../../../utils/css'
-import Button from '../../../Button'
+import { KARELIA } from '../../../../utils/css'
 import useInviter from '../../../../hooks/useInviter'
 import { useStore } from '../../../Store'
+import { useSend } from '../MessageTransmitter'
+import { MetadataType } from '../MessageAggregator'
+import { Partition } from '../../../../utils/types'
 
 const customStyles = {
     overlay: {
@@ -128,6 +129,8 @@ const AddMemberModal = ({
         setModalIsOpen(true)
     }
 
+    const send = useSend()
+
     return (
         <>
             {button ? (
@@ -188,6 +191,14 @@ const AddMemberModal = ({
                                         invitees: [memberAddress],
                                         stream: stream,
                                     })
+
+                                    send(MetadataType.SendInvite, {
+                                        streamPartition: Partition.Metadata,
+                                        streamId: roomId,
+                                        data: memberAddress,
+                                    })
+
+                                    closeModal()
                                 }}
                             >
                                 Add

@@ -1,9 +1,6 @@
 import styled from 'styled-components'
 import { format } from 'date-fns'
 import AddMemberModal from '../AddMemberModal'
-import { AddMemberIcon } from '../../../../icons'
-import Button from '../../../Button'
-import { KARELIA, MEDIUM } from '../../../../utils/css'
 import { useEffect, useState } from 'react'
 import { useStore } from '../../../Store'
 import getRoomMetadata from '../../../../getters/getRoomMetadata'
@@ -16,29 +13,6 @@ const CreatedAt = styled.span`
     display: block;
     letter-spacing: 0.02em;
     margin-bottom: 2rem;
-`
-const AddMemberButton = styled(Button)`
-    align-items: center;
-    background: rgba(255, 89, 36, 0.08);
-    border-radius: 1.5rem;
-    color: #ff5924;
-    cursor: pointer;
-    display: flex;
-    margin: 0 auto;
-    padding: 0 2rem;
-
-    span {
-        display: block;
-        font-family: ${KARELIA};
-        font-size: 1.125rem;
-        font-weight: ${MEDIUM};
-        transform: translateY(-0.1em);
-    }
-
-    svg {
-        display: block;
-        margin-right: 0.75rem;
-    }
 `
 
 const UnstyledEmptyFeed = ({ className }: Props) => {
