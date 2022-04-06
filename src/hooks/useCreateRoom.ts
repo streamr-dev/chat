@@ -1,10 +1,18 @@
 import { useCallback } from 'react'
+import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { v4 as uuidv4 } from 'uuid'
-import useInviter from './useInviter'
-import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import { RoomMetadata } from '../utils/types'
+import useInviterSelf from './useInviterSelf'
+import useSetPublicPermissions from './useSetPublicPermissions'
 
-export default function useCreateRoom(): () => Promise<void> {
+type Options = {
+    roomName: string
+    privacy: 'private' | 'viewonly' | 'public'
+}
+export default function useCreateRoom(): ({
+    roomName,
+    privacy,
+}: Options) => Promise<void> {
     const {
         session: { wallet },
         account,
@@ -13,40 +21,85 @@ export default function useCreateRoom(): () => Promise<void> {
 
     const sessionAccount = wallet?.address
 
-    const invite = useInviter()
+    const inviteSelf = useInviterSelf()
+    const setPublicPermissions = useSetPublicPermissions()
 
     const dispatch = useDispatch()
 
-    return useCallback(async () => {
-        if (!sessionAccount) {
-            throw new Error('Missing session account')
-        }
+    return useCallback(
+        async ({ roomName, privacy }) => {
+            if (!sessionAccount) {
+                throw new Error('Missing session account')
+            }
 
-        if (!account) {
-            throw new Error('Missing account')
-        }
+            if (!account) {
+                throw new Error('Missing account')
+            }
 
-        if (!metamaskStreamrClient) {
-            throw new Error('Missing metamask streamr client')
-        }
+            if (!metamaskStreamrClient) {
+                throw new Error('Missing metamask streamr client')
+            }
 
-        const id = `${account}/streamr-chat/room/${uuidv4()}`.toLowerCase()
-        const roomName = getRoomNameFromRoomId(id)
+            const normalizedRoomName = roomName.toLowerCase()
 
-        const stream = await metamaskStreamrClient.createStream({
-            id,
-            partitions: 2,
-            description: roomName,
-        })
+            if (!/^[a-zA-Z0-9-_]+$/.test(normalizedRoomName)) {
+                throw new Error('Invalid room name')
+            }
 
-        await invite({
-            invitees: [sessionAccount],
-            stream,
-        })
+            const description: RoomMetadata = {
+                name: normalizedRoomName,
+                createdAt: Date.now(),
+                privacy,
+            }
 
-        dispatch({
-            type: ActionType.AddRoomIds,
-            payload: [id],
-        })
-    }, [sessionAccount, metamaskStreamrClient, account, invite, dispatch])
+            const stream = await metamaskStreamrClient.createStream({
+                id: `/streamr-chat/room/${normalizedRoomName}`,
+                partitions: 2,
+                description: JSON.stringify(description),
+            })
+
+            console.info(`Created stream ${stream.id}`)
+
+            switch (privacy) {
+                case 'private':
+                    await inviteSelf({
+                        streamIds: [stream.id],
+                    })
+                    break
+
+                case 'viewonly':
+                    await inviteSelf({
+                        streamIds: [stream.id],
+                        includePublicPermissions: true,
+                    })
+                    break
+                case 'public':
+                    await setPublicPermissions({
+                        permissions: [
+                            StreamPermission.PUBLISH,
+                            StreamPermission.SUBSCRIBE,
+                        ],
+                        stream,
+                    })
+                    break
+            }
+
+            console.info(
+                `Assigned ${privacy} permissions to stream ${stream.id}`
+            )
+
+            dispatch({
+                type: ActionType.AddRoomIds,
+                payload: [stream.id],
+            })
+        },
+        [
+            sessionAccount,
+            metamaskStreamrClient,
+            account,
+            inviteSelf,
+            dispatch,
+            setPublicPermissions,
+        ]
+    )
 }

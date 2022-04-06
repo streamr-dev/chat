@@ -4,10 +4,12 @@ import AddMemberModal from '../AddMemberModal'
 import { AddMemberIcon } from '../../../../icons'
 import Button from '../../../Button'
 import { KARELIA, MEDIUM } from '../../../../utils/css'
+import { useEffect, useState } from 'react'
+import { useStore } from '../../../Store'
+import getRoomMetadata from '../../../../getters/getRoomMetadata'
 
 type Props = {
     className?: string
-    roomCreatedAt?: number
 }
 
 const CreatedAt = styled.span`
@@ -39,25 +41,49 @@ const AddMemberButton = styled(Button)`
     }
 `
 
-const UnstyledEmptyFeed = ({ className, roomCreatedAt }: Props) => {
+const UnstyledEmptyFeed = ({ className }: Props) => {
+    const [roomCreatedAt, setRoomCreatedAt] = useState<number | undefined>(
+        undefined
+    )
+
+    const {
+        roomId,
+        session: { streamrClient },
+    } = useStore()
+
+    useEffect(() => {
+        let mounted = true
+
+        const fn = async () => {
+            if (!streamrClient || !roomId || !mounted) {
+                return
+            }
+            const stream = await streamrClient.getStream(roomId)
+            if (!mounted) {
+                return
+            }
+            const description = getRoomMetadata(stream.description!)
+            setRoomCreatedAt(description.createdAt)
+        }
+
+        fn()
+
+        return () => {
+            mounted = false
+        }
+    }, [roomId, streamrClient])
+
     return (
         <div className={className}>
-            <div>
-                {roomCreatedAt != null && (
+            <>
+                {roomCreatedAt ? (
                     <CreatedAt>
                         You created this room on{' '}
                         {format(roomCreatedAt, 'iiii, LLL do yyyy')}
                     </CreatedAt>
-                )}
-                <AddMemberModal
-                    button={
-                        <AddMemberButton type="button">
-                            <AddMemberIcon />
-                            <span>Add member</span>
-                        </AddMemberButton>
-                    }
-                />
-            </div>
+                ) : null}
+                <AddMemberModal />
+            </>
         </div>
     )
 }

@@ -1,44 +1,62 @@
 import { useCallback } from 'react'
-import { Stream, StreamPermission } from 'streamr-client'
+import { StreamPermission } from 'streamr-client'
 import { useStore } from '../components/Store'
 
 type Options = {
-    invitee: string
-    streams: Stream[]
+    streamIds: string[]
+    includePublicPermissions?: boolean
 }
 
-type Inviter = ({ invitee, streams }: Options) => Promise<void>
+type Inviter = ({
+    streamIds,
+    includePublicPermissions,
+}: Options) => Promise<void>
 
 export default function useInviterSelf(): Inviter {
-    const { metamaskStreamrClient } = useStore()
+    const {
+        metamaskStreamrClient,
+        session: { wallet },
+    } = useStore()
     return useCallback(
-        async ({ invitee, streams }: Options) => {
-            if (!metamaskStreamrClient) {
+        async ({ streamIds, includePublicPermissions }: Options) => {
+            if (!metamaskStreamrClient || !wallet) {
                 return
             }
 
             console.info(
                 'calling inviteSelf for streams',
-                streams.map((s) => s.id)
+                streamIds,
+                `on account ${wallet.address}`,
+                includePublicPermissions
+                    ? 'with public permissions'
+                    : 'without public permissions'
             )
 
-            const tasks = streams.map((stream) => {
+            const tasks = streamIds.map((streamId) => {
+                const assignments: any[] = [
+                    {
+                        user: wallet.address,
+                        permissions: [
+                            StreamPermission.SUBSCRIBE,
+                            StreamPermission.PUBLISH,
+                        ],
+                    },
+                ]
+
+                if (includePublicPermissions) {
+                    assignments.push({
+                        public: true as true,
+                        permissions: [StreamPermission.SUBSCRIBE],
+                    })
+                }
                 return {
-                    streamId: stream.id,
-                    assignments: [
-                        {
-                            user: invitee,
-                            permissions: [
-                                StreamPermission.SUBSCRIBE,
-                                StreamPermission.PUBLISH,
-                            ],
-                        },
-                    ],
+                    streamId: streamId,
+                    assignments,
                 }
             })
 
             await metamaskStreamrClient.setPermissions(...tasks)
         },
-        [metamaskStreamrClient]
+        [metamaskStreamrClient, wallet]
     )
 }

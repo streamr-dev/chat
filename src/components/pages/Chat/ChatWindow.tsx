@@ -68,7 +68,7 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
                     {React.Children.count(children) ? (
                         <Feed ref={feedRef}>{children}</Feed>
                     ) : (
-                        <EmptyFeed roomCreatedAt={Date.now()} />
+                        <EmptyFeed />
                     )}
                 </div>
             </FeedWrap>

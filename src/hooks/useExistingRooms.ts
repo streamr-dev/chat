@@ -3,8 +3,8 @@ import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { StorageKey } from '../utils/types'
 import intersection from 'lodash/intersection'
-import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 import useInviterSelf from './useInviterSelf'
+import getRoomMetadata from '../getters/getRoomMetadata'
 
 export const ROOM_PREFIX = 'streamr-chat/room'
 
@@ -49,18 +49,14 @@ export default function useExistingRooms() {
             const remoteRoomIds: string[] = []
             const streams = metamaskStreamrClient!.searchStreams(ROOM_PREFIX, {
                 user: account!,
-                anyOf: [StreamPermission.GRANT],
+                anyOf: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
                 allowPublic: true,
             })
 
-            const selfInviteStreams = []
+            const selfInviteStreams: string[] = []
             for await (const stream of streams) {
                 try {
-                    if (
-                        stream.description !== getRoomNameFromRoomId(stream.id)
-                    ) {
-                        continue
-                    }
+                    const metadata = getRoomMetadata(stream.description!)
 
                     const hasPermission = await stream.hasPermission({
                         user: sessionAccount!,
@@ -68,8 +64,8 @@ export default function useExistingRooms() {
                         allowPublic: true,
                     })
 
-                    if (!hasPermission) {
-                        selfInviteStreams.push(stream)
+                    if (!hasPermission && metadata.privacy !== 'public') {
+                        selfInviteStreams.push(stream.id)
                     }
                     remoteRoomIds.push(stream.id)
                     dispatch({
@@ -83,8 +79,7 @@ export default function useExistingRooms() {
 
             if (selfInviteStreams.length > 0) {
                 await inviteSelf({
-                    invitee: sessionAccount!,
-                    streams: selfInviteStreams,
+                    streamIds: selfInviteStreams,
                 })
             }
 

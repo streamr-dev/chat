@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import useCreateRoom from '../../../hooks/useCreateRoom'
-import type { Props } from './SidebarItem'
-import SidebarItem from './SidebarItem'
-import { KARELIA } from '../../../utils/css'
+import useCreateRoom from '../../../../hooks/useCreateRoom'
+import type { Props } from '../SidebarItem'
+import SidebarItem from '../SidebarItem'
+import { KARELIA } from '../../../../utils/css'
 import ReactModal from 'react-modal'
+import PrivacySelect from './PrivacySelect'
+
+import getRandomRoomName from '../../../../getters/getRandomRoomName'
 
 const IconWrap = styled.div`
     padding: 13px;
@@ -17,7 +20,6 @@ const customStyles = {
     content: {
         border: 'none',
         width: '528px',
-        height: '361px',
         top: '50%',
         left: '50%',
         right: 'auto',
@@ -53,6 +55,11 @@ const CreateButton = styled.button`
 
     svg {
         display: block;
+    }
+
+    :disabled {
+        background: #ff5924;
+        opacity: 0.5;
     }
 `
 
@@ -111,10 +118,26 @@ const ModalHeader = styled.div`
 function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [roomName, setRoomName] = useState(getRandomRoomName())
+    const [privacy, setPrivacy] = useState<any>()
+
+    const { value: privacyValue } = privacy || {}
 
     const closeModal = () => {
         setModalIsOpen(false)
+        // replace the random name after modal closes
+        setRoomName(getRandomRoomName())
     }
+
+    const handleChangeRoomName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRoomName(e.target.value)
+    }
+
+    useEffect(() => {
+        if (!modalIsOpen) {
+            setPrivacy(undefined)
+        }
+    }, [modalIsOpen])
 
     return (
         <>
@@ -154,7 +177,7 @@ function UnstyledAddRoomItem(props: Props) {
                     <ModalContainer>
                         <ModalHeader>
                             <h2>Create new room</h2>
-                            <CloseButton onClick={closeModal}>
+                            <CloseButton onClick={closeModal} type="button">
                                 <svg
                                     width="16"
                                     height="16"
@@ -178,24 +201,51 @@ function UnstyledAddRoomItem(props: Props) {
                             </CloseButton>
                         </ModalHeader>
                         <div>
-                            <Subheading>Name</Subheading>
-                            <input
-                                disabled={true}
-                                placeholder="random-name-abc"
-                            />
-                            <Subtitle>
-                                Room name is generated randomly, you will be
-                                able to change the name later. The room name
-                                will be publicly visible.{' '}
-                            </Subtitle>
-                            <CreateButton
-                                onClick={() => {
-                                    createRoom()
+                            <form
+                                onSubmit={(e) => {
+                                    if (!privacyValue) {
+                                        throw new Error(
+                                            'Privacy cannot be blank'
+                                        )
+                                    }
+
+                                    createRoom({
+                                        roomName,
+                                        privacy: privacyValue as any,
+                                    })
                                     closeModal()
+                                    e.preventDefault()
                                 }}
                             >
-                                Create
-                            </CreateButton>
+                                <Subheading>Name</Subheading>
+                                <input
+                                    value={roomName}
+                                    onChange={handleChangeRoomName}
+                                />
+                                <Subtitle>
+                                    Room name is generated randomly but you can
+                                    provide your own, as long as it's unique in
+                                    your account. The room name will be publicly
+                                    visible.
+                                    <br />
+                                    You may use alphanumeric characters, as well
+                                    as dashes (-) and underscores (_) for room
+                                    names.{' '}
+                                </Subtitle>
+                                <Subheading>Choose privacy</Subheading>
+                                <PrivacySelect
+                                    value={privacy}
+                                    onChange={(option: any) =>
+                                        void setPrivacy(option)
+                                    }
+                                />
+                                <CreateButton
+                                    type="submit"
+                                    disabled={!roomName || !privacy}
+                                >
+                                    Create
+                                </CreateButton>
+                            </form>
                         </div>
                     </ModalContainer>
                 </StyledModalContent>

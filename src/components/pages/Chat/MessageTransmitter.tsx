@@ -11,6 +11,7 @@ import { StreamPermission } from 'streamr-client'
 import useRevoker from '../../../hooks/useRevoker'
 import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
 import { ROOM_PREFIX } from '../../../hooks/useExistingRooms'
+import getRoomMetadata from '../../../getters/getRoomMetadata'
 
 type TransmitFn = (
     payload: string,
@@ -36,6 +37,8 @@ enum Command {
     Revoke = 'revoke',
     IsMember = 'isMember',
     Purge = 'purge',
+    Export = 'export',
+    Join = 'join',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -43,7 +46,7 @@ export default function MessageTransmitter({ children }: Props) {
         metamaskStreamrClient,
         account,
         roomId,
-        session: { streamrClient },
+        session: { streamrClient, wallet },
     } = useStore()
 
     const invite = useInviter()
@@ -63,14 +66,15 @@ export default function MessageTransmitter({ children }: Props) {
                     !account ||
                     !roomId ||
                     !streamrClient ||
-                    !metamaskStreamrClient
+                    !metamaskStreamrClient ||
+                    !wallet
                 ) {
                     return
                 }
 
                 const [command, arg] = (
                     payload.match(
-                        /\/(invite|delete|new|rename|members|revoke|isMember|purge)\s*(.+)?\s*$/
+                        /\/(invite|delete|new|rename|members|revoke|isMember|purge|export|join)\s*(.+)?\s*$/
                     ) || []
                 ).slice(1)
 
@@ -144,7 +148,10 @@ export default function MessageTransmitter({ children }: Props) {
                         await deleteRoom(roomId)
                         return
                     case Command.New:
-                        await createRoom()
+                        await createRoom({
+                            roomName: arg,
+                            privacy: 'private',
+                        })
                         return
                     case Command.Members:
                         const stream = await streamrClient.getStream(roomId)
@@ -176,7 +183,10 @@ export default function MessageTransmitter({ children }: Props) {
                                     ROOM_PREFIX,
                                     {
                                         user: account!,
-                                        anyOf: [StreamPermission.GRANT],
+                                        anyOf: [
+                                            StreamPermission.GRANT,
+                                            StreamPermission.SUBSCRIBE,
+                                        ],
                                         allowPublic: true,
                                     }
                                 )
@@ -185,7 +195,10 @@ export default function MessageTransmitter({ children }: Props) {
                                 try {
                                     await stream.revokePermissions({
                                         user: account!,
-                                        permissions: [StreamPermission.GRANT],
+                                        permissions: [
+                                            StreamPermission.GRANT,
+                                            StreamPermission.SUBSCRIBE,
+                                        ],
                                     })
                                     console.info(
                                         `revoked permissions for ${stream.id}`
@@ -206,6 +219,14 @@ export default function MessageTransmitter({ children }: Props) {
                             window.location.reload()
                         }
 
+                        return
+                    case Command.Export:
+                        const { privateKey } = wallet
+                        alert(
+                            `This is your session's private key:\n${privateKey}`
+                        )
+                        return
+                    case Command.Join:
                         return
                     default:
                         break
@@ -236,22 +257,26 @@ export default function MessageTransmitter({ children }: Props) {
                     return
                 }
                 try {
-                    await streamrClient.publish(
-                        streamId,
-                        {
-                            body: {
-                                type: payload,
-                                payload: data,
+                    const stream = await streamrClient.getStream(streamId)
+                    const { privacy } = getRoomMetadata(stream.description!)
+                    if (privacy === 'private') {
+                        await streamrClient.publish(
+                            streamId,
+                            {
+                                body: {
+                                    type: payload,
+                                    payload: data,
+                                },
+                                createdAt: Date.now(),
+                                id: uuidv4(),
+                                sender: account,
+                                type: MessageType.Metadata,
+                                version: 1,
                             },
-                            createdAt: Date.now(),
-                            id: uuidv4(),
-                            sender: account,
-                            type: MessageType.Metadata,
-                            version: 1,
-                        },
-                        Date.now(),
-                        streamPartition
-                    )
+                            Date.now(),
+                            streamPartition
+                        )
+                    }
                 } catch (e: any) {
                     console.warn(`Failed to publish to stream ${roomId}`)
                 }
@@ -262,6 +287,7 @@ export default function MessageTransmitter({ children }: Props) {
             account,
             roomId,
             streamrClient,
+            wallet,
             invite,
             createRoom,
             deleteRoom,
