@@ -119,7 +119,9 @@ function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [roomName, setRoomName] = useState(getRandomRoomName())
-    const [privacy, setPrivacy] = useState()
+    const [privacy, setPrivacy] = useState<any>()
+
+    const { value: privacyValue } = privacy || {}
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -175,10 +177,7 @@ function UnstyledAddRoomItem(props: Props) {
                     <ModalContainer>
                         <ModalHeader>
                             <h2>Create new room</h2>
-                            <CloseButton
-                                onClick={closeModal}
-                                type="button"
-                            >
+                            <CloseButton onClick={closeModal} type="button">
                                 <svg
                                     width="16"
                                     height="16"
@@ -204,7 +203,16 @@ function UnstyledAddRoomItem(props: Props) {
                         <div>
                             <form
                                 onSubmit={(e) => {
-                                    createRoom(roomName)
+                                    if (!privacyValue) {
+                                        throw new Error(
+                                            'Privacy cannot be blank'
+                                        )
+                                    }
+
+                                    createRoom({
+                                        roomName,
+                                        privacy: privacyValue as any,
+                                    })
                                     closeModal()
                                     e.preventDefault()
                                 }}
@@ -227,7 +235,9 @@ function UnstyledAddRoomItem(props: Props) {
                                 <Subheading>Choose privacy</Subheading>
                                 <PrivacySelect
                                     value={privacy}
-                                    onChange={(option: any) => void setPrivacy(option)}
+                                    onChange={(option: any) =>
+                                        void setPrivacy(option)
+                                    }
                                 />
                                 <CreateButton
                                     type="submit"

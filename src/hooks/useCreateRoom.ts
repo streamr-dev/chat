@@ -1,9 +1,18 @@
 import { useCallback } from 'react'
+import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { RoomMetadata } from '../utils/types'
 import useInviterSelf from './useInviterSelf'
+import useSetPublicPermissions from './useSetPublicPermissions'
 
-export default function useCreateRoom(): (roomName: string) => Promise<void> {
+type Options = {
+    roomName: string
+    privacy: 'private' | 'viewonly' | 'public'
+}
+export default function useCreateRoom(): ({
+    roomName,
+    privacy,
+}: Options) => Promise<void> {
     const {
         session: { wallet },
         account,
@@ -13,11 +22,12 @@ export default function useCreateRoom(): (roomName: string) => Promise<void> {
     const sessionAccount = wallet?.address
 
     const inviteSelf = useInviterSelf()
+    const setPublicPermissions = useSetPublicPermissions()
 
     const dispatch = useDispatch()
 
     return useCallback(
-        async (roomName: string) => {
+        async ({ roomName, privacy }) => {
             if (!sessionAccount) {
                 throw new Error('Missing session account')
             }
@@ -39,6 +49,7 @@ export default function useCreateRoom(): (roomName: string) => Promise<void> {
             const description: RoomMetadata = {
                 name: normalizedRoomName,
                 createdAt: Date.now(),
+                privacy,
             }
 
             const stream = await metamaskStreamrClient.createStream({
@@ -49,12 +60,32 @@ export default function useCreateRoom(): (roomName: string) => Promise<void> {
 
             console.info(`Created stream ${stream.id}`)
 
-            await inviteSelf({
-                streamIds: [stream.id],
-            })
+            switch (privacy) {
+                case 'private':
+                    await inviteSelf({
+                        streamIds: [stream.id],
+                    })
+                    break
+
+                case 'viewonly':
+                    await inviteSelf({
+                        streamIds: [stream.id],
+                        includePublicPermissions: true,
+                    })
+                    break
+                case 'public':
+                    await setPublicPermissions({
+                        permissions: [
+                            StreamPermission.PUBLISH,
+                            StreamPermission.SUBSCRIBE,
+                        ],
+                        stream,
+                    })
+                    break
+            }
 
             console.info(
-                `Invited session account ${sessionAccount} to stream ${stream.id}`
+                `Assigned ${privacy} permissions to stream ${stream.id}`
             )
 
             dispatch({
@@ -62,6 +93,13 @@ export default function useCreateRoom(): (roomName: string) => Promise<void> {
                 payload: [stream.id],
             })
         },
-        [sessionAccount, metamaskStreamrClient, account, inviteSelf, dispatch]
+        [
+            sessionAccount,
+            metamaskStreamrClient,
+            account,
+            inviteSelf,
+            dispatch,
+            setPublicPermissions,
+        ]
     )
 }
