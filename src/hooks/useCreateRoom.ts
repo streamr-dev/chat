@@ -85,7 +85,7 @@ export default function useCreateRoom(): ({
             }
 
             console.info(
-                `Invited session account ${sessionAccount} to stream ${stream.id}`
+                `Assigned ${privacy} permissions to stream ${stream.id}`
             )
 
             dispatch({

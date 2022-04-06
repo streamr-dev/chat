@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { Stream, StreamPermission } from 'streamr-client'
+import { useStore } from '../components/Store'
 
 type Options = {
     stream: Stream
@@ -10,10 +11,23 @@ export default function useSetPublicPermissions(): ({
     permissions,
     stream,
 }: Options) => Promise<void> {
-    return useCallback(async ({ permissions, stream }: Options) => {
-        await stream.grantPermissions({
-            public: true,
-            permissions,
-        })
-    }, [])
+    const { metamaskStreamrClient } = useStore()
+    return useCallback(
+        async ({ permissions, stream }: Options) => {
+            if (!metamaskStreamrClient) {
+                throw new Error('No metamask streamr client found')
+            }
+
+            await metamaskStreamrClient.setPermissions({
+                streamId: stream.id,
+                assignments: [
+                    {
+                        public: true,
+                        permissions,
+                    },
+                ],
+            })
+        },
+        [metamaskStreamrClient]
+    )
 }

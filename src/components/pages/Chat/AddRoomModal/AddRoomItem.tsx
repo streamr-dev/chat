@@ -177,10 +177,7 @@ function UnstyledAddRoomItem(props: Props) {
                     <ModalContainer>
                         <ModalHeader>
                             <h2>Create new room</h2>
-                            <CloseButton
-                                onClick={closeModal}
-                                type="button"
-                            >
+                            <CloseButton onClick={closeModal} type="button">
                                 <svg
                                     width="16"
                                     height="16"
@@ -207,10 +204,15 @@ function UnstyledAddRoomItem(props: Props) {
                             <form
                                 onSubmit={(e) => {
                                     if (!privacyValue) {
-                                        throw new Error('Privacy cannot be blank')
+                                        throw new Error(
+                                            'Privacy cannot be blank'
+                                        )
                                     }
 
-                                    createRoom({ roomName, privacy: privacyValue as any })
+                                    createRoom({
+                                        roomName,
+                                        privacy: privacyValue as any,
+                                    })
                                     closeModal()
                                     e.preventDefault()
                                 }}
@@ -233,7 +235,9 @@ function UnstyledAddRoomItem(props: Props) {
                                 <Subheading>Choose privacy</Subheading>
                                 <PrivacySelect
                                     value={privacy}
-                                    onChange={(option: any) => void setPrivacy(option)}
+                                    onChange={(option: any) =>
+                                        void setPrivacy(option)
+                                    }
                                 />
                                 <CreateButton
                                     type="submit"

@@ -68,13 +68,13 @@ const LabelContainer = styled.div`
     margin-right: auto;
 
     p {
-        color: #36404E;
+        color: #36404e;
         font-size: 14px;
         margin: 0;
     }
 
     p + p {
-        color: #59799C;
+        color: #59799c;
         font-size: 12px;
     }
 `
@@ -97,7 +97,7 @@ const CheckIcon = styled.img`
 `
 
 const ControlIcon = styled.div`
-    color: #59799C;
+    color: #59799c;
 
     img {
         display: block;
@@ -130,17 +130,15 @@ const Option = ({ data: { icon, label, subLabel }, ...props }: any) => (
 )
 
 function Control({ children, ...props }: any) {
-    const { selectProps: { value } } = props
+    const {
+        selectProps: { value },
+    } = props
 
     const { icon } = value || {}
 
     return (
         <components.Control {...props}>
-            <ControlIcon>
-                {!!icon && (
-                    <img src={icon} alt="" />
-                )}
-            </ControlIcon>
+            <ControlIcon>{!!icon && <img src={icon} alt="" />}</ControlIcon>
             {children}
         </components.Control>
     )
