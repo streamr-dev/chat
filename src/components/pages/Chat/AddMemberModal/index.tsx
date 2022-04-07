@@ -112,6 +112,8 @@ type Props = {
 
 const AddMemberModal = ({ button, isOpen = false, handleModal }: Props) => {
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
+    const [inviteFormIsEnabled, setInviteFormIsEnabled] =
+        useState<boolean>(true)
 
     const [memberAddress, setMemberAddress] = useState<string>('')
 
@@ -128,15 +130,31 @@ const AddMemberModal = ({ button, isOpen = false, handleModal }: Props) => {
         setModalIsOpen(true)
     }
 
+    const sendInvite = async () => {
+        setInviteFormIsEnabled(false)
+        const stream = await metamaskStreamrClient!.getStream(roomId!)
+        await invite({
+            invitees: [memberAddress],
+            stream: stream,
+        })
+
+        send(MetadataType.SendInvite, {
+            streamPartition: Partition.Metadata,
+            streamId: roomId,
+            data: memberAddress,
+        })
+        setInviteFormIsEnabled(true)
+        closeModal()
+    }
+
     const send = useSend()
 
     return (
         <>
-            {!!button && (
+            {!!button &&
                 React.cloneElement(button, {
                     onClick: openModal,
-                })
-            )}
+                })}
             <ReactModal
                 ariaHideApp={false}
                 isOpen={modalIsOpen || isOpen}
@@ -174,6 +192,7 @@ const AddMemberModal = ({ button, isOpen = false, handleModal }: Props) => {
                         <div>
                             <Subheading>Member Address</Subheading>
                             <input
+                                disabled={!inviteFormIsEnabled}
                                 placeholder="Member Address"
                                 onChange={(e) => {
                                     setMemberAddress(e.target.value)
@@ -181,24 +200,8 @@ const AddMemberModal = ({ button, isOpen = false, handleModal }: Props) => {
                                 value={memberAddress}
                             />
                             <CreateButton
-                                onClick={async () => {
-                                    const stream =
-                                        await metamaskStreamrClient!.getStream(
-                                            roomId!
-                                        )
-                                    await invite({
-                                        invitees: [memberAddress],
-                                        stream: stream,
-                                    })
-
-                                    send(MetadataType.SendInvite, {
-                                        streamPartition: Partition.Metadata,
-                                        streamId: roomId,
-                                        data: memberAddress,
-                                    })
-
-                                    closeModal()
-                                }}
+                                disabled={!inviteFormIsEnabled}
+                                onClick={sendInvite}
                             >
                                 Add
                             </CreateButton>

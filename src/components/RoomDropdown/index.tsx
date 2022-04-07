@@ -194,9 +194,7 @@ const RoomDropdown = ({ button }: Props) => {
                                 <AddMemberIcon />
                                 Add member
                             </ListItem>
-                            <ListItem
-                                onClick={() => void setModalIsOpen(true)}
-                            >
+                            <ListItem onClick={() => void setModalIsOpen(true)}>
                                 <EditMembersIcon />
                                 Edit members
                             </ListItem>
