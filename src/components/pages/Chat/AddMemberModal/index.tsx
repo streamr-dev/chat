@@ -104,17 +104,16 @@ const ModalHeader = styled.div`
     justify-content: space-between;
 `
 
-const AddMemberModal = ({
-    button,
-    isOpen = false,
-    handleModal,
-}: {
+type Props = {
     button?: React.ReactElement<any>
     isOpen?: boolean
     handleModal?: (state: boolean) => void
-}) => {
-    const [modalIsOpen, setModalIsOpen] = useState(false)
-    const [memberAddress, setMemberAddress] = useState('')
+}
+
+const AddMemberModal = ({ button, isOpen = false, handleModal }: Props) => {
+    const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
+
+    const [memberAddress, setMemberAddress] = useState<string>('')
 
     const { metamaskStreamrClient, roomId } = useStore()
 
@@ -133,10 +132,10 @@ const AddMemberModal = ({
 
     return (
         <>
-            {button ? (
-                React.cloneElement(button!, { onClick: openModal })
-            ) : (
-                <></>
+            {!!button && (
+                React.cloneElement(button, {
+                    onClick: openModal,
+                })
             )}
             <ReactModal
                 ariaHideApp={false}

@@ -130,7 +130,7 @@ const RoomDropdown = ({ button }: Props) => {
     const [isOpen, toggleOpen] = useReducer((current) => !current, false)
 
     const [modalIsOpen, setModalIsOpen] = useState(false)
-    const [memberModalIsOpen, setMemberModalIsOpen] = useState(false)
+    const [memberModalIsOpen, setMemberModalIsOpen] = useState<boolean>(false)
     const ref = useRef<HTMLDivElement>(null)
 
     const {
@@ -165,20 +165,10 @@ const RoomDropdown = ({ button }: Props) => {
         }
     }, [ref])
 
-    const openModal = () => {
-        setModalIsOpen(true)
-    }
-
     const closeModal = () => {
         setModalIsOpen(false)
     }
 
-    const handleMemberModal = (state: boolean) => {
-        setMemberModalIsOpen(state)
-    }
-    /*
-    const toggleOpen = () => {
-        setIsOpen(!isOpen)*/
     const deleteRoom = useDeleteRoom()
 
     const clickDeleteRoom = () => {
@@ -199,14 +189,14 @@ const RoomDropdown = ({ button }: Props) => {
                     <DropDownListContainer ref={ref}>
                         <DropDownList>
                             <ListItem
-                                onClick={() => {
-                                    handleMemberModal(true)
-                                }}
+                                onClick={() => void setMemberModalIsOpen(true)}
                             >
                                 <AddMemberIcon />
                                 Add member
                             </ListItem>
-                            <ListItem onClick={openModal}>
+                            <ListItem
+                                onClick={() => void setModalIsOpen(true)}
+                            >
                                 <EditMembersIcon />
                                 Edit members
                             </ListItem>
@@ -228,12 +218,10 @@ const RoomDropdown = ({ button }: Props) => {
                     </DropDownListContainer>
                 )}
             </DropDownContainer>
-
             <AddMemberModal
                 isOpen={memberModalIsOpen}
-                handleModal={handleMemberModal}
+                handleModal={(open) => void setMemberModalIsOpen(open)}
             />
-
             <ReactModal
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
