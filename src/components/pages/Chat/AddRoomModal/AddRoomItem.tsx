@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Switch from 'react-switch'
 import styled from 'styled-components'
 import useCreateRoom from '../../../../hooks/useCreateRoom'
 import type { Props } from '../SidebarItem'
@@ -20,6 +21,7 @@ const customStyles = {
     content: {
         border: 'none',
         width: '528px',
+        height: '600px',
         top: '50%',
         left: '50%',
         right: 'auto',
@@ -70,11 +72,11 @@ const Subheading = styled.h3`
     margin-bottom: 7px;
 `
 
-const Subtitle = styled.h3`
-    margin-top: 7px;
-    font-weight: normal;
-    font-size: 14px;
+const Subtitle = styled.p`
     color: #59799c;
+    font-size: 14px;
+    font-weight: normal;
+    margin: 7px 0 0;
 `
 
 const CloseButton = styled.button`
@@ -115,13 +117,18 @@ const ModalHeader = styled.div`
     justify-content: space-between;
 `
 
+const MessageStorageContainer = styled.div`
+    display: flex;
+    align-items: center;
+`
+
 function UnstyledAddRoomItem(props: Props) {
     const createRoom = useCreateRoom()
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [roomName, setRoomName] = useState(getRandomRoomName())
     const [privacy, setPrivacy] = useState<any>()
-
     const { value: privacyValue } = privacy || {}
+    const [storageEnable, setStorageEnable] = useState(false)
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -230,15 +237,38 @@ function UnstyledAddRoomItem(props: Props) {
                                     <br />
                                     You may use alphanumeric characters, as well
                                     as dashes (-) and underscores (_) for room
-                                    names.{' '}
+                                    names.
                                 </Subtitle>
                                 <Subheading>Choose privacy</Subheading>
                                 <PrivacySelect
                                     value={privacy}
                                     onChange={(option: any) =>
-                                        void setPrivacy(option)
+                                        setPrivacy(option)
                                     }
                                 />
+                                <MessageStorageContainer>
+                                    <div>
+                                        <Subheading>Message storage</Subheading>
+                                        <Subtitle>
+                                            When message storage is disabled,
+                                            participants will only see messages
+                                            sent while they are online.
+                                        </Subtitle>
+                                    </div>
+                                    <Switch
+                                        onChange={(checked: boolean) =>
+                                            setStorageEnable(checked)
+                                        }
+                                        checked={storageEnable}
+                                        onColor="#00875A"
+                                        offColor="#59799C"
+                                        uncheckedIcon={false}
+                                        checkedIcon={false}
+                                        width={40}
+                                        height={20}
+                                        handleDiameter={15}
+                                    />
+                                </MessageStorageContainer>
                                 <CreateButton
                                     type="submit"
                                     disabled={!roomName || !privacy}
