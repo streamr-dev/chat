@@ -243,7 +243,7 @@ function UnstyledAddRoomItem(props: Props) {
                                 <PrivacySelect
                                     value={privacy}
                                     onChange={(option: any) =>
-                                        setPrivacy(option)
+                                        void setPrivacy(option)
                                     }
                                 />
                                 <MessageStorageContainer>
@@ -257,7 +257,7 @@ function UnstyledAddRoomItem(props: Props) {
                                     </div>
                                     <Switch
                                         onChange={(checked: boolean) =>
-                                            setStorageEnable(checked)
+                                            void setStorageEnable(checked)
                                         }
                                         checked={storageEnable}
                                         onColor="#00875A"
