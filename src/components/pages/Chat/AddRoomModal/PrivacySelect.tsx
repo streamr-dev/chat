@@ -39,7 +39,7 @@ const customStyles = {
         alignItems: 'center',
         paddingLeft: '20px',
         paddingRight: '10px',
-        marginBottom: '15px',
+        marginBottom: '0',
     }),
     indicatorSeparator: () => ({ display: 'none' }),
     menu: (provided: any) => ({
