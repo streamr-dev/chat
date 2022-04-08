@@ -13,7 +13,7 @@ type Options = {
 export default function useCreateRoom(): ({
     roomName,
     privacy,
-    storageEnabled
+    storageEnabled,
 }: Options) => Promise<void> {
     const {
         session: { wallet },
