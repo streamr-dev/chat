@@ -70,6 +70,7 @@ const MessageInterceptor = memo(
                         {
                             streamId,
                             partition: streamPartition,
+                            resend: { last: 50 },
                         },
                         (data: any, raw: StreamMessage) => {
                             if (!mounted) {
