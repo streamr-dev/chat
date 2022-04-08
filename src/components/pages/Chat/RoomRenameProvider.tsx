@@ -23,7 +23,7 @@ export default function RoomRenameProvider({ children }: Props) {
     } = useStore()
 
     const rename = useCallback(
-        async (roomId, newName) => {
+        async (roomId: RoomId, newName: string) => {
             if (!streamrClient) {
                 throw new Error('Missing streamr client')
             }
