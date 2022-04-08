@@ -69,7 +69,7 @@ export default function MessageAggregator({ children }: Props) {
     }, [dispatch, roomId])
 
     const onTextMessage = useCallback(
-        (data, { messageId }) => {
+        (data: MessagePayload, { messageId }: any) => {
             const { streamId, streamPartition } = messageId
 
             if (streamPartition !== Partition.Messages) {
@@ -108,14 +108,14 @@ export default function MessageAggregator({ children }: Props) {
     )
 
     const onMetadataMessage = useCallback(
-        (data, { messageId }) => {
+        (data: MessagePayload, { messageId }: any) => {
             const { streamPartition } = messageId
-
+            const body = data.body as any
             if (streamPartition !== Partition.Metadata) {
                 throw new Error('Unexpected partition')
             }
             const { current: cache } = presenceCacheRef
-            switch (data.body.type) {
+            switch (body.type) {
                 case MetadataType.UserOnline:
                     if (
                         cache[data.sender] &&
@@ -127,7 +127,7 @@ export default function MessageAggregator({ children }: Props) {
 
                     break
                 case MetadataType.SendInvite:
-                    console.info('sent invite to', data.body.payload)
+                    console.info('sent invite to', body.payload)
                     break
                 case MetadataType.AcceptInvite:
                     console.info('accepted invite', data)
@@ -135,7 +135,7 @@ export default function MessageAggregator({ children }: Props) {
                 case MetadataType.RevokeInvite:
                     console.info('revoked invite', data)
 
-                    const target = data.body.payload
+                    const target = body.payload
                     if (target === account) {
                         deleteRoom(target)
                     }
