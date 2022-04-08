@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef } from 'react'
+import { useEffect, useReducer, useRef } from 'react'
 import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
@@ -143,19 +143,41 @@ const RoomDropdown = ({ button }: Props) => {
     const getOnlineRoomMembers = useGetOnlineRoomMembers()
     const [onlineMembers, setOnlineMembers] = useState(Array<string>())
     useEffect(() => {
+        let mounted = true
+
         const fn = async () => {
             if (!streamrClient || !roomId) {
                 return
             }
+
+            // go checking mountpoint??
             const stream = await streamrClient.getStream(roomId)
-            setMembers(await getRoomMembersFromStream(stream))
-            setOnlineMembers(
-                await getOnlineRoomMembers({ streamId: stream.id })
-            )
+
+            if (!mounted) {
+                return
+            }
+
+            const members = await getRoomMembersFromStream(stream)
+            if (!mounted) {
+                return
+            }
+            setMembers(members)
+
+            const onlineMembers = await getOnlineRoomMembers({
+                streamId: stream.id,
+            })
+            if (!mounted) {
+                return
+            }
+            setOnlineMembers(onlineMembers)
         }
 
         fn()
-    }, [roomId, streamrClient])
+
+        return () => {
+            mounted = false
+        }
+    }, [roomId, streamrClient, getOnlineRoomMembers])
 
     useEffect(() => {
         function handleClickOutside(event: any) {

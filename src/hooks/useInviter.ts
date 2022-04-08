@@ -31,6 +31,10 @@ export default function useInviter(): Inviter {
                     data: user,
                 })
             })
+
+            console.info(
+                `Invited ${invitees.join(', ')} to stream ${stream.id}`
+            )
         },
         [send]
     )

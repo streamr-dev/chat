@@ -241,6 +241,7 @@ export default function MessageTransmitter({ children }: Props) {
             }
 
             if (messageType === MessageType.Metadata) {
+                console.warn('found metadata', data, payload)
                 if (!account || !streamrClient || !streamId || !data) {
                     return
                 }

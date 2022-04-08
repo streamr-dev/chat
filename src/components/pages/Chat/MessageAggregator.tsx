@@ -100,7 +100,6 @@ export default function MessageAggregator({ children }: Props) {
 
     const onMetadataMessage = useCallback(
         (data) => {
-            console.log('onMetadataMessage', data)
             if (data.type !== MessageType.Metadata) {
                 throw new Error('Unexpected message type')
             }
@@ -133,13 +132,8 @@ export default function MessageAggregator({ children }: Props) {
                 <Fragment key={id}>
                     <MessageInterceptor
                         streamId={id}
-                        messageType={MessageType.Text}
-                        onMessage={onTextMessage}
-                    />
-                    <MessageInterceptor
-                        streamId={id}
-                        messageType={MessageType.Metadata}
-                        onMessage={onMetadataMessage}
+                        onTextMessage={onTextMessage}
+                        onMetadataMessage={onMetadataMessage}
                     />
                 </Fragment>
             ))}

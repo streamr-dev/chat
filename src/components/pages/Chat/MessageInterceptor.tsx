@@ -6,8 +6,9 @@ import { MessageType } from '../../../utils/types'
 
 type Props = {
     streamId: string
-    messageType: MessageType
-    onMessage: (data: any, raw: any) => void
+    //messageType: MessageType
+    onTextMessage: (data: any, raw: any) => void
+    onMetadataMessage: (data: any, raw: any) => void
 }
 
 type MessagePresenceMap = {
@@ -17,7 +18,11 @@ type MessagePresenceMap = {
 const EmptyMessagePresenceMap = {}
 
 const MessageInterceptor = memo(
-    ({ streamId, messageType, onMessage: onMessageProp }: Props) => {
+    ({
+        streamId,
+        onTextMessage: onTextMessageProp,
+        onMetadataMessage: onMetadataMessageProp,
+    }: Props) => {
         const {
             session: { streamrClient },
             account,
@@ -30,11 +35,13 @@ const MessageInterceptor = memo(
             messagesRef.current = EmptyMessagePresenceMap
         }, [streamId])
 
-        const onMessageRef = useRef(onMessageProp)
+        const onTextMessageRef = useRef(onTextMessageProp)
+        const onMetadataMessageRef = useRef(onMetadataMessageProp)
 
         useEffect(() => {
-            onMessageRef.current = onMessageProp
-        }, [onMessageProp])
+            onTextMessageRef.current = onTextMessageProp
+            onMetadataMessageRef.current = onMetadataMessageProp
+        }, [onTextMessageProp, onMetadataMessageProp])
 
         useEffect(() => {
             let mounted = true
@@ -71,13 +78,23 @@ const MessageInterceptor = memo(
 
                             messagesRef.current[data.id] = true
 
-                            const { current: onMessage } = onMessageRef
+                            const { current: onTextMessage } = onTextMessageRef
+                            const { current: onMetadataMessage } =
+                                onMetadataMessageRef
 
-                            if (
-                                typeof onMessage === 'function' &&
-                                data.type === messageType
-                            ) {
-                                onMessage(data, raw)
+                            switch (data.type) {
+                                case MessageType.Text:
+                                    onTextMessage(data, raw)
+                                    break
+                                case MessageType.Metadata:
+                                    onMetadataMessage(data, raw)
+                                    break
+                                default:
+                                    console.error(
+                                        'Unknown message type',
+                                        data.type
+                                    )
+                                    break
                             }
                         }
                     )
@@ -98,7 +115,7 @@ const MessageInterceptor = memo(
                 mounted = false
                 unsub()
             }
-        }, [streamId, messageType, streamrClient, account, send])
+        }, [streamId, streamrClient, account, send])
 
         return null
     }
