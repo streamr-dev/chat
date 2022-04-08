@@ -7,7 +7,6 @@ import SidebarItem from '../SidebarItem'
 import { KARELIA } from '../../../../utils/css'
 import ReactModal from 'react-modal'
 import PrivacySelect from './PrivacySelect'
-
 import getRandomRoomName from '../../../../getters/getRandomRoomName'
 
 const IconWrap = styled.div`
@@ -128,7 +127,7 @@ function UnstyledAddRoomItem(props: Props) {
     const [roomName, setRoomName] = useState(getRandomRoomName())
     const [privacy, setPrivacy] = useState<any>()
     const { value: privacyValue } = privacy || {}
-    const [storageEnable, setStorageEnable] = useState(false)
+    const [storageEnabled, setStorageEnabled] = useState<boolean>(false)
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -219,6 +218,7 @@ function UnstyledAddRoomItem(props: Props) {
                                     createRoom({
                                         roomName,
                                         privacy: privacyValue as any,
+                                        storageEnabled,
                                     })
                                     closeModal()
                                     e.preventDefault()
@@ -257,9 +257,9 @@ function UnstyledAddRoomItem(props: Props) {
                                     </div>
                                     <Switch
                                         onChange={(checked: boolean) =>
-                                            void setStorageEnable(checked)
+                                            void setStorageEnabled(checked)
                                         }
-                                        checked={storageEnable}
+                                        checked={storageEnabled}
                                         onColor="#00875A"
                                         offColor="#59799C"
                                         uncheckedIcon={false}
