@@ -1,13 +1,18 @@
+import React from 'react'
 import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
-import { AddMemberIcon } from '../../../../icons'
-import { KARELIA, MEDIUM } from '../../../../utils/css'
-import Button from '../../../Button'
+import { KARELIA } from '../../../../utils/css'
+import useInviter from '../../../../hooks/useInviter'
+import { useStore } from '../../../Store'
+import { useSend } from '../MessageTransmitter'
+import { MetadataType } from '../MessageAggregator'
+import { Partition } from '../../../../utils/types'
 
 const customStyles = {
     overlay: {
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        zIndex: '100000',
     },
     content: {
         border: 'none',
@@ -20,32 +25,9 @@ const customStyles = {
         borderRadius: '20px',
         transform: 'translate(-50%, -50%)',
         fontFamily: `${KARELIA}`,
+        overflow: 'hidden',
     },
 }
-
-const AddMemberButton = styled(Button)`
-    align-items: center;
-    background: rgba(255, 89, 36, 0.08);
-    border-radius: 1.5rem;
-    color: #ff5924;
-    cursor: pointer;
-    display: flex;
-    margin: 0 auto;
-    padding: 0 2rem;
-
-    span {
-        display: block;
-        font-family: ${KARELIA};
-        font-size: 1.125rem;
-        font-weight: ${MEDIUM};
-        transform: translateY(-0.1em);
-    }
-
-    svg {
-        display: block;
-        margin-right: 0.75rem;
-    }
-`
 
 const CreateButton = styled.button`
     align-items: center;
@@ -122,26 +104,61 @@ const ModalHeader = styled.div`
     justify-content: space-between;
 `
 
-const AddMemberModal = () => {
-    const [modalIsOpen, setModalIsOpen] = useState(false)
+type Props = {
+    button?: React.ReactElement<any>
+    isOpen?: boolean
+    handleModal?: (state: boolean) => void
+}
+
+const AddMemberModal = ({ button, isOpen = false, handleModal }: Props) => {
+    const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
+    const [inviteFormIsEnabled, setInviteFormIsEnabled] =
+        useState<boolean>(true)
+
+    const [memberAddress, setMemberAddress] = useState<string>('')
+
+    const { metamaskStreamrClient, roomId } = useStore()
+
+    const invite = useInviter()
 
     const closeModal = () => {
         setModalIsOpen(false)
+        handleModal && handleModal(false)
     }
 
     const openModal = () => {
         setModalIsOpen(true)
     }
 
+    const sendInvite = async () => {
+        setInviteFormIsEnabled(false)
+        const stream = await metamaskStreamrClient!.getStream(roomId!)
+        await invite({
+            invitees: [memberAddress],
+            stream: stream,
+        })
+
+        send(MetadataType.SendInvite, {
+            streamPartition: Partition.Metadata,
+            streamId: roomId,
+            data: memberAddress,
+        })
+        setInviteFormIsEnabled(true)
+        closeModal()
+    }
+
+    const send = useSend()
+
     return (
         <>
-            <AddMemberButton type="button" onClick={openModal}>
-                <AddMemberIcon />
-                <span>Add member</span>
-            </AddMemberButton>
+            {!!button &&
+                React.cloneElement(button, {
+                    onClick: openModal,
+                })}
             <ReactModal
+                ariaHideApp={false}
+                isOpen={modalIsOpen || isOpen}
                 appElement={document.getElementById('root') as HTMLElement}
-                isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
                 style={customStyles}
             >
@@ -174,8 +191,20 @@ const AddMemberModal = () => {
                         </ModalHeader>
                         <div>
                             <Subheading>Member Address</Subheading>
-                            <input placeholder="Member Address" />
-                            <CreateButton onClick={() => {}}>Add</CreateButton>
+                            <input
+                                disabled={!inviteFormIsEnabled}
+                                placeholder="Member Address"
+                                onChange={(e) => {
+                                    setMemberAddress(e.target.value)
+                                }}
+                                value={memberAddress}
+                            />
+                            <CreateButton
+                                disabled={!inviteFormIsEnabled}
+                                onClick={sendInvite}
+                            >
+                                Add
+                            </CreateButton>
                         </div>
                     </ModalContainer>
                 </StyledModalContent>

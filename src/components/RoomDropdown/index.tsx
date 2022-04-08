@@ -13,6 +13,7 @@ import { KARELIA } from '../../utils/css'
 import MemberOptions from './MemberOptions'
 import CloseIcon from '../../icons/CloseIcon'
 import RoomAction from '../pages/Chat/RoomAction'
+import AddMemberModal from '../pages/Chat/AddMemberModal'
 import { useStore } from '../Store'
 import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
@@ -130,6 +131,7 @@ const RoomDropdown = ({ button }: Props) => {
     const [isOpen, toggleOpen] = useReducer((current) => !current, false)
 
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [memberModalIsOpen, setMemberModalIsOpen] = useState<boolean>(false)
     const ref = useRef<HTMLDivElement>(null)
 
     const {
@@ -142,7 +144,7 @@ const RoomDropdown = ({ button }: Props) => {
     const [onlineMembers, setOnlineMembers] = useState(Array<string>())
     useEffect(() => {
         const fn = async () => {
-            if (!streamrClient || !roomId || members.length > 0) {
+            if (!streamrClient || !roomId) {
                 return
             }
             const stream = await streamrClient.getStream(roomId)
@@ -153,7 +155,7 @@ const RoomDropdown = ({ button }: Props) => {
         }
 
         fn()
-    })
+    }, [roomId, streamrClient])
 
     useEffect(() => {
         function handleClickOutside(event: any) {
@@ -167,10 +169,6 @@ const RoomDropdown = ({ button }: Props) => {
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [ref])
-
-    const openModal = () => {
-        setModalIsOpen(true)
-    }
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -194,12 +192,14 @@ const RoomDropdown = ({ button }: Props) => {
                 </RoomAction>
                 {isOpen && (
                     <DropDownListContainer ref={ref}>
-                        <DropDownList onClick={toggleOpen}>
-                            <ListItem>
+                        <DropDownList>
+                            <ListItem
+                                onClick={() => void setMemberModalIsOpen(true)}
+                            >
                                 <AddMemberIcon />
                                 Add member
                             </ListItem>
-                            <ListItem onClick={openModal}>
+                            <ListItem onClick={() => void setModalIsOpen(true)}>
                                 <EditMembersIcon />
                                 Edit members
                             </ListItem>
@@ -221,7 +221,10 @@ const RoomDropdown = ({ button }: Props) => {
                     </DropDownListContainer>
                 )}
             </DropDownContainer>
-
+            <AddMemberModal
+                isOpen={memberModalIsOpen}
+                handleModal={(open) => void setMemberModalIsOpen(open)}
+            />
             <ReactModal
                 isOpen={modalIsOpen}
                 contentLabel="Connect a wallet"
