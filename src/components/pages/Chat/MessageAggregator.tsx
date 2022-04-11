@@ -60,9 +60,9 @@ export default function MessageAggregator({ children }: Props) {
         })()
     }, [dispatch, roomId])
 
-    const onTextMessage = useCallback(            
+    const onTextMessage = useCallback(
         (data: MessagePayload, { messageId }: any) => {
-            const { streamId, streamPartition } = messageId
+            const { streamId } = messageId
 
             if (data.type !== MessageType.Text) {
                 throw new Error('Unexpected message type')
@@ -100,17 +100,13 @@ export default function MessageAggregator({ children }: Props) {
     )
 
     const onMetadataMessage = useCallback(
-            
         (data: MessagePayload, { messageId }: any) => {
-            const { streamPartition } = messageId
             const body = data.body as any
-            
 
             if (data.type !== MessageType.Metadata) {
                 throw new Error('Unexpected message type')
             }
             switch (body.type) {
-                
                 case MetadataType.SendInvite:
                     console.info('sent invite to', body.payload)
                     break
