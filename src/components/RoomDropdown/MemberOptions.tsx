@@ -10,6 +10,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage'
 import useRevoker from '../../hooks/useRevoker'
 import { ActionType, useDispatch, useStore } from '../Store'
 import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
+import getIdenticon from '../../getters/getIdenticon'
 
 const Root = styled.div`
     padding: 15px 0px;
@@ -32,7 +33,7 @@ const Subtitle = styled.span`
 const MemberIcon = styled.div`
     height: 3rem;
     width: 3rem;
-    background-color: #cdcfd1;
+    background-color: #fff;
     border-radius: 50%;
     margin: 0px 20px;
 `
@@ -78,6 +79,17 @@ const DropDownListContainer = styled.div`
     top: 45px;
     right: 0px;
     z-index: 100;
+`
+
+const AvatarWrap = styled.div`
+    padding: 0.5rem;
+`
+
+const Avatar = styled.img`
+    background-color: #f1f4f7;
+    display: block;
+    height: 2rem;
+    width: 2rem;
 `
 
 const DropDownList = styled.div`
@@ -163,7 +175,15 @@ const UnstyledMemberOptions = ({ address }: any) => {
     }
     return (
         <Root>
-            <MemberIcon />
+            <MemberIcon>
+                <AvatarWrap>
+                    <Avatar
+                        src={`data:image/png;base64,${getIdenticon(address)}`}
+                        alt={address}
+                    />
+                </AvatarWrap>
+            </MemberIcon>
+
             <MemberContainer>
                 {editing ? (
                     <MemberInput

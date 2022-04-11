@@ -3,9 +3,8 @@ import type { Props as SidebarItemProps } from './SidebarItem'
 import SidebarItem from './SidebarItem'
 import type { MessagePayload } from '../../../utils/types'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import Identicon from 'identicon.js'
 import useRoomName from '../../../hooks/useRoomName'
-import { keccak256 } from 'js-sha3'
+import getIdenticon from '../../../getters/getIdenticon'
 
 type Props = SidebarItemProps & {
     id: string
@@ -30,11 +29,6 @@ const Avatar = styled.img`
     height: 2rem;
     width: 2rem;
 `
-
-const AVATAR_OPTIONS: any = {
-    size: 32,
-    background: [255, 255, 255, 255],
-}
 
 function UnstyledRoomItem({ id, ...props }: Props) {
     const { roomId, recentMessages } = useStore()
@@ -62,10 +56,7 @@ function UnstyledRoomItem({ id, ...props }: Props) {
             icon={
                 <AvatarWrap>
                     <Avatar
-                        src={`data:image/png;base64,${new Identicon(
-                            keccak256(id),
-                            AVATAR_OPTIONS
-                        ).toString()}`}
+                        src={`data:image/png;base64,${getIdenticon(id)}`}
                         alt={id}
                     />
                 </AvatarWrap>

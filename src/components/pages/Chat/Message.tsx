@@ -3,6 +3,7 @@ import Identicon from 'identicon.js'
 import DateTooltip from './DateTooltip'
 import type { MessagePayload } from '../../../utils/types'
 import { useStore } from '../../Store'
+import getIdenticon from '../../../getters/getIdenticon'
 
 type Props = {
     className?: string
@@ -70,10 +71,7 @@ const UnstyledMessage = ({
             {incoming && (
                 <AvatarWrap>
                     <Avatar
-                        src={`data:image/png;base64,${new Identicon(
-                            sender,
-                            AVATAR_OPTIONS
-                        ).toString()}`}
+                        src={`data:image/png;base64,${getIdenticon(sender)}`}
                         alt={sender}
                     />
                 </AvatarWrap>
