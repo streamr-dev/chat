@@ -65,6 +65,7 @@ const MessageInterceptor = memo(
                     sub = await streamrClient!.subscribe(
                         {
                             streamId,
+                            resend: { last: 50 },
                         },
                         (data: any, raw: StreamMessage) => {
                             if (!mounted) {

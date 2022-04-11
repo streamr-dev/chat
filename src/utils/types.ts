@@ -10,6 +10,7 @@ export type MessagePayload = {
     id: string
     sender: string
     version: number
+    type: MessageType
 }
 
 export type RoomMetadata = {
@@ -38,10 +39,6 @@ export type ChatState = {
 export enum MessageType {
     Text = 'text',
     Metadata = 'metadata',
-}
-export interface ChatMessage {
-    type: MessageType
-    payload: string
 }
 
 export interface StreamrSession {
