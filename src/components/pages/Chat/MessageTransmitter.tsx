@@ -12,6 +12,7 @@ import useRevoker from '../../../hooks/useRevoker'
 import getRoomMembersFromStream from '../../../getters/getRoomMembersFromStream'
 import { ROOM_PREFIX } from '../../../hooks/useExistingRooms'
 import getRoomMetadata from '../../../getters/getRoomMetadata'
+import { toast } from 'react-toastify'
 
 type TransmitFn = (
     payload: string,
@@ -228,8 +229,11 @@ export default function MessageTransmitter({ children }: Props) {
                         return
                     case Command.Export:
                         const { privateKey } = wallet
-                        alert(
-                            `This is your session's private key:\n${privateKey}`
+                        toast.info(
+                            <div>
+                                This is your session's private key: <br />
+                                {`${privateKey}`}
+                            </div>
                         )
                         return
                     case Command.Join:
