@@ -19,6 +19,7 @@ const RoomList = styled(UnstyledRoomList)`
     width: 22rem;
 
     @media only screen and (max-width: 768px) {
+        height: 50%;
         width: 100%;
     }
 `

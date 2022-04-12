@@ -19,6 +19,7 @@ const FeedWrap = styled.div`
 
         > div {
             height: 100%;
+            padding: 0 20px;
         }
     }
 `
