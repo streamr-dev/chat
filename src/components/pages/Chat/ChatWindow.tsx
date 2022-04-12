@@ -48,6 +48,7 @@ const Feed = styled(UnstyledFeed)`
     height: 100%;
     display: flex;
     flex-direction: column;
+    padding-bottom: 34px;
 
     > div:first-child {
         flex-grow: 1;
