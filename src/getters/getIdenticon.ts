@@ -18,5 +18,5 @@ export default function getIdenticon(seed: string): string {
     const identicon = new Identicon(hash, AVATAR_OPTIONS).toString()
     localStorage.setItem(LocalStorageKey, identicon)
 
-    return identicon.toString()
+    return identicon
 }
