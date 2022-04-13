@@ -1,5 +1,6 @@
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import { useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { useStore } from '../components/Store'
 
 const PolygonChainId = 137
@@ -23,7 +24,7 @@ export const requestNetworkChange = async (
         ethereumProvider.networkVersion !==
         PolygonNetworkInfo.chainId.toString()
     ) {
-        alert(
+        toast.error(
             'Looks like you are not connected to the Polygon Network. Approve your switch on Metamask'
         )
         try {
@@ -35,7 +36,7 @@ export const requestNetworkChange = async (
                     },
                 ],
             })
-            alert('Successfully connected to Polygon Network')
+            toast.success('Successfully connected to Polygon Network')
             return requestSwitch
         } catch (err: any) {
             if (err.code === 4902) {
@@ -59,7 +60,7 @@ export const requestNetworkChange = async (
                             },
                         ],
                     })
-                    alert('Successfully connected to Polygon Network')
+                    toast.success('Successfully connected to Polygon Network')
                     return requestAdd
                 } catch (err: any) {
                     if (err.code === 4001 || err.code === 4902) {
