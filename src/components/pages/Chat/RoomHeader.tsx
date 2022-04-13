@@ -80,7 +80,7 @@ function UnstyledRoomHeader({ className }: Props) {
                             <span>Save</span>
                         </RoomAction>
                     </>
-                ) : (
+                ) : roomId ? (
                     <>
                         <RoomAction
                             type="button"
@@ -95,7 +95,7 @@ function UnstyledRoomHeader({ className }: Props) {
                         </RoomAction>
                         <RoomDropdown />
                     </>
-                )}
+                ) : null}
             </Collection>
         </form>
     )
