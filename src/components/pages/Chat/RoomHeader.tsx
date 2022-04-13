@@ -110,6 +110,10 @@ const RoomHeader = styled(UnstyledRoomHeader)`
     position: absolute;
     top: 0;
     width: 100%;
+
+    @media only screen and (max-width: 768px) {
+        position: static;
+    }
 `
 
 export default RoomHeader

@@ -20,8 +20,8 @@ const customStyles = {
     },
     content: {
         border: 'none',
-        width: '528px',
-        height: '260px',
+        width: '90vw',
+        maxWidth: '512px',
         top: '50%',
         left: '50%',
         right: 'auto',
@@ -330,6 +330,20 @@ const Navbar = styled(UnstyledNavbar)`
     ${Button} > span {
         display: block;
         transform: translateY(-0.1em);
+    }
+
+    @media (max-width: 768px) {
+        padding-top: 40px;
+        padding-right: 20px;
+        padding-left: 20px;
+        ${Button} {
+            font-size: 14px;
+            padding: 10px 15px 10px 15px;
+        }
+
+        h4 {
+            font-size: 20px;
+        }
     }
 `
 

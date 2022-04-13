@@ -33,6 +33,12 @@ const AddressButton = styled(UnstyledAddressButton)`
         flex: 0;
         margin-right: 1rem;
     }
+
+    @media only screen and (max-width: 768px) {
+        font-size: 14px;
+        padding: 10px 15px 10px 15px;
+        margin-right: 0.5rem;
+    }
 `
 
 export default AddressButton

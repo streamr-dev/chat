@@ -11,6 +11,17 @@ const FeedWrap = styled.div`
     > div {
         height: 100%;
     }
+
+    @media only screen and (max-width: 768px) {
+        padding: 0px 0 0px;
+        overflow: hidden;
+        height: 65%;
+
+        > div {
+            height: 100%;
+            padding: 0 20px;
+        }
+    }
 `
 
 const FeedFlex = styled.div`
@@ -37,6 +48,7 @@ const Feed = styled(UnstyledFeed)`
     height: 100%;
     display: flex;
     flex-direction: column;
+    padding-bottom: 34px;
 
     > div:first-child {
         flex-grow: 1;
@@ -85,6 +97,14 @@ const ChatWindow = styled(UnstyledChatWindow)`
     top: 0;
     left: 24rem;
     right: 0;
+
+    @media only screen and (max-width: 768px) {
+        height: 60vh !important;
+        position: static;
+        left: 0;
+        right: 0;
+        margin-top: 20px;
+    }
 `
 
 export default ChatWindow
