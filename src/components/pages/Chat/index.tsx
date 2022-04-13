@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom'
 import { Fragment, useEffect } from 'react'
 import MessageTransmitter from './MessageTransmitter'
 import RoomNameLoader from './RoomNameLoader'
-import PresenceEmitter from './PresenceEmitter'
 
 const Content = styled.div`
     height: 100vh;
@@ -57,7 +56,6 @@ const UnstyledChat = ({ className }: Props) => {
             {roomIds.map((id) => (
                 <Fragment key={id}>
                     <RoomNameLoader roomId={id} />
-                    <PresenceEmitter roomId={id} />
                 </Fragment>
             ))}
             <Helmet title="Let's chat!" />

@@ -37,7 +37,8 @@ export default async function getRoomMembersFromStream(
                 // on private streams return those with GRANT permission
 
                 (metadata.privacy === 'private' &&
-                    assignment.permissions.includes(StreamPermission.GRANT)))
+                    assignment.permissions.includes(StreamPermission.GRANT)) ||
+                assignment.permissions.includes(StreamPermission.SUBSCRIBE))
         ) {
             members.push(assignment.user)
         }

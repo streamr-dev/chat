@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import { MessagePayload, Partition } from '../../../utils/types'
+import { MessagePayload, MessageType, MetadataType } from '../../../utils/types'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { db } from '../../../utils/db'
 import getLocalMessagesForRoom from '../../../getters/getLocalMessagesForRoom'
@@ -36,20 +36,12 @@ type Props = {
     children?: React.ReactNode
 }
 
-export enum MetadataType {
-    UserOnline = 'user-online',
-    SendInvite = 'send-invite',
-    AcceptInvite = 'accept-invite',
-    RevokeInvite = 'revoke-invite',
-}
-
 export default function MessageAggregator({ children }: Props) {
     const { roomIds = [], roomId, account } = useStore()
 
     const dispatch = useDispatch()
 
     const cacheRef = useRef<Cache>([])
-    const presenceCacheRef = useRef<PresenceCache>({})
 
     const deleteRoom = useDeleteRoom()
 
@@ -70,10 +62,10 @@ export default function MessageAggregator({ children }: Props) {
 
     const onTextMessage = useCallback(
         (data: MessagePayload, { messageId }: any) => {
-            const { streamId, streamPartition } = messageId
+            const { streamId } = messageId
 
-            if (streamPartition !== Partition.Messages) {
-                throw new Error('Unexpected partition')
+            if (data.type !== MessageType.Text) {
+                throw new Error('Unexpected message type')
             }
 
             if (!isMessagePayloadValid(data)) {
@@ -109,23 +101,12 @@ export default function MessageAggregator({ children }: Props) {
 
     const onMetadataMessage = useCallback(
         (data: MessagePayload, { messageId }: any) => {
-            const { streamPartition } = messageId
             const body = data.body as any
-            if (streamPartition !== Partition.Metadata) {
-                throw new Error('Unexpected partition')
-            }
-            const { current: cache } = presenceCacheRef
-            switch (body.type) {
-                case MetadataType.UserOnline:
-                    if (
-                        cache[data.sender] &&
-                        cache[data.sender] + 60 * 1000 > Date.now()
-                    ) {
-                        return
-                    }
-                    cache[data.sender] = data.createdAt
 
-                    break
+            if (data.type !== MessageType.Metadata) {
+                throw new Error('Unexpected message type')
+            }
+            switch (body.type) {
                 case MetadataType.SendInvite:
                     console.info('sent invite to', body.payload)
                     break
@@ -144,8 +125,6 @@ export default function MessageAggregator({ children }: Props) {
                     console.warn('Unknown metadata type', data)
                     break
             }
-
-            console.info('Cache updated', cache)
         },
         [account, deleteRoom]
     )
@@ -156,13 +135,8 @@ export default function MessageAggregator({ children }: Props) {
                 <Fragment key={id}>
                     <MessageInterceptor
                         streamId={id}
-                        streamPartition={Partition.Messages}
-                        onMessage={onTextMessage}
-                    />
-                    <MessageInterceptor
-                        streamId={id}
-                        streamPartition={Partition.Metadata}
-                        onMessage={onMetadataMessage}
+                        onTextMessage={onTextMessage}
+                        onMetadataMessage={onMetadataMessage}
                     />
                 </Fragment>
             ))}

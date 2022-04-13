@@ -41,6 +41,7 @@ const CracoConfig = {
                     fallback: {
                         ...fallback,
                         stream: false,
+                        crypto: false
                     },
                 },
             }

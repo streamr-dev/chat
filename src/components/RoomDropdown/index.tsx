@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef } from 'react'
+import { useEffect, useReducer, useRef } from 'react'
 import { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
@@ -18,6 +18,7 @@ import { useStore } from '../Store'
 import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import useDeleteRoom from '../../hooks/useDeleteRoom'
+import useGetOnlineRoomMembers from '../../hooks/useGetOnlineRoomMembers'
 
 type Props = {
     button?: any
@@ -139,18 +140,44 @@ const RoomDropdown = ({ button }: Props) => {
     } = useStore()
 
     const [members, setMembers] = useState(Array<string>())
-
+    const getOnlineRoomMembers = useGetOnlineRoomMembers()
+    const [onlineMembers, setOnlineMembers] = useState(Array<string>())
     useEffect(() => {
+        let mounted = true
+
         const fn = async () => {
             if (!streamrClient || !roomId) {
                 return
             }
+
+            // go checking mountpoint??
             const stream = await streamrClient.getStream(roomId)
-            setMembers(await getRoomMembersFromStream(stream))
+
+            if (!mounted) {
+                return
+            }
+
+            const members = await getRoomMembersFromStream(stream)
+            if (!mounted) {
+                return
+            }
+            setMembers(members)
+
+            const onlineMembers = await getOnlineRoomMembers({
+                streamId: stream.id,
+            })
+            if (!mounted) {
+                return
+            }
+            setOnlineMembers(onlineMembers)
         }
 
         fn()
-    }, [roomId, streamrClient])
+
+        return () => {
+            mounted = false
+        }
+    }, [roomId, streamrClient, getOnlineRoomMembers])
 
     useEffect(() => {
         function handleClickOutside(event: any) {
@@ -237,7 +264,11 @@ const RoomDropdown = ({ button }: Props) => {
                     <MemberList>
                         {members.map((member) => {
                             return (
-                                <MemberOptions key={member} address={member} />
+                                <MemberOptions
+                                    key={member}
+                                    address={member}
+                                    isOnline={onlineMembers.includes(member)}
+                                />
                             )
                         })}
                     </MemberList>

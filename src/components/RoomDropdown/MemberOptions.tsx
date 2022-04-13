@@ -141,7 +141,11 @@ const ListItem = styled.div`
     }
 `
 
-const UnstyledMemberOptions = ({ address }: any) => {
+type Props = {
+    address: string
+    isOnline?: boolean
+}
+const UnstyledMemberOptions = ({ address, isOnline }: Props) => {
     const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
 
@@ -194,7 +198,10 @@ const UnstyledMemberOptions = ({ address }: any) => {
                         }}
                     />
                 ) : (
-                    <MemberName>{nickname ? nickname : address}</MemberName>
+                    <MemberName>
+                        {isOnline ? '🟢 ' : '◯ '}
+                        {nickname ? nickname : address}
+                    </MemberName>
                 )}
                 {editing ? (
                     <Subtitle>Nickname is only visible to you</Subtitle>

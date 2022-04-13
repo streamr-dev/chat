@@ -5,9 +5,6 @@ import styled from 'styled-components'
 import { KARELIA } from '../../../../utils/css'
 import useInviter from '../../../../hooks/useInviter'
 import { useStore } from '../../../Store'
-import { useSend } from '../MessageTransmitter'
-import { MetadataType } from '../MessageAggregator'
-import { Partition } from '../../../../utils/types'
 
 const customStyles = {
     overlay: {
@@ -138,16 +135,9 @@ const AddMemberModal = ({ button, isOpen = false, handleModal }: Props) => {
             stream: stream,
         })
 
-        send(MetadataType.SendInvite, {
-            streamPartition: Partition.Metadata,
-            streamId: roomId,
-            data: memberAddress,
-        })
         setInviteFormIsEnabled(true)
         closeModal()
     }
-
-    const send = useSend()
 
     return (
         <>

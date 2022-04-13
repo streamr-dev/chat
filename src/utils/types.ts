@@ -51,7 +51,8 @@ export enum StorageKey {
     RoomIds = 'chat/room-ids',
 }
 
-export enum Partition {
-    Messages,
-    Metadata,
+export enum MetadataType {
+    SendInvite = 'send-invite',
+    AcceptInvite = 'accept-invite',
+    RevokeInvite = 'revoke-invite',
 }

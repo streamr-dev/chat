@@ -1,9 +1,9 @@
 import { createContext, useCallback, useContext } from 'react'
 import useInviter from '../../../hooks/useInviter'
-import { MessageType, Partition } from '../../../utils/types'
+import { MessageType } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
-import MessageAggregator, { MetadataType } from './MessageAggregator'
+import MessageAggregator from './MessageAggregator'
 import useCreateRoom from '../../../hooks/useCreateRoom'
 import useDeleteRoom from '../../../hooks/useDeleteRoom'
 import { useRenameRoom } from './RoomRenameProvider'
@@ -16,7 +16,7 @@ import { toast } from 'react-toastify'
 
 type TransmitFn = (
     payload: string,
-    options: { streamPartition?: number; streamId?: string; data?: any }
+    options: { messageType: MessageType; streamId?: string; data?: any }
 ) => void
 
 const TransmitContext = createContext<TransmitFn>(() => {})
@@ -39,7 +39,6 @@ enum Command {
     IsMember = 'isMember',
     Purge = 'purge',
     Export = 'export',
-    Join = 'join',
 }
 
 export default function MessageTransmitter({ children }: Props) {
@@ -61,8 +60,8 @@ export default function MessageTransmitter({ children }: Props) {
     const renameRoom = useRenameRoom()
 
     const send = useCallback<TransmitFn>(
-        async (payload, { streamPartition, streamId, data }) => {
-            if (streamPartition === Partition.Messages) {
+        async (payload, { messageType, streamId, data }) => {
+            if (messageType === MessageType.Text) {
                 if (
                     !account ||
                     !roomId ||
@@ -105,15 +104,6 @@ export default function MessageTransmitter({ children }: Props) {
                                 invitees: addresses,
                                 stream,
                             })
-
-                            for (let i = 0; i < addresses.length; i++) {
-                                const address = addresses[i]
-                                send(MetadataType.SendInvite, {
-                                    streamPartition: Partition.Metadata,
-                                    streamId: roomId,
-                                    data: address,
-                                })
-                            }
                         })()
 
                         return
@@ -132,11 +122,6 @@ export default function MessageTransmitter({ children }: Props) {
                             for (let i = 0; i < addresses.length; i++) {
                                 const address = addresses[i]
 
-                                send(MetadataType.RevokeInvite, {
-                                    streamPartition: Partition.Metadata,
-                                    streamId: roomId,
-                                    data: address,
-                                })
                                 await revoke({
                                     revokee: address,
                                     stream,
@@ -236,8 +221,6 @@ export default function MessageTransmitter({ children }: Props) {
                             </div>
                         )
                         return
-                    case Command.Join:
-                        return
                     default:
                         break
                 }
@@ -253,8 +236,7 @@ export default function MessageTransmitter({ children }: Props) {
                             type: MessageType.Text,
                             version: 1,
                         },
-                        Date.now(),
-                        streamPartition
+                        Date.now()
                     )
                 } catch (e: any) {
                     console.warn(`Failed to publish to stream ${roomId}`)
@@ -262,7 +244,8 @@ export default function MessageTransmitter({ children }: Props) {
                 return
             }
 
-            if (streamPartition === Partition.Metadata) {
+            if (messageType === MessageType.Metadata) {
+                console.warn('found metadata', data, payload)
                 if (!account || !streamrClient || !streamId || !data) {
                     return
                 }
@@ -283,8 +266,7 @@ export default function MessageTransmitter({ children }: Props) {
                                 type: MessageType.Metadata,
                                 version: 1,
                             },
-                            Date.now(),
-                            streamPartition
+                            Date.now()
                         )
                     }
                 } catch (e: any) {

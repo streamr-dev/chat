@@ -56,7 +56,6 @@ export default function useCreateRoom(): ({
 
             const stream = await metamaskStreamrClient.createStream({
                 id: `/streamr-chat/room/${normalizedRoomName}`,
-                partitions: 2,
                 description: JSON.stringify(description),
             })
 
