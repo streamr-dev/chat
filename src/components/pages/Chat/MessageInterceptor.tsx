@@ -99,6 +99,10 @@ const MessageInterceptor = memo(
                             }
                         }
                     )
+
+                    sub.onError((err: any) => {
+                        console.warn('subscription error', err)
+                    })
                 } catch (e: any) {
                     console.warn(`Error subscribing to stream ${streamId}:`)
                 }
