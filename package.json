@@ -36,7 +36,7 @@
     "keccak": "^3.0.2",
     "lodash": "^4.17.21",
     "react": "^18.0.0",
-    "react-copy-to-clipboard": "^5.0.4",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.0.0",
     "react-helmet": "^6.1.0",
     "react-modal": "^3.14.4",
