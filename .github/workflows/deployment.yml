@@ -2,7 +2,7 @@ name: Site
 on:
   push:
     branches:
-      - master
+      - development
 jobs:
   publish:
     runs-on: ubuntu-latest
