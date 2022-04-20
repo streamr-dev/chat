@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { StorageKey } from '../utils/types'
+import { RoomPrivacy, StorageKey } from '../utils/types'
 import intersection from 'lodash/intersection'
 import useInviterSelf from './useInviterSelf'
 import getRoomMetadata from '../getters/getRoomMetadata'
@@ -64,7 +64,10 @@ export default function useExistingRooms() {
                         allowPublic: true,
                     })
 
-                    if (!hasPermission && metadata.privacy !== 'public') {
+                    if (
+                        !hasPermission &&
+                        metadata.privacy !== RoomPrivacy.Public
+                    ) {
                         selfInviteStreams.push(stream.id)
                     }
                     remoteRoomIds.push(stream.id)

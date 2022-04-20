@@ -1,13 +1,13 @@
 import { useCallback } from 'react'
 import { StreamPermission, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { RoomMetadata } from '../utils/types'
+import { RoomMetadata, RoomPrivacy } from '../utils/types'
 import useInviterSelf from './useInviterSelf'
 import useSetPublicPermissions from './useSetPublicPermissions'
 
 type Options = {
     roomName: string
-    privacy: 'private' | 'viewonly' | 'public'
+    privacy: RoomPrivacy
     storageEnabled?: boolean
 }
 export default function useCreateRoom(): ({
@@ -67,19 +67,19 @@ export default function useCreateRoom(): ({
             console.info(`Created stream ${stream.id}`)
 
             switch (privacy) {
-                case 'private':
+                case RoomPrivacy.Private:
                     await inviteSelf({
                         streamIds: [stream.id],
                     })
                     break
 
-                case 'viewonly':
+                case RoomPrivacy.ViewOnly:
                     await inviteSelf({
                         streamIds: [stream.id],
                         includePublicPermissions: true,
                     })
                     break
-                case 'public':
+                case RoomPrivacy.Public:
                     await setPublicPermissions({
                         permissions: [
                             StreamPermission.PUBLISH,

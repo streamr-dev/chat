@@ -4,6 +4,7 @@ import {
     StreamPermission,
     UserPermissionQuery,
 } from 'streamr-client'
+import { RoomPrivacy } from '../utils/types'
 import getRoomMetadata from './getRoomMetadata'
 
 const isUserPermissionQuery = (
@@ -23,7 +24,7 @@ export default async function getRoomMembersFromStream(
 
     // on public streams return an empty array
 
-    if (metadata.privacy === 'public') {
+    if (metadata.privacy === RoomPrivacy.Public) {
         return members
     }
 
@@ -32,11 +33,11 @@ export default async function getRoomMembersFromStream(
             isUserPermissionQuery(assignment) &&
             // on read-only streams return those with PUBLISH permission
 
-            ((metadata.privacy === 'viewonly' &&
+            ((metadata.privacy === RoomPrivacy.ViewOnly &&
                 assignment.permissions.includes(StreamPermission.PUBLISH)) ||
                 // on private streams return those with GRANT permission
 
-                (metadata.privacy === 'private' &&
+                (metadata.privacy === RoomPrivacy.Private &&
                     assignment.permissions.includes(StreamPermission.GRANT)) ||
                 assignment.permissions.includes(StreamPermission.SUBSCRIBE))
         ) {
