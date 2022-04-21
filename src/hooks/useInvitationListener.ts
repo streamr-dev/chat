@@ -4,6 +4,7 @@ import { BigNumber } from 'ethers'
 import getStreamRegistryAt from '../getters/getStreamRegistryAt'
 import { toast } from 'react-toastify'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import { ROOM_PREFIX } from './useExistingRooms'
 
 const StreamRegistryAddress = '0x0D483E10612F327FC11965Fc82E90dC19b141641'
 
@@ -36,7 +37,11 @@ export default function useInvitationListener(): ListenerParams {
                 canGrant: boolean
             ) => {
                 const user = userAddress.toLowerCase()
-                if (user !== account || !canGrant) {
+                if (
+                    user !== account ||
+                    !canGrant ||
+                    !streamId.includes(ROOM_PREFIX)
+                ) {
                     return
                 }
 
