@@ -13,6 +13,7 @@ export default function useExistingRooms() {
         account,
         session: { wallet, streamrClient },
         metamaskStreamrClient,
+        roomId,
     } = useStore()
 
     const dispatch = useDispatch()
@@ -44,6 +45,14 @@ export default function useExistingRooms() {
             type: ActionType.SetRoomIds,
             payload: localRoomIds,
         })
+
+        // select the first room, if any
+        if (!roomId && localRoomIds.length > 0) {
+            dispatch({
+                type: ActionType.SelectRoom,
+                payload: localRoomIds[0],
+            })
+        }
 
         async function fn() {
             const remoteRoomIds: string[] = []
@@ -94,6 +103,13 @@ export default function useExistingRooms() {
                     ...remoteRoomIds,
                 ],
             })
+
+            if (!roomId && remoteRoomIds.length > 0) {
+                dispatch({
+                    type: ActionType.SelectRoom,
+                    payload: remoteRoomIds[0],
+                })
+            }
         }
 
         fn()
@@ -101,6 +117,7 @@ export default function useExistingRooms() {
         account,
         dispatch,
         inviteSelf,
+        roomId,
         sessionAccount,
         streamrClient,
         metamaskStreamrClient,
