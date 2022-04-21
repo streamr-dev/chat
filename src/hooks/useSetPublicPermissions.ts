@@ -1,6 +1,8 @@
 import { useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { Stream, StreamPermission } from 'streamr-client'
 import { useStore } from '../components/Store'
+import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 
 type Options = {
     stream: Stream
@@ -17,6 +19,10 @@ export default function useSetPublicPermissions(): ({
             if (!metamaskStreamrClient) {
                 throw new Error('No metamask streamr client found')
             }
+            const roomName = getRoomNameFromRoomId(stream.id)
+            toast.info(`Setting public permissions for room ${roomName}`, {
+                position: 'top-center',
+            })
 
             await metamaskStreamrClient.setPermissions({
                 streamId: stream.id,
@@ -27,6 +33,13 @@ export default function useSetPublicPermissions(): ({
                     },
                 ],
             })
+
+            toast.success(
+                `Successfully set public permissions for room ${roomName}`,
+                {
+                    position: 'top-center',
+                }
+            )
         },
         [metamaskStreamrClient]
     )
