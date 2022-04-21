@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import useContractListenerScaffolding from '../../../hooks/useContractListenerScaffolding'
+import useContractListenerScaffolding from '../../../hooks/useInvitationListener'
 
 type Props = {
     className?: string
