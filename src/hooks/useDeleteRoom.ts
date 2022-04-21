@@ -2,14 +2,18 @@ import { useCallback } from 'react'
 import { StreamrClient } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import { RoomId } from '../utils/types'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
 
 export default function useDeleteRoom(): (roomId: RoomId) => Promise<void> {
     const dispatch = useDispatch()
 
     const { ethereumProvider } = useStore()
+    const ensureMaticBalance = useEnsureMaticBalance()
 
     return useCallback(
         async (roomId) => {
+            await ensureMaticBalance()
+
             const providerClient = new StreamrClient({
                 auth: {
                     ethereum: ethereumProvider as any,
@@ -24,6 +28,6 @@ export default function useDeleteRoom(): (roomId: RoomId) => Promise<void> {
                 payload: roomId,
             })
         },
-        [ethereumProvider, dispatch]
+        [ensureMaticBalance, ethereumProvider, dispatch]
     )
 }
