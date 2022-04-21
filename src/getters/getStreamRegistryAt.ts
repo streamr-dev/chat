@@ -11,7 +11,7 @@ export default function getStreamRegistryAt({
     address: string
     ethereumProvider: MetaMaskInpageProvider
 }): any {
-    const provider = new providers.Web3Provider(ethereumProvider as any)
-
+    //const provider = new providers.Web3Provider(ethereumProvider as any)
+    const provider = new providers.WebSocketProvider(ethereumProvider as any)
     return new Contract(address, StreamRegistryArtifact.abi, provider) as any
 }

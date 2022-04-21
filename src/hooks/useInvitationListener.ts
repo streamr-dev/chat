@@ -5,6 +5,7 @@ import getStreamRegistryAt from '../getters/getStreamRegistryAt'
 import { toast } from 'react-toastify'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
 import { ROOM_PREFIX } from './useExistingRooms'
+import useInviterSelf from './useInviterSelf'
 
 const StreamRegistryAddress = '0x0D483E10612F327FC11965Fc82E90dC19b141641'
 
@@ -12,6 +13,7 @@ type ListenerParams = () => Promise<void>
 
 export default function useInvitationListener(): ListenerParams {
     const { account, ethereumProvider } = useStore()
+    const inviterSelf = useInviterSelf()
 
     return useCallback(async () => {
         if (!ethereumProvider || !account) {
@@ -46,14 +48,22 @@ export default function useInvitationListener(): ListenerParams {
                 }
 
                 const roomName = getRoomNameFromRoomId(streamId)
-                const message = `You have been invited to join room ${roomName}`
-                console.info(message)
-                toast.info(message, {
-                    position: 'top-center' as 'top-center',
-                    autoClose: false as false,
-                    progress: undefined,
-                })
+                console.info(`You have been invited to join room ${roomName}`)
+                toast.info(
+                    `You have been invited to join room ${roomName}. Click here to accept the invitation`,
+                    {
+                        position: 'top-center' as 'top-center',
+                        autoClose: false as false,
+                        progress: undefined,
+                        onClick: async () => {
+                            await inviterSelf({
+                                streamIds: [streamId],
+                            })
+                            toast.dismiss()
+                        },
+                    }
+                )
             }
         )
-    }, [account, ethereumProvider])
+    }, [account, ethereumProvider, inviterSelf])
 }

@@ -50,9 +50,3 @@ export enum StorageKey {
     EncryptedSession = 'chat/encrypted-session',
     RoomIds = 'chat/room-ids',
 }
-
-export enum MetadataType {
-    SendInvite = 'send-invite',
-    AcceptInvite = 'accept-invite',
-    RevokeInvite = 'revoke-invite',
-}

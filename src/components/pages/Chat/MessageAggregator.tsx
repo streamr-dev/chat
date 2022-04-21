@@ -1,8 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import MessageInterceptor from './MessageInterceptor'
 import { ActionType, useDispatch, useStore } from '../../Store'
-import { MessagePayload, MessageType, MetadataType } from '../../../utils/types'
-import useDeleteRoom from '../../../hooks/useDeleteRoom'
+import { MessagePayload, MessageType } from '../../../utils/types'
 import { db } from '../../../utils/db'
 import getLocalMessagesForRoom from '../../../getters/getLocalMessagesForRoom'
 
@@ -37,13 +36,11 @@ type Props = {
 }
 
 export default function MessageAggregator({ children }: Props) {
-    const { roomIds = [], roomId, account } = useStore()
+    const { roomIds = [], roomId } = useStore()
 
     const dispatch = useDispatch()
 
     const cacheRef = useRef<Cache>([])
-
-    const deleteRoom = useDeleteRoom()
 
     useEffect(() => {
         ;(async () => {
@@ -99,36 +96,6 @@ export default function MessageAggregator({ children }: Props) {
         [dispatch, roomId]
     )
 
-    const onMetadataMessage = useCallback(
-        (data: MessagePayload, { messageId }: any) => {
-            const body = data.body as any
-
-            if (data.type !== MessageType.Metadata) {
-                throw new Error('Unexpected message type')
-            }
-            switch (body.type) {
-                case MetadataType.SendInvite:
-                    console.info('sent invite to', body.payload)
-                    break
-                case MetadataType.AcceptInvite:
-                    console.info('accepted invite', data)
-                    break
-                case MetadataType.RevokeInvite:
-                    console.info('revoked invite', data)
-
-                    const target = body.payload
-                    if (target === account) {
-                        deleteRoom(target)
-                    }
-                    break
-                default:
-                    console.warn('Unknown metadata type', data)
-                    break
-            }
-        },
-        [account, deleteRoom]
-    )
-
     return (
         <>
             {roomIds.map((id) => (
@@ -136,7 +103,6 @@ export default function MessageAggregator({ children }: Props) {
                     <MessageInterceptor
                         streamId={id}
                         onTextMessage={onTextMessage}
-                        onMetadataMessage={onMetadataMessage}
                     />
                 </Fragment>
             ))}
