@@ -20,10 +20,7 @@ export default function useInvitationListener(): ListenerParams {
             return
         }
 
-        const streamRegistry = getStreamRegistryAt({
-            address: StreamRegistryAddress,
-            ethereumProvider,
-        })
+        const streamRegistry = getStreamRegistryAt(StreamRegistryAddress)
 
         const filter = streamRegistry.filters.PermissionUpdated()
 
@@ -39,6 +36,7 @@ export default function useInvitationListener(): ListenerParams {
                 canGrant: boolean
             ) => {
                 const user = userAddress.toLowerCase()
+
                 if (
                     user !== account ||
                     !canGrant ||
