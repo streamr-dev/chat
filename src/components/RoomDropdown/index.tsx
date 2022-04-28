@@ -81,6 +81,7 @@ const ListItem = styled.div`
     background-clip: padding-box;
     align-items: center;
     display: flex;
+    cursor: pointer;
 
     :first-child {
         padding-top: 15px;
@@ -126,6 +127,10 @@ const MemberList = styled.div`
     overflow-x: hidden;
     overflow-y: auto;
 `
+
+const CursorPointer = {
+    cursor: 'pointer',
+}
 
 const RoomDropdown = ({ button }: Props) => {
     const [isOpen, toggleOpen] = useReducer((current) => !current, false)
@@ -209,7 +214,11 @@ const RoomDropdown = ({ button }: Props) => {
     return (
         <>
             <DropDownContainer>
-                <RoomAction type="button" onClick={toggleOpen}>
+                <RoomAction
+                    style={CursorPointer}
+                    type="button"
+                    onClick={toggleOpen}
+                >
                     <MoreIcon />
                 </RoomAction>
                 {isOpen && (
@@ -257,7 +266,10 @@ const RoomDropdown = ({ button }: Props) => {
                 <StyledModalContent>
                     <ModalHeader>
                         <h2>Edit members</h2>
-                        <ModalCloseButton onClick={closeModal}>
+                        <ModalCloseButton
+                            style={CursorPointer}
+                            onClick={closeModal}
+                        >
                             <CloseIcon />
                         </ModalCloseButton>
                     </ModalHeader>
