@@ -22,7 +22,15 @@ export default function useInvitationListener(): ListenerParams {
 
         const streamRegistry = getStreamRegistryAt(StreamRegistryAddress)
 
-        const filter = streamRegistry.filters.PermissionUpdated()
+        const filter = streamRegistry.filters.PermissionUpdated(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
 
         streamRegistry.on(
             filter,
