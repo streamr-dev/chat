@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { useStore } from '../components/Store'
 import { BigNumber } from 'ethers'
 import getStreamRegistryAt from '../getters/getStreamRegistryAt'
@@ -14,7 +14,7 @@ type ListenerParams = () => Promise<void>
 export default function useInvitationListener(): ListenerParams {
     const { account, ethereumProvider } = useStore()
     const inviterSelf = useInviterSelf()
-    const streamRegistry = getStreamRegistryAt(StreamRegistryAddress)
+    const { current: streamRegistry } = useRef(getStreamRegistryAt(StreamRegistryAddress))
 
     return useCallback(async () => {
         if (!ethereumProvider || !account) {
