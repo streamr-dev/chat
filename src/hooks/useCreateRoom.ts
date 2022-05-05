@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { StreamPermission, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
 import useEnsureMaticBalance from './useEnsureMaticBalance'
@@ -59,17 +60,37 @@ export default function useCreateRoom(): ({
                 privacy,
             }
 
+            toast.info(`Creating room ${normalizedRoomName}`, {
+                position: 'top-center',
+            })
+
             const stream = await metamaskStreamrClient.createStream({
                 id: `/streamr-chat/room/${normalizedRoomName}`,
                 description: JSON.stringify(description),
             })
 
+            console.info(`Created stream ${stream.id}`)
+            toast.success(`Created room ${normalizedRoomName}`, {
+                position: 'top-center',
+            })
+
             if (storageEnabled) {
+                toast.info(`Enabling storage for room ${normalizedRoomName}`, {
+                    position: 'top-center',
+                })
                 await stream.addToStorageNode(STREAMR_STORAGE_NODE_GERMANY)
                 console.info(`Storage enabled on stream ${stream.id}`)
+                toast.success(
+                    `Storage enabled for room ${normalizedRoomName}`,
+                    {
+                        position: 'top-center',
+                    }
+                )
             }
 
-            console.info(`Created stream ${stream.id}`)
+            toast.info(`Setting permissions for room ${normalizedRoomName}`, {
+                position: 'top-center',
+            })
 
             switch (privacy) {
                 case RoomPrivacy.Private:
@@ -98,6 +119,10 @@ export default function useCreateRoom(): ({
             console.info(
                 `Assigned ${privacy} permissions to stream ${stream.id}`
             )
+
+            toast.success(`Permissions set for room ${normalizedRoomName}`, {
+                position: 'top-center',
+            })
 
             dispatch({
                 type: ActionType.AddRoomIds,

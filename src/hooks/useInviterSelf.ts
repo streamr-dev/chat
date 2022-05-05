@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { StreamPermission } from 'streamr-client'
 import { useStore } from '../components/Store'
 import useEnsureMaticBalance from './useEnsureMaticBalance'
@@ -37,6 +38,10 @@ export default function useInviterSelf(): Inviter {
                     : 'without public permissions'
             )
 
+            toast.info(`Authorizing your delegated wallet ${wallet.address}`, {
+                position: 'top-center',
+            })
+
             const tasks = streamIds.map((streamId) => {
                 const assignments: any[] = [
                     {
@@ -61,6 +66,13 @@ export default function useInviterSelf(): Inviter {
             })
 
             await metamaskStreamrClient.setPermissions(...tasks)
+
+            toast.success(
+                `Successfully authorized your delegated wallet ${wallet.address}`,
+                {
+                    position: 'top-center',
+                }
+            )
         },
         [ensureMaticBalance, metamaskStreamrClient, wallet]
     )
