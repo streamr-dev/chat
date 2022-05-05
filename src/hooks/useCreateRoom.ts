@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { StreamPermission, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
 import { RoomMetadata, RoomPrivacy } from '../utils/types'
 import useInviterSelf from './useInviterSelf'
 import useSetPublicPermissions from './useSetPublicPermissions'
@@ -28,6 +29,8 @@ export default function useCreateRoom(): ({
 
     const dispatch = useDispatch()
 
+    const ensureMaticBalance = useEnsureMaticBalance()
+
     return useCallback(
         async ({ roomName, privacy, storageEnabled }) => {
             if (!sessionAccount) {
@@ -41,6 +44,8 @@ export default function useCreateRoom(): ({
             if (!metamaskStreamrClient) {
                 throw new Error('Missing metamask streamr client')
             }
+
+            await ensureMaticBalance()
 
             const normalizedRoomName = roomName.toLowerCase()
 
@@ -100,11 +105,12 @@ export default function useCreateRoom(): ({
             })
         },
         [
-            sessionAccount,
-            metamaskStreamrClient,
             account,
-            inviteSelf,
             dispatch,
+            ensureMaticBalance,
+            inviteSelf,
+            metamaskStreamrClient,
+            sessionAccount,
             setPublicPermissions,
         ]
     )
