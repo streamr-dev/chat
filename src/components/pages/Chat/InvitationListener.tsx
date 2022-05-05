@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 
-import useContractListenerScaffolding from '../../../hooks/useInvitationListener'
+import useInvitationListener from '../../../hooks/useInvitationListener'
 
 type Props = {
     className?: string
 }
 
 function InvitationListener({ className }: Props) {
-    const contractListener = useContractListenerScaffolding()
+    const contractListener = useInvitationListener()
 
     useEffect(() => {
         const fn = async () => {
