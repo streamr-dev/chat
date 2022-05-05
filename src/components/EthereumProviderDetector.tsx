@@ -1,6 +1,7 @@
 import detectEthereumProvider from '@metamask/detect-provider'
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import { useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { ActionType, useDispatch } from '../components/Store'
 
 export default function EthereumProviderDetector() {
@@ -11,6 +12,9 @@ export default function EthereumProviderDetector() {
 
         async function detect() {
             try {
+                if (!window.ethereum) {
+                    throw new Error('Ethereum provider could not be detected.')
+                }
                 const provider =
                     (await detectEthereumProvider()) as MetaMaskInpageProvider
 
@@ -22,8 +26,12 @@ export default function EthereumProviderDetector() {
                     type: ActionType.SetEthereumProvider,
                     payload: provider,
                 })
-            } catch (e) {
-                console.warn('Ethereum provider could not be detected.')
+            } catch (e: any) {
+                console.warn(e)
+                toast.error(e.message, {
+                    position: 'top-center',
+                    autoClose: false,
+                })
             }
         }
 

@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { Fragment, useEffect } from 'react'
 import MessageTransmitter from './MessageTransmitter'
 import RoomNameLoader from './RoomNameLoader'
+import InvitationListener from './InvitationListener'
 
 const Content = styled.div`
     height: 100vh;
@@ -64,6 +65,7 @@ const UnstyledChat = ({ className }: Props) => {
                 </Fragment>
             ))}
             <Helmet title="Let's chat!" />
+            <InvitationListener />
             <main className={className}>
                 <Navbar />
                 <Content>

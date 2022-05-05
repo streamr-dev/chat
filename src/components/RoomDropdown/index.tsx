@@ -19,6 +19,9 @@ import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import useDeleteRoom from '../../hooks/useDeleteRoom'
 import useGetOnlineRoomMembers from '../../hooks/useGetOnlineRoomMembers'
+import { toast } from 'react-toastify'
+import getRoomMetadata from '../../getters/getRoomMetadata'
+import { RoomPrivacy } from '../../utils/types'
 
 type Props = {
     button?: any
@@ -141,17 +144,20 @@ const RoomDropdown = ({ button }: Props) => {
 
     const {
         roomId,
+        account,
         session: { streamrClient },
     } = useStore()
 
     const [members, setMembers] = useState(Array<string>())
+    const [isRoomOwner, setIsRoomOwner] = useState(false)
+    const [roomPrivacy, setRoomPrivacy] = useState<RoomPrivacy>()
     const getOnlineRoomMembers = useGetOnlineRoomMembers()
     const [onlineMembers, setOnlineMembers] = useState(Array<string>())
     useEffect(() => {
         let mounted = true
 
         const fn = async () => {
-            if (!streamrClient || !roomId) {
+            if (!streamrClient || !roomId || !account) {
                 return
             }
 
@@ -162,12 +168,21 @@ const RoomDropdown = ({ button }: Props) => {
                 return
             }
 
+            // parse and assign the privacy
+            const { privacy } = getRoomMetadata(stream.description!)
+            setRoomPrivacy(privacy)
+
+            // check if owner
+            setIsRoomOwner(stream.id.includes(account))
+
+            // get room members
             const members = await getRoomMembersFromStream(stream)
             if (!mounted) {
                 return
             }
             setMembers(members)
 
+            // get online members
             const onlineMembers = await getOnlineRoomMembers({
                 streamId: stream.id,
             })
@@ -182,7 +197,7 @@ const RoomDropdown = ({ button }: Props) => {
         return () => {
             mounted = false
         }
-    }, [roomId, streamrClient, getOnlineRoomMembers])
+    }, [account, getOnlineRoomMembers, roomId, streamrClient])
 
     useEffect(() => {
         function handleClickOutside(event: any) {
@@ -208,7 +223,14 @@ const RoomDropdown = ({ button }: Props) => {
             return
         }
         deleteRoom(roomId)
-        closeModal()
+        toggleOpen()
+    }
+
+    const onRoomIdCopied = async () => {
+        toast.info(`Room ID copied to clipboard: ${roomId!}`, {
+            position: 'top-center',
+        })
+        toggleOpen()
     }
 
     return (
@@ -224,19 +246,32 @@ const RoomDropdown = ({ button }: Props) => {
                 {isOpen && (
                     <DropDownListContainer ref={ref}>
                         <DropDownList>
-                            <ListItem
-                                onClick={() => void setMemberModalIsOpen(true)}
-                            >
-                                <AddMemberIcon />
-                                Add member
-                            </ListItem>
-                            <ListItem onClick={() => void setModalIsOpen(true)}>
-                                <EditMembersIcon />
-                                Edit members
-                            </ListItem>
-                            <hr></hr>
+                            {roomPrivacy !== RoomPrivacy.Public && (
+                                <>
+                                    <ListItem
+                                        onClick={() =>
+                                            void setMemberModalIsOpen(true)
+                                        }
+                                    >
+                                        <AddMemberIcon />
+                                        Add member
+                                    </ListItem>
+                                    <ListItem
+                                        onClick={() =>
+                                            void setModalIsOpen(true)
+                                        }
+                                    >
+                                        <EditMembersIcon />
+                                        Edit members
+                                    </ListItem>
+                                    <hr></hr>
+                                </>
+                            )}
                             <ListItem>
-                                <CopyToClipboard text={roomId!}>
+                                <CopyToClipboard
+                                    text={roomId!}
+                                    onCopy={onRoomIdCopied}
+                                >
                                     <div>
                                         <CopyIcon />
                                         Copy room id
@@ -244,10 +279,12 @@ const RoomDropdown = ({ button }: Props) => {
                                 </CopyToClipboard>
                             </ListItem>
                             <hr></hr>
-                            <ListItem onClick={clickDeleteRoom}>
-                                <DeleteIcon />
-                                Delete room
-                            </ListItem>
+                            {isRoomOwner ? (
+                                <ListItem onClick={clickDeleteRoom}>
+                                    <DeleteIcon />
+                                    Delete room
+                                </ListItem>
+                            ) : null}
                         </DropDownList>
                     </DropDownListContainer>
                 )}
