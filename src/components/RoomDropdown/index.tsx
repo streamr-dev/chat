@@ -19,6 +19,7 @@ import getRoomMembersFromStream from '../../getters/getRoomMembersFromStream'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import useDeleteRoom from '../../hooks/useDeleteRoom'
 import useGetOnlineRoomMembers from '../../hooks/useGetOnlineRoomMembers'
+import { toast } from 'react-toastify'
 import getRoomMetadata from '../../getters/getRoomMetadata'
 import { RoomPrivacy } from '../../utils/types'
 
@@ -217,7 +218,14 @@ const RoomDropdown = ({ button }: Props) => {
             return
         }
         deleteRoom(roomId)
-        closeModal()
+        toggleOpen()
+    }
+
+    const onRoomIdCopied = async () => {
+        toast.info(`Room ID copied to clipboard: ${roomId!}`, {
+            position: 'top-center',
+        })
+        toggleOpen()
     }
 
     return (
@@ -251,7 +259,10 @@ const RoomDropdown = ({ button }: Props) => {
                                 </>
                             )}
                             <ListItem>
-                                <CopyToClipboard text={roomId!}>
+                                <CopyToClipboard
+                                    text={roomId!}
+                                    onCopy={onRoomIdCopied}
+                                >
                                     <div>
                                         <CopyIcon />
                                         Copy room id
