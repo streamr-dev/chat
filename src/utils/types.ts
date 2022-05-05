@@ -13,10 +13,15 @@ export type MessagePayload = {
     type: MessageType
 }
 
+export enum RoomPrivacy {
+    Private = 'private',
+    ViewOnly = 'viewonly',
+    Public = 'public',
+}
 export type RoomMetadata = {
     name: string
     createdAt: number
-    privacy: 'private' | 'viewonly' | 'public'
+    privacy: RoomPrivacy
 }
 
 export type ChatState = {
@@ -49,10 +54,4 @@ export interface StreamrSession {
 export enum StorageKey {
     EncryptedSession = 'chat/encrypted-session',
     RoomIds = 'chat/room-ids',
-}
-
-export enum MetadataType {
-    SendInvite = 'send-invite',
-    AcceptInvite = 'accept-invite',
-    RevokeInvite = 'revoke-invite',
 }

@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { Stream, StreamPermission } from 'streamr-client'
-import { useSend } from '../components/pages/Chat/MessageTransmitter'
-import { MessageType, MetadataType } from '../utils/types'
+import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
 
 type Options = {
     invitees: string[]
@@ -11,9 +12,12 @@ type Options = {
 type Inviter = ({ invitees, stream }: Options) => Promise<void>
 
 export default function useInviter(): Inviter {
-    const send = useSend()
+    const ensureMaticBalance = useEnsureMaticBalance()
+
     return useCallback(
         async ({ invitees, stream }: Options) => {
+            await ensureMaticBalance()
+
             const tasks: { user: string; permissions: StreamPermission[] }[] =
                 []
             for (let i = 0; i < invitees.length; i++) {
@@ -22,20 +26,30 @@ export default function useInviter(): Inviter {
                     permissions: [StreamPermission.GRANT],
                 })
             }
-            await stream.grantPermissions(...tasks)
 
-            tasks.forEach(({ user }) => {
-                send(MetadataType.SendInvite, {
-                    messageType: MessageType.Metadata,
-                    streamId: stream.id,
-                    data: user,
-                })
-            })
+            const roomName = getRoomNameFromRoomId(stream.id)
+            toast.info(
+                `Inviting users [${invitees.join(', ')}] to room ${roomName}`,
+                {
+                    position: 'top-center',
+                }
+            )
+
+            await stream.grantPermissions(...tasks)
 
             console.info(
                 `Invited ${invitees.join(', ')} to stream ${stream.id}`
             )
+
+            toast.success(
+                `Successfully invited users [${invitees.join(
+                    ', '
+                )}] to room ${roomName}`,
+                {
+                    position: 'top-center',
+                }
+            )
         },
-        [send]
+        [ensureMaticBalance]
     )
 }

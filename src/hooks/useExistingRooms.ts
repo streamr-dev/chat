@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { StorageKey } from '../utils/types'
+import { RoomPrivacy, StorageKey } from '../utils/types'
 import intersection from 'lodash/intersection'
 import useInviterSelf from './useInviterSelf'
 import getRoomMetadata from '../getters/getRoomMetadata'
@@ -13,6 +13,7 @@ export default function useExistingRooms() {
         account,
         session: { wallet, streamrClient },
         metamaskStreamrClient,
+        roomId,
     } = useStore()
 
     const dispatch = useDispatch()
@@ -45,6 +46,14 @@ export default function useExistingRooms() {
             payload: localRoomIds,
         })
 
+        // select the first room, if any
+        if (!roomId && localRoomIds.length > 0) {
+            dispatch({
+                type: ActionType.SelectRoom,
+                payload: localRoomIds[0],
+            })
+        }
+
         async function fn() {
             const remoteRoomIds: string[] = []
             const streams = metamaskStreamrClient!.searchStreams(ROOM_PREFIX, {
@@ -64,7 +73,10 @@ export default function useExistingRooms() {
                         allowPublic: true,
                     })
 
-                    if (!hasPermission && metadata.privacy !== 'public') {
+                    if (
+                        !hasPermission &&
+                        metadata.privacy !== RoomPrivacy.Public
+                    ) {
                         selfInviteStreams.push(stream.id)
                     }
                     remoteRoomIds.push(stream.id)
@@ -94,6 +106,13 @@ export default function useExistingRooms() {
                     ...remoteRoomIds,
                 ],
             })
+
+            if (!roomId && remoteRoomIds.length > 0) {
+                dispatch({
+                    type: ActionType.SelectRoom,
+                    payload: remoteRoomIds[0],
+                })
+            }
         }
 
         fn()
@@ -101,6 +120,7 @@ export default function useExistingRooms() {
         account,
         dispatch,
         inviteSelf,
+        roomId,
         sessionAccount,
         streamrClient,
         metamaskStreamrClient,

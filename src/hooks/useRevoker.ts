@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { Stream } from 'streamr-client'
-import { useSend } from '../components/pages/Chat/MessageTransmitter'
-import { MessageType, MetadataType } from '../utils/types'
+import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
 
 type Options = {
     revokee: string
@@ -11,9 +12,11 @@ type Options = {
 type Revoker = ({ revokee, stream }: Options) => Promise<void>
 
 export default function useRevoker(): Revoker {
-    const send = useSend()
+    const ensureMaticBalance = useEnsureMaticBalance()
+
     return useCallback(
         async ({ revokee, stream }: Options) => {
+            await ensureMaticBalance()
             // fetch the specific permissions to revoke
             const streamPermissions = await stream.getPermissions()
             const [permissions] = streamPermissions
@@ -22,17 +25,25 @@ export default function useRevoker(): Revoker {
                 })
                 .map((item) => item.permissions)
 
+            const roomName = getRoomNameFromRoomId(stream.id)
+            toast.info(`Deleting member ${revokee} from room ${roomName}`, {
+                position: 'top-center',
+            })
+
             await stream.revokePermissions({
                 user: revokee,
                 permissions,
             })
 
-            send(MetadataType.RevokeInvite, {
-                messageType: MessageType.Metadata,
-                streamId: stream.id,
-                data: revokee,
-            })
+            toast.success(
+                `Successfully revoked permissions [${permissions.join(
+                    ', '
+                )}] from user ${revokee}`,
+                {
+                    position: 'top-center',
+                }
+            )
         },
-        [send]
+        [ensureMaticBalance]
     )
 }
