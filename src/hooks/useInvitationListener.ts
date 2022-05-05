@@ -14,13 +14,12 @@ type ListenerParams = () => Promise<void>
 export default function useInvitationListener(): ListenerParams {
     const { account, ethereumProvider } = useStore()
     const inviterSelf = useInviterSelf()
+    const streamRegistry = getStreamRegistryAt(StreamRegistryAddress)
 
     return useCallback(async () => {
         if (!ethereumProvider || !account) {
             return
         }
-
-        const streamRegistry = getStreamRegistryAt(StreamRegistryAddress)
 
         // Listener filters for the PermissionUpdated event
         // the typings for the event filter require all parameters to be nulled out
@@ -75,5 +74,5 @@ export default function useInvitationListener(): ListenerParams {
         )
 
         console.info('Invitation listener is running')
-    }, [account, ethereumProvider, inviterSelf])
+    }, [account, ethereumProvider, inviterSelf, streamRegistry])
 }
