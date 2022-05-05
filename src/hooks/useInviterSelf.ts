@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { toast } from 'react-toastify'
 import { StreamPermission } from 'streamr-client'
 import { useStore } from '../components/Store'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
 
 type Options = {
     streamIds: string[]
@@ -18,12 +19,15 @@ export default function useInviterSelf(): Inviter {
         metamaskStreamrClient,
         session: { wallet },
     } = useStore()
+    const ensureMaticBalance = useEnsureMaticBalance()
 
     return useCallback(
         async ({ streamIds, includePublicPermissions }: Options) => {
             if (!metamaskStreamrClient || !wallet) {
                 return
             }
+
+            await ensureMaticBalance()
 
             console.info(
                 'calling inviteSelf for streams',
@@ -70,6 +74,6 @@ export default function useInviterSelf(): Inviter {
                 }
             )
         },
-        [metamaskStreamrClient, wallet]
+        [ensureMaticBalance, metamaskStreamrClient, wallet]
     )
 }

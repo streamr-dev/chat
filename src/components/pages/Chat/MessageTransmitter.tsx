@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext } from 'react'
 import useInviter from '../../../hooks/useInviter'
-import { MessageType } from '../../../utils/types'
+import { MessageType, RoomPrivacy } from '../../../utils/types'
 import { useStore } from '../../Store'
 import { v4 as uuidv4 } from 'uuid'
 import MessageAggregator from './MessageAggregator'
@@ -136,7 +136,7 @@ export default function MessageTransmitter({ children }: Props) {
                     case Command.New:
                         await createRoom({
                             roomName: arg,
-                            privacy: 'private',
+                            privacy: RoomPrivacy.Private,
                         })
                         return
                     case Command.Members:
@@ -252,7 +252,7 @@ export default function MessageTransmitter({ children }: Props) {
                 try {
                     const stream = await streamrClient.getStream(streamId)
                     const { privacy } = getRoomMetadata(stream.description!)
-                    if (privacy === 'private') {
+                    if (privacy === RoomPrivacy.Private) {
                         await streamrClient.publish(
                             streamId,
                             {

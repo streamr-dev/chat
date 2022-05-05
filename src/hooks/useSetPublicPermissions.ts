@@ -3,6 +3,7 @@ import { toast } from 'react-toastify'
 import { Stream, StreamPermission } from 'streamr-client'
 import { useStore } from '../components/Store'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
 
 type Options = {
     stream: Stream
@@ -14,6 +15,8 @@ export default function useSetPublicPermissions(): ({
     stream,
 }: Options) => Promise<void> {
     const { metamaskStreamrClient } = useStore()
+    const ensureMaticBalance = useEnsureMaticBalance()
+
     return useCallback(
         async ({ permissions, stream }: Options) => {
             if (!metamaskStreamrClient) {
@@ -23,6 +26,8 @@ export default function useSetPublicPermissions(): ({
             toast.info(`Setting public permissions for room ${roomName}`, {
                 position: 'top-center',
             })
+
+            await ensureMaticBalance()
 
             await metamaskStreamrClient.setPermissions({
                 streamId: stream.id,
@@ -41,6 +46,6 @@ export default function useSetPublicPermissions(): ({
                 }
             )
         },
-        [metamaskStreamrClient]
+        [ensureMaticBalance, metamaskStreamrClient]
     )
 }

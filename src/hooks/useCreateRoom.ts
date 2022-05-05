@@ -2,13 +2,14 @@ import { useCallback } from 'react'
 import { toast } from 'react-toastify'
 import { StreamPermission, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import { ActionType, useDispatch, useStore } from '../components/Store'
-import { RoomMetadata } from '../utils/types'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
+import { RoomMetadata, RoomPrivacy } from '../utils/types'
 import useInviterSelf from './useInviterSelf'
 import useSetPublicPermissions from './useSetPublicPermissions'
 
 type Options = {
     roomName: string
-    privacy: 'private' | 'viewonly' | 'public'
+    privacy: RoomPrivacy
     storageEnabled?: boolean
 }
 export default function useCreateRoom(): ({
@@ -29,6 +30,8 @@ export default function useCreateRoom(): ({
 
     const dispatch = useDispatch()
 
+    const ensureMaticBalance = useEnsureMaticBalance()
+
     return useCallback(
         async ({ roomName, privacy, storageEnabled }) => {
             if (!sessionAccount) {
@@ -42,6 +45,8 @@ export default function useCreateRoom(): ({
             if (!metamaskStreamrClient) {
                 throw new Error('Missing metamask streamr client')
             }
+
+            await ensureMaticBalance()
 
             const normalizedRoomName = roomName.toLowerCase()
 
@@ -88,19 +93,19 @@ export default function useCreateRoom(): ({
             })
 
             switch (privacy) {
-                case 'private':
+                case RoomPrivacy.Private:
                     await inviteSelf({
                         streamIds: [stream.id],
                     })
                     break
 
-                case 'viewonly':
+                case RoomPrivacy.ViewOnly:
                     await inviteSelf({
                         streamIds: [stream.id],
                         includePublicPermissions: true,
                     })
                     break
-                case 'public':
+                case RoomPrivacy.Public:
                     await setPublicPermissions({
                         permissions: [
                             StreamPermission.PUBLISH,
@@ -125,11 +130,12 @@ export default function useCreateRoom(): ({
             })
         },
         [
-            sessionAccount,
-            metamaskStreamrClient,
             account,
-            inviteSelf,
             dispatch,
+            ensureMaticBalance,
+            inviteSelf,
+            metamaskStreamrClient,
+            sessionAccount,
             setPublicPermissions,
         ]
     )

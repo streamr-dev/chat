@@ -1,9 +1,8 @@
 import { useCallback } from 'react'
 import { toast } from 'react-toastify'
 import { Stream, StreamPermission } from 'streamr-client'
-import { useSend } from '../components/pages/Chat/MessageTransmitter'
 import getRoomNameFromRoomId from '../getters/getRoomNameFromRoomId'
-import { MessageType, MetadataType } from '../utils/types'
+import useEnsureMaticBalance from './useEnsureMaticBalance'
 
 type Options = {
     invitees: string[]
@@ -13,9 +12,12 @@ type Options = {
 type Inviter = ({ invitees, stream }: Options) => Promise<void>
 
 export default function useInviter(): Inviter {
-    const send = useSend()
+    const ensureMaticBalance = useEnsureMaticBalance()
+
     return useCallback(
         async ({ invitees, stream }: Options) => {
+            await ensureMaticBalance()
+
             const tasks: { user: string; permissions: StreamPermission[] }[] =
                 []
             for (let i = 0; i < invitees.length; i++) {
@@ -35,14 +37,6 @@ export default function useInviter(): Inviter {
 
             await stream.grantPermissions(...tasks)
 
-            tasks.forEach(({ user }) => {
-                send(MetadataType.SendInvite, {
-                    messageType: MessageType.Metadata,
-                    streamId: stream.id,
-                    data: user,
-                })
-            })
-
             console.info(
                 `Invited ${invitees.join(', ')} to stream ${stream.id}`
             )
@@ -56,6 +50,6 @@ export default function useInviter(): Inviter {
                 }
             )
         },
-        [send]
+        [ensureMaticBalance]
     )
 }

@@ -8,7 +8,6 @@ type Props = {
     streamId: string
     //messageType: MessageType
     onTextMessage: (data: any, raw: any) => void
-    onMetadataMessage: (data: any, raw: any) => void
 }
 
 type MessagePresenceMap = {
@@ -18,11 +17,7 @@ type MessagePresenceMap = {
 const EmptyMessagePresenceMap = {}
 
 const MessageInterceptor = memo(
-    ({
-        streamId,
-        onTextMessage: onTextMessageProp,
-        onMetadataMessage: onMetadataMessageProp,
-    }: Props) => {
+    ({ streamId, onTextMessage: onTextMessageProp }: Props) => {
         const {
             session: { streamrClient },
             account,
@@ -36,12 +31,10 @@ const MessageInterceptor = memo(
         }, [streamId])
 
         const onTextMessageRef = useRef(onTextMessageProp)
-        const onMetadataMessageRef = useRef(onMetadataMessageProp)
 
         useEffect(() => {
             onTextMessageRef.current = onTextMessageProp
-            onMetadataMessageRef.current = onMetadataMessageProp
-        }, [onTextMessageProp, onMetadataMessageProp])
+        }, [onTextMessageProp])
 
         useEffect(() => {
             let mounted = true
@@ -80,15 +73,10 @@ const MessageInterceptor = memo(
                             messagesRef.current[data.id] = true
 
                             const { current: onTextMessage } = onTextMessageRef
-                            const { current: onMetadataMessage } =
-                                onMetadataMessageRef
 
                             switch (data.type) {
                                 case MessageType.Text:
                                     onTextMessage(data, raw)
-                                    break
-                                case MessageType.Metadata:
-                                    onMetadataMessage(data, raw)
                                     break
                                 default:
                                     console.error(
