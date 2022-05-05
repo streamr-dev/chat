@@ -229,7 +229,7 @@ const RoomDropdown = ({ button }: Props) => {
                 {isOpen && (
                     <DropDownListContainer ref={ref}>
                         <DropDownList>
-                            {roomPrivacy !== RoomPrivacy.Public ? (
+                            {roomPrivacy !== RoomPrivacy.Public && (
                                 <>
                                     <ListItem
                                         onClick={() =>
@@ -249,7 +249,7 @@ const RoomDropdown = ({ button }: Props) => {
                                     </ListItem>
                                     <hr></hr>
                                 </>
-                            ) : null}
+                            )}
                             <ListItem>
                                 <CopyToClipboard text={roomId!}>
                                     <div>
