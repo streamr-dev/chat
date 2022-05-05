@@ -22,14 +22,16 @@ export default function useInvitationListener(): ListenerParams {
 
         const streamRegistry = getStreamRegistryAt(StreamRegistryAddress)
 
+        // Listener filters for the PermissionUpdated event
+        // the typings for the event filter require all parameters to be nulled out
         const filter = streamRegistry.filters.PermissionUpdated(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
+            null, // StreamId
+            null, // user
+            null, // canEdit
+            null, // canDelete
+            null, // publishExpiration
+            null, // subscribeExpiration
+            null // canGrant
         )
 
         streamRegistry.on(
