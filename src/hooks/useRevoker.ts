@@ -43,7 +43,6 @@ export default function useRevoker(): Revoker {
                     position: 'top-center',
                 }
             )
-
         },
         [ensureMaticBalance]
     )
