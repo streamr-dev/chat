@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
 import Button from './Button'
 import { KARELIA, SEMIBOLD } from '../utils/css'
 import WalletModal from './WalletModal'
@@ -199,13 +198,11 @@ const UnstyledNavbar = ({ className }: Props) => {
     return (
         <nav className={className}>
             <h4>
-                <Link to="/">
-                    thechat.eth
-                    <BetaBadge>
-                        Beta
-                        <BetaBadgeTail />
-                    </BetaBadge>
-                </Link>
+                thechat.eth
+                <BetaBadge>
+                    Beta
+                    <BetaBadgeTail />
+                </BetaBadge>
             </h4>
             {account ? (
                 <>
