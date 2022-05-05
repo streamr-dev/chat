@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import MessageInput from './MessageInput'
 import RoomHeader from './RoomHeader'
 import EmptyFeed from './EmptyFeed/index'
+import { useStore } from '../../Store'
 
 const FeedWrap = styled.div`
     height: 100%;
@@ -64,6 +65,8 @@ type Props = {
 const UnstyledChatWindow = ({ className, children }: Props) => {
     const feedRef = useRef<HTMLDivElement>(null)
 
+    const { roomId } = useStore()
+
     useLayoutEffect(() => {
         const { current: feed } = feedRef
 
@@ -84,7 +87,7 @@ const UnstyledChatWindow = ({ className, children }: Props) => {
                     )}
                 </div>
             </FeedWrap>
-            <MessageInput />
+            {roomId ? <MessageInput /> : null}
         </div>
     )
 }

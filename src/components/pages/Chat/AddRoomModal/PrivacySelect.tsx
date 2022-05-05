@@ -5,24 +5,25 @@ import publicIcon from './public.svg'
 import viewOnlyIcon from './viewonly.svg'
 import privateIcon from './private.svg'
 import checkIcon from './check.svg'
+import { RoomPrivacy } from '../../../../utils/types'
 
 const options = [
     {
         label: 'Private',
         subLabel: 'Only invited members can post and view messages',
-        value: 'private',
+        value: RoomPrivacy.Private,
         icon: privateIcon,
     },
     {
         label: 'View only',
         subLabel: 'Anyone can view other messages',
-        value: 'viewonly',
+        value: RoomPrivacy.ViewOnly,
         icon: viewOnlyIcon,
     },
     {
         label: 'Public',
         subLabel: 'Anyone can post and view other messages',
-        value: 'public',
+        value: RoomPrivacy.Public,
         icon: publicIcon,
     },
 ]

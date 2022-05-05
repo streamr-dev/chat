@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { Stream } from 'streamr-client'
 import { useSend } from '../components/pages/Chat/MessageTransmitter'
-import { MessageType, MetadataType } from '../utils/types'
+import { MessageType } from '../utils/types'
 import useEnsureMaticBalance from './useEnsureMaticBalance'
 
 type Options = {
@@ -12,32 +12,21 @@ type Options = {
 type Revoker = ({ revokee, stream }: Options) => Promise<void>
 
 export default function useRevoker(): Revoker {
-    const send = useSend()
     const ensureMaticBalance = useEnsureMaticBalance()
 
-    return useCallback(
-        async ({ revokee, stream }: Options) => {
-            await ensureMaticBalance()
-
-            // fetch the specific permissions to revoke
-            const streamPermissions = await stream.getPermissions()
-            const [permissions] = streamPermissions
-                .filter((item) => {
-                    return (item as any).user === revokee
-                })
-                .map((item) => item.permissions)
-
-            await stream.revokePermissions({
-                user: revokee,
-                permissions,
+    return useCallback(async ({ revokee, stream }: Options) => {
+        await ensureMaticBalance()
+        // fetch the specific permissions to revoke
+        const streamPermissions = await stream.getPermissions()
+        const [permissions] = streamPermissions
+            .filter((item) => {
+                return (item as any).user === revokee
             })
+            .map((item) => item.permissions)
 
-            send(MetadataType.RevokeInvite, {
-                messageType: MessageType.Metadata,
-                streamId: stream.id,
-                data: revokee,
-            })
-        },
-        [ensureMaticBalance, send]
-    )
+        await stream.revokePermissions({
+            user: revokee,
+            permissions,
+        })
+    }, [ensureMaticBalance])
 }
