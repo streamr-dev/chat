@@ -35,7 +35,7 @@ export default function useGetOnlineRoomMembers(): OnlineRoomMemberGetter {
             const json = await (await fetch(streamUrl)).json()
 
             // clear the sessionIds and return the online addresses
-            return Object.keys(json[`${streamId}#0`]).map(
+            return Object.keys(json[`${streamId}#0`] || {}).map(
                 (key) => key.split('#')[0]
             )
         },
