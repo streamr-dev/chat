@@ -16,7 +16,7 @@ function InvitationListener({ className }: Props) {
 
         fn()
     }, [contractListener])
-    return <></>
+    return null
 }
 
 export default InvitationListener
