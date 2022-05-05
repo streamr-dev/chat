@@ -71,5 +71,7 @@ export default function useInvitationListener(): ListenerParams {
                 )
             }
         )
+
+        console.info('Invitation listener is running')
     }, [account, ethereumProvider, inviterSelf])
 }
