@@ -5,7 +5,6 @@ import * as _StreamRegistryArtifact from '../ethereum-contracts/StreamRegistryV3
 const StreamRegistryArtifact: { [key: string]: any } = _StreamRegistryArtifact
 
 export default function getStreamRegistryAt(address: string): StreamRegistryV3 {
-    // const provider = new providers.Web3Provider(ethereumProvider as any)
     const provider = new providers.WebSocketProvider(
         'wss://ws-matic-mainnet.chainstacklabs.com'
     )
