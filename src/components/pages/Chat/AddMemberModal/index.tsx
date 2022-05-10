@@ -38,6 +38,7 @@ const CreateButton = styled.button`
     font-family: ${KARELIA};
     font-size: 18px;
     padding: 10px 30px;
+    cursor: pointer;
 
     :hover,
     :focus {
@@ -64,6 +65,7 @@ const Subheading = styled.h3`
 const CloseButton = styled.button`
     background-color: transparent;
     border: none;
+    cursor: pointer;
 `
 
 const StyledModalContent = styled.div`

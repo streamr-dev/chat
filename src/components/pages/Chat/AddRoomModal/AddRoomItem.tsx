@@ -43,6 +43,7 @@ const CreateButton = styled.button`
     font-family: ${KARELIA};
     font-size: 18px;
     padding: 10px 30px;
+    cursor: pointer;
 
     :hover,
     :focus {

@@ -197,7 +197,7 @@ const UnstyledNavbar = ({ className }: Props) => {
 
     return (
         <nav className={className}>
-            <h4>
+            <h4 style={{ cursor: 'pointer' }}>
                 thechat.eth
                 <BetaBadge>
                     Beta

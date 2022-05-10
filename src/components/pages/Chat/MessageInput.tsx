@@ -30,6 +30,7 @@ const Inner = styled.div<InnerProps>`
         css`
             ${SubmitButton} {
                 opacity: 1;
+                cursor: pointer;
             }
         `}
 `

@@ -46,6 +46,7 @@ const EditButton = styled.div`
     border-radius: 50%;
     margin: 0px 20px;
     margin-left: auto;
+    cursor: pointer;
 `
 
 const MemberName = styled.span`
