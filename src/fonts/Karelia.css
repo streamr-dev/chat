@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'Karelia';
+    src: url('./Karelia/KareliaWeb-Regular.woff2') format('woff2'),
+        url('./Karelia/KareliaWeb-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Karelia';
+    src: url('./Karelia/KareliaWeb-Medium.woff2') format('woff2'),
+        url('./Karelia/KareliaWeb-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
