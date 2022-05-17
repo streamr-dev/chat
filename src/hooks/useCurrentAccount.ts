@@ -1,37 +1,39 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { selectEthereumProvider } from '../features/session'
+import { useEthereumProvider } from '../features/session'
 
 export default function useCurrentAccount() {
-    const ethereumProvider = useSelector(selectEthereumProvider)
+    const ethereumProvider = useEthereumProvider()
 
     const [account, setAccount] = useState<string | null>()
 
     useEffect(() => {
         let mounted = true
 
+        let accounts: string[]
+
         async function fn() {
-            if (!ethereumProvider) {
+            try {
+                accounts = await ethereumProvider.listAccounts()
+            } catch (e) {
+                console.warn(e)
+            }
+
+            if (!mounted) {
                 return
             }
 
-            let account
-
-            try {
-                account = await ethereumProvider.getAccount()
-            } catch (e) {
-                // Ignore failures.
-            } finally {
-                if (!mounted) {
-                    return
-                }
-
-                // @TODO We need a "change" watcher for this.
-                setAccount(account || null)
+            if (!Array.isArray(accounts)) {
+                accounts = []
             }
+
+            // @TODO We need a "change" watcher for this.
+            setAccount(accounts[0] || null)
         }
 
-        fn()
+        if (ethereumProvider) {
+            fn()
+        }
 
         return () => {
             mounted = false

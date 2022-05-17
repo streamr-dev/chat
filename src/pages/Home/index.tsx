@@ -1,40 +1,16 @@
 import tw, { css } from 'twin.macro'
-// import { useNavigate } from 'react-router-dom'
 import Helmet from 'react-helmet'
-// import Navbar from '../../Navbar'
 import Background from './background.png'
 import Button from '../../components/Button'
 import Text from '../../components/Text'
 import Navbar, { NavButton } from '../../components/Navbar'
 import useCurrentAccount from '../../hooks/useCurrentAccount'
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
-// import { useEffect } from 'react'
-// import { useStore } from '../../Store'
-// import useConnect from '../../../hooks/useConnect'
-
-// const UnstyledHome = ({ className }: Props) => {
-//     const {
-//         session: { wallet },
-//     } = useStore()
-
-//     const sessionAccount = wallet?.address
-
-//     const navigate = useNavigate()
-
-//     const connect = useConnect()
-
-//     useEffect(() => {
-//         if (sessionAccount) {
-//             navigate('/chat')
-//         }
-//     }, [sessionAccount, navigate])
-// }
+import { useEffect, useState } from 'react'
+import WalletModal from './WalletModal'
 
 function UnwrappedHome() {
-    function connect() {
-        // Noop.
-    }
+    const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
 
     return (
         <>
@@ -57,7 +33,7 @@ function UnwrappedHome() {
             >
                 <Navbar>
                     <NavButton
-                        onClick={connect}
+                        onClick={() => void setWalletModalOpen(true)}
                         css={[
                             tw`
                                 h-full
@@ -119,7 +95,7 @@ function UnwrappedHome() {
                                 `,
                             ]}
                             type="button"
-                            onClick={connect}
+                            onClick={() => {}}
                         >
                             <div
                                 css={[
@@ -194,6 +170,7 @@ function UnwrappedHome() {
                     </Text>
                 </div>
             </main>
+            <WalletModal open={walletModalOpen} setOpen={setWalletModalOpen} />
         </>
     )
 }

@@ -5,7 +5,10 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Chat from './pages/Chat'
 import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
-import RootProvider from './components/RootProvider'
+import { Provider } from 'react-redux'
+import store from './store'
+import WalletAdapterObserver from './components/WalletAdapterObserver'
+import adapters from './utils/web3/adapters'
 
 const ToastContainer = styled(PrestyledToastContainer)`
     width: auto;
@@ -30,12 +33,16 @@ const customGlobalStyles = css`
 
 export default function App() {
     return (
-        <RootProvider>
+        <Provider store={store}>
             <GlobalStyles />
             <Global styles={customGlobalStyles} />
+            {adapters.map((adapter) => (
+                <WalletAdapterObserver
+                    key={adapter.id}
+                    walletAdapter={adapter}
+                />
+            ))}
             <div>
-                {/* <SessionHandler /> */}
-                {/* <Global /> */}
                 <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>
                     <Routes>
@@ -44,6 +51,6 @@ export default function App() {
                     </Routes>
                 </HashRouter>
             </div>
-        </RootProvider>
+        </Provider>
     )
 }
