@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import inject from '@rollup/plugin-inject'
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,13 +15,29 @@ export default defineConfig({
             },
         }),
     ],
-    define: {
-        'process.env': {},
-        global: 'globalThis',
+    optimizeDeps: {
+        esbuildOptions: {
+            define: {
+                global: 'globalThis',
+            },
+            plugins: [
+                NodeGlobalsPolyfillPlugin({
+                    process: true,
+                    buffer: true,
+                }),
+                NodeModulesPolyfillPlugin(),
+            ],
+        },
     },
     resolve: {
         alias: {
             web3: `${__dirname}/node_modules/web3/dist/web3.min.js`,
+            util: 'rollup-plugin-node-polyfills/polyfills/util',
+        },
+    },
+    build: {
+        rollupOptions: {
+            plugins: [rollupNodePolyFill()],
         },
     },
 })
