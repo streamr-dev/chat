@@ -2,7 +2,7 @@ import { FC, ReactNode, useEffect } from 'react'
 import ReactModal from 'react-modal'
 import tw from 'twin.macro'
 import { useDispatch } from 'react-redux'
-import { setEthereumProvider, setWalletAdapterId } from '../../features/session'
+import { setWalletAdapterId } from '../../features/session'
 import adapters from '../../utils/web3/adapters'
 import { WalletAdapter } from '../../../types/common'
 
@@ -105,11 +105,9 @@ type WalletOptionProps = {
 }
 
 function WalletOption({ walletAdapter }: WalletOptionProps) {
-    const [adapter, hooks] = walletAdapter.getConnector()
+    const [adapter] = walletAdapter.getConnector()
 
     const { icon: Icon } = walletAdapter
-
-    const isActive = hooks.useIsActive()
 
     const dispatch = useDispatch()
 
@@ -156,7 +154,6 @@ function WalletOption({ walletAdapter }: WalletOptionProps) {
                 ]}
             >
                 {walletAdapter.label}
-                {isActive ? ' (active)' : ''}
             </div>
             <div>
                 <Icon />

@@ -4,10 +4,10 @@ import Background from './background.png'
 import Button from '../../components/Button'
 import Text from '../../components/Text'
 import Navbar, { NavButton } from '../../components/Navbar'
-import useCurrentAccount from '../../hooks/useCurrentAccount'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import WalletModal from './WalletModal'
+import { useAccount } from '../../features/session'
 
 function UnwrappedHome() {
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
@@ -176,7 +176,7 @@ function UnwrappedHome() {
 }
 
 export default function Home() {
-    const account = useCurrentAccount()
+    const account = useAccount()
 
     const navigate = useNavigate()
 
@@ -185,6 +185,10 @@ export default function Home() {
             navigate('/chat')
         }
     }, [navigate, account])
+
+    if (account === undefined) {
+        return null
+    }
 
     return <UnwrappedHome />
 }

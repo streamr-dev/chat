@@ -3,19 +3,32 @@ import { useSelector } from 'react-redux'
 
 const AdapterIdKey = 'chat:walletAdapterId'
 
+interface State {
+    ethereumProvider: any
+    walletAdapterId: string | undefined
+    account: string | undefined | null // address | we're checking | not signed in
+}
+
 const sessionSlice = createSlice({
     name: 'session',
     initialState: {
         ethereumProvider: undefined,
         walletAdapterId: localStorage.getItem(AdapterIdKey) || undefined,
+        account: undefined,
     },
     reducers: {
-        setEthereumProvider(state, action: PayloadAction<any>) {
+        setEthereumProvider(state: State, action: PayloadAction<any>) {
             state.ethereumProvider = action.payload
         },
-        setWalletAdapterId(state, action: PayloadAction<string>) {
+        setWalletAdapterId(state: State, action: PayloadAction<string>) {
             localStorage.setItem(AdapterIdKey, action.payload)
             state.walletAdapterId = action.payload
+        },
+        setAccount(
+            state: State,
+            action: PayloadAction<string | undefined | null>
+        ) {
+            state.account = action.payload
         },
     },
 })
@@ -42,6 +55,16 @@ export function useWalletAdapterId() {
     return useSelector(selectWalletAdapterId)
 }
 
-export const { setEthereumProvider, setWalletAdapterId } = sessionSlice.actions
+const selectAccount = createSelector(
+    selectSelf,
+    (substate: any) => substate.account
+)
+
+export function useAccount() {
+    return useSelector(selectAccount)
+}
+
+export const { setEthereumProvider, setWalletAdapterId, setAccount } =
+    sessionSlice.actions
 
 export default sessionSlice.reducer

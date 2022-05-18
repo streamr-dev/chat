@@ -9,6 +9,7 @@ import { Provider } from 'react-redux'
 import store from './store'
 import WalletAdapterObserver from './components/WalletAdapterObserver'
 import adapters from './utils/web3/adapters'
+import AccountWatcher from './components/AccountWatcher'
 
 const ToastContainer = styled(PrestyledToastContainer)`
     width: auto;
@@ -42,6 +43,7 @@ export default function App() {
                     walletAdapter={adapter}
                 />
             ))}
+            <AccountWatcher />
             <div>
                 <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>
