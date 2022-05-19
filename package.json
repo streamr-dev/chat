@@ -43,7 +43,7 @@
     "react-router": "^6.2.1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
-    "react-select": "^5.3.1",
+    "react-select": "^5.3.2",
     "react-switch": "^6.0.0",
     "react-toastify": "^8.2.0",
     "streamr-client": "^6.0.4",
