@@ -1,6 +1,4 @@
-import tw, { css } from 'twin.macro'
-import Helmet from 'react-helmet'
-import Background from './background.png'
+import tw from 'twin.macro'
 import Button from '../../components/Button'
 import Text from '../../components/Text'
 import Navbar, { NavButton } from '../../components/Navbar'
@@ -8,45 +6,26 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import WalletModal from './WalletModal'
 import { useAccount, useWalletAdapterId } from '../../features/session'
+import Page from '../../components/Page'
 
 function UnwrappedHome() {
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
 
     return (
         <>
-            <Helmet title="Streamr Chat dApp" />
-            <main
-                css={[
-                    css`
-                        background-image: url('${Background}');
-                    `,
-                    tw`
-                        bg-center
-                        bg-cover
-                        bg-fixed
-                        bg-no-repeat
-                        h-screen
-                        justify-center
-                        w-screen
-                    `,
-                ]}
-            >
+            <Page>
                 <Navbar>
                     <NavButton
                         onClick={() => void setWalletModalOpen(true)}
                         css={[
                             tw`
-                                h-full
-                                px-[30px]
-                                py-[10px]
                                 text-[#ff5924]
-                                text-[15px]
                                 hover:bg-[#fefefe]
                                 active:bg-[#f7f7f7]
                             `,
                         ]}
                     >
-                        Connect a wallet
+                        <Text>Connect a wallet</Text>
                     </NavButton>
                 </Navbar>
                 <div
@@ -169,7 +148,7 @@ function UnwrappedHome() {
                         </a>
                     </Text>
                 </div>
-            </main>
+            </Page>
             <WalletModal open={walletModalOpen} setOpen={setWalletModalOpen} />
         </>
     )

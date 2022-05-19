@@ -244,16 +244,21 @@ export function NavButton({ children, ...props }: ButtonProps) {
                     flex
                     font-karelia
                     font-medium
-                    text-[14px]
-                    md:text-[1rem]
+                    h-full
                     items-center
+                    px-[30px]
+                    py-[10px]
                     rounded-[1.5rem]
+                    text-[14px]
+                    text-[15px]
+                    tracking-wider
+                    md:text-[1rem]
                     hover:bg-[#fefefe]
                     active:bg-[#f7f7f7]
                 `,
             ]}
         >
-            <Text>{children}</Text>
+            {children}
         </Button>
     )
 }

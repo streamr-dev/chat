@@ -7,7 +7,7 @@ export default function Text(props: React.HTMLAttributes<HTMLSpanElement>) {
             css={[
                 tw`
                     block
-                    translate-y-[-0.12em]
+                    translate-y-[-0.06em]
                 `,
             ]}
         />
