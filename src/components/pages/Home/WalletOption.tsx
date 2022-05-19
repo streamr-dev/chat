@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { WalletAdapter } from '../../../../../types/common'
-import { setWalletAdapterId } from '../../../../features/session'
+import { WalletAdapter } from '../../../../types/common'
+import { setWalletAdapterId } from '../../../features/session'
 
 type Props = {
     walletAdapter: WalletAdapter
