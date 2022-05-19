@@ -1,13 +1,13 @@
 import tw from 'twin.macro'
-import Button from '../../components/Button'
-import Text from '../../components/Text'
-import Navbar, { NavButton } from '../../components/Navbar'
+import Button from '../../Button'
+import Text from '../../Text'
+import Navbar, { NavButton } from '../../Navbar'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import WalletModal from './WalletModal'
-import { useAccount, useWalletAdapterId } from '../../features/session'
-import Page from '../../components/Page'
-import noOp from '../../utils/noOp'
+import { useAccount, useWalletAdapterId } from '../../../features/session'
+import Page from '../../Page'
+import noOp from '../../../utils/noOp'
 
 function UnwrappedHome() {
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)

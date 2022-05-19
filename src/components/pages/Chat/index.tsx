@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAccount, useWalletAdapterId } from '../../features/session'
-import Navbar, { NavButton } from '../../components/Navbar'
-import trunc from '../../utils/trunc'
-import Page from '../../components/Page'
+import { useAccount, useWalletAdapterId } from '../../../features/session'
+import Navbar, { NavButton } from '../../Navbar'
+import trunc from '../../../utils/trunc'
+import Page from '../../Page'
 import tw from 'twin.macro'
-import Text from '../../components/Text'
+import Text from '../../Text'
 
 function UnwrappedChat() {
     const account = useAccount()
