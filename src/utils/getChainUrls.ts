@@ -10,7 +10,7 @@ type Cache = {
 
 const cache: Cache = {}
 
-export default function getChainUrls(infuraId: string = '') {
+export default function getChainUrls(infuraId = '') {
     if (cache[infuraId]) {
         return cache[infuraId]
     }

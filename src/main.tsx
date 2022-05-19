@@ -5,8 +5,14 @@ import 'react-toastify/dist/ReactToastify.css'
 import './fonts/Karelia.css'
 import 'twin.macro'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>
-)
+const root = document.getElementById('root')
+
+if (root) {
+    ReactDOM.createRoot(root).render(
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
+    )
+} else {
+    throw new Error('Missing `#root`. Check `document.getElementById("root")`.')
+}

@@ -3,15 +3,14 @@ import { useDispatch } from 'react-redux'
 import { setEthereumProvider, useWalletAdapterId } from '../features/session'
 import { lookup } from '../utils/web3/adapters'
 import { initializeConnector } from '@web3-react/core'
-// @ts-ignore ts does not see `export Empty`.
-import { Empty, EMPTY } from '@web3-react/empty'
+import { EMPTY } from '@web3-react/empty'
 
 let fallbackConnector: any
 
 const fallbackWalletAdapter = {
     getConnector() {
         if (!fallbackConnector) {
-            fallbackConnector = initializeConnector<Empty>(() => EMPTY)
+            fallbackConnector = initializeConnector<any>(() => EMPTY)
         }
 
         return fallbackConnector

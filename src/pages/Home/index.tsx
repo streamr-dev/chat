@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import WalletModal from './WalletModal'
 import { useAccount, useWalletAdapterId } from '../../features/session'
 import Page from '../../components/Page'
+import noOp from '../../utils/noOp'
 
 function UnwrappedHome() {
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
@@ -74,7 +75,7 @@ function UnwrappedHome() {
                                 `,
                             ]}
                             type="button"
-                            onClick={() => {}}
+                            onClick={noOp}
                         >
                             <div
                                 css={[

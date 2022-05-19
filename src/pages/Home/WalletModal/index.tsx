@@ -1,5 +1,6 @@
 import ReactModal from 'react-modal'
 import tw from 'twin.macro'
+import noOp from '../../../utils/noOp'
 import adapters from '../../../utils/web3/adapters'
 import WalletOption from './WalletOption'
 
@@ -7,8 +8,6 @@ type Props = {
     open?: boolean
     setOpen?: (state: boolean) => void
 }
-
-function noOp() {}
 
 const customStyles = {
     overlay: {

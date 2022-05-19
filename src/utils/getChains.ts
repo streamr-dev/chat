@@ -41,7 +41,7 @@ const cache: Cache = {}
 
 type Chain = [number, Network]
 
-export default function getChains(infuraId: string = '') {
+export default function getChains(infuraId = '') {
     if (cache[infuraId]) {
         return cache[infuraId]
     }

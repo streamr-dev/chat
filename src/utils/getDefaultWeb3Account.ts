@@ -1,5 +1,3 @@
-import { ethers } from 'ethers'
-
 type Account = string | undefined | null
 
 export default async function getDefaultWeb3Account(
