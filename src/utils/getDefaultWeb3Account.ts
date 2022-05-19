@@ -1,3 +1,5 @@
+import { ethers } from 'ethers'
+
 type Account = string | undefined | null
 
 export default async function getDefaultWeb3Account(
@@ -10,6 +12,7 @@ export default async function getDefaultWeb3Account(
     let accounts: string[] = []
 
     try {
+        // accounts = await ethereumProvider.listAccounts()
         accounts = await ethereumProvider.listAccounts()
     } catch (e) {
         console.warn(e)

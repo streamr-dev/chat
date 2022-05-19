@@ -8,12 +8,17 @@ export default function AccountWatcher() {
 
     const dispatch = useDispatch()
 
+    const timeoutRef = useRef<number | undefined>()
+
     useEffect(() => {
         let mounted = true
 
-        let timeout: number | undefined
-
         async function check() {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+                timeoutRef.current = undefined
+            }
+
             const account = await getDefaultWeb3Account(ethereumProvider)
 
             if (!mounted) {
@@ -23,15 +28,15 @@ export default function AccountWatcher() {
             dispatch(setAccount(account))
 
             if (ethereumProvider) {
-                timeout = window.setTimeout(check, 1000)
+                timeoutRef.current = window.setTimeout(check, 1000)
             }
         }
 
         check()
 
         return () => {
-            clearTimeout(timeout)
-            timeout = undefined
+            clearTimeout(timeoutRef.current)
+            timeoutRef.current = undefined
             mounted = false
         }
     }, [ethereumProvider])

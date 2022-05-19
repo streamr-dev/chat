@@ -20,8 +20,15 @@ const sessionSlice = createSlice({
         setEthereumProvider(state: State, action: PayloadAction<any>) {
             state.ethereumProvider = action.payload
         },
-        setWalletAdapterId(state: State, action: PayloadAction<string>) {
-            localStorage.setItem(AdapterIdKey, action.payload)
+        setWalletAdapterId(
+            state: State,
+            action: PayloadAction<string | undefined>
+        ) {
+            if (typeof action.payload === 'undefined') {
+                localStorage.removeItem(AdapterIdKey)
+            } else {
+                localStorage.setItem(AdapterIdKey, action.payload)
+            }
             state.walletAdapterId = action.payload
         },
         setAccount(

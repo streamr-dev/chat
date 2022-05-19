@@ -1,22 +1,30 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAccount } from '../../features/session'
+import { useAccount, useWalletAdapterId } from '../../features/session'
 
 function UnwrappedChat() {
-    return <h1>Chat</h1>
+    const account = useAccount()
+
+    return <h1>Chat {account}</h1>
 }
 
 export default function Chat() {
     const account = useAccount()
 
+    const walletAdapterId = useWalletAdapterId()
+
     const navigate = useNavigate()
 
+    const shouldRedirect = account === null || !walletAdapterId
+
     useEffect(() => {
-        if (account === null) {
+        if (shouldRedirect) {
             navigate('/')
         }
-    }, [navigate, account])
+    }, [navigate, shouldRedirect])
 
+    // No account? Render nothing and wait. The above `useEffect` will
+    // take us places.
     if (!account) {
         return null
     }

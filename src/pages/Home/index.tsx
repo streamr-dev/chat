@@ -7,7 +7,7 @@ import Navbar, { NavButton } from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import WalletModal from './WalletModal'
-import { useAccount } from '../../features/session'
+import { useAccount, useWalletAdapterId } from '../../features/session'
 
 function UnwrappedHome() {
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
@@ -178,6 +178,8 @@ function UnwrappedHome() {
 export default function Home() {
     const account = useAccount()
 
+    const adapterId = useWalletAdapterId()
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -186,7 +188,7 @@ export default function Home() {
         }
     }, [navigate, account])
 
-    if (account === undefined) {
+    if (typeof account === 'undefined' && adapterId) {
         return null
     }
 

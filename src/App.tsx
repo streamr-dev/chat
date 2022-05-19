@@ -1,4 +1,3 @@
-// import styled, { createGlobalStyle } from 'styled-components'
 import tw, { styled, GlobalStyles } from 'twin.macro'
 import { css, Global } from '@emotion/react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
@@ -7,9 +6,8 @@ import Chat from './pages/Chat'
 import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from './store'
-import WalletAdapterObserver from './components/WalletAdapterObserver'
-import adapters from './utils/web3/adapters'
 import AccountWatcher from './components/AccountWatcher'
+import WalletObserver from './components/WalletObserver'
 
 const ToastContainer = styled(PrestyledToastContainer)`
     width: auto;
@@ -37,12 +35,7 @@ export default function App() {
         <Provider store={store}>
             <GlobalStyles />
             <Global styles={customGlobalStyles} />
-            {adapters.map((adapter) => (
-                <WalletAdapterObserver
-                    key={adapter.id}
-                    walletAdapter={adapter}
-                />
-            ))}
+            <WalletObserver />
             <AccountWatcher />
             <div>
                 <ToastContainer position="bottom-left" closeOnClick={false} />
