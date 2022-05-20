@@ -1,17 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import session from './features/session'
+import wallet from './features/wallet'
 
 const store = configureStore({
     reducer: {
-        session,
+        wallet,
     },
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: {
-                ignoredActions: ['session/setEthereumProvider'],
-                ignoredPaths: ['session.ethereumProvider'],
-            },
-        }),
 })
 
 export default store

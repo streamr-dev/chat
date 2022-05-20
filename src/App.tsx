@@ -6,8 +6,7 @@ import Chat from './components/pages/Chat'
 import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from './store'
-import AccountWatcher from './components/AccountWatcher'
-import WalletObserver from './components/WalletObserver'
+import WalletIntegrationObserver from './components/WalletIntegrationObserver'
 
 const ToastContainer = styled(PrestyledToastContainer)`
     width: auto;
@@ -35,8 +34,7 @@ export default function App() {
         <Provider store={store}>
             <GlobalStyles />
             <Global styles={customGlobalStyles} />
-            <WalletObserver />
-            <AccountWatcher />
+            <WalletIntegrationObserver />
             <div>
                 <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>

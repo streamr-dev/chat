@@ -1,15 +1,30 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAccount, useWalletAdapterId } from '../../../features/session'
+import { useAccount } from '../../../features/wallet'
 import Page from '../../Page'
+import WalletModal from '../../WalletModal'
+import AccountModal from './AccountModal'
 import Nav from './Nav'
 
 function UnwrappedChat() {
+    const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
+
+    const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
+
     return (
         <>
             <Page>
-                <Nav />
+                <Nav onAccountClick={() => void setAccountModalOpen(true)} />
             </Page>
+            <AccountModal
+                open={accountModalOpen}
+                setOpen={setAccountModalOpen}
+                onChangeClick={() => {
+                    setAccountModalOpen(false)
+                    setWalletModalOpen(true)
+                }}
+            />
+            <WalletModal open={walletModalOpen} setOpen={setWalletModalOpen} />
         </>
     )
 }
@@ -17,17 +32,13 @@ function UnwrappedChat() {
 export default function Chat() {
     const account = useAccount()
 
-    const walletAdapterId = useWalletAdapterId()
-
     const navigate = useNavigate()
 
-    const shouldRedirect = account === null || !walletAdapterId
-
     useEffect(() => {
-        if (shouldRedirect) {
+        if (account === null) {
             navigate('/')
         }
-    }, [navigate, shouldRedirect])
+    }, [navigate, account])
 
     // No account? Render nothing and wait. The above `useEffect` will
     // take us places.

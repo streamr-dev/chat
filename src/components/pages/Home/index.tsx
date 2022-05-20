@@ -1,12 +1,12 @@
 import tw from 'twin.macro'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import WalletModal from './WalletModal'
-import { useAccount, useWalletAdapterId } from '../../../features/session'
+import WalletModal from '../../WalletModal'
 import Page from '../../Page'
 import PoweredBy from './PoweredBy'
-import CreateRoomButton from './CreateRoomButton'
-import Nav from './Nav'
+import ConnectButton from './ConnectButton'
+import { useAccount } from '../../../features/wallet'
+import Navbar from '../../Navbar'
 
 function UnwrappedHome() {
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
@@ -14,7 +14,7 @@ function UnwrappedHome() {
     return (
         <>
             <Page>
-                <Nav onConnectClick={() => void setWalletModalOpen(true)} />
+                <Navbar />
                 <div
                     css={[
                         tw`
@@ -42,7 +42,9 @@ function UnwrappedHome() {
                         >
                             Hello world.
                         </h1>
-                        <CreateRoomButton />
+                        <ConnectButton
+                            onClick={() => void setWalletModalOpen(true)}
+                        />
                     </div>
                 </div>
                 <PoweredBy />
@@ -55,8 +57,6 @@ function UnwrappedHome() {
 export default function Home() {
     const account = useAccount()
 
-    const adapterId = useWalletAdapterId()
-
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -64,10 +64,6 @@ export default function Home() {
             navigate('/chat')
         }
     }, [navigate, account])
-
-    if (typeof account === 'undefined' && adapterId) {
-        return null
-    }
 
     return <UnwrappedHome />
 }

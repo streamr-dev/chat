@@ -1,18 +1,24 @@
 import tw from 'twin.macro'
-import { useAccount } from '../../../features/session'
+import { useAccount } from '../../../features/wallet'
 import trunc from '../../../utils/trunc'
 import Navbar, { NavButton } from '../../Navbar'
 import Text from '../../Text'
 
-export default function Nav() {
+type Props = {
+    onAccountClick?: () => void
+}
+
+export default function Nav({ onAccountClick }: Props) {
     const account = useAccount()
 
     return (
         <Navbar>
             <NavButton
+                onClick={onAccountClick}
                 css={[
                     tw`
                         bg-[rgba(255, 255, 255, 0.3)]
+                        pl-7
                     `,
                 ]}
             >
@@ -42,7 +48,7 @@ export default function Nav() {
                     </svg>
                 </div>
                 <div>
-                    <Text>{trunc(account)}</Text>
+                    <Text>{trunc(account as string)}</Text>
                 </div>
             </NavButton>
         </Navbar>
