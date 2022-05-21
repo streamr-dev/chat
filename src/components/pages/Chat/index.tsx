@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import tw from 'twin.macro'
 import { useAccount } from '../../../features/wallet'
 import Page from '../../Page'
 import WalletModal from '../../WalletModal'
@@ -19,10 +20,35 @@ function UnwrappedChat() {
         }
     }
 
+    const { current: roomIds = [] } = useRef()
+
     return (
-        <>
-            <Page>
+        <MessageTransmitter>
+            <Page title="Let's chat!">
                 <Nav onAccountClick={() => void setAccountModalOpen(true)} />
+                <main
+                    css={[
+                        tw`
+                            w-screen
+                            h-screen
+                            p-10
+                            pt-[91px]
+                        `,
+                    ]}
+                >
+                    <div
+                        css={[
+                            tw`
+                                w-full
+                                h-full
+                                relative
+                            `,
+                        ]}
+                    >
+                        <RoomList />
+                        <Convo />
+                    </div>
+                </main>
             </Page>
             <AccountModal
                 open={accountModalOpen}
@@ -33,7 +59,11 @@ function UnwrappedChat() {
                 }}
             />
             <WalletModal open={walletModalOpen} setOpen={toggleWalletModal} />
-        </>
+            {roomIds.map((id) => (
+                <RoomNameLoader key={id} roomId={id} />
+            ))}
+            <InvitationListener />
+        </MessageTransmitter>
     )
 }
 
@@ -55,4 +85,25 @@ export default function Chat() {
     }
 
     return <UnwrappedChat />
+}
+
+function MessageTransmitter(props: any) {
+    return <Fragment {...props} />
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function RoomNameLoader(props: any) {
+    return null
+}
+
+function InvitationListener() {
+    return null
+}
+
+function RoomList() {
+    return null
+}
+
+function Convo() {
+    return null
 }
