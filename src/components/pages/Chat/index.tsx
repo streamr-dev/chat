@@ -11,6 +11,14 @@ function UnwrappedChat() {
 
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
 
+    function toggleWalletModal(state: boolean) {
+        setWalletModalOpen(state)
+
+        if (state === false) {
+            setAccountModalOpen(true)
+        }
+    }
+
     return (
         <>
             <Page>
@@ -24,7 +32,7 @@ function UnwrappedChat() {
                     setWalletModalOpen(true)
                 }}
             />
-            <WalletModal open={walletModalOpen} setOpen={setWalletModalOpen} />
+            <WalletModal open={walletModalOpen} setOpen={toggleWalletModal} />
         </>
     )
 }
