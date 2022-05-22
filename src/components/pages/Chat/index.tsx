@@ -5,12 +5,16 @@ import { useAccount } from '../../../features/wallet'
 import Page from '../../Page'
 import WalletModal from '../../WalletModal'
 import AccountModal from './AccountModal'
+import AddRoomButton from './AddRoomButton'
+import AddRoomModal from './AddRoomModal'
 import Nav from './Nav'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
 
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
+
+    const [roomModalOpen, setRoomModalOpen] = useState<boolean>(false)
 
     function toggleWalletModal(state: boolean) {
         setWalletModalOpen(state)
@@ -45,7 +49,21 @@ function UnwrappedChat() {
                             `,
                         ]}
                     >
-                        <RoomList />
+                        <aside
+                            css={[
+                                tw`
+                                    h-full
+                                    w-[22rem]
+                                    bg-[rgba(255,0,0,0.2)]
+                                    overflow-auto
+                                `,
+                            ]}
+                        >
+                            <AddRoomButton
+                                onClick={() => void setRoomModalOpen(true)}
+                            />
+                            {/* existing rooms */}
+                        </aside>
                         <Convo />
                     </div>
                 </main>
@@ -63,6 +81,7 @@ function UnwrappedChat() {
                 <RoomNameLoader key={id} roomId={id} />
             ))}
             <InvitationListener />
+            <AddRoomModal open={roomModalOpen} setOpen={setRoomModalOpen} />
         </MessageTransmitter>
     )
 }
@@ -97,10 +116,6 @@ function RoomNameLoader(props: any) {
 }
 
 function InvitationListener() {
-    return null
-}
-
-function RoomList() {
     return null
 }
 

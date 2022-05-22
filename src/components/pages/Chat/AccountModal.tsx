@@ -7,6 +7,7 @@ import Modal, { ModalProps } from '../../Modal'
 import Text from '../../Text'
 import useCopy from '../../../hooks/useCopy'
 import PrimaryButton from '../../PrimaryButton'
+import TextField from '../../TextField'
 
 type Props = ModalProps & {
     onChangeClick?: () => void
@@ -47,26 +48,15 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
                     </PrimaryButton>
                 </div>
             </div>
-            <div
+            <TextField
+                readOnly
+                defaultValue={trunc(account!)}
                 css={[
                     tw`
-                        appearance-none
-                        bg-[#F1F4F7]
-                        border-0
-                        font-medium
                         mt-3
-                        outline-none
-                        px-4
-                        py-5
-                        rounded-lg
-                        text-[#36404e]
-                        text-[18px]
-                        w-full
                     `,
                 ]}
-            >
-                <Text>{trunc(account!)}</Text>
-            </div>
+            />
             <div
                 css={[
                     tw`
