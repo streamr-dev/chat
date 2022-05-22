@@ -6,6 +6,7 @@ import Button from '../../Button'
 import Modal, { ModalProps } from '../../Modal'
 import Text from '../../Text'
 import useCopy from '../../../hooks/useCopy'
+import PrimaryButton from '../../PrimaryButton'
 
 type Props = ModalProps & {
     onChangeClick?: () => void
@@ -41,22 +42,9 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
                     Connected with {label}
                 </div>
                 <div>
-                    <Button
-                        onClick={onChangeClick}
-                        css={[
-                            css`
-                                color: inherit;
-                            `,
-                            tw`
-                                bg-[#EFF4F9]
-                                h-[30px]
-                                px-3
-                                rounded-[15px]
-                            `,
-                        ]}
-                    >
+                    <PrimaryButton onClick={onChangeClick}>
                         <Text>Change</Text>
-                    </Button>
+                    </PrimaryButton>
                 </div>
             </div>
             <div
