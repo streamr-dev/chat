@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes } from 'react'
 import tw from 'twin.macro'
 import Button from './Button'
 
-export default function PrimaryButton(
+export default function SecondaryButton(
     props: ButtonHTMLAttributes<HTMLButtonElement>
 ) {
     return (
@@ -10,9 +10,8 @@ export default function PrimaryButton(
             {...props}
             css={[
                 tw`
-                    text-[white]
-                    font-medium
-                    bg-[#FF5924]
+                    text-[#59799C]
+                    bg-[#EFF4F9]
                     h-[30px]
                     px-3
                     rounded-[15px]

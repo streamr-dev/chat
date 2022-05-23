@@ -1,13 +1,12 @@
-import tw, { css } from 'twin.macro'
+import tw from 'twin.macro'
 import { useAccount, useWalletIntegrationId } from '../../../features/wallet'
 import integrations from '../../../utils/integrations'
 import trunc from '../../../utils/trunc'
-import Button from '../../Button'
 import Modal, { ModalProps } from '../../Modal'
 import Text from '../../Text'
 import useCopy from '../../../hooks/useCopy'
-import PrimaryButton from '../../PrimaryButton'
 import TextField from '../../TextField'
+import SecondaryButton from '../../SecondaryButton'
 
 type Props = ModalProps & {
     onChangeClick?: () => void
@@ -43,9 +42,9 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
                     Connected with {label}
                 </div>
                 <div>
-                    <PrimaryButton onClick={onChangeClick}>
+                    <SecondaryButton onClick={onChangeClick}>
                         <Text>Change</Text>
-                    </PrimaryButton>
+                    </SecondaryButton>
                 </div>
             </div>
             <TextField
