@@ -15,7 +15,7 @@ export default function PrimaryButton(
                     bg-[#FF5924]
                     h-[30px]
                     px-3
-                    rounded-[15px]
+                    rounded-full
                 `,
             ]}
         />

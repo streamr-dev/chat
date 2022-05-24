@@ -14,7 +14,7 @@ export default function SecondaryButton(
                     bg-[#EFF4F9]
                     h-[30px]
                     px-3
-                    rounded-[15px]
+                    rounded-full
                 `,
             ]}
         />

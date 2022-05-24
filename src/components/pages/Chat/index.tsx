@@ -7,6 +7,7 @@ import WalletModal from '../../WalletModal'
 import AccountModal from './AccountModal'
 import AddRoomButton from './AddRoomButton'
 import AddRoomModal from './AddRoomModal'
+import Conversation from './Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
 
@@ -66,7 +67,21 @@ function UnwrappedChat() {
                             <RoomButton roomId="ROOM_ID" />
                             <RoomButton roomId="dummy" />
                         </aside>
-                        <Convo />
+                        <div
+                            css={[
+                                tw`
+                                    bg-white
+                                    rounded-[20px]
+                                    absolute
+                                    bottom-0
+                                    left-[24rem]
+                                    right-0
+                                    top-0
+                                `,
+                            ]}
+                        >
+                            <Conversation />
+                        </div>
                     </div>
                 </main>
             </Page>
@@ -118,9 +133,5 @@ function RoomNameLoader(props: any) {
 }
 
 function InvitationListener() {
-    return null
-}
-
-function Convo() {
     return null
 }
