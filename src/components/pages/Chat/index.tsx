@@ -8,6 +8,7 @@ import AccountModal from './AccountModal'
 import AddRoomButton from './AddRoomButton'
 import AddRoomModal from './AddRoomModal'
 import Nav from './Nav'
+import RoomButton from './RoomButton'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -54,15 +55,16 @@ function UnwrappedChat() {
                                 tw`
                                     h-full
                                     w-[22rem]
-                                    bg-[rgba(255,0,0,0.2)]
                                     overflow-auto
+                                    [button + button]:mt-4
                                 `,
                             ]}
                         >
                             <AddRoomButton
                                 onClick={() => void setRoomModalOpen(true)}
                             />
-                            {/* existing rooms */}
+                            <RoomButton roomId="ROOM_ID" />
+                            <RoomButton roomId="dummy" />
                         </aside>
                         <Convo />
                     </div>
