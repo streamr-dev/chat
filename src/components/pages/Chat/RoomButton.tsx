@@ -38,6 +38,7 @@ export default function RoomButton({ roomId, ...props }: Props) {
                         tw`
                             text-[#59799C]
                             text-[14px]
+                            font-plex
                         `,
                     ]}
                 >

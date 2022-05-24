@@ -7,6 +7,7 @@ module.exports = {
             },
             fontFamily: {
                 karelia: ['Karelia', 'sans-serif'],
+                plex: ['IBM Plex Sans', 'sans-serif'],
             },
             fontSize: {
                 h1: ['5rem', { lineHeight: 'normal', letterSpacing: '0' }],
