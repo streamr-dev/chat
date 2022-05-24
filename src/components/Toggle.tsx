@@ -51,7 +51,12 @@ export default function Toggle({ value: valueProp = false, onChange }: Props) {
                     p-[2px]
                     w-10
                     rounded-full
+                    transition-colors
                 `,
+                value &&
+                    tw`
+                        bg-[#00875A]
+                    `,
             ]}
         >
             <div
