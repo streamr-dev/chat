@@ -5,7 +5,6 @@ import Form from '../../../Form'
 import Hint from '../../../Hint'
 import Label from '../../../Label'
 import Modal, { ModalProps } from '../../../Modal'
-import PrimaryButton from '../../../PrimaryButton'
 import SelectField, {
     Option as RawOption,
     SingleValue as RawSingleValue,
