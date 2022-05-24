@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 import ReactModal from 'react-modal'
 import tw from 'twin.macro'
-import noOp from '../utils/noOp'
 
 export type ModalProps = {
     open?: boolean
@@ -11,6 +10,7 @@ export type ModalProps = {
 type Props = ModalProps & {
     children?: ReactNode
     title: string
+    onClose?: () => void
 }
 
 const customStyles = {
@@ -21,15 +21,28 @@ const customStyles = {
 
 export default function Modal({
     open = false,
-    setOpen = noOp,
+    setOpen,
     children,
     title,
+    onClose,
 }: Props) {
+    function close() {
+        if (typeof setOpen !== 'function') {
+            return
+        }
+
+        setOpen(false)
+
+        if (typeof onClose === 'function') {
+            onClose()
+        }
+    }
+
     return (
         <ReactModal
             isOpen={open}
             contentLabel="Connect a wallet"
-            onRequestClose={() => void setOpen(false)}
+            onRequestClose={close}
             appElement={document.getElementById('root') as HTMLElement}
             style={customStyles}
             css={[
@@ -79,7 +92,7 @@ export default function Modal({
                                 [svg]:block
                             `,
                         ]}
-                        onClick={() => void setOpen(false)}
+                        onClick={close}
                     >
                         <svg
                             width="32"

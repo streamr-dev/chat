@@ -4,6 +4,8 @@ import AddMemberIcon from '../../icons/AddMemberIcon'
 import CopyIcon from '../../icons/CopyIcon'
 import DeleteIcon from '../../icons/DeleteIcon'
 import EditMembersIcon from '../../icons/EditMembersIcon'
+import AddMemberModal from '../AddMemberModal'
+import EditMembersModal from '../EditMembersModal'
 import Form from '../Form'
 import Menu, { MenuButtonItem, MenuContainer, MenuSeparatorItem } from '../Menu'
 import SecondaryButton from '../SecondaryButton'
@@ -37,11 +39,16 @@ export default function Conversation() {
         setNewRoomName(e.target.value)
     }
 
-    const [isRoomMenuOpen, setIsRoomMenuOpen] = useState<boolean>(false)
+    const [roomMenuOpen, setRoomMenuOpen] = useState<boolean>(false)
 
     const { current: messages } = useRef<string[]>(
         'lorem ipsum dolor sit emat'.split(/\s/)
     )
+
+    const [addMemberModalOpen, setAddMemberModalOpen] = useState<boolean>(false)
+
+    const [editMembersModalOpen, setEditMembersModalOpen] =
+        useState<boolean>(false)
 
     return (
         <>
@@ -152,15 +159,13 @@ export default function Conversation() {
                         <MenuContainer
                             tw="ml-3"
                             onMouseDownOutside={() =>
-                                void setIsRoomMenuOpen(false)
+                                void setRoomMenuOpen(false)
                             }
                         >
                             <ActionButton
-                                active={isRoomMenuOpen}
+                                active={roomMenuOpen}
                                 onClick={() =>
-                                    void setIsRoomMenuOpen(
-                                        (current) => !current
-                                    )
+                                    void setRoomMenuOpen((current) => !current)
                                 }
                             >
                                 <svg
@@ -184,12 +189,24 @@ export default function Conversation() {
                                     />
                                 </svg>
                             </ActionButton>
-                            {isRoomMenuOpen && (
+                            {roomMenuOpen && (
                                 <Menu>
-                                    <MenuButtonItem icon={<AddMemberIcon />}>
+                                    <MenuButtonItem
+                                        icon={<AddMemberIcon />}
+                                        onClick={() => {
+                                            setAddMemberModalOpen(true)
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
                                         Add member
                                     </MenuButtonItem>
-                                    <MenuButtonItem icon={<EditMembersIcon />}>
+                                    <MenuButtonItem
+                                        icon={<EditMembersIcon />}
+                                        onClick={() => {
+                                            setEditMembersModalOpen(true)
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
                                         Edit members
                                     </MenuButtonItem>
                                     <MenuSeparatorItem />
@@ -237,6 +254,16 @@ export default function Conversation() {
                 </div>
             </div>
             <MessageInput />
+            <>
+                <AddMemberModal
+                    open={addMemberModalOpen}
+                    setOpen={setAddMemberModalOpen}
+                />
+                <EditMembersModal
+                    open={editMembersModalOpen}
+                    setOpen={setEditMembersModalOpen}
+                />
+            </>
         </>
     )
 }

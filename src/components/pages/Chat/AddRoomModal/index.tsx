@@ -1,5 +1,6 @@
 import { FC, useState } from 'react'
 import tw from 'twin.macro'
+import isBlank from '../../../../utils/isBlank'
 import Form from '../../../Form'
 import Hint from '../../../Hint'
 import Label from '../../../Label'
@@ -9,6 +10,7 @@ import SelectField, {
     Option as RawOption,
     SingleValue as RawSingleValue,
 } from '../../../SelectField'
+import Submit from '../../../Submit'
 import Text from '../../../Text'
 import TextField from '../../../TextField'
 import Toggle from '../../../Toggle'
@@ -55,12 +57,25 @@ export default function AddRoomModal(props: ModalProps) {
         privacyOptions[0]
     )
 
+    const [roomName, setRoomName] = useState<string>('')
+
+    const disabled = isBlank(roomName)
+
     return (
-        <Modal {...props} title="Create new room">
+        <Modal
+            {...props}
+            title="Create new room"
+            onClose={() => void setRoomName('')}
+        >
             <Form>
                 <>
                     <Label htmlFor="roomName">Name</Label>
-                    <TextField placeholder="e.g. giggling-bear" id="roomName" />
+                    <TextField
+                        placeholder="e.g. giggling-bear"
+                        id="roomName"
+                        value={roomName}
+                        onChange={(e) => void setRoomName(e.target.value)}
+                    />
                     <Hint>The room name will be publicly visible.</Hint>
                     <Hint>
                         You may use alphanumeric characters, as well as dashes
@@ -121,36 +136,7 @@ export default function AddRoomModal(props: ModalProps) {
                     </div>
                 </>
                 <>
-                    <div
-                        css={[
-                            tw`
-                                flex
-                                mt-12
-                            `,
-                        ]}
-                    >
-                        <div
-                            css={[
-                                tw`
-                                    flex-grow
-                                `,
-                            ]}
-                        />
-                        <div>
-                            <PrimaryButton
-                                type="submit"
-                                css={[
-                                    tw`
-                                        h-12
-                                        rounded-[24px]
-                                        px-8
-                                    `,
-                                ]}
-                            >
-                                <Text>Create</Text>
-                            </PrimaryButton>
-                        </div>
-                    </div>
+                    <Submit label="Create" disabled={disabled} />
                 </>
             </Form>
         </Modal>
