@@ -253,6 +253,7 @@ export default function Conversation() {
                     </div>
                 </div>
             </div>
+            {/* @TODO Hide the input when room id is undef. */}
             <MessageInput />
             <>
                 <AddMemberModal
