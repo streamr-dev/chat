@@ -21,6 +21,8 @@ export default function Button({ type = 'button', ...props }: Props) {
                     hover:translate-y-[-2%]
                     active:duration-[50ms]
                     active:translate-y-[1%]
+                    disabled:opacity-50
+                    disabled:cursor-default
                 `,
             ]}
             type={type}
