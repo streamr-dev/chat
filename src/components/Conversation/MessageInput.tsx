@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import tw from 'twin.macro'
-import focus from '../../../utils/focus'
-import Form from '../../Form'
+import focus from '../../utils/focus'
+import Form from '../Form'
 
 enum MessageType {
     Text = 'text',

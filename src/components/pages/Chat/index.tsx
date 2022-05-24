@@ -7,7 +7,7 @@ import WalletModal from '../../WalletModal'
 import AccountModal from './AccountModal'
 import AddRoomButton from './AddRoomButton'
 import AddRoomModal from './AddRoomModal'
-import Conversation from './Conversation'
+import Conversation from '../../Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
 

@@ -1,17 +1,14 @@
 import { ButtonHTMLAttributes, useLayoutEffect, useRef, useState } from 'react'
 import tw, { css } from 'twin.macro'
-import AddMemberIcon from '../../../icons/AddMemberIcon'
-import CopyIcon from '../../../icons/CopyIcon'
-import DeleteIcon from '../../../icons/DeleteIcon'
-import EditMembersIcon from '../../../icons/EditMembersIcon'
-import Form from '../../Form'
-import Menu, {
-    MenuButtonItem,
-    MenuContainer,
-    MenuSeparatorItem,
-} from '../../Menu'
-import SecondaryButton from '../../SecondaryButton'
-import Text from '../../Text'
+import AddMemberIcon from '../../icons/AddMemberIcon'
+import CopyIcon from '../../icons/CopyIcon'
+import DeleteIcon from '../../icons/DeleteIcon'
+import EditMembersIcon from '../../icons/EditMembersIcon'
+import Form from '../Form'
+import Menu, { MenuButtonItem, MenuContainer, MenuSeparatorItem } from '../Menu'
+import SecondaryButton from '../SecondaryButton'
+import Text from '../Text'
+import Message from './Message'
 import MessageInput from './MessageInput'
 
 export default function Conversation() {
@@ -43,7 +40,7 @@ export default function Conversation() {
     const [isRoomMenuOpen, setIsRoomMenuOpen] = useState<boolean>(false)
 
     const { current: messages } = useRef<string[]>(
-        'lorem ipsum dolor sit emat lorem ipsum dolor sit emat'.split(/\s/)
+        'lorem ipsum dolor sit emat'.split(/\s/)
     )
 
     return (
@@ -323,12 +320,24 @@ function MessageFeed({ messages }: MessageFeedProps) {
                     overflow-auto
                     px-6
                     pt-6
+                    [> *]:mt-[0.625rem]
                 `,
             ]}
         >
             {messages.map((message, index) => (
-                <div key={index}>{message}</div>
+                <Message
+                    key={index}
+                    sender={getSender(message)}
+                    incoming={message === 'lorem'}
+                    createdAt={Date.now()}
+                >
+                    {message}
+                </Message>
             ))}
         </div>
     )
+}
+
+function getSender(message: string) {
+    return message === 'lorem' ? '0xasdas' : '0xefsdf'
 }
