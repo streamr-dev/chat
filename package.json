@@ -45,7 +45,7 @@
     "react-scripts": "^5.0.1",
     "react-select": "^5.3.2",
     "react-switch": "^6.0.0",
-    "react-toastify": "^8.2.0",
+    "react-toastify": "^9.0.1",
     "streamr-client": "^6.0.4",
     "strip-hex-prefix": "^1.0.0",
     "styled-components": "^5.3.5",
