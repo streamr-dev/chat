@@ -1,16 +1,19 @@
+import { forwardRef, Ref } from 'react'
 import tw, { css } from 'twin.macro'
 
 type Props = React.ButtonHTMLAttributes<HTMLButtonElement>
 
-export default function Button({ type = 'button', ...props }: Props) {
-    return (
-        <button
-            {...props}
-            css={[
-                css`
-                    will-change: transform;
-                `,
-                tw`
+const Button = forwardRef(
+    ({ type = 'button', ...props }: Props, ref: Ref<HTMLButtonElement>) => {
+        return (
+            <button
+                {...props}
+                ref={ref}
+                css={[
+                    css`
+                        will-change: transform;
+                    `,
+                    tw`
                     appearance-none
                     bg-[#ffffff]
                     border-0
@@ -24,8 +27,11 @@ export default function Button({ type = 'button', ...props }: Props) {
                     disabled:opacity-50
                     disabled:cursor-default
                 `,
-            ]}
-            type={type}
-        />
-    )
-}
+                ]}
+                type={type}
+            />
+        )
+    }
+)
+
+export default Button

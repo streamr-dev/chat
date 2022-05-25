@@ -5,11 +5,21 @@ import {
     ReactNode,
     useEffect,
     useRef,
+    useState,
 } from 'react'
 import tw from 'twin.macro'
 import Text from './Text'
 
-export default function Menu(props: HTMLAttributes<HTMLDivElement>) {
+type Props = HTMLAttributes<HTMLDivElement> & {
+    anchorEl?: HTMLButtonElement | null
+}
+
+export default function Menu({ anchorEl, ...props }: Props) {
+    const [[x, y], setPosition] = useState<[number, number]>([NaN, NaN])
+
+    // @TODO on mount: create a portal, add the menu body into it, and position it properly
+    // @TODO remove portal element on unmount
+
     return (
         <div
             {...props}

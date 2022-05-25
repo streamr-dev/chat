@@ -41,7 +41,6 @@ export default function Modal({
     return (
         <ReactModal
             isOpen={open}
-            contentLabel="Connect a wallet"
             onRequestClose={close}
             appElement={document.getElementById('root') as HTMLElement}
             style={customStyles}
