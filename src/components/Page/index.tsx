@@ -1,9 +1,10 @@
+import { ReactNode } from 'react'
 import { Helmet } from 'react-helmet'
 import tw, { css } from 'twin.macro'
-import { DefaultProps } from '../../../types/common'
 import Background from './background.png'
 
-type Props = DefaultProps & {
+type Props = {
+    children?: ReactNode
     title?: string
 }
 
