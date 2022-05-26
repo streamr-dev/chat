@@ -2,18 +2,15 @@ import tw from 'twin.macro'
 import { format } from 'date-fns'
 import Text from '../Text'
 import AddMemberIcon from '../../icons/AddMemberIcon'
-import Button from '../Button'
 import trunc from '../../utils/trunc'
+import { useSelectedRoom } from '../../features/rooms/hooks'
+import UtilityButton from '../UtilityButton'
 
 type Props = {
     onAddMemberClick?: () => void
 }
 
 export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
-    const roomCreatedAt = Date.now()
-
-    const creator = '0xababaababaababaababaababaababaababaababa'
-
     return (
         <div
             css={[
@@ -29,45 +26,67 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                 `,
             ]}
         >
-            {roomCreatedAt ? (
-                <>
-                    <div
-                        css={[
-                            tw`
-                                block
-                                tracking-[0.02em]
-                                mb-8
-                            `,
-                        ]}
-                    >
-                        <span tw="font-medium">{trunc(creator)}</span> created
-                        this room on{' '}
-                        {format(roomCreatedAt, 'iiii, LLL do yyyy')}
-                    </div>
-                    <Button
-                        onClick={onAddMemberClick}
-                        css={[
-                            tw`
-                                bg-[#FFF2EE]
-                                text-[#FF5924]
-                                flex
-                                h-14
-                                px-8
-                                rounded-full
-                                items-center
-                                font-medium
-                            `,
-                        ]}
-                    >
-                        <div tw="mr-2">
-                            <AddMemberIcon />
-                        </div>
-                        <div tw="flex-grow">
-                            <Text>Add member</Text>
-                        </div>
-                    </Button>
-                </>
-            ) : null}
+            <div
+                css={[
+                    tw`
+                            block
+                            tracking-[0.02em]
+                            mb-8
+                            empty:hidden
+                        `,
+                ]}
+            >
+                <Credits />
+            </div>
+            <UtilityButton
+                onClick={onAddMemberClick}
+                css={[
+                    tw`
+                        flex
+                        items-center
+                    `,
+                ]}
+            >
+                <div tw="mr-2">
+                    <AddMemberIcon />
+                </div>
+                <div tw="flex-grow">
+                    <Text>Add member</Text>
+                </div>
+            </UtilityButton>
         </div>
     )
+}
+
+function Credits() {
+    const { createdAt, createdBy } = useSelectedRoom() || {}
+
+    if (createdAt) {
+        return (
+            <>
+                <span
+                    css={[
+                        !!createdBy &&
+                            tw`
+                                font-medium
+                            `,
+                    ]}
+                >
+                    {createdBy ? trunc(createdBy) : 'Someone'}
+                </span>{' '}
+                created this room on {format(createdAt, 'iiii, LLL do yyyy')}.
+            </>
+        )
+    }
+
+    if (createdBy) {
+        return (
+            <>
+                Room created by <span tw="font-medium">{trunc(createdBy)}</span>
+                .
+            </>
+        )
+    }
+
+    return null
 }

@@ -1,5 +1,8 @@
 import { FC, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
+import { createRoom } from '../../../../features/rooms/actions'
+import { useWalletAccount } from '../../../../features/wallet/hooks'
 import isBlank from '../../../../utils/isBlank'
 import Form from '../../../Form'
 import Hint from '../../../Hint'
@@ -51,22 +54,54 @@ const privacyOptions: PrivacyOption[] = [
     },
 ]
 
-export default function AddRoomModal(props: ModalProps) {
+export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(
         privacyOptions[0]
     )
 
     const [roomName, setRoomName] = useState<string>('')
 
-    const disabled = isBlank(roomName)
+    const canSubmit = !isBlank(roomName)
+
+    const dispatch = useDispatch()
+
+    const account = useWalletAccount()
+
+    function onClose() {
+        setRoomName('')
+        setPrivacySetting(privacyOptions[0])
+    }
+
+    function onSubmit() {
+        if (!canSubmit) {
+            return
+        }
+
+        dispatch(
+            createRoom({
+                createdAt: Date.now(),
+                createdBy: account!,
+                name: roomName,
+            })
+        )
+
+        if (typeof setOpen === 'function') {
+            setOpen(false)
+            onClose()
+        }
+    }
 
     return (
         <Modal
             {...props}
             title="Create new room"
-            onClose={() => void setRoomName('')}
+            setOpen={setOpen}
+            onClose={() => {
+                setRoomName('')
+                setPrivacySetting(privacyOptions[0])
+            }}
         >
-            <Form>
+            <Form onSubmit={onSubmit}>
                 <>
                     <Label htmlFor="roomName">Name</Label>
                     <TextField
@@ -135,7 +170,7 @@ export default function AddRoomModal(props: ModalProps) {
                     </div>
                 </>
                 <>
-                    <Submit label="Create" disabled={disabled} />
+                    <Submit label="Create" disabled={!canSubmit} />
                 </>
             </Form>
         </Modal>

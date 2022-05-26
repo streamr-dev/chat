@@ -18,6 +18,7 @@ export default function SidebarButton({
             type="button"
             css={[
                 tw`
+                    outline-none
                     appearance-none
                     h-[92px]
                     rounded-[20px]
@@ -28,6 +29,7 @@ export default function SidebarButton({
                     flex
                     items-center
                     transition-colors
+                    select-none
                     hover:bg-[rgba(255, 255, 255, 0.85)]
                 `,
                 active &&

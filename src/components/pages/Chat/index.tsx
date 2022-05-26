@@ -10,6 +10,9 @@ import Conversation from '../../Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
 import { useWalletAccount } from '../../../features/wallet/hooks'
+import { useRoomIds, useSelectedRoomId } from '../../../features/rooms/hooks'
+import UtilityButton from '../../UtilityButton'
+import Text from '../../Text'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -26,7 +29,9 @@ function UnwrappedChat() {
         }
     }
 
-    const { current: roomIds = [] } = useRef()
+    const roomIds = useRoomIds()
+
+    const selectedRoomId = useSelectedRoomId()
 
     return (
         <MessageTransmitter>
@@ -64,8 +69,9 @@ function UnwrappedChat() {
                             <AddRoomButton
                                 onClick={() => void setRoomModalOpen(true)}
                             />
-                            <RoomButton roomId="ROOM_ID" />
-                            <RoomButton roomId="dummy" />
+                            {roomIds.map((roomId) => (
+                                <RoomButton key={roomId} roomId={roomId} />
+                            ))}
                         </aside>
                         <div
                             css={[
@@ -80,7 +86,30 @@ function UnwrappedChat() {
                                 `,
                             ]}
                         >
-                            <Conversation />
+                            {selectedRoomId ? (
+                                <Conversation />
+                            ) : (
+                                <div
+                                    css={[
+                                        tw`
+                                            h-full
+                                            w-full
+                                            flex
+                                            flex-col
+                                            items-center
+                                            justify-center
+                                        `,
+                                    ]}
+                                >
+                                    <UtilityButton
+                                        onClick={() =>
+                                            void setRoomModalOpen(true)
+                                        }
+                                    >
+                                        <Text>Add new room</Text>
+                                    </UtilityButton>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </main>
@@ -94,9 +123,6 @@ function UnwrappedChat() {
                 }}
             />
             <WalletModal open={walletModalOpen} setOpen={toggleWalletModal} />
-            {roomIds.map((id) => (
-                <RoomNameLoader key={id} roomId={id} />
-            ))}
             <InvitationListener />
             <AddRoomModal open={roomModalOpen} setOpen={setRoomModalOpen} />
         </MessageTransmitter>
@@ -125,11 +151,6 @@ export default function Chat() {
 
 function MessageTransmitter(props: any) {
     return <Fragment {...props} />
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function RoomNameLoader(props: any) {
-    return null
 }
 
 function InvitationListener() {

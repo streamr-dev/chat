@@ -1,5 +1,12 @@
 import { ButtonHTMLAttributes } from 'react'
+import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
+import { selectRoom } from '../../../features/rooms/actions'
+import {
+    useRoomName,
+    useRoomRecentMessage,
+    useSelectedRoomId,
+} from '../../../features/rooms/hooks'
 import getIdenticon from '../../../getters/getIdenticon'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
@@ -12,15 +19,20 @@ type Props = Omit<
 }
 
 export default function RoomButton({ roomId, ...props }: Props) {
-    const roomName = undefined
+    const roomName = useRoomName(roomId)
 
-    const recentMessage = undefined
+    const recentMessage = useRoomRecentMessage(roomId)
+
+    const active = roomId === useSelectedRoomId()
+
+    const dispatch = useDispatch()
 
     return (
         <SidebarButton
             {...props}
-            active={roomId === 'ROOM_ID'}
+            active={active}
             icon={<Icon roomId={roomId} />}
+            onClick={() => void dispatch(selectRoom(roomId))}
         >
             <div>
                 <div

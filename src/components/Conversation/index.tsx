@@ -1,5 +1,14 @@
-import { ButtonHTMLAttributes, useLayoutEffect, useRef, useState } from 'react'
+import {
+    ButtonHTMLAttributes,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react'
+import { useDispatch } from 'react-redux'
 import tw, { css } from 'twin.macro'
+import { deleteRoom, renameRoom } from '../../features/rooms/actions'
+import { useSelectedRoom, useSelectedRoomId } from '../../features/rooms/hooks'
 import useCopy from '../../hooks/useCopy'
 import AddMemberIcon from '../../icons/AddMemberIcon'
 import CopyIcon from '../../icons/CopyIcon'
@@ -18,15 +27,25 @@ import Message from './Message'
 import MessageInput from './MessageInput'
 
 export default function Conversation() {
-    const roomName = ''
+    const { name = '' } = useSelectedRoom() || {}
+
+    const selectedRoomId = useSelectedRoomId()
 
     const [isRoomNameEditable, setIsRoomNameEditable] = useState<boolean>(false)
 
-    const [newRoomName, setNewRoomName] = useState<string>(roomName)
+    const [newRoomName, setNewRoomName] = useState<string>(name)
+
+    useEffect(() => {
+        setNewRoomName(name)
+    }, [name])
+
+    useEffect(() => {
+        setIsRoomNameEditable(false)
+    }, [selectedRoomId])
 
     function abortNameEdit() {
         setIsRoomNameEditable(false)
-        setNewRoomName(roomName)
+        setNewRoomName(name)
     }
 
     function onNameDoubleClick() {
@@ -61,6 +80,13 @@ export default function Conversation() {
 
     const { copy } = useCopy()
 
+    const dispatch = useDispatch()
+
+    function onRenameSubmit() {
+        dispatch(renameRoom([selectedRoomId!, newRoomName]))
+        setIsRoomNameEditable(false)
+    }
+
     return (
         <>
             <Form
@@ -77,6 +103,7 @@ export default function Conversation() {
                         w-full
                     `,
                 ]}
+                onSubmit={onRenameSubmit}
             >
                 <div tw="flex-grow">
                     {isRoomNameEditable ? (
@@ -127,7 +154,7 @@ export default function Conversation() {
                             ]}
                         >
                             <Text tw="truncate">
-                                {roomName || 'Unnamed room'}&zwnj;
+                                {name || 'Unnamed room'}&zwnj;
                             </Text>
                         </div>
                     )}
@@ -206,7 +233,7 @@ export default function Conversation() {
                                 <MenuButtonItem
                                     icon={<CopyIcon />}
                                     onClick={() => {
-                                        copy('')
+                                        copy(selectedRoomId!)
                                         setRoomMenuOpen(false)
                                     }}
                                 >
@@ -216,6 +243,7 @@ export default function Conversation() {
                                 <MenuButtonItem
                                     icon={<DeleteIcon />}
                                     onClick={() => {
+                                        dispatch(deleteRoom(selectedRoomId!))
                                         setRoomMenuOpen(false)
                                     }}
                                 >
@@ -264,7 +292,6 @@ export default function Conversation() {
                     )}
                 </div>
             </div>
-            {/* @TODO Hide the input when room id is undef. */}
             <MessageInput />
             <>
                 <AddMemberModal
