@@ -1,5 +1,5 @@
 import tw from 'twin.macro'
-import { useAccount } from '../../../features/wallet'
+import { useWalletAccount } from '../../../features/wallet/hooks'
 import trunc from '../../../utils/trunc'
 import Navbar, { NavButton } from '../../Navbar'
 import Text from '../../Text'
@@ -9,7 +9,7 @@ type Props = {
 }
 
 export default function Nav({ onAccountClick }: Props) {
-    const account = useAccount()
+    const account = useWalletAccount()
 
     return (
         <Navbar>

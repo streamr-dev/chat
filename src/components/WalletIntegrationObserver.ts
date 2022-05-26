@@ -1,7 +1,8 @@
 import { ethers } from 'ethers'
 import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
-import { setAccount, useWalletIntegrationId } from '../features/wallet'
+import { setWalletAccount } from '../features/wallet/actions'
+import { useWalletIntegrationId } from '../features/wallet/hooks'
 import getConnector from '../utils/getConnector'
 
 export default function WalletIntegrationObserver() {
@@ -20,13 +21,13 @@ export default function WalletIntegrationObserver() {
 
         async function fn() {
             if (!provider || !isActive) {
-                dispatch(setAccount(null))
+                dispatch(setWalletAccount(null))
                 return
             }
 
             const web3Provider = new ethers.providers.Web3Provider(provider)
 
-            dispatch(setAccount(undefined))
+            dispatch(setWalletAccount(undefined))
 
             let accounts: string[] = []
 
@@ -40,7 +41,7 @@ export default function WalletIntegrationObserver() {
                 return
             }
 
-            dispatch(setAccount(accounts[0] || null))
+            dispatch(setWalletAccount(accounts[0] || null))
         }
 
         fn()

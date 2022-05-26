@@ -1,5 +1,4 @@
 import tw from 'twin.macro'
-import { useAccount, useWalletIntegrationId } from '../../../features/wallet'
 import integrations from '../../../utils/integrations'
 import trunc from '../../../utils/trunc'
 import Modal, { ModalProps } from '../../Modal'
@@ -8,6 +7,10 @@ import useCopy from '../../../hooks/useCopy'
 import TextField from '../../TextField'
 import SecondaryButton from '../../SecondaryButton'
 import getExplorerURL from '../../../utils/getExplorerURL'
+import {
+    useWalletAccount,
+    useWalletIntegrationId,
+} from '../../../features/wallet/hooks'
 
 type Props = ModalProps & {
     onChangeClick?: () => void
@@ -18,7 +21,7 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
 
     const { label } = integrations.get(integrationId!)!
 
-    const account = useAccount()
+    const account = useWalletAccount()
 
     const { copy, isCopied } = useCopy()
 

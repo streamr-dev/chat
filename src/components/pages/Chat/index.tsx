@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
-import { useAccount } from '../../../features/wallet'
 import Page from '../../Page'
 import WalletModal from '../../WalletModal'
 import AccountModal from './AccountModal'
@@ -10,6 +9,7 @@ import AddRoomModal from './AddRoomModal'
 import Conversation from '../../Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
+import { useWalletAccount } from '../../../features/wallet/hooks'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -104,7 +104,7 @@ function UnwrappedChat() {
 }
 
 export default function Chat() {
-    const account = useAccount()
+    const account = useWalletAccount()
 
     const navigate = useNavigate()
 

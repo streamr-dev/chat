@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { WalletIntegrationId } from '../../../types/wallet'
-import {
-    setWalletIntegrationId,
-    useWalletIntegrationId,
-} from '../../features/wallet'
+import { setWalletIntegrationId } from '../../features/wallet/actions'
+import { useWalletIntegrationId } from '../../features/wallet/hooks'
 import getConnector from '../../utils/getConnector'
 import integrations from '../../utils/integrations'
 import Modal, { ModalProps } from '../Modal'

@@ -5,8 +5,8 @@ import WalletModal from '../../WalletModal'
 import Page from '../../Page'
 import PoweredBy from './PoweredBy'
 import ConnectButton from './ConnectButton'
-import { useAccount } from '../../../features/wallet'
 import Navbar from '../../Navbar'
+import { useWalletAccount } from '../../../features/wallet/hooks'
 
 function UnwrappedHome() {
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
@@ -55,7 +55,7 @@ function UnwrappedHome() {
 }
 
 export default function Home() {
-    const account = useAccount()
+    const account = useWalletAccount()
 
     const navigate = useNavigate()
 
