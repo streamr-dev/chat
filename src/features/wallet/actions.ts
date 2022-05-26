@@ -4,6 +4,7 @@ import { WalletState } from '../../../types/wallet'
 export enum WalletAction {
     SetWalletIntegrationId = 'set wallet integration id',
     SetWalletAccount = 'set wallet account',
+    SetWalletProvider = 'set wallet provider',
 }
 
 export const setWalletIntegrationId = createAction<
@@ -12,4 +13,8 @@ export const setWalletIntegrationId = createAction<
 
 export const setWalletAccount = createAction<WalletState['account']>(
     WalletAction.SetWalletAccount
+)
+
+export const setWalletProvider = createAction<WalletState['provider']>(
+    WalletAction.SetWalletProvider
 )

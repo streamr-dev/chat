@@ -1,6 +1,7 @@
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet'
 import { initializeConnector } from '@web3-react/core'
 import { MetaMask } from '@web3-react/metamask'
+import { Provider } from '@web3-react/types'
 import { WalletConnect } from '@web3-react/walletconnect'
 import { FC } from 'react'
 
@@ -13,6 +14,7 @@ export enum WalletIntegrationId {
 export type WalletState = {
     account: string | undefined | null
     integrationId: WalletIntegrationId | undefined
+    provider: Provider | undefined
 }
 
 export type ConnectorMap = {
