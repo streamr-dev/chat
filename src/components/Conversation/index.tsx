@@ -1,5 +1,7 @@
+import copy from 'copy-to-clipboard'
 import { ButtonHTMLAttributes, useLayoutEffect, useRef, useState } from 'react'
 import tw, { css } from 'twin.macro'
+import useCopy from '../../hooks/useCopy'
 import AddMemberIcon from '../../icons/AddMemberIcon'
 import CopyIcon from '../../icons/CopyIcon'
 import DeleteIcon from '../../icons/DeleteIcon'
@@ -51,6 +53,12 @@ export default function Conversation() {
 
     const [editMembersModalOpen, setEditMembersModalOpen] =
         useState<boolean>(false)
+
+    const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
+        null
+    )
+
+    const { copy } = useCopy()
 
     return (
         <>
@@ -158,51 +166,62 @@ export default function Conversation() {
                                 />
                             </svg>
                         </ActionButton>
-                        <MenuContainer
+                        <ActionButton
                             tw="ml-3"
-                            onMouseDownOutside={() =>
-                                void setRoomMenuOpen(false)
+                            active={roomMenuOpen}
+                            onClick={() =>
+                                void setRoomMenuOpen((current) => !current)
                             }
+                            ref={setMenuAnchorEl}
                         >
-                            <ActionButton
-                                active={roomMenuOpen}
-                                onClick={() =>
-                                    void setRoomMenuOpen((current) => !current)
+                            <MoreIcon />
+                        </ActionButton>
+                        {roomMenuOpen && (
+                            <Menu
+                                anchorEl={menuAnchorEl}
+                                onMouseDownOutside={() =>
+                                    void setRoomMenuOpen(false)
                                 }
                             >
-                                <MoreIcon />
-                            </ActionButton>
-                            {roomMenuOpen && (
-                                <Menu>
-                                    <MenuButtonItem
-                                        icon={<AddMemberIcon />}
-                                        onClick={() => {
-                                            setAddMemberModalOpen(true)
-                                            setRoomMenuOpen(false)
-                                        }}
-                                    >
-                                        Add member
-                                    </MenuButtonItem>
-                                    <MenuButtonItem
-                                        icon={<EditMembersIcon />}
-                                        onClick={() => {
-                                            setEditMembersModalOpen(true)
-                                            setRoomMenuOpen(false)
-                                        }}
-                                    >
-                                        Edit members
-                                    </MenuButtonItem>
-                                    <MenuSeparatorItem />
-                                    <MenuButtonItem icon={<CopyIcon />}>
-                                        Copy room id
-                                    </MenuButtonItem>
-                                    <MenuSeparatorItem />
-                                    <MenuButtonItem icon={<DeleteIcon />}>
-                                        Delete room
-                                    </MenuButtonItem>
-                                </Menu>
-                            )}
-                        </MenuContainer>
+                                <MenuButtonItem
+                                    icon={<AddMemberIcon />}
+                                    onClick={() => {
+                                        setAddMemberModalOpen(true)
+                                        setRoomMenuOpen(false)
+                                    }}
+                                >
+                                    Add member
+                                </MenuButtonItem>
+                                <MenuButtonItem
+                                    icon={<EditMembersIcon />}
+                                    onClick={() => {
+                                        setEditMembersModalOpen(true)
+                                        setRoomMenuOpen(false)
+                                    }}
+                                >
+                                    Edit members
+                                </MenuButtonItem>
+                                <MenuSeparatorItem />
+                                <MenuButtonItem
+                                    icon={<CopyIcon />}
+                                    onClick={() => {
+                                        copy('')
+                                        setRoomMenuOpen(false)
+                                    }}
+                                >
+                                    Copy room id
+                                </MenuButtonItem>
+                                <MenuSeparatorItem />
+                                <MenuButtonItem
+                                    icon={<DeleteIcon />}
+                                    onClick={() => {
+                                        setRoomMenuOpen(false)
+                                    }}
+                                >
+                                    Delete room
+                                </MenuButtonItem>
+                            </Menu>
+                        )}
                     </div>
                 )}
             </Form>

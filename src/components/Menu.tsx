@@ -1,57 +1,49 @@
 import {
     ButtonHTMLAttributes,
     HTMLAttributes,
-    LinkHTMLAttributes,
+    AnchorHTMLAttributes,
     ReactNode,
     useEffect,
     useRef,
     useState,
 } from 'react'
-import tw from 'twin.macro'
+import { createPortal } from 'react-dom'
+import tw, { css } from 'twin.macro'
 import Text from './Text'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     anchorEl?: HTMLButtonElement | null
-}
-
-export default function Menu({ anchorEl, ...props }: Props) {
-    const [[x, y], setPosition] = useState<[number, number]>([NaN, NaN])
-
-    // @TODO on mount: create a portal, add the menu body into it, and position it properly
-    // @TODO remove portal element on unmount
-
-    return (
-        <div
-            {...props}
-            css={[
-                tw`
-                    bg-white
-                    absolute
-                    rounded-[10px]
-                    shadow-[0px 0px 10px rgba(0, 0, 0, 0.1)]
-                    w-[250px]
-                    min-h-[1rem]
-                    right-0
-                    top-[100%]
-                    mt-2
-                    py-1
-                    text-[0.875rem]
-                    overflow-hidden
-                `,
-            ]}
-        />
-    )
-}
-
-type MenuContainerProps = HTMLAttributes<HTMLDivElement> & {
     onMouseDownOutside?: () => void
 }
 
-export function MenuContainer({
+function getRect(element: HTMLElement | null | undefined) {
+    return element ? element.getBoundingClientRect() : undefined
+}
+
+export default function Menu({
+    anchorEl,
     onMouseDownOutside,
     ...props
-}: MenuContainerProps) {
+}: Props) {
+    const [rect, setRect] = useState(getRect(anchorEl))
+
+    const portalRootRef = useRef<HTMLDivElement>(document.createElement('div'))
+
+    useEffect(() => {
+        document.body.appendChild(portalRootRef.current)
+
+        return () => {
+            document.body.removeChild(portalRootRef.current)
+        }
+    }, [])
+
     const rootRef = useRef<HTMLDivElement>(null)
+
+    const anchorElRef = useRef(anchorEl)
+
+    useEffect(() => {
+        anchorElRef.current = anchorEl
+    }, [anchorEl])
 
     const onMouseDownOutsideRef = useRef(onMouseDownOutside)
 
@@ -60,10 +52,28 @@ export function MenuContainer({
     }, [onMouseDownOutside])
 
     useEffect(() => {
+        function onResize() {
+            setRect(getRect(anchorElRef.current))
+        }
+
+        window.addEventListener('resize', onResize)
+
+        return () => {
+            window.removeEventListener('resize', onResize)
+        }
+    }, [])
+
+    useEffect(() => {
         function handleClickOutside(e: any) {
             const { current: root } = rootRef
 
+            const { current: anchor } = anchorElRef
+
             if (!root || root.contains(e.target)) {
+                return
+            }
+
+            if (!anchor || anchor.contains(e.target)) {
                 return
             }
 
@@ -79,11 +89,39 @@ export function MenuContainer({
         }
     }, [])
 
-    return <div {...props} tw="relative" ref={rootRef} />
+    return createPortal(
+        <div
+            {...props}
+            ref={rootRef}
+            css={[
+                rect &&
+                    css`
+                        transform: translateX(${rect.x}px)
+                            translateX(${rect.width}px) translateX(-100%)
+                            translateY(${rect.y}px) translateY(${rect.height}px);
+                    `,
+                tw`
+                    bg-white
+                    absolute
+                    rounded-[10px]
+                    shadow-[0px 0px 10px rgba(0, 0, 0, 0.1)]
+                    w-[250px]
+                    min-h-[1rem]
+                    py-1
+                    text-[0.875rem]
+                    mt-2
+                    top-0
+                    left-0
+                    overflow-hidden
+                `,
+            ]}
+        />,
+        portalRootRef.current
+    )
 }
 
 type ClickableHTMLElementProps =
-    | LinkHTMLAttributes<HTMLAnchorElement>
+    | AnchorHTMLAttributes<HTMLAnchorElement>
     | ButtonHTMLAttributes<HTMLButtonElement>
 
 type MenuItemProps<T = ClickableHTMLElementProps> = T & {
@@ -104,7 +142,7 @@ function MenuItem({
     }
 
     if (Tag === 'a') {
-        props = propsProp as LinkHTMLAttributes<HTMLAnchorElement>
+        props = propsProp as AnchorHTMLAttributes<HTMLAnchorElement>
     }
 
     return (
@@ -144,7 +182,7 @@ function MenuItem({
 }
 
 export function MenuLinkItem(
-    props: MenuItemProps<LinkHTMLAttributes<HTMLAnchorElement>>
+    props: MenuItemProps<AnchorHTMLAttributes<HTMLAnchorElement>>
 ) {
     return <MenuItem {...props} tag="a" />
 }

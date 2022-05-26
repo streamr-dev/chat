@@ -7,6 +7,7 @@ import Text from '../../Text'
 import useCopy from '../../../hooks/useCopy'
 import TextField from '../../TextField'
 import SecondaryButton from '../../SecondaryButton'
+import getExplorerURL from '../../../utils/getExplorerURL'
 
 type Props = ModalProps & {
     onChangeClick?: () => void
@@ -66,7 +67,7 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
                 ]}
             >
                 <ExternalLink
-                    href={`https://etherscan.io/address/${account}`}
+                    href={getExplorerURL(account!)}
                     target="_blank"
                     rel="noopener noreferrer"
                 >

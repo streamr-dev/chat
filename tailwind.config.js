@@ -13,6 +13,9 @@ module.exports = {
                 h1: ['5rem', { lineHeight: 'normal', letterSpacing: '0' }],
                 plug: ['0.75rem', { lineHeight: 'normal', letterSpacing: '0' }],
             },
+            colors: {
+                debug: 'rgba(255, 0, 0, 0.1)',
+            },
         },
     },
     plugins: [],
