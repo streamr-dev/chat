@@ -13,6 +13,7 @@ import Form from '../Form'
 import Menu, { MenuButtonItem, MenuSeparatorItem } from '../Menu'
 import SecondaryButton from '../SecondaryButton'
 import Text from '../Text'
+import EmptyMessageFeed from './EmptyMessageFeed'
 import Message from './Message'
 import MessageInput from './MessageInput'
 
@@ -45,7 +46,8 @@ export default function Conversation() {
     const [roomMenuOpen, setRoomMenuOpen] = useState<boolean>(false)
 
     const { current: messages } = useRef<string[]>(
-        'lorem ipsum dolor sit emat'.split(/\s/)
+        // 'lorem ipsum dolor sit emat'.split(/\s/)
+        []
     )
 
     const [addMemberModalOpen, setAddMemberModalOpen] = useState<boolean>(false)
@@ -240,18 +242,26 @@ export default function Conversation() {
                         `,
                     ]}
                 >
-                    <div
-                        css={[
-                            tw`
-                                h-full
-                                flex
-                                flex-col
-                            `,
-                        ]}
-                    >
-                        <div tw="flex-grow" />
-                        <MessageFeed messages={messages} />
-                    </div>
+                    {messages.length ? (
+                        <div
+                            css={[
+                                tw`
+                                    h-full
+                                    flex
+                                    flex-col
+                                `,
+                            ]}
+                        >
+                            <div tw="flex-grow" />
+                            <MessageFeed messages={messages} />
+                        </div>
+                    ) : (
+                        <EmptyMessageFeed
+                            onAddMemberClick={() =>
+                                void setAddMemberModalOpen(true)
+                            }
+                        />
+                    )}
                 </div>
             </div>
             {/* @TODO Hide the input when room id is undef. */}

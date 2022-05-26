@@ -26,6 +26,7 @@
         "@web3-react/types": "^8.0.17-beta.0",
         "@web3-react/walletconnect": "^8.0.31-beta.0",
         "copy-to-clipboard": "^3.3.1",
+        "date-fns": "^2.28.0",
         "empty": "^0.10.1",
         "ethers": "^5.6.6",
         "identicon.js": "^2.3.3",
