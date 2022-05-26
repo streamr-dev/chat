@@ -7,10 +7,15 @@ function selectSelf(state: any): WalletState {
 
 export const selectWalletIntegrationId = createSelector(
     selectSelf,
-    (substate: WalletState) => substate.integrationId
+    ({ integrationId }: WalletState) => integrationId
 )
 
 export const selectWalletAccount = createSelector(
     selectSelf,
-    (substate: WalletState) => substate.account
+    ({ account }: WalletState) => account
+)
+
+export const selectWalletProvider = createSelector(
+    selectSelf,
+    ({ provider }: WalletState) => provider
 )

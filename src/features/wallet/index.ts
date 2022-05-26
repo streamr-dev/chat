@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { StorageItemKey } from '../../../types/common'
+import { StorageKey } from '../../../types/common'
 import { WalletIntegrationId, WalletState } from '../../../types/wallet'
 import {
     setWalletAccount,
@@ -12,7 +12,7 @@ const initialState: WalletState = {
     provider: undefined,
     integrationId:
         (localStorage.getItem(
-            StorageItemKey.WalletIntegrationId
+            StorageKey.WalletIntegrationId
         ) as WalletIntegrationId) || undefined,
 }
 

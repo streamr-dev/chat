@@ -14,11 +14,11 @@ export default function WalletIntegrationObserver() {
     const isActive = hooks.useIsActive()
 
     useEffect(() => {
-        dispatch(
-            setWalletProvider(
-                isActive ? getConnector(integrationId)[0].provider : undefined
-            )
-        )
+        const newProvider = isActive
+            ? getConnector(integrationId)[0].provider
+            : undefined
+
+        dispatch(setWalletProvider(newProvider))
     }, [integrationId, isActive])
 
     const integrationIdRef = useRef(integrationId)

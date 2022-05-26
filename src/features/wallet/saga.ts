@@ -1,9 +1,10 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 import { ethers } from 'ethers'
-import { takeLatest, put, all } from 'redux-saga/effects'
-import { StorageItemKey } from '../../../types/common'
+import { takeLatest, put, all, select } from 'redux-saga/effects'
+import { StorageKey } from '../../../types/common'
 import { WalletState } from '../../../types/wallet'
 import { setWalletAccount, WalletAction } from './actions'
+import { selectWalletIntegrationId } from './selectors'
 
 export function* extractWalletAccount({
     payload: provider,
@@ -28,14 +29,15 @@ export function* extractWalletAccount({
     yield put(setWalletAccount(accounts[0] || null))
 }
 
-// eslint-disable-next-line require-yield
-export function* storeWalletIntegrationId({
-    payload,
-}: PayloadAction<WalletState['integrationId']>) {
-    if (payload) {
-        localStorage.setItem(StorageItemKey.WalletIntegrationId, payload)
+export function* storeWalletIntegrationId() {
+    const integrationId: WalletState['integrationId'] = yield select(
+        selectWalletIntegrationId
+    )
+
+    if (integrationId) {
+        localStorage.setItem(StorageKey.WalletIntegrationId, integrationId)
     } else {
-        localStorage.removeItem(StorageItemKey.WalletIntegrationId)
+        localStorage.removeItem(StorageKey.WalletIntegrationId)
     }
 }
 
