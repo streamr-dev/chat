@@ -38,9 +38,13 @@ function UnwrappedChat() {
 
     const dispatch = useDispatch()
 
+    const account = useWalletAccount()
+
     useEffect(() => {
-        dispatch(getMissingRooms())
-    }, [dispatch])
+        if (account) {
+            dispatch(getMissingRooms())
+        }
+    }, [dispatch, account])
 
     return (
         <MessageTransmitter>
