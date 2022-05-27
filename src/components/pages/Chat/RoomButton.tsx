@@ -4,6 +4,7 @@ import tw from 'twin.macro'
 import { selectRoom, syncRoom } from '../../../features/rooms/actions'
 import { IRoom } from '../../../features/rooms/types'
 import getIdenticon from '../../../getters/getIdenticon'
+import useRecentMessage from '../../../hooks/useRecentMessage'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
 
@@ -16,7 +17,7 @@ type Props = Omit<
 }
 
 export default function RoomButton({ room, active, ...props }: Props) {
-    const recentMessage = ''
+    const recentMessage = useRecentMessage(room.id)?.content
 
     const dispatch = useDispatch()
 
