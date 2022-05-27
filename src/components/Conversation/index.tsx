@@ -7,10 +7,12 @@ import {
 } from 'react'
 import { useDispatch } from 'react-redux'
 import tw, { css } from 'twin.macro'
+import { IMessage } from '../../features/messages/types'
 import { deleteRoom, renameRoom } from '../../features/rooms/actions'
 import { useSelectedRoomId } from '../../features/rooms/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
 import useCopy from '../../hooks/useCopy'
+import useMessages from '../../hooks/useMessages'
 import useSelectedRoom from '../../hooks/useSelectedRoom'
 import AddMemberIcon from '../../icons/AddMemberIcon'
 import CopyIcon from '../../icons/CopyIcon'
@@ -66,10 +68,7 @@ export default function Conversation() {
 
     const [roomMenuOpen, setRoomMenuOpen] = useState<boolean>(false)
 
-    const { current: messages } = useRef<string[]>(
-        // 'lorem ipsum dolor sit emat'.split(/\s/)
-        []
-    )
+    const messages = useMessages()
 
     const [addMemberModalOpen, setAddMemberModalOpen] = useState<boolean>(false)
 
@@ -279,7 +278,7 @@ export default function Conversation() {
                         `,
                     ]}
                 >
-                    {messages.length ? (
+                    {(messages || []).length ? (
                         <div
                             css={[
                                 tw`
@@ -345,10 +344,10 @@ function ActionTextButton({
 }
 
 type MessageFeedProps = {
-    messages: string[]
+    messages?: IMessage[]
 }
 
-function MessageFeed({ messages }: MessageFeedProps) {
+function MessageFeed({ messages = [] }: MessageFeedProps) {
     const rootRef = useRef<HTMLDivElement>(null)
 
     useLayoutEffect(() => {
@@ -359,6 +358,8 @@ function MessageFeed({ messages }: MessageFeedProps) {
             root.scrollTop = root.scrollHeight
         }
     }, [messages])
+
+    const account = (useWalletAccount() || '').toLowerCase()
 
     return (
         <div
@@ -373,20 +374,13 @@ function MessageFeed({ messages }: MessageFeedProps) {
                 `,
             ]}
         >
-            {messages.map((message, index) => (
+            {messages.map((message) => (
                 <Message
-                    key={index}
-                    sender={getSender(message)}
-                    incoming={message === 'lorem'}
-                    createdAt={Date.now()}
-                >
-                    {message}
-                </Message>
+                    key={message.id}
+                    payload={message}
+                    incoming={message.createdBy !== account}
+                />
             ))}
         </div>
     )
-}
-
-function getSender(message: string) {
-    return message === 'lorem' ? '0xasdas' : '0xefsdf'
 }

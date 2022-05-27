@@ -45,6 +45,7 @@ function* onAccountChange({
     }
 }
 
+// @TODO move it to `wallet` feature.
 export default function* changeAccountSaga() {
     yield takeEvery(WalletAction.SetWalletAccount, onAccountChange)
 }

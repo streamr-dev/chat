@@ -10,6 +10,9 @@ function* onDeleteRoomAction({
     try {
         const o = owner.toLowerCase()
 
+        // Delete room messages for a given record owner.
+        yield db.messages.where({ owner: o, roomId: id }).delete()
+
         // Delete room for a given record owner.
         yield db.rooms.where({ owner: o, id }).delete()
 

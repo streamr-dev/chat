@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
+import { createMessage } from '../../features/messages/actions'
+import { useSelectedRoomId } from '../../features/rooms/hooks'
+import { useWalletAccount } from '../../features/wallet/hooks'
 import focus from '../../utils/focus'
 import Form from '../Form'
+import { v4 as uuidv4 } from 'uuid'
 
 enum MessageType {
     Text = 'text',
@@ -14,22 +19,49 @@ export default function MessageInput() {
 
     const submittable = !/^\s*$/.test(value)
 
-    const roomId = 'asdasd/123'
+    const selectedRoomId = useSelectedRoomId()
 
-    function send(...args: any[]) {
-        console.log('Send.', args)
+    const dispatch = useDispatch()
+
+    const account = useWalletAccount()
+
+    function send(content: string) {
+        if (!selectedRoomId) {
+            return
+        }
+
+        if (!account) {
+            return
+        }
+
+        const now = Date.now()
+
+        const createdBy = account.toLowerCase()
+
+        dispatch(
+            createMessage({
+                content,
+                createdAt: now,
+                updatedAt: now,
+                createdBy,
+                id: uuidv4(),
+                owner: createdBy,
+                roomId: selectedRoomId,
+            })
+        )
     }
 
     function onSubmit() {
         if (submittable) {
-            send(value, { messageType: MessageType.Text })
+            send(value)
             setValue('')
         }
     }
 
     useEffect(() => {
+        // Select a room -> focus the message input field.
         focus(inputRef.current)
-    }, [roomId])
+    }, [selectedRoomId])
 
     return (
         <Form
@@ -74,7 +106,7 @@ export default function MessageInput() {
                         setValue(e.currentTarget.value)
                     }}
                     placeholder="Type a message"
-                    readOnly={!roomId}
+                    readOnly={!selectedRoomId}
                     ref={inputRef}
                     type="text"
                     value={value}

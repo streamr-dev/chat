@@ -30,6 +30,7 @@ export default function AddMemberModal({ onSubmit, ...props }: Props) {
             >
                 <Label>Member address</Label>
                 <TextField
+                    autoFocus
                     placeholder="0x…"
                     value={address}
                     onChange={(e) => void setAddress(e.target.value)}

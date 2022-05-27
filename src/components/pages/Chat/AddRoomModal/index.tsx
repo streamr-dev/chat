@@ -116,6 +116,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         id="roomName"
                         value={roomName}
                         onChange={(e) => void setRoomName(e.target.value)}
+                        autoFocus
                     />
                     <Hint>The room name will be publicly visible.</Hint>
                     <Hint>

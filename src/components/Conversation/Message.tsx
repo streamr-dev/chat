@@ -1,22 +1,22 @@
 import { HTMLAttributes } from 'react'
 import tw, { css } from 'twin.macro'
+import { IMessage } from '../../features/messages/types'
 import Avatar from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
-    sender: string
-    createdAt: number
+    payload: IMessage
     incoming?: boolean
 }
 
 export default function Message({
-    sender,
-    createdAt,
-    children,
+    payload,
     incoming = false,
     ...props
 }: Props) {
+    const { createdBy, createdAt, content } = payload
+
     return (
         <div
             {...props}
@@ -30,13 +30,13 @@ export default function Message({
                     `,
             ]}
         >
-            {incoming && <Avatar account={sender} tw="mr-4" />}
+            {incoming && <Avatar account={createdBy} tw="mr-4" />}
             <div
                 css={[
                     css`
                         flex: 0 1 auto;
 
-                        :hover :first-child {
+                        :hover div:first-of-type {
                             opacity: 1;
                             visibility: visible;
                             transition-delay: 1s, 1s;
@@ -62,9 +62,9 @@ export default function Message({
                 ]}
             >
                 <DateTooltip timestamp={createdAt} />
-                <Text>{children}</Text>
+                <Text>{content}</Text>
             </div>
-            {!incoming && <Avatar account={sender} tw="ml-4" />}
+            {!incoming && <Avatar account={createdBy} tw="ml-4" />}
         </div>
     )
 }
