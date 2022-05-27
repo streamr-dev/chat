@@ -3,6 +3,7 @@ import changeAccountSaga from './changeAccountSaga'
 import createRoomSaga from './createRoomSaga'
 import deleteRoomSaga from './deleteRoomSaga'
 import renameRoomSaga from './renameRoomSaga'
+import syncRoomSaga from './syncRoomSaga'
 
 export default function* roomsSaga() {
     yield all([
@@ -10,5 +11,6 @@ export default function* roomsSaga() {
         renameRoomSaga(),
         deleteRoomSaga(),
         changeAccountSaga(),
+        syncRoomSaga(),
     ])
 }

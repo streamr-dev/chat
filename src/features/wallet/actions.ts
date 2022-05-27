@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit'
-import { WalletState } from '../../../types/wallet'
+import { WalletState } from './types'
 
 export enum WalletAction {
     SetWalletIntegrationId = 'set wallet integration id',

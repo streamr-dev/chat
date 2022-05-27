@@ -1,7 +1,7 @@
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet'
 import { MetaMask } from '@web3-react/metamask'
 import { WalletConnect } from '@web3-react/walletconnect'
-import { Integration, WalletIntegrationId } from '../../../types/wallet'
+import { Integration, WalletIntegrationId } from '../../features/wallet/types'
 import { Matic } from '../chains'
 import CoinbaseWalletIcon from './icons/CoinbaseWalletIcon'
 import MetaMaskIcon from './icons/MetaMaskIcon'

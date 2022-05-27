@@ -10,7 +10,7 @@ import {
     selectWalletAccount,
     selectWalletProvider,
 } from '../../wallet/selectors'
-import ensureCorrectNetworkSaga from '../../../components/sagas/ensureCorrectNetworkSaga'
+import ensureCorrectNetworkSaga from '../../../sagas/ensureCorrectNetworkSaga'
 
 class NewWalletRequiredError extends Error {}
 

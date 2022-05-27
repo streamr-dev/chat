@@ -1,15 +1,17 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { StorageKey } from '../../../types/common'
-import { WalletIntegrationId, WalletState } from '../../../types/wallet'
 import {
     setWalletAccount,
     setWalletIntegrationId,
     setWalletProvider,
 } from './actions'
+import { WalletIntegrationId, WalletState } from './types'
+import StreamrClient from 'streamr-client'
 
 const initialState: WalletState = {
     account: undefined,
     provider: undefined,
+    client: undefined,
     integrationId:
         (localStorage.getItem(
             StorageKey.WalletIntegrationId
@@ -29,6 +31,14 @@ const reducer = createReducer(initialState, (builder) => {
         state.provider = payload
         // Changing the provider makes the old account obsolete.
         state.account = null
+
+        state.client = payload
+            ? new StreamrClient({
+                  auth: {
+                      ethereum: payload,
+                  },
+              })
+            : undefined
     })
 })
 

@@ -4,6 +4,7 @@ import { MetaMask } from '@web3-react/metamask'
 import { Provider } from '@web3-react/types'
 import { WalletConnect } from '@web3-react/walletconnect'
 import { FC } from 'react'
+import StreamrClient from 'streamr-client'
 
 export enum WalletIntegrationId {
     MetaMask = 'metaMask',
@@ -15,6 +16,7 @@ export type WalletState = {
     account: string | undefined | null
     integrationId: WalletIntegrationId | undefined
     provider: Provider | undefined
+    client: undefined | StreamrClient
 }
 
 export type ConnectorMap = {

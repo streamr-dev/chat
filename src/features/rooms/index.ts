@@ -1,5 +1,11 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { createRoom, deleteRoom, renameRoom, selectRoom } from './actions'
+import {
+    createRoom,
+    deleteRoom,
+    renameRoom,
+    selectRoom,
+    syncRoom,
+} from './actions'
 import { RoomsState } from './types'
 
 const initialState: RoomsState = {
@@ -21,6 +27,10 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(deleteRoom, () => {
         // See `deleteRoomSaga`.
+    })
+
+    builder.addCase(syncRoom, () => {
+        // See `syncRoomSaga`.
     })
 })
 

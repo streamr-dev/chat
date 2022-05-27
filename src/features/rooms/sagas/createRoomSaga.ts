@@ -1,9 +1,12 @@
 import db from '../../../utils/db'
-import { put, takeEvery } from 'redux-saga/effects'
+import { call, put, takeEvery } from 'redux-saga/effects'
 import { createRoom, RoomAction, selectRoom } from '../actions'
+import createStreamSaga from '../../../sagas/createStreamSaga'
 
 function* onCreateRoomAction({ payload }: ReturnType<typeof createRoom>) {
     try {
+        yield call(createStreamSaga, payload)
+
         yield db.rooms.add({
             ...payload,
             owner: payload.owner.toLowerCase(),

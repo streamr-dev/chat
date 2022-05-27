@@ -16,7 +16,7 @@ class StreamrChatDatabase extends Dexie {
     constructor() {
         super('StreamrChatDatabase')
 
-        this.version(2).stores({
+        this.version(1).stores({
             rooms: '++, owner, id, &[owner+id]',
             messages:
                 '++, owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
@@ -29,6 +29,6 @@ const db = new StreamrChatDatabase()
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-window.db = db
+// window.db = db
 
 export default db

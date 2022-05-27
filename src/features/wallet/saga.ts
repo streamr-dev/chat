@@ -2,7 +2,7 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { ethers } from 'ethers'
 import { takeLatest, put, all, select } from 'redux-saga/effects'
 import { StorageKey } from '../../../types/common'
-import { WalletState } from '../../../types/wallet'
+import { WalletState } from './types'
 import { setWalletAccount, WalletAction } from './actions'
 import { selectWalletIntegrationId } from './selectors'
 

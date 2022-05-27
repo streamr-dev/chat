@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { WalletState } from '../../../types/wallet'
+import { WalletState } from './types'
 
 function selectSelf(state: any): WalletState {
     return state.wallet
@@ -18,4 +18,9 @@ export const selectWalletAccount = createSelector(
 export const selectWalletProvider = createSelector(
     selectSelf,
     ({ provider }: WalletState) => provider
+)
+
+export const selectWalletClient = createSelector(
+    selectSelf,
+    ({ client }) => client
 )

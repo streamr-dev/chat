@@ -84,7 +84,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
         dispatch(
             createRoom({
-                id: uuidv4(),
+                id: `/streamr-chat/room/${uuidv4()}`,
                 createdAt: now,
                 updatedAt: now,
                 createdBy: account!,

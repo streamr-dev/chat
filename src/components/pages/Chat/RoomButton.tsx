@@ -1,7 +1,7 @@
-import { ButtonHTMLAttributes } from 'react'
+import { ButtonHTMLAttributes, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { selectRoom } from '../../../features/rooms/actions'
+import { selectRoom, syncRoom } from '../../../features/rooms/actions'
 import { IRoom } from '../../../features/rooms/types'
 import getIdenticon from '../../../getters/getIdenticon'
 import SidebarButton from '../../SidebarButton'
@@ -21,6 +21,10 @@ export default function RoomButton({ room, active, ...props }: Props) {
     const dispatch = useDispatch()
 
     const { id, name } = room
+
+    useEffect(() => {
+        dispatch(syncRoom(id))
+    }, [dispatch, id])
 
     return (
         <SidebarButton
