@@ -3,11 +3,14 @@ import { call, put, takeEvery } from 'redux-saga/effects'
 import { createRoom, RoomAction, selectRoom } from '../actions'
 import createStreamSaga from '../../../sagas/createStreamSaga'
 import { Stream } from 'streamr-client'
+import ensurePositiveBalanceSaga from '../../../sagas/ensurePositiveBalanceSaga'
 
 function* onCreateRoomAction({
     payload: { owner, ...payload },
 }: ReturnType<typeof createRoom>) {
     try {
+        yield call(ensurePositiveBalanceSaga)
+
         // `payload.id` is a partial room id. The real room id gets constructed by the
         // client from the given value and the account address that creates the stream.
         const stream: Stream = yield call(createStreamSaga, payload)

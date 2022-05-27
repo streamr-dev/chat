@@ -18,5 +18,11 @@ export default function* createStreamSaga({
         },
     } as StreamProperties)
 
+    // @TODO storage enabling
+    // stream.addToStorageNode(STREAMR_STORAGE_NODE_GERMANY)
+    // STREAMR_STORAGE_NODE_GERMANY from 'streamr-client'
+
+    // @TODO assign permissions based on the privacy option
+
     return stream
 }
