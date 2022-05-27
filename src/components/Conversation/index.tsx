@@ -8,8 +8,10 @@ import {
 import { useDispatch } from 'react-redux'
 import tw, { css } from 'twin.macro'
 import { deleteRoom, renameRoom } from '../../features/rooms/actions'
-import { useSelectedRoom, useSelectedRoomId } from '../../features/rooms/hooks'
+import { useSelectedRoomId } from '../../features/rooms/hooks'
+import { useWalletAccount } from '../../features/wallet/hooks'
 import useCopy from '../../hooks/useCopy'
+import useSelectedRoom from '../../hooks/useSelectedRoom'
 import AddMemberIcon from '../../icons/AddMemberIcon'
 import CopyIcon from '../../icons/CopyIcon'
 import DeleteIcon from '../../icons/DeleteIcon'
@@ -86,6 +88,8 @@ export default function Conversation() {
         dispatch(renameRoom([selectedRoomId!, newRoomName]))
         setIsRoomNameEditable(false)
     }
+
+    const account = useWalletAccount()
 
     return (
         <>
@@ -243,7 +247,12 @@ export default function Conversation() {
                                 <MenuButtonItem
                                     icon={<DeleteIcon />}
                                     onClick={() => {
-                                        dispatch(deleteRoom(selectedRoomId!))
+                                        dispatch(
+                                            deleteRoom([
+                                                account!,
+                                                selectedRoomId!,
+                                            ])
+                                        )
                                         setRoomMenuOpen(false)
                                     }}
                                 >

@@ -6,6 +6,7 @@ import rooms from './features/rooms'
 import createSagaMiddleware from 'redux-saga'
 import walletSaga from './features/wallet/saga'
 import delegationSaga from './features/delegation/sagas'
+import roomsSaga from './features/rooms/sagas'
 import { WalletAction } from './features/wallet/actions'
 
 const sagaMiddleware = createSagaMiddleware()
@@ -30,7 +31,7 @@ const store = configureStore({
 })
 
 sagaMiddleware.run(function* saga() {
-    yield all([walletSaga(), delegationSaga()])
+    yield all([walletSaga(), delegationSaga(), roomsSaga()])
 })
 
 export default store

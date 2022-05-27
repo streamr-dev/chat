@@ -2,11 +2,7 @@ import { ButtonHTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { selectRoom } from '../../../features/rooms/actions'
-import {
-    useRoomName,
-    useRoomRecentMessage,
-    useSelectedRoomId,
-} from '../../../features/rooms/hooks'
+import { IRoom } from '../../../features/rooms/types'
 import getIdenticon from '../../../getters/getIdenticon'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
@@ -15,24 +11,23 @@ type Props = Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
     'type' | 'children'
 > & {
-    roomId: string
+    active?: boolean
+    room: IRoom
 }
 
-export default function RoomButton({ roomId, ...props }: Props) {
-    const roomName = useRoomName(roomId)
-
-    const recentMessage = useRoomRecentMessage(roomId)
-
-    const active = roomId === useSelectedRoomId()
+export default function RoomButton({ room, active, ...props }: Props) {
+    const recentMessage = ''
 
     const dispatch = useDispatch()
+
+    const { id, name } = room
 
     return (
         <SidebarButton
             {...props}
             active={active}
-            icon={<Icon roomId={roomId} />}
-            onClick={() => void dispatch(selectRoom(roomId))}
+            icon={<Icon id={id} />}
+            onClick={() => void dispatch(selectRoom(id))}
         >
             <div>
                 <div
@@ -43,7 +38,7 @@ export default function RoomButton({ roomId, ...props }: Props) {
                         `,
                     ]}
                 >
-                    {roomName || 'Unnamed room'}
+                    {name || 'Unnamed room'}
                 </div>
                 <div
                     css={[
@@ -61,7 +56,7 @@ export default function RoomButton({ roomId, ...props }: Props) {
     )
 }
 
-function Icon({ roomId }: Pick<Props, 'roomId'>) {
+function Icon({ id: roomId }: Pick<Props, 'id'>) {
     return (
         <div
             css={[

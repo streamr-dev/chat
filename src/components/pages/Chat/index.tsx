@@ -10,9 +10,10 @@ import Conversation from '../../Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
 import { useWalletAccount } from '../../../features/wallet/hooks'
-import { useRoomIds, useSelectedRoomId } from '../../../features/rooms/hooks'
 import UtilityButton from '../../UtilityButton'
 import Text from '../../Text'
+import useRooms from '../../../hooks/useRooms'
+import useSelectedRoom from '../../../hooks/useSelectedRoom'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -29,9 +30,9 @@ function UnwrappedChat() {
         }
     }
 
-    const roomIds = useRoomIds()
+    const selectedRoom = useSelectedRoom()
 
-    const selectedRoomId = useSelectedRoomId()
+    const rooms = useRooms()
 
     return (
         <MessageTransmitter>
@@ -69,8 +70,15 @@ function UnwrappedChat() {
                             <AddRoomButton
                                 onClick={() => void setRoomModalOpen(true)}
                             />
-                            {roomIds.map((roomId) => (
-                                <RoomButton key={roomId} roomId={roomId} />
+                            {(rooms || []).map((room) => (
+                                <RoomButton
+                                    key={room.id}
+                                    active={
+                                        selectedRoom &&
+                                        selectedRoom.id === room.id
+                                    }
+                                    room={room}
+                                />
                             ))}
                         </aside>
                         <div
@@ -86,7 +94,7 @@ function UnwrappedChat() {
                                 `,
                             ]}
                         >
-                            {selectedRoomId ? (
+                            {selectedRoom ? (
                                 <Conversation />
                             ) : (
                                 <div

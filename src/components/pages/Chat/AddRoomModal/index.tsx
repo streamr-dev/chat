@@ -19,6 +19,7 @@ import Toggle from '../../../Toggle'
 import PrivateIcon from './icons/PrivateIcon'
 import PublicIcon from './icons/PublicIcon'
 import ViewOnlyIcon from './icons/ViewOnlyIcon'
+import { v4 as uuidv4 } from 'uuid'
 
 enum PrivacySetting {
     Private = 'private',
@@ -67,6 +68,8 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     const account = useWalletAccount()
 
+    const [storage, setStorage] = useState<boolean>(false)
+
     function onClose() {
         setRoomName('')
         setPrivacySetting(privacyOptions[0])
@@ -77,11 +80,18 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
             return
         }
 
+        const now = Date.now()
+
         dispatch(
             createRoom({
-                createdAt: Date.now(),
+                id: uuidv4(),
+                createdAt: now,
+                updatedAt: now,
                 createdBy: account!,
+                owner: account!,
                 name: roomName,
+                privacy: privacySetting.value,
+                useStorage: storage,
             })
         )
 
@@ -96,10 +106,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
             {...props}
             title="Create new room"
             setOpen={setOpen}
-            onClose={() => {
-                setRoomName('')
-                setPrivacySetting(privacyOptions[0])
-            }}
+            onClose={onClose}
         >
             <Form onSubmit={onSubmit}>
                 <>
@@ -165,7 +172,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 `,
                             ]}
                         >
-                            <Toggle />
+                            <Toggle value={storage} onChange={setStorage} />
                         </div>
                     </div>
                 </>

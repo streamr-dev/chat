@@ -1,23 +1,16 @@
-export type RoomId = string
-
-export interface Room {
-    createdAt: number
-    createdBy: string
-    id: string
-    name?: undefined | string
-    recentMessage?: undefined | string
-}
+import { IRecord } from '../../../types/common'
 
 export interface RoomsState {
-    ids: RoomId[]
-    items: {
-        [index: RoomId]: Room
-    }
     selectedId: undefined | RoomId
 }
 
-export interface CreateRoomPayload {
+export interface IRoom extends IRecord {
     createdAt: number
     createdBy: string
+    id: string
     name: string
+    privacy: string
+    useStorage: boolean
 }
+
+export type RoomId = IRoom['id']
