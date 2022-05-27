@@ -61,7 +61,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
     )
 }
 
-function Icon({ id: roomId }: Pick<Props, 'id'>) {
+function Icon({ id: roomId }: Pick<Props['room'], 'id'>) {
     return (
         <div
             css={[
