@@ -7,6 +7,7 @@ export enum RoomAction {
     SelectRoom = 'select room',
     DeleteRoom = 'delete room',
     SyncRoom = 'sync room',
+    GetMissingRooms = 'get missing rooms',
 }
 
 export const renameRoom = createAction<[RoomId, string]>(RoomAction.RenameRoom)
@@ -20,3 +21,5 @@ export const selectRoom = createAction<RoomsState['selectedId']>(
 export const deleteRoom = createAction<[string, RoomId]>(RoomAction.DeleteRoom)
 
 export const syncRoom = createAction<RoomId>(RoomAction.SyncRoom)
+
+export const getMissingRooms = createAction(RoomAction.GetMissingRooms)

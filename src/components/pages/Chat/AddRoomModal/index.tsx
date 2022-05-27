@@ -20,12 +20,7 @@ import PrivateIcon from './icons/PrivateIcon'
 import PublicIcon from './icons/PublicIcon'
 import ViewOnlyIcon from './icons/ViewOnlyIcon'
 import { v4 as uuidv4 } from 'uuid'
-
-enum PrivacySetting {
-    Private = 'private',
-    ViewOnly = 'viewOnly',
-    Public = 'public',
-}
+import { Prefix, PrivacySetting } from '../../../../../types/common'
 
 type PrivacyOption = {
     value: PrivacySetting
@@ -84,7 +79,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
         dispatch(
             createRoom({
-                id: `/streamr-chat/room/${uuidv4()}`,
+                id: `/${Prefix.Room}/${uuidv4()}`,
                 createdAt: now,
                 updatedAt: now,
                 createdBy: account!,
@@ -119,10 +114,6 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         autoFocus
                     />
                     <Hint>The room name will be publicly visible.</Hint>
-                    <Hint>
-                        You may use alphanumeric characters, as well as dashes
-                        (-) and underscores (_) for room names.
-                    </Hint>
                 </>
                 <>
                     <Label>Choose privacy</Label>

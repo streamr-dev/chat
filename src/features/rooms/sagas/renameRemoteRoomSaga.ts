@@ -1,13 +1,28 @@
 import { call } from 'redux-saga/effects'
-import StreamrClient from 'streamr-client'
-import getWalletClientSaga from '../../../sagas/getWalletClientSaga'
-import { RoomId } from '../types'
+import { Stream } from 'streamr-client'
+import getStreamSaga from '../../../sagas/getStreamSaga'
+import { IRoom, RoomId } from '../types'
+
+type StreamWithExtensions = Stream & {
+    extensions?: {
+        'thechat.eth'?: Omit<IRoom, 'id' | 'name' | 'owner'>
+    }
+}
 
 export default function* renameRemoteRoomSaga(id: RoomId, name: string) {
-    const client: StreamrClient = yield call(getWalletClientSaga)
+    const stream: StreamWithExtensions = yield call(getStreamSaga, id)
 
-    yield client.updateStream({
-        id,
-        description: name,
-    })
+    if (!stream.extensions) {
+        stream.extensions = {}
+    }
+
+    if (!stream.extensions['thechat.eth']) {
+        stream.extensions['thechat.eth'] = {}
+    }
+
+    stream.description = name
+
+    stream.extensions['thechat.eth'].updatedAt = Date.now()
+
+    yield stream.update()
 }

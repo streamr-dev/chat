@@ -7,7 +7,7 @@ export default function* createStreamSaga({
     id,
     name: description,
     ...metadata
-}: IRoom) {
+}: Omit<IRoom, 'owner'>) {
     const client: StreamrClient = yield call(getWalletClientSaga)
 
     const stream: Stream = yield client.createStream({

@@ -5,12 +5,11 @@ export interface RoomsState {
 }
 
 export interface IRoom extends IRecord {
-    createdAt: number
-    createdBy: string
+    createdBy?: string
     id: string
     name: string
-    privacy: string
-    useStorage: boolean
+    privacy?: string
+    useStorage?: boolean
 }
 
 export type RoomId = IRoom['id']

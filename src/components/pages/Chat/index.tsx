@@ -14,6 +14,8 @@ import UtilityButton from '../../UtilityButton'
 import Text from '../../Text'
 import useRooms from '../../../hooks/useRooms'
 import useSelectedRoom from '../../../hooks/useSelectedRoom'
+import { useDispatch } from 'react-redux'
+import { getMissingRooms } from '../../../features/rooms/actions'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -33,6 +35,12 @@ function UnwrappedChat() {
     const selectedRoom = useSelectedRoom()
 
     const rooms = useRooms()
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getMissingRooms())
+    }, [dispatch])
 
     return (
         <MessageTransmitter>

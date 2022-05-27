@@ -2,6 +2,7 @@ import { createReducer } from '@reduxjs/toolkit'
 import {
     createRoom,
     deleteRoom,
+    getMissingRooms,
     renameRoom,
     selectRoom,
     syncRoom,
@@ -31,6 +32,10 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(syncRoom, () => {
         // See `syncRoomSaga`.
+    })
+
+    builder.addCase(getMissingRooms, () => {
+        // See `getMissingRoomsSaga`.
     })
 })
 
