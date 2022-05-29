@@ -8,11 +8,11 @@ import focus from '../../utils/focus'
 import Form from '../Form'
 import { v4 as uuidv4 } from 'uuid'
 
-enum MessageType {
-    Text = 'text',
+type Props = {
+    disabled?: boolean
 }
 
-export default function MessageInput() {
+export default function MessageInput({ disabled = false }: Props) {
     const [value, setValue] = useState<string>('')
 
     const inputRef = useRef<HTMLInputElement>(null)
@@ -88,8 +88,10 @@ export default function MessageInput() {
                 ]}
             >
                 <input
+                    disabled={disabled}
                     css={[
                         tw`
+                            disabled:opacity-25
                             appearance-none
                             bg-[transparent]
                             border-0
@@ -105,13 +107,14 @@ export default function MessageInput() {
                     onChange={(e) => {
                         setValue(e.currentTarget.value)
                     }}
-                    placeholder="Type a message"
+                    placeholder="Type a message…"
                     readOnly={!selectedRoomId}
                     ref={inputRef}
                     type="text"
                     value={value}
                 />
                 <button
+                    disabled={disabled}
                     type="submit"
                     css={[
                         tw`
@@ -120,6 +123,7 @@ export default function MessageInput() {
                             w-[60px]
                             opacity-30
                             cursor-default
+                            disabled:invisible
                         `,
                         submittable &&
                             tw`

@@ -8,19 +8,16 @@ import TextField from './TextField'
 
 type Props = ModalProps & {
     onSubmit?: (address: string) => void
+    canModifyMembers?: boolean
 }
 
-export default function AddMemberModal({ onSubmit, ...props }: Props) {
+export default function AddMemberModal({ onSubmit, canModifyMembers = false, ...props }: Props) {
     const [address, setAddress] = useState<string>('')
 
-    const canSubmit = !isBlank(address)
+    const canSubmit = !isBlank(address) && canModifyMembers
 
     return (
-        <Modal
-            {...props}
-            onClose={() => void setAddress('')}
-            title="Add member"
-        >
+        <Modal {...props} onClose={() => void setAddress('')} title="Add member">
             <Form
                 onSubmit={() => {
                     if (typeof onSubmit === 'function' && canSubmit) {

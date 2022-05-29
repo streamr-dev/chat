@@ -1,11 +1,8 @@
 import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
 import { detectMembers } from '../features/members/actions'
 import { useMembers } from '../features/members/hooks'
-import { fetchPermission } from '../features/permissions/actions'
-import { useAbility } from '../features/permissions/hooks'
 import { useSelectedRoomId } from '../features/rooms/hooks'
 import { useWalletAccount } from '../features/wallet/hooks'
 import useCopy from '../hooks/useCopy'
@@ -25,7 +22,11 @@ type MenuOpens = {
     [index: string]: boolean
 }
 
-export default function EditMembersModal({ open, ...props }: ModalProps) {
+type Props = ModalProps & {
+    canModifyMembers?: boolean
+}
+
+export default function EditMembersModal({ open, canModifyMembers = false, ...props }: Props) {
     const menuOpenRef = useRef<MenuOpens>({})
 
     const [anyMenuOpen, setAnyMenuOpen] = useState<boolean>(false)
@@ -50,18 +51,6 @@ export default function EditMembersModal({ open, ...props }: ModalProps) {
     }, [dispatch, selectedRoomId, open])
 
     const account = useWalletAccount()
-
-    const canGrant = useAbility(selectedRoomId, account, StreamPermission.GRANT)
-
-    useEffect(() => {
-        if (!open || !selectedRoomId || !account) {
-            return
-        }
-
-        dispatch(
-            fetchPermission([selectedRoomId, account, StreamPermission.GRANT])
-        )
-    }, [dispatch, open, selectedRoomId, account])
 
     return (
         <Modal {...props} open={open} title="Edit members">
@@ -94,9 +83,7 @@ export default function EditMembersModal({ open, ...props }: ModalProps) {
                             key={address}
                             onMenuToggle={onMenuToggle}
                             address={address}
-                            deletable={
-                                canGrant && !isSameAddress(account, address)
-                            }
+                            deletable={canModifyMembers && !isSameAddress(account, address)}
                         />
                     ))}
                 </div>
@@ -114,9 +101,7 @@ type ItemProps = HTMLAttributes<HTMLDivElement> & {
 function Item({ address, onMenuToggle, deletable, ...props }: ItemProps) {
     const [memberMenuOpen, setMemberMenuOpen] = useState<boolean>(false)
 
-    const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
-        null
-    )
+    const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
 
     const onMenuToggleRef = useRef(onMenuToggle)
 
@@ -185,9 +170,7 @@ function Item({ address, onMenuToggle, deletable, ...props }: ItemProps) {
                 <ActionButton
                     active={memberMenuOpen}
                     light
-                    onClick={() =>
-                        void setMemberMenuOpen((current) => !current)
-                    }
+                    onClick={() => void setMemberMenuOpen((current) => !current)}
                     ref={setMenuAnchorEl}
                 >
                     <MoreIcon />

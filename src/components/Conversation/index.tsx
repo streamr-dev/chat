@@ -29,12 +29,16 @@ export default function Conversation() {
 
     const canGrant = useAbility(selectedRoomId, account, StreamPermission.GRANT)
 
+    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
+
     useEffect(() => {
         if (!selectedRoomId || !account) {
             return
         }
 
         dispatch(fetchPermission([selectedRoomId, account, StreamPermission.GRANT]))
+
+        dispatch(fetchPermission([selectedRoomId, account, StreamPermission.PUBLISH]))
     }, [dispatch, selectedRoomId, account])
 
     return (
@@ -75,10 +79,18 @@ export default function Conversation() {
                     )}
                 </div>
             </div>
-            <MessageInput />
+            <MessageInput disabled={!canPublish} />
             <>
-                <AddMemberModal open={addMemberModalOpen} setOpen={setAddMemberModalOpen} />
-                <EditMembersModal open={editMembersModalOpen} setOpen={setEditMembersModalOpen} />
+                <AddMemberModal
+                    canModifyMembers={canGrant}
+                    open={addMemberModalOpen}
+                    setOpen={setAddMemberModalOpen}
+                />
+                <EditMembersModal
+                    canModifyMembers={canGrant}
+                    open={editMembersModalOpen}
+                    setOpen={setEditMembersModalOpen}
+                />
             </>
         </>
     )
