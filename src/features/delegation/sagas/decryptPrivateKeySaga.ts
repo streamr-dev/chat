@@ -6,8 +6,10 @@ import { setDelegatedPrivateKey } from '../actions'
 import { selectDelegatedPrivateKey } from '../selectors'
 import { DelegationState } from '../types'
 import { encrypt } from '@metamask/eth-sig-util'
-import { selectWalletAccount, selectWalletProvider } from '../../wallet/selectors'
-import ensureCorrectNetworkSaga from '../../../sagas/ensureCorrectNetworkSaga'
+import { selectWalletAccount } from '../../wallet/selectors'
+import { Provider } from '@web3-react/types'
+import getWalletProviderSaga from '../../../sagas/getWalletProviderSaga'
+import web3PreflightSaga from '../../../sagas/web3PreflightSaga'
 
 class NewWalletRequiredError extends Error {}
 
@@ -17,8 +19,6 @@ class MissingAccountError extends Error {}
 
 export default function* decryptPrivateKeySaga() {
     const encryptedPrivateKey = localStorage.getItem(StorageKey.EncryptedSession) || undefined
-
-    const provider: WalletState['provider'] = yield select(selectWalletProvider)
 
     const account: WalletState['account'] = yield select(selectWalletAccount)
 
@@ -30,7 +30,14 @@ export default function* decryptPrivateKeySaga() {
     }
 
     try {
-        yield call(ensureCorrectNetworkSaga)
+        const provider: Provider = yield call(getWalletProviderSaga)
+
+        yield call(web3PreflightSaga, {
+            provider,
+            // Encrypting and decrypting - which are the only operations the user performs
+            // here - are free of charge. It's just signing.
+            freeRide: true,
+        })
 
         if (!provider) {
             throw new MissingProviderError()

@@ -38,10 +38,11 @@ type Currency = {
 }
 
 type Network = {
-    name: string
+    chainId: string
+    chainName: string
     blockExplorerUrls?: string[]
     nativeCurrency?: Currency
-    urls: string[]
+    rpcUrls: string[]
 }
 
 export type Chain = [chainId: number, network: Network]

@@ -10,7 +10,7 @@ import WalletConnectIcon from './icons/WalletConnectIcon'
 const [
     chainId,
     {
-        urls: [url],
+        rpcUrls: [url],
     },
 ] = Matic
 
