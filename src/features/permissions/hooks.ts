@@ -40,7 +40,7 @@ export function useLoadCurrentAbilityEffect(permission: StreamPermission) {
             fetchPermission({
                 roomId: selectedRoomId,
                 address: account,
-                permission: StreamPermission.GRANT,
+                permission,
             })
         )
     }, [selectedRoomId, account, permission])
