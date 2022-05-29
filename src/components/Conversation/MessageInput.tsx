@@ -27,12 +27,26 @@ export default function MessageInput({ disabled = false }: Props) {
 
     const account = useWalletAccount()
 
-    function send(content: string) {
-        if (!selectedRoomId) {
+    function makeDraft(content: string) {
+        if (!account || !selectedRoomId) {
             return
         }
 
-        if (!account) {
+        const now = Date.now()
+
+        dispatch(
+            storeDraft({
+                content,
+                createdAt: now,
+                owner: account,
+                roomId: selectedRoomId,
+                updatedAt: now,
+            })
+        )
+    }
+
+    function send(content: string) {
+        if (!selectedRoomId || !account) {
             return
         }
 
@@ -57,6 +71,7 @@ export default function MessageInput({ disabled = false }: Props) {
         if (submittable) {
             send(value)
             setValue('')
+            makeDraft('')
         }
     }
 
@@ -136,22 +151,7 @@ export default function MessageInput({ disabled = false }: Props) {
                     autoFocus
                     onChange={(e) => {
                         setValue(e.currentTarget.value)
-
-                        if (!account || !selectedRoomId) {
-                            return
-                        }
-
-                        const now = Date.now()
-
-                        dispatch(
-                            storeDraft({
-                                content: e.currentTarget.value,
-                                createdAt: now,
-                                owner: account,
-                                roomId: selectedRoomId,
-                                updatedAt: now,
-                            })
-                        )
+                        makeDraft(e.currentTarget.value)
                     }}
                     placeholder="Type a message…"
                     readOnly={!selectedRoomId}
