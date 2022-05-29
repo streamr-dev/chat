@@ -6,6 +6,7 @@ import rooms from './features/rooms'
 import messages from './features/messages'
 import members from './features/members'
 import permissions from './features/permissions'
+import drafts from './features/drafts'
 import createSagaMiddleware from 'redux-saga'
 import walletSaga from './features/wallet/saga'
 import delegationSaga from './features/delegation/sagas'
@@ -13,6 +14,7 @@ import roomsSaga from './features/rooms/sagas'
 import messagesSaga from './features/messages/sagas'
 import membersSaga from './features/members/sagas'
 import permissionsSaga from './features/permissions/sagas'
+import draftsSaga from './features/drafts/sagas'
 import { WalletAction } from './features/wallet/actions'
 
 const sagaMiddleware = createSagaMiddleware()
@@ -25,6 +27,7 @@ const store = configureStore({
         messages,
         members,
         permissions,
+        drafts,
     },
     middleware(getDefaultMiddleware) {
         return [
@@ -47,6 +50,7 @@ sagaMiddleware.run(function* saga() {
         messagesSaga(),
         membersSaga(),
         permissionsSaga(),
+        draftsSaga(),
     ])
 })
 

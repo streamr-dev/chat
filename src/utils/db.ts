@@ -1,5 +1,6 @@
 import Dexie, { Table } from 'dexie'
 import { IRecord } from '../../types/common'
+import { IDraft } from '../features/drafts/types'
 import { IMessage } from '../features/messages/types'
 import { IRoom } from '../features/rooms/types'
 
@@ -12,15 +13,16 @@ class StreamrChatDatabase extends Dexie {
     messages!: Table<IMessage, number>
     rooms!: Table<IRoom, number>
     accountAliases!: Table<IAccountAlias, number>
+    drafts!: Table<IDraft, number>
 
     constructor() {
         super('StreamrChatDatabase')
 
-        this.version(1).stores({
+        this.version(2).stores({
             rooms: '++, owner, id, &[owner+id]',
-            messages:
-                '++, owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
+            messages: '++, owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
             aliases: '++, owner, account, &[owner+account]',
+            drafts: '++, owner, roomId, &[owner+roomId]',
         })
     }
 }

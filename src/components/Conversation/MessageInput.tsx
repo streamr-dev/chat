@@ -7,6 +7,8 @@ import { useWalletAccount } from '../../features/wallet/hooks'
 import focus from '../../utils/focus'
 import Form from '../Form'
 import { v4 as uuidv4 } from 'uuid'
+import { storeDraft } from '../../features/drafts/actions'
+import db from '../../utils/db'
 
 type Props = {
     disabled?: boolean
@@ -59,9 +61,37 @@ export default function MessageInput({ disabled = false }: Props) {
     }
 
     useEffect(() => {
-        // Select a room -> focus the message input field.
-        focus(inputRef.current)
-    }, [selectedRoomId])
+        let mounted = true
+
+        setValue('')
+
+        async function fn() {
+            try {
+                if (!account || !selectedRoomId) {
+                    return
+                }
+
+                const draft = await db.drafts
+                    .where({ owner: account.toLowerCase(), roomId: selectedRoomId })
+                    .first()
+
+                if (mounted && draft) {
+                    setValue(draft.content)
+                }
+            } catch (e) {
+                // Ignore.
+            } finally {
+                // Select a room -> focus the message input field.
+                focus(inputRef.current)
+            }
+        }
+
+        fn()
+
+        return () => {
+            mounted = false
+        }
+    }, [account, selectedRoomId])
 
     return (
         <Form
@@ -106,6 +136,22 @@ export default function MessageInput({ disabled = false }: Props) {
                     autoFocus
                     onChange={(e) => {
                         setValue(e.currentTarget.value)
+
+                        if (!account || !selectedRoomId) {
+                            return
+                        }
+
+                        const now = Date.now()
+
+                        dispatch(
+                            storeDraft({
+                                content: e.currentTarget.value,
+                                createdAt: now,
+                                owner: account,
+                                roomId: selectedRoomId,
+                                updatedAt: now,
+                            })
+                        )
                     }}
                     placeholder="Type a message…"
                     readOnly={!selectedRoomId}
