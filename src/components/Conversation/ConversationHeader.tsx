@@ -68,7 +68,10 @@ export default function ConversationHeader({
     const dispatch = useDispatch()
 
     function onRenameSubmit() {
-        dispatch(renameRoom([selectedRoomId!, newRoomName]))
+        if (selectedRoomId) {
+            dispatch(renameRoom({ roomId: selectedRoomId, name: newRoomName }))
+        }
+
         setIsRoomNameEditable(false)
     }
 
@@ -234,7 +237,9 @@ export default function ConversationHeader({
                                 icon={<DeleteIcon />}
                                 onClick={() => {
                                     if (account && selectedRoomId) {
-                                        dispatch(deleteRoom([account, selectedRoomId]))
+                                        dispatch(
+                                            deleteRoom({ owner: account, roomId: selectedRoomId })
+                                        )
                                     }
                                     setRoomMenuOpen(false)
                                 }}
