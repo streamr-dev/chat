@@ -3,13 +3,11 @@ import { deleteRoom, RoomAction } from '../actions'
 import deleteRemoteRoomSaga from './deleteRemoteRoomSaga'
 import deleteLocalRoomSaga from './deleteLocalRoomSaga'
 
-function* onDeleteRoomAction({
-    payload: [owner, id],
-}: ReturnType<typeof deleteRoom>) {
+function* onDeleteRoomAction({ payload: { owner, roomId } }: ReturnType<typeof deleteRoom>) {
     try {
-        yield call(deleteRemoteRoomSaga, id)
+        yield call(deleteRemoteRoomSaga, roomId)
 
-        yield call(deleteLocalRoomSaga, id, owner.toLowerCase())
+        yield call(deleteLocalRoomSaga, roomId, owner.toLowerCase())
     } catch (e) {
         console.warn('Oh no!', e)
     }

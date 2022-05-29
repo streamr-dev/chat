@@ -36,9 +36,21 @@ export default function Conversation() {
             return
         }
 
-        dispatch(fetchPermission([selectedRoomId, account, StreamPermission.GRANT]))
+        dispatch(
+            fetchPermission({
+                roomId: selectedRoomId,
+                address: account,
+                permission: StreamPermission.GRANT,
+            })
+        )
 
-        dispatch(fetchPermission([selectedRoomId, account, StreamPermission.PUBLISH]))
+        dispatch(
+            fetchPermission({
+                roomId: selectedRoomId,
+                address: account,
+                permission: StreamPermission.PUBLISH,
+            })
+        )
     }, [dispatch, selectedRoomId, account])
 
     return (

@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit'
+import { Address } from '../../../types/common'
 import { IRoom, RoomId, RoomsState } from './types'
 
 export enum RoomAction {
@@ -10,15 +11,13 @@ export enum RoomAction {
     GetMissingRooms = 'get missing rooms',
 }
 
-export const renameRoom = createAction<[RoomId, string]>(RoomAction.RenameRoom)
+export const renameRoom = createAction<{ roomId: RoomId; name: string }>(RoomAction.RenameRoom)
 
 export const createRoom = createAction<IRoom>(RoomAction.CreateRoom)
 
-export const selectRoom = createAction<RoomsState['selectedId']>(
-    RoomAction.SelectRoom
-)
+export const selectRoom = createAction<RoomsState['selectedId']>(RoomAction.SelectRoom)
 
-export const deleteRoom = createAction<[string, RoomId]>(RoomAction.DeleteRoom)
+export const deleteRoom = createAction<{ owner: Address; roomId: RoomId }>(RoomAction.DeleteRoom)
 
 export const syncRoom = createAction<RoomId>(RoomAction.SyncRoom)
 

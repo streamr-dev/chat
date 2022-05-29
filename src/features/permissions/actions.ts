@@ -8,10 +8,15 @@ export enum PermissionAction {
     SetLocalPermission = 'set local permission',
 }
 
-export const fetchPermission = createAction<
-    [RoomId, Address, StreamPermission]
->(PermissionAction.FetchPermission)
+export const fetchPermission = createAction<{
+    roomId: RoomId
+    address: Address
+    permission: StreamPermission
+}>(PermissionAction.FetchPermission)
 
-export const setLocalPermission = createAction<
-    [RoomId, Address, StreamPermission, boolean]
->(PermissionAction.SetLocalPermission)
+export const setLocalPermission = createAction<{
+    roomId: RoomId
+    address: Address
+    permission: StreamPermission
+    value: boolean
+}>(PermissionAction.SetLocalPermission)

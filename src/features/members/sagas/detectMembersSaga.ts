@@ -5,9 +5,7 @@ import getStreamSaga from '../../../sagas/getStreamSaga'
 import { detectMembers, MemberAction, setMembers } from '../actions'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-function* onDetectMembersAction({
-    payload: roomId,
-}: ReturnType<typeof detectMembers>) {
+function* onDetectMembersAction({ payload: roomId }: ReturnType<typeof detectMembers>) {
     try {
         const members: string[] = []
 
@@ -15,15 +13,11 @@ function* onDetectMembersAction({
 
         const { privacy } = stream.extensions['thechat.eth']
 
-        if (
-            privacy !== PrivacySetting.Private &&
-            privacy !== PrivacySetting.ViewOnly
-        ) {
+        if (privacy !== PrivacySetting.Private && privacy !== PrivacySetting.ViewOnly) {
             return []
         }
 
-        const assignments: PermissionAssignment[] =
-            yield stream.getPermissions()
+        const assignments: PermissionAssignment[] = yield stream.getPermissions()
 
         for (const assignment of assignments) {
             if (!('user' in assignment) || !assignment.user) {
@@ -54,7 +48,7 @@ function* onDetectMembersAction({
             members.push(assignment.user)
         }
 
-        yield put(setMembers([roomId, members]))
+        yield put(setMembers({ roomId, addresses: members }))
     } catch (e) {
         console.warn('Detection failed.', e)
     }

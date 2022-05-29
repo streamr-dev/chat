@@ -19,8 +19,8 @@ const reducer = createReducer(initialState, (builder) => {
         // See `detectMembersSaga`.
     })
 
-    builder.addCase(setMembers, (state, { payload: [roomId, members] }) => {
-        state.items[roomId] = members
+    builder.addCase(setMembers, (state, { payload: { roomId, addresses } }) => {
+        state.items[roomId] = addresses
     })
 })
 

@@ -13,7 +13,7 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(
         setLocalPermission,
-        (state, { payload: [roomId, address, permission, value] }) => {
+        (state, { payload: { roomId, address, permission, value } }) => {
             if (!state.items[roomId]) {
                 state.items[roomId] = {}
             }

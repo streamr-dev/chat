@@ -1,15 +1,12 @@
 import { Wallet } from 'ethers'
 import { select, call, put } from 'redux-saga/effects'
 import { StorageKey } from '../../../../types/common'
-import { WalletState } from '../../../../types/wallet'
+import { WalletState } from '../../wallet/types'
 import { setDelegatedPrivateKey } from '../actions'
 import { selectDelegatedPrivateKey } from '../selectors'
 import { DelegationState } from '../types'
 import { encrypt } from '@metamask/eth-sig-util'
-import {
-    selectWalletAccount,
-    selectWalletProvider,
-} from '../../wallet/selectors'
+import { selectWalletAccount, selectWalletProvider } from '../../wallet/selectors'
 import ensureCorrectNetworkSaga from '../../../sagas/ensureCorrectNetworkSaga'
 
 class NewWalletRequiredError extends Error {}
@@ -19,16 +16,13 @@ class MissingProviderError extends Error {}
 class MissingAccountError extends Error {}
 
 export default function* decryptPrivateKeySaga() {
-    const encryptedPrivateKey =
-        localStorage.getItem(StorageKey.EncryptedSession) || undefined
+    const encryptedPrivateKey = localStorage.getItem(StorageKey.EncryptedSession) || undefined
 
     const provider: WalletState['provider'] = yield select(selectWalletProvider)
 
     const account: WalletState['account'] = yield select(selectWalletAccount)
 
-    const dpk: DelegationState['privateKey'] = yield select(
-        selectDelegatedPrivateKey
-    )
+    const dpk: DelegationState['privateKey'] = yield select(selectDelegatedPrivateKey)
 
     if (dpk) {
         // Do nothing. We already have a decrypted delegated private key in the store.
@@ -59,9 +53,7 @@ export default function* decryptPrivateKeySaga() {
                     params: [encryptedPrivateKey, account],
                 })
 
-                yield put(
-                    setDelegatedPrivateKey(JSON.parse(decrypted).privateKey)
-                )
+                yield put(setDelegatedPrivateKey(JSON.parse(decrypted).privateKey))
             } catch (e: any) {
                 if (e.code === 4001) {
                     // User rejected the signing. Don't create a new wallet.

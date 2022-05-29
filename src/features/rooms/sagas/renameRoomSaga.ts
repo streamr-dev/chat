@@ -3,13 +3,11 @@ import { renameRoom, RoomAction } from '../actions'
 import renameLocalRoomSaga from './renameLocalRoomSaga'
 import renameRemoteRoomSaga from './renameRemoteRoomSaga'
 
-function* onRenameRoomAction({
-    payload: [id, name],
-}: ReturnType<typeof renameRoom>) {
+function* onRenameRoomAction({ payload: { roomId, name } }: ReturnType<typeof renameRoom>) {
     try {
-        yield call(renameRemoteRoomSaga, id, name)
+        yield call(renameRemoteRoomSaga, roomId, name)
 
-        yield call(renameLocalRoomSaga, id, name)
+        yield call(renameLocalRoomSaga, roomId, name)
     } catch (e) {
         console.warn('Oh no! `onRenameRoomAction` failed', e)
     }
