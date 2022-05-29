@@ -9,20 +9,19 @@ export enum MemberAction {
     SetMembers = 'set room members',
 }
 
-interface ItemPayload {
+export const addMember = createAction<{
     roomId: RoomId
     address: Address
-}
+}>(MemberAction.AddMember)
 
-interface CollectionPayload {
+export const removeMember = createAction<{
     roomId: RoomId
-    addresses: Address[]
-}
-
-export const addMember = createAction<ItemPayload>(MemberAction.AddMember)
-
-export const removeMember = createAction<ItemPayload>(MemberAction.RemoveMember)
+    address: Address
+}>(MemberAction.RemoveMember)
 
 export const detectMembers = createAction<RoomId>(MemberAction.DetectMembers)
 
-export const setMembers = createAction<CollectionPayload>(MemberAction.SetMembers)
+export const setMembers = createAction<{
+    roomId: RoomId
+    addresses: Address[]
+}>(MemberAction.SetMembers)

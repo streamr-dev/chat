@@ -34,6 +34,10 @@ export default function ConversationHeader({
 
     useLoadCurrentAbilityEffect(StreamPermission.EDIT)
 
+    const canDelete = useCurrentAbility(StreamPermission.DELETE)
+
+    useLoadCurrentAbilityEffect(StreamPermission.DELETE)
+
     const { name = '' } = useSelectedRoom() || {}
 
     const selectedRoomId = useSelectedRoomId()
@@ -248,20 +252,27 @@ export default function ConversationHeader({
                             >
                                 Copy room id
                             </MenuButtonItem>
-                            <MenuSeparatorItem />
-                            <MenuButtonItem
-                                icon={<DeleteIcon />}
-                                onClick={() => {
-                                    if (account && selectedRoomId) {
-                                        dispatch(
-                                            deleteRoom({ owner: account, roomId: selectedRoomId })
-                                        )
-                                    }
-                                    setRoomMenuOpen(false)
-                                }}
-                            >
-                                Delete room
-                            </MenuButtonItem>
+                            {canDelete && (
+                                <>
+                                    <MenuSeparatorItem />
+                                    <MenuButtonItem
+                                        icon={<DeleteIcon />}
+                                        onClick={() => {
+                                            if (account && selectedRoomId) {
+                                                dispatch(
+                                                    deleteRoom({
+                                                        owner: account,
+                                                        roomId: selectedRoomId,
+                                                    })
+                                                )
+                                            }
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
+                                        Delete room
+                                    </MenuButtonItem>
+                                </>
+                            )}
                         </Menu>
                     )}
                 </div>

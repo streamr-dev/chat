@@ -1,7 +1,8 @@
 import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { detectMembers } from '../../features/members/actions'
+import { Address } from '../../../types/common'
+import { detectMembers, removeMember } from '../../features/members/actions'
 import { useMembers } from '../../features/members/hooks'
 import { useSelectedRoomId } from '../../features/rooms/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
@@ -31,16 +32,32 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
 
     const [anyMenuOpen, setAnyMenuOpen] = useState<boolean>(false)
 
-    const onMenuToggle = useCallback((address: string, state: boolean) => {
+    const onMenuToggle = useCallback((address: Address, state: boolean) => {
         menuOpenRef.current[address] = state
         setAnyMenuOpen(Object.values(menuOpenRef.current).includes(true))
     }, [])
 
+    const dispatch = useDispatch()
+
     const selectedRoomId = useSelectedRoomId()
 
-    const members = useMembers(selectedRoomId)
+    const onDeleteClick = useCallback(
+        (address: Address) => {
+            if (!selectedRoomId) {
+                return
+            }
 
-    const dispatch = useDispatch()
+            dispatch(
+                removeMember({
+                    roomId: selectedRoomId,
+                    address,
+                })
+            )
+        },
+        [dispatch, selectedRoomId]
+    )
+
+    const members = useMembers(selectedRoomId)
 
     useEffect(() => {
         if (!open || !selectedRoomId) {
@@ -83,7 +100,8 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                             key={address}
                             onMenuToggle={onMenuToggle}
                             address={address}
-                            deletable={canModifyMembers && !isSameAddress(account, address)}
+                            canBeDeleted={canModifyMembers && !isSameAddress(account, address)}
+                            onDeleteClick={onDeleteClick}
                         />
                     ))}
                 </div>
@@ -94,11 +112,12 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
 
 type ItemProps = HTMLAttributes<HTMLDivElement> & {
     address: string
-    onMenuToggle?: (address: string, state: boolean) => void
-    deletable?: boolean
+    onMenuToggle?: (address: Address, state: boolean) => void
+    canBeDeleted?: boolean
+    onDeleteClick?: (address: Address) => void
 }
 
-function Item({ address, onMenuToggle, deletable, ...props }: ItemProps) {
+function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: ItemProps) {
     const [memberMenuOpen, setMemberMenuOpen] = useState<boolean>(false)
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -198,13 +217,16 @@ function Item({ address, onMenuToggle, deletable, ...props }: ItemProps) {
                         >
                             Copy address
                         </MenuButtonItem>
-                        {deletable && (
+                        {canBeDeleted && (
                             <>
                                 <MenuSeparatorItem />
                                 <MenuButtonItem
                                     icon={<DeleteIcon />}
                                     onClick={() => {
-                                        // @TODO dispatch proper action.
+                                        if (typeof onDeleteClick === 'function') {
+                                            onDeleteClick(address)
+                                        }
+
                                         setMemberMenuOpen(false)
                                     }}
                                 >

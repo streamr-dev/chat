@@ -37,7 +37,7 @@ function* onDetectMembersAction({ payload: roomId }: ReturnType<typeof detectMem
             if (privacy === PrivacySetting.Private) {
                 if (!permissions.includes(StreamPermission.GRANT)) {
                     if (!permissions.includes(StreamPermission.SUBSCRIBE)) {
-                        // Private and no `GRANT` and no `SUBSCRIBE` -> skip.
+                        // Private and no `GRANT` nor `SUBSCRIBE` -> skip.
                         continue
                     }
                 }

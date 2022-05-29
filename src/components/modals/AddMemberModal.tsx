@@ -5,23 +5,46 @@ import Label from '../Label'
 import Modal, { ModalProps } from './Modal'
 import Submit from '../Submit'
 import TextField from '../TextField'
+import { Address } from '../../../types/common'
+import { useDispatch } from 'react-redux'
+import { addMember } from '../../features/members/actions'
+import { useSelectedRoomId } from '../../features/rooms/hooks'
 
 type Props = ModalProps & {
-    onSubmit?: (address: string) => void
     canModifyMembers?: boolean
 }
 
-export default function AddMemberModal({ onSubmit, canModifyMembers = false, ...props }: Props) {
-    const [address, setAddress] = useState<string>('')
+export default function AddMemberModal({ canModifyMembers = false, setOpen, ...props }: Props) {
+    const [address, setAddress] = useState<Address>('')
 
     const canSubmit = !isBlank(address) && canModifyMembers
 
+    const dispatch = useDispatch()
+
+    function onClose() {
+        setAddress('')
+    }
+
+    const selectedRoomId = useSelectedRoomId()
+
     return (
-        <Modal {...props} onClose={() => void setAddress('')} title="Add member">
+        <Modal {...props} setOpen={setOpen} onClose={onClose} title="Add member">
             <Form
                 onSubmit={() => {
-                    if (typeof onSubmit === 'function' && canSubmit) {
-                        onSubmit(address)
+                    if (!canSubmit || !selectedRoomId) {
+                        return
+                    }
+
+                    dispatch(
+                        addMember({
+                            roomId: selectedRoomId,
+                            address,
+                        })
+                    )
+
+                    if (typeof setOpen === 'function') {
+                        setOpen(false)
+                        onClose()
                     }
                 }}
             >
