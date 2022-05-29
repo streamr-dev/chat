@@ -1,6 +1,7 @@
 import { call } from 'redux-saga/effects'
 import StreamrClient, { Stream } from 'streamr-client'
 import { RoomId } from '../features/rooms/types'
+import sanitizeStream from '../utils/sanitizeStream'
 import getWalletClientSaga from './getWalletClientSaga'
 
 export default function* getStreamSaga(id: RoomId) {
@@ -8,5 +9,5 @@ export default function* getStreamSaga(id: RoomId) {
 
     const stream: undefined | Stream = yield client.getStream(id)
 
-    return stream
+    return stream ? sanitizeStream(stream) : stream
 }

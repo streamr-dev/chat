@@ -1,11 +1,20 @@
 import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
+import { detectMembers } from '../features/members/actions'
+import { useMembers } from '../features/members/hooks'
+import { fetchPermission } from '../features/permissions/actions'
+import { useAbility } from '../features/permissions/hooks'
+import { useSelectedRoomId } from '../features/rooms/hooks'
+import { useWalletAccount } from '../features/wallet/hooks'
 import useCopy from '../hooks/useCopy'
 import CopyIcon from '../icons/CopyIcon'
 import DeleteIcon from '../icons/DeleteIcon'
 import ExternalLinkIcon from '../icons/ExternalLinkIcon'
 import MoreIcon from '../icons/MoreIcon'
 import getExplorerURL from '../utils/getExplorerURL'
+import isSameAddress from '../utils/isSameAddress'
 import trunc from '../utils/trunc'
 import ActionButton from './ActionButton'
 import Avatar from './Avatar'
@@ -16,7 +25,7 @@ type MenuOpens = {
     [index: string]: boolean
 }
 
-export default function EditMembersModal(props: ModalProps) {
+export default function EditMembersModal({ open, ...props }: ModalProps) {
     const menuOpenRef = useRef<MenuOpens>({})
 
     const [anyMenuOpen, setAnyMenuOpen] = useState<boolean>(false)
@@ -26,8 +35,36 @@ export default function EditMembersModal(props: ModalProps) {
         setAnyMenuOpen(Object.values(menuOpenRef.current).includes(true))
     }, [])
 
+    const selectedRoomId = useSelectedRoomId()
+
+    const members = useMembers(selectedRoomId)
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (!open || !selectedRoomId) {
+            return
+        }
+
+        dispatch(detectMembers(selectedRoomId))
+    }, [dispatch, selectedRoomId, open])
+
+    const account = useWalletAccount()
+
+    const canGrant = useAbility(selectedRoomId, account, StreamPermission.GRANT)
+
+    useEffect(() => {
+        if (!open || !selectedRoomId || !account) {
+            return
+        }
+
+        dispatch(
+            fetchPermission([selectedRoomId, account, StreamPermission.GRANT])
+        )
+    }, [dispatch, open, selectedRoomId, account])
+
     return (
-        <Modal {...props} title="Edit members">
+        <Modal {...props} open={open} title="Edit members">
             <div tw="relative">
                 {anyMenuOpen && (
                     // If any item has its menu open we block list's scroll by covering it
@@ -52,30 +89,16 @@ export default function EditMembersModal(props: ModalProps) {
                         `,
                     ]}
                 >
-                    <Item
-                        onMenuToggle={onMenuToggle}
-                        address="0x1bcabcabcabcabcabcabcabcabcabcbcabcbcabc"
-                    />
-                    <Item
-                        onMenuToggle={onMenuToggle}
-                        address="0x2bcabcabcabcabcabcabcabcabcabcbcabcbcabc"
-                    />
-                    <Item
-                        onMenuToggle={onMenuToggle}
-                        address="0x3bcabcabcabcabcabcabcabcabcabcbcabcbcabc"
-                    />
-                    <Item
-                        onMenuToggle={onMenuToggle}
-                        address="0x4bcabcabcabcabcabcabcabcabcabcbcabcbcabc"
-                    />
-                    <Item
-                        onMenuToggle={onMenuToggle}
-                        address="0x5bcabcabcabcabcabcabcabcabcabcbcabcbcabc"
-                    />
-                    <Item
-                        onMenuToggle={onMenuToggle}
-                        address="0x6bcabcabcabcabcabcabcabcabcabcbcabcbcabc"
-                    />
+                    {members.map((address) => (
+                        <Item
+                            key={address}
+                            onMenuToggle={onMenuToggle}
+                            address={address}
+                            deletable={
+                                canGrant && !isSameAddress(account, address)
+                            }
+                        />
+                    ))}
                 </div>
             </div>
         </Modal>
@@ -85,9 +108,10 @@ export default function EditMembersModal(props: ModalProps) {
 type ItemProps = HTMLAttributes<HTMLDivElement> & {
     address: string
     onMenuToggle?: (address: string, state: boolean) => void
+    deletable?: boolean
 }
 
-function Item({ address, onMenuToggle, ...props }: ItemProps) {
+function Item({ address, onMenuToggle, deletable, ...props }: ItemProps) {
     const [memberMenuOpen, setMemberMenuOpen] = useState<boolean>(false)
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
@@ -191,15 +215,20 @@ function Item({ address, onMenuToggle, ...props }: ItemProps) {
                         >
                             Copy address
                         </MenuButtonItem>
-                        <MenuSeparatorItem />
-                        <MenuButtonItem
-                            icon={<DeleteIcon />}
-                            onClick={() => {
-                                setMemberMenuOpen(false)
-                            }}
-                        >
-                            Delete member
-                        </MenuButtonItem>
+                        {deletable && (
+                            <>
+                                <MenuSeparatorItem />
+                                <MenuButtonItem
+                                    icon={<DeleteIcon />}
+                                    onClick={() => {
+                                        // @TODO dispatch proper action.
+                                        setMemberMenuOpen(false)
+                                    }}
+                                >
+                                    Delete member
+                                </MenuButtonItem>
+                            </>
+                        )}
                     </Menu>
                 )}
             </div>

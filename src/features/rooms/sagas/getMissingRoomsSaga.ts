@@ -1,9 +1,10 @@
 import { call, select, takeLatest } from 'redux-saga/effects'
 import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
-import { ExtendedStream, Prefix } from '../../../../types/common'
+import { UnsafeStream, Prefix } from '../../../../types/common'
 import MissingWalletAccountError from '../../../errors/MissingWalletAccountError'
 import getWalletClientSaga from '../../../sagas/getWalletClientSaga'
 import db from '../../../utils/db'
+import sanitizeStream from '../../../utils/sanitizeStream'
 import { selectWalletAccount } from '../../wallet/selectors'
 import { WalletState } from '../../wallet/types'
 import { RoomAction } from '../actions'
@@ -25,8 +26,8 @@ async function getRoomIds(client: StreamrClient, account: string) {
     return ids
 }
 
-async function addLocalRoomFromStream(stream: ExtendedStream, owner: string) {
-    const metadata = stream.extensions?.['thechat.eth']
+async function addLocalRoomFromStream(stream: UnsafeStream, owner: string) {
+    const metadata = sanitizeStream(stream).extensions['thechat.eth']
 
     const alreadyExists = await db.rooms.where({ id: stream.id, owner }).first()
 
@@ -35,13 +36,13 @@ async function addLocalRoomFromStream(stream: ExtendedStream, owner: string) {
     }
 
     return db.rooms.add({
-        createdAt: metadata?.createdAt,
-        createdBy: metadata?.createdBy,
+        createdAt: metadata.createdAt,
+        createdBy: metadata.createdBy,
         id: stream.id,
         name: stream.description || '',
         owner,
-        privacy: metadata?.privacy,
-        useStorage: metadata?.useStorage,
+        privacy: metadata.privacy,
+        useStorage: metadata.useStorage,
     })
 }
 

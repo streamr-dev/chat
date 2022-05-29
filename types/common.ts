@@ -23,8 +23,20 @@ export enum PrivacySetting {
     Public = 'public',
 }
 
-export type ExtendedStream = Stream & {
+export type RoomMetadata = Omit<IRoom, 'id' | 'name' | 'owner'>
+
+export type UnsafeStream = Stream & {
     extensions?: {
-        'thechat.eth'?: Omit<IRoom, 'id' | 'name'>
+        'thechat.eth'?: RoomMetadata
     }
 }
+
+export type EnhancedStream = Stream & {
+    extensions: {
+        'thechat.eth': RoomMetadata
+    }
+}
+
+export type Address = string
+
+export type OptionalAddress = undefined | null | Address
