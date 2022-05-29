@@ -1,7 +1,6 @@
 import { throttle } from 'redux-saga/effects'
 import db from '../../../utils/db'
 import { DraftAction, storeDraft } from '../actions'
-import { IDraft } from '../types'
 
 function* onStoreDraftAction({ payload }: ReturnType<typeof storeDraft>) {
     try {
