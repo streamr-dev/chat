@@ -4,10 +4,9 @@ import { createRoom, RoomAction, selectRoom } from '../actions'
 import createStreamSaga from '../../../sagas/createStreamSaga'
 import { Stream } from 'streamr-client'
 import ensurePositiveBalanceSaga from '../../../sagas/ensurePositiveBalanceSaga'
+import handleError from '../../../utils/handleError'
 
-function* onCreateRoomAction({
-    payload: { owner, ...payload },
-}: ReturnType<typeof createRoom>) {
+function* onCreateRoomAction({ payload: { owner, ...payload } }: ReturnType<typeof createRoom>) {
     try {
         yield call(ensurePositiveBalanceSaga)
 
@@ -24,7 +23,7 @@ function* onCreateRoomAction({
         // Select newly created room.
         yield put(selectRoom(stream.id))
     } catch (e) {
-        console.warn('Oh no!', e)
+        handleError(e)
     }
 }
 
