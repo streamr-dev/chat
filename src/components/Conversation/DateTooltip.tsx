@@ -3,7 +3,7 @@ import Text from '../Text'
 
 type Props = {
     className?: string
-    timestamp: number
+    timestamp: number | undefined
 }
 
 function formatDate(timestamp: number) {
@@ -22,12 +22,15 @@ function formatDate(timestamp: number) {
 }
 
 export default function DateTooltip({ timestamp }: Props) {
+    if (!timestamp) {
+        return <div />
+    }
+
     return (
         <div
             css={[
                 css`
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05),
-                        0 1px 3px rgba(0, 0, 0, 0.1);
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
                     line-height: normal;
                     transition: 0.2s;
                     transition-property: visibility, opacity;
@@ -54,8 +57,7 @@ export default function DateTooltip({ timestamp }: Props) {
             <div
                 css={[
                     css`
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05),
-                            0 1px 3px rgba(0, 0, 0, 0.1);
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
                     `,
                     tw`
                         bg-white
