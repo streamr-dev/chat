@@ -10,11 +10,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
     incoming?: boolean
 }
 
-export default function Message({
-    payload,
-    incoming = false,
-    ...props
-}: Props) {
+export default function Message({ payload, incoming = false, ...props }: Props) {
     const { createdBy, createdAt, content } = payload
 
     return (

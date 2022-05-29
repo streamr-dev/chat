@@ -40,7 +40,7 @@ export default function MessageFeed({ messages = [] }: Props) {
                 <Message
                     key={message.id}
                     payload={message}
-                    incoming={isSameAddress(account, message.createdBy)}
+                    incoming={!isSameAddress(account, message.createdBy)}
                 />
             ))}
         </div>
