@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { WalletIntegrationId } from '../../../types/wallet'
-import { setWalletIntegrationId } from '../../features/wallet/actions'
-import { useWalletIntegrationId } from '../../features/wallet/hooks'
-import getConnector from '../../utils/getConnector'
-import integrations from '../../utils/integrations'
+import { setWalletIntegrationId } from '../../../features/wallet/actions'
+import { useWalletIntegrationId } from '../../../features/wallet/hooks'
+import { WalletIntegrationId } from '../../../features/wallet/types'
+import getConnector from '../../../utils/getConnector'
+import integrations from '../../../utils/integrations'
 import Modal, { ModalProps } from '../Modal'
 import WalletOption from './WalletOption'
 
 export default function WalletModal(props: ModalProps) {
     const dispatch = useDispatch()
 
-    const [nextIntegrationId, setNextIntegrationId] = useState<
-        WalletIntegrationId | undefined
-    >(useWalletIntegrationId())
+    const [nextIntegrationId, setNextIntegrationId] = useState<WalletIntegrationId | undefined>(
+        useWalletIntegrationId()
+    )
 
     const [, nextHooks] = getConnector(nextIntegrationId)
 

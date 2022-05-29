@@ -2,10 +2,10 @@ import { Fragment, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
 import Page from '../../Page'
-import WalletModal from '../../WalletModal'
+import WalletModal from '../../modals/WalletModal'
 import AccountModal from './AccountModal'
 import AddRoomButton from './AddRoomButton'
-import AddRoomModal from './AddRoomModal'
+import AddRoomModal from '../../modals/AddRoomModal'
 import Conversation from '../../Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
@@ -79,16 +79,11 @@ function UnwrappedChat() {
                                 `,
                             ]}
                         >
-                            <AddRoomButton
-                                onClick={() => void setRoomModalOpen(true)}
-                            />
+                            <AddRoomButton onClick={() => void setRoomModalOpen(true)} />
                             {(rooms || []).map((room) => (
                                 <RoomButton
                                     key={room.id}
-                                    active={
-                                        selectedRoom &&
-                                        selectedRoom.id === room.id
-                                    }
+                                    active={selectedRoom && selectedRoom.id === room.id}
                                     room={room}
                                 />
                             ))}
@@ -121,11 +116,7 @@ function UnwrappedChat() {
                                         `,
                                     ]}
                                 >
-                                    <UtilityButton
-                                        onClick={() =>
-                                            void setRoomModalOpen(true)
-                                        }
-                                    >
+                                    <UtilityButton onClick={() => void setRoomModalOpen(true)}>
                                         <Text>Add new room</Text>
                                     </UtilityButton>
                                 </div>

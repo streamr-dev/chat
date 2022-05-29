@@ -1,11 +1,7 @@
-import Select, {
-    components,
-    OptionProps,
-    ValueContainerProps,
-} from 'react-select'
+import Select, { components, OptionProps, ValueContainerProps } from 'react-select'
 import { StateManagerProps } from 'react-select/dist/declarations/src/useStateManager'
 import tw from 'twin.macro'
-import CheckIcon from './pages/Chat/AddRoomModal/icons/CheckIcon'
+import CheckIcon from './modals/AddRoomModal/icons/CheckIcon'
 
 export function Option({ children, isSelected, ...props }: OptionProps) {
     return (

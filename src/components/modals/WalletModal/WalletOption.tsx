@@ -1,17 +1,14 @@
 import tw from 'twin.macro'
-import { WalletIntegrationId } from '../../../types/wallet'
-import { useWalletIntegrationId } from '../../features/wallet/hooks'
-import integrations from '../../utils/integrations'
+import { WalletIntegrationId } from '../../../features/wallet/types'
+import { useWalletIntegrationId } from '../../../features/wallet/hooks'
+import integrations from '../../../utils/integrations'
 
 type Props = {
     integrationId: WalletIntegrationId
     onClick?: (integrationId: WalletIntegrationId) => void
 }
 
-export default function WalletOption({
-    integrationId,
-    onClick: onClickProp,
-}: Props) {
+export default function WalletOption({ integrationId, onClick: onClickProp }: Props) {
     const { label, icon: Icon } = integrations.get(integrationId)!
 
     const currentIntegrationId = useWalletIntegrationId()

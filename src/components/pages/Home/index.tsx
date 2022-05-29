@@ -1,7 +1,7 @@
 import tw from 'twin.macro'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import WalletModal from '../../WalletModal'
+import WalletModal from '../../modals/WalletModal'
 import Page from '../../Page'
 import PoweredBy from './PoweredBy'
 import ConnectButton from './ConnectButton'
@@ -42,9 +42,7 @@ function UnwrappedHome() {
                         >
                             Hello world.
                         </h1>
-                        <ConnectButton
-                            onClick={() => void setWalletModalOpen(true)}
-                        />
+                        <ConnectButton onClick={() => void setWalletModalOpen(true)} />
                     </div>
                 </div>
                 <PoweredBy />

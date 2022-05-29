@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import isBlank from '../utils/isBlank'
-import Form from './Form'
-import Label from './Label'
+import isBlank from '../../utils/isBlank'
+import Form from '../Form'
+import Label from '../Label'
 import Modal, { ModalProps } from './Modal'
-import Submit from './Submit'
-import TextField from './TextField'
+import Submit from '../Submit'
+import TextField from '../TextField'
 
 type Props = ModalProps & {
     onSubmit?: (address: string) => void

@@ -1,26 +1,23 @@
 import { FC, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { createRoom } from '../../../../features/rooms/actions'
-import { useWalletAccount } from '../../../../features/wallet/hooks'
-import isBlank from '../../../../utils/isBlank'
-import Form from '../../../Form'
-import Hint from '../../../Hint'
-import Label from '../../../Label'
-import Modal, { ModalProps } from '../../../Modal'
-import SelectField, {
-    Option as RawOption,
-    SingleValue as RawSingleValue,
-} from '../../../SelectField'
-import Submit from '../../../Submit'
-import Text from '../../../Text'
-import TextField from '../../../TextField'
-import Toggle from '../../../Toggle'
+import { createRoom } from '../../../features/rooms/actions'
+import { useWalletAccount } from '../../../features/wallet/hooks'
+import isBlank from '../../../utils/isBlank'
+import Form from '../../Form'
+import Hint from '../../Hint'
+import Label from '../../Label'
+import Modal, { ModalProps } from '../Modal'
+import SelectField, { Option as RawOption, SingleValue as RawSingleValue } from '../../SelectField'
+import Submit from '../../Submit'
+import Text from '../../Text'
+import TextField from '../../TextField'
+import Toggle from '../../Toggle'
 import PrivateIcon from './icons/PrivateIcon'
 import PublicIcon from './icons/PublicIcon'
 import ViewOnlyIcon from './icons/ViewOnlyIcon'
 import { v4 as uuidv4 } from 'uuid'
-import { Prefix, PrivacySetting } from '../../../../../types/common'
+import { Prefix, PrivacySetting } from '../../../../types/common'
 
 type PrivacyOption = {
     value: PrivacySetting
@@ -51,9 +48,7 @@ const privacyOptions: PrivacyOption[] = [
 ]
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
-    const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(
-        privacyOptions[0]
-    )
+    const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(privacyOptions[0])
 
     const [roomName, setRoomName] = useState<string>('')
 
@@ -97,12 +92,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     }
 
     return (
-        <Modal
-            {...props}
-            title="Create new room"
-            setOpen={setOpen}
-            onClose={onClose}
-        >
+        <Modal {...props} title="Create new room" setOpen={setOpen} onClose={onClose}>
             <Form onSubmit={onSubmit}>
                 <>
                     <Label htmlFor="roomName">Name</Label>
@@ -120,9 +110,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                     <SelectField
                         options={privacyOptions}
                         value={privacySetting}
-                        onChange={(option) =>
-                            void setPrivacySetting(option as PrivacyOption)
-                        }
+                        onChange={(option) => void setPrivacySetting(option as PrivacyOption)}
                         optionComponent={Option}
                         singleValueComponent={SingleValue}
                     />
@@ -151,9 +139,8 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 ]}
                             >
                                 <Text>
-                                    When message storage is disabled,
-                                    participants will only see messages sent
-                                    while they are online.
+                                    When message storage is disabled, participants will only see
+                                    messages sent while they are online.
                                 </Text>
                             </Hint>
                         </div>
