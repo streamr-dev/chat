@@ -8,9 +8,10 @@ import useSelectedRoom from '../../hooks/useSelectedRoom'
 
 type Props = {
     onAddMemberClick?: () => void
+    canModifyMembers?: boolean
 }
 
-export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
+export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = false }: Props) {
     return (
         <div
             css={[
@@ -39,6 +40,7 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                 <Credits />
             </div>
             <UtilityButton
+                disabled={!canModifyMembers}
                 onClick={onAddMemberClick}
                 css={[
                     tw`
@@ -82,8 +84,7 @@ function Credits() {
     if (createdBy) {
         return (
             <>
-                Room created by <span tw="font-medium">{trunc(createdBy)}</span>
-                .
+                Room created by <span tw="font-medium">{trunc(createdBy)}</span>.
             </>
         )
     }

@@ -69,6 +69,7 @@ export default function Conversation() {
                         </div>
                     ) : (
                         <EmptyMessageFeed
+                            canModifyMembers={canGrant}
                             onAddMemberClick={() => void setAddMemberModalOpen(true)}
                         />
                     )}
