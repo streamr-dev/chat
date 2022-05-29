@@ -1,11 +1,7 @@
-import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import { fetchPermission } from '../../features/permissions/actions'
-import { useAbility } from '../../features/permissions/hooks'
-import { useSelectedRoomId } from '../../features/rooms/hooks'
-import { useWalletAccount } from '../../features/wallet/hooks'
+import { useCurrentAbility, useLoadCurrentAbilityEffect } from '../../features/permissions/hooks'
 import useMessages from '../../hooks/useMessages'
 import AddMemberModal from '../modals/AddMemberModal'
 import EditMembersModal from '../modals/EditMembersModal'
@@ -15,43 +11,19 @@ import MessageFeed from './MessageFeed'
 import MessageInput from './MessageInput'
 
 export default function Conversation() {
-    const selectedRoomId = useSelectedRoomId()
-
     const messages = useMessages()
 
     const [addMemberModalOpen, setAddMemberModalOpen] = useState<boolean>(false)
 
     const [editMembersModalOpen, setEditMembersModalOpen] = useState<boolean>(false)
 
-    const dispatch = useDispatch()
+    const canGrant = useCurrentAbility(StreamPermission.GRANT)
 
-    const account = useWalletAccount()
+    useLoadCurrentAbilityEffect(StreamPermission.GRANT)
 
-    const canGrant = useAbility(selectedRoomId, account, StreamPermission.GRANT)
+    const canPublish = useCurrentAbility(StreamPermission.PUBLISH)
 
-    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
-
-    useEffect(() => {
-        if (!selectedRoomId || !account) {
-            return
-        }
-
-        dispatch(
-            fetchPermission({
-                roomId: selectedRoomId,
-                address: account,
-                permission: StreamPermission.GRANT,
-            })
-        )
-
-        dispatch(
-            fetchPermission({
-                roomId: selectedRoomId,
-                address: account,
-                permission: StreamPermission.PUBLISH,
-            })
-        )
-    }, [dispatch, selectedRoomId, account])
+    useLoadCurrentAbilityEffect(StreamPermission.PUBLISH)
 
     return (
         <>
