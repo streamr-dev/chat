@@ -132,7 +132,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
                     </Cta>
                 }
             >
-                Message publishing requires a delegated account.
+                Publishing messages requires room access delegation.
             </MessageInputPlaceholder>
         )
     }
