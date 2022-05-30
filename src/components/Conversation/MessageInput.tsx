@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { createMessage } from '../../features/messages/actions'
 import { useSelectedRoomId } from '../../features/rooms/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
 import focus from '../../utils/focus'
 import Form from '../Form'
-import { v4 as uuidv4 } from 'uuid'
 import { storeDraft } from '../../features/drafts/actions'
 import db from '../../utils/db'
+import { publishMessage } from '../../features/messages/actions'
 
 type Props = {
     disabled?: boolean
@@ -46,25 +45,28 @@ export default function MessageInput({ disabled = false }: Props) {
     }
 
     function send(content: string) {
-        if (!selectedRoomId || !account) {
+        if (!selectedRoomId) {
             return
         }
 
-        const now = Date.now()
-
-        const createdBy = account.toLowerCase()
-
         dispatch(
-            createMessage({
-                content,
-                createdAt: now,
-                updatedAt: now,
-                createdBy,
-                id: uuidv4(),
-                owner: createdBy,
+            publishMessage({
                 roomId: selectedRoomId,
+                content,
             })
         )
+
+        // dispatch(
+        //     createMessage({
+        //         content,
+        //         createdAt: now,
+        //         updatedAt: now,
+        //         createdBy,
+        //         id: uuidv4(),
+        //         owner: createdBy,
+        //         roomId: selectedRoomId,
+        //     })
+        // )
     }
 
     function onSubmit() {

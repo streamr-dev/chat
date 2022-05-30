@@ -34,7 +34,7 @@ const store = configureStore({
             ...getDefaultMiddleware({
                 serializableCheck: {
                     ignoredActions: [WalletAction.SetWalletProvider],
-                    ignoredPaths: ['wallet.provider', 'wallet.client'],
+                    ignoredPaths: ['wallet.provider', 'wallet.client', 'delegation.client'],
                 },
             }),
             sagaMiddleware,

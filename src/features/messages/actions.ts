@@ -1,14 +1,15 @@
 import { createAction } from '@reduxjs/toolkit'
+import { RoomId } from '../rooms/types'
 import { IMessage } from './types'
 
 export enum MessageAction {
-    CreateMessage = 'create a message',
+    PublishMessage = 'publish a message',
+    RegisterMessage = 'register a message',
 }
 
-// HERE
-// 1. Rename createMessage to something more like `registerMessage` cause we're gonna show the message
-// once it actually arrives back (publish -> intercept).
-// 2. Add `publishMessage` which is the actual publishing.
-// 3. Sort messages by their createdAt instead of the arrival shit.
+export const publishMessage = createAction<{
+    roomId: RoomId
+    content: string
+}>(MessageAction.PublishMessage)
 
-export const createMessage = createAction<IMessage>(MessageAction.CreateMessage)
+export const registerMessage = createAction<IMessage>(MessageAction.RegisterMessage)

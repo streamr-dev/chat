@@ -1,6 +1,6 @@
 import { all } from 'redux-saga/effects'
-import createMessageSaga from './createMessageSaga'
+import publishMessageSaga from './publishMessageSaga'
 
 export default function* saga() {
-    yield all([createMessageSaga()])
+    yield all([publishMessageSaga()])
 }
