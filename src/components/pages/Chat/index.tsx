@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
 import Page from '../../Page'
@@ -47,7 +47,7 @@ function UnwrappedChat() {
     }, [dispatch, account])
 
     return (
-        <MessageTransmitter>
+        <>
             <Page title="Let's chat!">
                 <Nav onAccountClick={() => void setAccountModalOpen(true)} />
                 <main
@@ -136,7 +136,7 @@ function UnwrappedChat() {
             <WalletModal open={walletModalOpen} setOpen={toggleWalletModal} />
             <InvitationListener />
             <AddRoomModal open={roomModalOpen} setOpen={setRoomModalOpen} />
-        </MessageTransmitter>
+        </>
     )
 }
 
@@ -158,10 +158,6 @@ export default function Chat() {
     }
 
     return <UnwrappedChat />
-}
-
-function MessageTransmitter(props: any) {
-    return <Fragment {...props} />
 }
 
 function InvitationListener() {
