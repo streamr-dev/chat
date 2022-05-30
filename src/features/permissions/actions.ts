@@ -6,6 +6,7 @@ import { RoomId } from '../rooms/types'
 export enum PermissionAction {
     FetchPermission = 'fetch permission',
     SetLocalPermission = 'set local permission',
+    InvalidatePermissions = 'invalidate permissions',
 }
 
 export const fetchPermission = createAction<{
@@ -20,3 +21,8 @@ export const setLocalPermission = createAction<{
     permission: StreamPermission
     value: boolean
 }>(PermissionAction.SetLocalPermission)
+
+export const invalidatePermissions = createAction<{
+    roomId: RoomId
+    address: Address
+}>(PermissionAction.InvalidatePermissions)

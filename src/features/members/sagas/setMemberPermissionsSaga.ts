@@ -4,12 +4,15 @@ import StreamrClient from 'streamr-client'
 import { Address } from '../../../../types/common'
 import getWalletAccountSaga from '../../wallet/sagas/getWalletAccountSaga'
 import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
-import handleError from '../../../utils/handleError'
 import preflight from '../../../utils/preflight'
-import { detectMembers, MemberAction, removeMember } from '../actions'
+import { detectMembers, MemberAction, setMemberPermissions } from '../actions'
 import getWalletProviderSaga from '../../wallet/sagas/getWalletProviderSaga'
+import handleError from '../../../utils/handleError'
+import { invalidatePermissions } from '../../permissions/actions'
 
-function* onRemoveMemberAction({ payload: { roomId, address } }: ReturnType<typeof removeMember>) {
+function* onSetMemberPermissionsAction({
+    payload: { roomId: streamId, address: user, permissions },
+}: ReturnType<typeof setMemberPermissions>) {
     try {
         const provider: Provider = yield call(getWalletProviderSaga)
 
@@ -23,21 +26,23 @@ function* onRemoveMemberAction({ payload: { roomId, address } }: ReturnType<type
         const client: StreamrClient = yield call(getWalletClientSaga)
 
         yield client.setPermissions({
-            streamId: roomId,
+            streamId,
             assignments: [
                 {
-                    user: address,
-                    permissions: [],
+                    user,
+                    permissions,
                 },
             ],
         })
 
-        yield put(detectMembers(roomId))
+        yield put(detectMembers(streamId))
+
+        yield put(invalidatePermissions({ roomId: streamId, address: user }))
     } catch (e) {
         handleError(e)
     }
 }
 
-export default function* removeMemberSaga() {
-    yield takeEvery(MemberAction.RemoveMember, onRemoveMemberAction)
+export default function* setMemberPermissionsSaga() {
+    yield takeEvery(MemberAction.SetMemberPermissions, onSetMemberPermissionsAction)
 }

@@ -2,7 +2,7 @@ import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Address } from '../../../types/common'
-import { detectMembers, removeMember } from '../../features/members/actions'
+import { detectMembers, setMemberPermissions } from '../../features/members/actions'
 import { useMembers } from '../../features/members/hooks'
 import { useSelectedRoomId } from '../../features/rooms/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
@@ -48,9 +48,10 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             }
 
             dispatch(
-                removeMember({
+                setMemberPermissions({
                     roomId: selectedRoomId,
                     address,
+                    permissions: [],
                 })
             )
         },

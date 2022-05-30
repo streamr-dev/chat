@@ -5,7 +5,10 @@ export interface PermissionsState {
     items: {
         [index: RoomId]: {
             [index: Address]: {
-                [index: string]: boolean
+                [index: string]: {
+                    cache?: number
+                    value?: boolean
+                }
             }
         }
     }

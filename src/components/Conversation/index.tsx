@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { ButtonHTMLAttributes, ReactNode, useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import { useDelegatedClient } from '../../features/delegation/hooks'
+import { useDelegatedAccount, useDelegatedClient } from '../../features/delegation/hooks'
 import {
     useCurrentAbility,
     useCurrentDelegationAbility,
@@ -15,7 +15,13 @@ import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
 import MessageFeed from './MessageFeed'
 import MessageInput from './MessageInput'
-import NeedDelegatedClientBanner from './NeedDelegatedClientBanner'
+import MessageInputPlaceholder from './MessageInputPlaceholder'
+import Text from '../Text'
+import SecondaryButton from '../SecondaryButton'
+import { useDispatch } from 'react-redux'
+import { requestDelegatedPrivateKey } from '../../features/delegation/actions'
+import { useSelectedRoomId } from '../../features/rooms/hooks'
+import { setMemberPermissions } from '../../features/members/actions'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -77,7 +83,7 @@ export default function Conversation() {
                     `,
                 ]}
             >
-                <MessageBox />
+                <MessageBox canGrant={canGrant} />
             </div>
             <>
                 <AddMemberModal
@@ -95,21 +101,90 @@ export default function Conversation() {
     )
 }
 
-function MessageBox() {
+interface MessageBoxProps {
+    canGrant?: boolean
+}
+
+function MessageBox({ canGrant = false }: MessageBoxProps) {
     const delegatedClient = useDelegatedClient()
 
     const canDelegatedPublish = useCurrentDelegationAbility(StreamPermission.PUBLISH)
 
     useLoadCurrentDelegationAbilityEffect(StreamPermission.PUBLISH)
 
+    const dispatch = useDispatch()
+
+    const delegatedAccount = useDelegatedAccount()
+
+    const selectedRoomId = useSelectedRoomId()
+
     if (canDelegatedPublish) {
-        // That's all we need: delegated account being able to push messages.
+        // We can stop here. For publishing that's all that matters.
         return <MessageInput />
     }
 
     if (!delegatedClient) {
-        return <NeedDelegatedClientBanner />
+        return (
+            <MessageInputPlaceholder
+                cta={
+                    <Cta onClick={() => void dispatch(requestDelegatedPrivateKey())}>
+                        Delegate now
+                    </Cta>
+                }
+            >
+                Message publishing requires a delegated account.
+            </MessageInputPlaceholder>
+        )
+    }
+
+    if (canGrant) {
+        return (
+            <MessageInputPlaceholder
+                cta={
+                    <Cta
+                        onClick={() => {
+                            if (!selectedRoomId || !delegatedAccount) {
+                                return
+                            }
+
+                            dispatch(
+                                setMemberPermissions({
+                                    roomId: selectedRoomId,
+                                    address: delegatedAccount,
+                                    permissions: [StreamPermission.PUBLISH],
+                                })
+                            )
+                        }}
+                    >
+                        Promote it
+                    </Cta>
+                }
+            >
+                Your delegated account is not a publisher in this room.
+            </MessageInputPlaceholder>
+        )
     }
 
     return <MessageInput disabled />
+}
+
+type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+    children?: ReactNode
+}
+
+function Cta({ children, ...props }: CtaProps) {
+    return (
+        <SecondaryButton
+            {...props}
+            css={[
+                tw`
+                    text-[0.875rem]
+                    h-8
+                    px-4
+                `,
+            ]}
+        >
+            <Text>{children}</Text>
+        </SecondaryButton>
+    )
 }

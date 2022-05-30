@@ -1,8 +1,7 @@
 import { all } from 'redux-saga/effects'
-import addMemberSaga from './addMemberSaga'
 import detectMembersSaga from './detectMembersSaga'
-import removeMemberSaga from './removeMemberSaga'
+import setMemberPermissionsSaga from './setMemberPermissionsSaga'
 
 export default function* membersSaga() {
-    yield all([addMemberSaga(), removeMemberSaga(), detectMembersSaga()])
+    yield all([detectMembersSaga(), setMemberPermissionsSaga()])
 }

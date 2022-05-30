@@ -7,7 +7,7 @@ import { useSelectedRoomId } from '../rooms/hooks'
 import { RoomId } from '../rooms/types'
 import { useWalletAccount } from '../wallet/hooks'
 import { fetchPermission } from './actions'
-import { selectAbility } from './selectors'
+import { selectAbility, selectAbilityCache } from './selectors'
 
 export function useAbility(
     roomId: undefined | RoomId,
@@ -25,12 +25,22 @@ export function useCurrentAbility(permission: StreamPermission) {
     return useAbility(selectedRoomId, account, permission)
 }
 
+function useAbilityCache(
+    roomId: undefined | RoomId,
+    address: OptionalAddress,
+    permission: StreamPermission
+) {
+    return useSelector(selectAbilityCache(roomId, address, permission))
+}
+
 function useLoadAbilityEffect(
     roomId: undefined | RoomId,
     address: OptionalAddress,
     permission: StreamPermission
 ) {
     const dispatch = useDispatch()
+
+    const cache = useAbilityCache(roomId, address, permission)
 
     useEffect(() => {
         if (!roomId || !address) {
@@ -44,7 +54,7 @@ function useLoadAbilityEffect(
                 permission,
             })
         )
-    }, [roomId, address, permission])
+    }, [roomId, address, permission, cache])
 }
 
 export function useLoadCurrentAbilityEffect(permission: StreamPermission) {
