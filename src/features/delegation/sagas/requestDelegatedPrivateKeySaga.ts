@@ -8,6 +8,7 @@ import retrieveDelegatedPrivateKey from '../../../utils/retrieveDelegatedPrivate
 import storeDelegatedPrivateKey from '../../../utils/storeDelegatedPrivateKey'
 import { setDelegatedPrivateKey } from '../actions'
 import getWalletProviderSaga from '../../wallet/sagas/getWalletProviderSaga'
+import networkPreflight from '../../../utils/networkPreflight'
 
 interface Params {
     provider?: Provider
@@ -23,6 +24,8 @@ export default function* requestDelegatedPrivateKeySaga({
     const address: Address = addressParam ? addressParam : yield call(getWalletAccountSaga)
 
     let privateKey: string
+
+    yield networkPreflight(provider)
 
     try {
         privateKey = yield retrieveDelegatedPrivateKey({
