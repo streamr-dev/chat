@@ -1,13 +1,32 @@
+import { Provider } from '@web3-react/types'
 import { call } from 'redux-saga/effects'
-import { EnhancedStream } from '../../../../types/common'
-import getStreamSaga from '../../../sagas/getStreamSaga'
-import web3PreflightSaga from '../../../sagas/web3PreflightSaga'
+import StreamrClient from 'streamr-client'
+import { Address, EnhancedStream } from '../../../../types/common'
+import RoomNotFoundError from '../../../errors/RoomNotFoundError'
+import getWalletAccountSaga from '../../wallet/sagas/getWalletAccountSaga'
+import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
+import getStream from '../../../utils/getStream'
+import preflight from '../../../utils/preflight'
 import { RoomId } from '../types'
+import getWalletProviderSaga from '../../wallet/sagas/getWalletProviderSaga'
 
 export default function* renameRemoteRoomSaga(id: RoomId, name: string) {
-    yield call(web3PreflightSaga)
+    const provider: Provider = yield call(getWalletProviderSaga)
 
-    const stream: EnhancedStream = yield call(getStreamSaga, id)
+    const account: Address = yield call(getWalletAccountSaga)
+
+    yield preflight({
+        provider,
+        address: account,
+    })
+
+    const client: StreamrClient = yield call(getWalletClientSaga)
+
+    const stream: undefined | EnhancedStream = yield getStream(client, id)
+
+    if (!stream) {
+        throw new RoomNotFoundError(id)
+    }
 
     stream.description = name
 

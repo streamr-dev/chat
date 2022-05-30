@@ -1,28 +1,21 @@
-import db from '../../../utils/db'
 import { put, select, takeEvery } from 'redux-saga/effects'
 import { selectRoom } from '../actions'
 import { setWalletAccount, WalletAction } from '../../wallet/actions'
 import { IRoom, RoomId } from '../types'
 import { selectSelectedRoomId } from '../selectors'
+import handleError from '../../../utils/handleError'
+import getLocalRooms from '../../../utils/getLocalRooms'
 
-function* onAccountChange({
-    payload: account,
-}: ReturnType<typeof setWalletAccount>) {
+function* onAccountChange({ payload: account }: ReturnType<typeof setWalletAccount>) {
     if (!account) {
         yield put(selectRoom(undefined))
         return
     }
 
     try {
-        const rooms: IRoom[] = yield db.rooms
-            .where({
-                owner: account.toLowerCase(),
-            })
-            .toArray()
+        const rooms: IRoom[] = yield getLocalRooms(account)
 
-        const selectedRoomId: undefined | RoomId = yield select(
-            selectSelectedRoomId
-        )
+        const selectedRoomId: undefined | RoomId = yield select(selectSelectedRoomId)
 
         if (!rooms.length) {
             put(selectRoom(undefined))
@@ -41,7 +34,7 @@ function* onAccountChange({
 
         yield put(selectRoom(rooms[0].id))
     } catch (e) {
-        console.warn('Oh no!', e)
+        handleError(e)
     }
 }
 

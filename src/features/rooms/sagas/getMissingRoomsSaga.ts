@@ -1,12 +1,11 @@
-import { call, select, takeLatest } from 'redux-saga/effects'
+import { call, takeLatest } from 'redux-saga/effects'
 import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
-import { UnsafeStream, Prefix } from '../../../../types/common'
-import MissingWalletAccountError from '../../../errors/MissingWalletAccountError'
-import getWalletClientSaga from '../../../sagas/getWalletClientSaga'
+import { UnsafeStream, Prefix, Address } from '../../../../types/common'
+import getWalletAccountSaga from '../../wallet/sagas/getWalletAccountSaga'
+import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
 import db from '../../../utils/db'
+import handleError from '../../../utils/handleError'
 import sanitizeStream from '../../../utils/sanitizeStream'
-import { selectWalletAccount } from '../../wallet/selectors'
-import { WalletState } from '../../wallet/types'
 import { RoomAction } from '../actions'
 import { RoomId } from '../types'
 
@@ -50,13 +49,7 @@ function* onGetMissingRoomsAction() {
     try {
         const client: StreamrClient = yield call(getWalletClientSaga)
 
-        const account: WalletState['account'] = yield select(
-            selectWalletAccount
-        )
-
-        if (!account) {
-            throw new MissingWalletAccountError()
-        }
+        const account: Address = yield call(getWalletAccountSaga)
 
         const ids: RoomId[] = yield getRoomIds(client, account)
 
@@ -68,7 +61,7 @@ function* onGetMissingRoomsAction() {
             }
         }
     } catch (e) {
-        console.warn('Oh, `onGetMissingRoomsAction` failed.', e)
+        handleError(e)
     }
 }
 

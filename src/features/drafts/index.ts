@@ -3,7 +3,7 @@ import { storeDraft } from './actions'
 
 const reducer = createReducer({}, (builder) => {
     builder.addCase(storeDraft, () => {
-        // See `storeDraftSaga`.
+        // See `drafts/sagas`.
     })
 })
 

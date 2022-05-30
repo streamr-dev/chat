@@ -1,3 +1,4 @@
+import { Provider } from '@web3-react/types'
 import { Stream } from 'streamr-client'
 import { IRoom } from '../src/features/rooms/types'
 
@@ -40,3 +41,8 @@ export type EnhancedStream = Stream & {
 export type Address = string
 
 export type OptionalAddress = undefined | null | Address
+
+export interface PreflightParams {
+    provider: Provider
+    address: Address
+}

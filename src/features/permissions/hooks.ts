@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
-import { Address } from '../../../types/common'
+import { Address, OptionalAddress } from '../../../types/common'
+import { useDelegatedAccount } from '../delegation/hooks'
 import { useSelectedRoomId } from '../rooms/hooks'
 import { RoomId } from '../rooms/types'
 import { useWalletAccount } from '../wallet/hooks'
@@ -24,24 +25,44 @@ export function useCurrentAbility(permission: StreamPermission) {
     return useAbility(selectedRoomId, account, permission)
 }
 
-export function useLoadCurrentAbilityEffect(permission: StreamPermission) {
-    const selectedRoomId = useSelectedRoomId()
-
-    const account = useWalletAccount()
-
+function useLoadAbilityEffect(
+    roomId: undefined | RoomId,
+    address: OptionalAddress,
+    permission: StreamPermission
+) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!selectedRoomId || !account) {
+        if (!roomId || !address) {
             return
         }
 
         dispatch(
             fetchPermission({
-                roomId: selectedRoomId,
-                address: account,
+                roomId,
+                address,
                 permission,
             })
         )
-    }, [selectedRoomId, account, permission])
+    }, [roomId, address, permission])
+}
+
+export function useLoadCurrentAbilityEffect(permission: StreamPermission) {
+    const selectedRoomId = useSelectedRoomId()
+
+    const account = useWalletAccount()
+
+    useLoadAbilityEffect(selectedRoomId, account, permission)
+}
+
+export function useCurrentDelegationAbility(permission: StreamPermission) {
+    return useAbility(useSelectedRoomId(), useDelegatedAccount(), permission)
+}
+
+export function useLoadCurrentDelegationAbilityEffect(permission: StreamPermission) {
+    const selectedRoomId = useSelectedRoomId()
+
+    const delegatedAccount = useDelegatedAccount()
+
+    useLoadAbilityEffect(selectedRoomId, delegatedAccount, permission)
 }

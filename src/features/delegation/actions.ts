@@ -9,6 +9,4 @@ export const setDelegatedPrivateKey = createAction<string | undefined>(
     DelegationAction.SetDelegatedPrivateKey
 )
 
-export const requestDelegatedPrivateKey = createAction(
-    DelegationAction.RequestDelegatedPrivateKey
-)
+export const requestDelegatedPrivateKey = createAction(DelegationAction.RequestDelegatedPrivateKey)

@@ -1,10 +1,10 @@
-import { call, select, takeLatest } from 'redux-saga/effects'
-import { PermissionAssignment, Stream, StreamPermission } from 'streamr-client'
+import { call, takeLatest } from 'redux-saga/effects'
+import StreamrClient, { PermissionAssignment, Stream, StreamPermission } from 'streamr-client'
 import { Address } from '../../../../types/common'
-import MissingWalletAccountError from '../../../errors/MissingWalletAccountError'
-import getStreamSaga from '../../../sagas/getStreamSaga'
-import { selectWalletAccount } from '../../wallet/selectors'
-import { WalletState } from '../../wallet/types'
+import getWalletAccountSaga from '../../wallet/sagas/getWalletAccountSaga'
+import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
+import getStream from '../../../utils/getStream'
+import handleError from '../../../utils/handleError'
 import { RoomAction, syncRoom } from '../actions'
 import deleteLocalRoomSaga from './deleteLocalRoomSaga'
 import renameLocalRoomSaga from './renameLocalRoomSaga'
@@ -21,14 +21,11 @@ async function getUserPermissions(user: Address, stream: Stream) {
 
 function* onSyncRoomAction({ payload: roomId }: ReturnType<typeof syncRoom>) {
     try {
-        const stream: undefined | Stream = yield call(getStreamSaga, roomId)
+        const client: StreamrClient = yield call(getWalletClientSaga)
 
-        const account: WalletState['account'] = yield select(selectWalletAccount)
+        const account: Address = yield call(getWalletAccountSaga)
 
-        if (!account) {
-            // No current account? Fail. It's not a shame.
-            throw new MissingWalletAccountError()
-        }
+        const stream: undefined | Stream = yield getStream(client, roomId)
 
         if (stream) {
             const permissions: StreamPermission[] = yield getUserPermissions(account, stream)
@@ -44,7 +41,7 @@ function* onSyncRoomAction({ payload: roomId }: ReturnType<typeof syncRoom>) {
 
         yield call(deleteLocalRoomSaga, roomId, account.toLowerCase())
     } catch (e) {
-        console.warn('Oh no, `onSyncRoomAction` failed.', e)
+        handleError(e)
     }
 }
 

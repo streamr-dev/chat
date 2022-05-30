@@ -1,15 +1,23 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
-import { PermissionAssignment, StreamPermission } from 'streamr-client'
+import StreamrClient, { PermissionAssignment, StreamPermission } from 'streamr-client'
 import { EnhancedStream, PrivacySetting } from '../../../../types/common'
-import getStreamSaga from '../../../sagas/getStreamSaga'
+import RoomNotFoundError from '../../../errors/RoomNotFoundError'
+import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
+import getStream from '../../../utils/getStream'
+import handleError from '../../../utils/handleError'
 import { detectMembers, MemberAction, setMembers } from '../actions'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 function* onDetectMembersAction({ payload: roomId }: ReturnType<typeof detectMembers>) {
     try {
         const members: string[] = []
 
-        const stream: EnhancedStream = yield call(getStreamSaga, roomId)
+        const client: StreamrClient = yield call(getWalletClientSaga)
+
+        const stream: undefined | EnhancedStream = yield getStream(client, roomId)
+
+        if (!stream) {
+            throw new RoomNotFoundError(roomId)
+        }
 
         const { privacy } = stream.extensions['thechat.eth']
 
@@ -50,7 +58,7 @@ function* onDetectMembersAction({ payload: roomId }: ReturnType<typeof detectMem
 
         yield put(setMembers({ roomId, addresses: members }))
     } catch (e) {
-        console.warn('Detection failed.', e)
+        handleError(e)
     }
 }
 

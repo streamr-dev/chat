@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import { takeLatest, put } from 'redux-saga/effects'
 import { WalletState } from '../types'
 import { setWalletAccount, WalletAction } from '../actions'
+import handleError from '../../../utils/handleError'
 
 export function* onSetWalletProviderAction({
     payload: provider,
@@ -21,7 +22,7 @@ export function* onSetWalletProviderAction({
     try {
         accounts = yield web3Provider.listAccounts()
     } catch (e) {
-        console.warn('Failed to list accounts', e)
+        handleError(e)
     }
 
     yield put(setWalletAccount(accounts[0] || null))

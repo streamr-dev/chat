@@ -3,5 +3,5 @@ import { RoomId } from '../types'
 
 export default function* renameLocalRoomSaga(id: RoomId, name: string) {
     // Rename rooms for all record owners.
-    yield db.rooms.where({ id }).modify({ name })
+    yield db.rooms.where('id').equals(id).modify({ name })
 }

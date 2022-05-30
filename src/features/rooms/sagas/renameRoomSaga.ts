@@ -1,4 +1,5 @@
 import { call, takeEvery } from 'redux-saga/effects'
+import handleError from '../../../utils/handleError'
 import { renameRoom, RoomAction } from '../actions'
 import renameLocalRoomSaga from './renameLocalRoomSaga'
 import renameRemoteRoomSaga from './renameRemoteRoomSaga'
@@ -9,7 +10,7 @@ function* onRenameRoomAction({ payload: { roomId, name } }: ReturnType<typeof re
 
         yield call(renameLocalRoomSaga, roomId, name)
     } catch (e) {
-        console.warn('Oh no! `onRenameRoomAction` failed', e)
+        handleError(e)
     }
 }
 

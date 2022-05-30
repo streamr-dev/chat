@@ -1,23 +1,26 @@
 import { call, put, takeEvery } from 'redux-saga/effects'
-import { Stream } from 'streamr-client'
-import getStreamSaga from '../../../sagas/getStreamSaga'
+import StreamrClient from 'streamr-client'
+import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
+import fetchRoomPermission from '../../../utils/fetchRoomPermission'
+import handleError from '../../../utils/handleError'
 import { fetchPermission, PermissionAction, setLocalPermission } from '../actions'
 
 function* onFetchPermissionAction({
     payload: { roomId, address, permission },
 }: ReturnType<typeof fetchPermission>) {
     try {
-        const stream: Stream = yield call(getStreamSaga, roomId)
+        const client: StreamrClient = yield call(getWalletClientSaga)
 
-        const hasPermission: boolean = yield stream.hasPermission({
-            user: address,
+        const hasPermission: boolean = yield fetchRoomPermission({
+            roomId,
+            address,
             permission,
-            allowPublic: true,
+            client,
         })
 
         yield put(setLocalPermission({ roomId, address, permission, value: hasPermission }))
     } catch (e) {
-        console.warn('Permission fetching failed.', e)
+        handleError(e)
     }
 }
 

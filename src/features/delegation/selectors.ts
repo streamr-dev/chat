@@ -6,10 +6,12 @@ function selectSelf(state: any): DelegationState {
     return state.delegation
 }
 
-export const selectDelegatedPrivateKey = createSelector(selectSelf, ({ privateKey }) => privateKey)
-
-export const selectDelegatedAccount = createSelector(selectDelegatedPrivateKey, (privateKey) =>
-    privateKey ? new Wallet(privateKey).address : undefined
-)
-
 export const selectDelegatedClient = createSelector(selectSelf, ({ client }) => client)
+
+export const selectDelegatedAccount = createSelector(selectSelf, ({ privateKey }) => {
+    if (!privateKey) {
+        return undefined
+    }
+
+    return new Wallet(privateKey).address
+})

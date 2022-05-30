@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import { useCurrentAbility, useLoadCurrentAbilityEffect } from '../../features/permissions/hooks'
+import { useDelegatedClient } from '../../features/delegation/hooks'
+import {
+    useCurrentAbility,
+    useCurrentDelegationAbility,
+    useLoadCurrentAbilityEffect,
+    useLoadCurrentDelegationAbilityEffect,
+} from '../../features/permissions/hooks'
 import useMessages from '../../hooks/useMessages'
 import AddMemberModal from '../modals/AddMemberModal'
 import EditMembersModal from '../modals/EditMembersModal'
@@ -9,6 +15,7 @@ import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
 import MessageFeed from './MessageFeed'
 import MessageInput from './MessageInput'
+import NeedDelegatedClientBanner from './NeedDelegatedClientBanner'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -20,10 +27,6 @@ export default function Conversation() {
     const canGrant = useCurrentAbility(StreamPermission.GRANT)
 
     useLoadCurrentAbilityEffect(StreamPermission.GRANT)
-
-    const canPublish = useCurrentAbility(StreamPermission.PUBLISH)
-
-    useLoadCurrentAbilityEffect(StreamPermission.PUBLISH)
 
     return (
         <>
@@ -63,7 +66,19 @@ export default function Conversation() {
                     )}
                 </div>
             </div>
-            <MessageInput disabled={!canPublish} />
+            <div
+                css={[
+                    tw`
+                        absolute
+                        p-6
+                        bottom-0
+                        left-0
+                        w-full
+                    `,
+                ]}
+            >
+                <MessageBox />
+            </div>
             <>
                 <AddMemberModal
                     canModifyMembers={canGrant}
@@ -78,4 +93,23 @@ export default function Conversation() {
             </>
         </>
     )
+}
+
+function MessageBox() {
+    const delegatedClient = useDelegatedClient()
+
+    const canDelegatedPublish = useCurrentDelegationAbility(StreamPermission.PUBLISH)
+
+    useLoadCurrentDelegationAbilityEffect(StreamPermission.PUBLISH)
+
+    if (canDelegatedPublish) {
+        // That's all we need: delegated account being able to push messages.
+        return <MessageInput />
+    }
+
+    if (!delegatedClient) {
+        return <NeedDelegatedClientBanner />
+    }
+
+    return <MessageInput disabled />
 }

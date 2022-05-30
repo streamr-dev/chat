@@ -1,7 +1,7 @@
 import { select } from 'redux-saga/effects'
-import MissingWalletAccountError from '../errors/MissingWalletAccountError'
-import { selectWalletAccount } from '../features/wallet/selectors'
-import { WalletState } from '../features/wallet/types'
+import MissingWalletAccountError from '../../../errors/MissingWalletAccountError'
+import { selectWalletAccount } from '../selectors'
+import { WalletState } from '../types'
 
 export default function* getWalletAccountSaga() {
     const account: WalletState['account'] = yield select(selectWalletAccount)

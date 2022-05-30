@@ -1,10 +1,10 @@
 import { Provider } from '@web3-react/types'
 import { Matic } from '../utils/chains'
 
-export default function* addNetworkSaga(provider: Provider) {
+export default async function addNetwork(provider: Provider) {
     const [, params] = Matic
 
-    yield provider.request({
+    await provider.request({
         method: 'wallet_addEthereumChain',
         params: [params],
     })
