@@ -10,6 +10,7 @@ import { selectDelegatedClient } from '../../delegation/selectors'
 import { DelegationState } from '../../delegation/types'
 import { publishMessage, MessageAction } from '../actions'
 import getWalletProviderSaga from '../../wallet/sagas/getWalletProviderSaga'
+import { v4 as uuidv4 } from 'uuid'
 
 function* getDelegatedClientSaga() {
     let client: DelegationState['client'] = yield select(selectDelegatedClient)
@@ -35,14 +36,19 @@ function* getDelegatedClientSaga() {
 }
 
 function* onPublishMessageAction({
-    payload: { roomId, content },
+    payload: { roomId, content, type },
 }: ReturnType<typeof publishMessage>) {
     try {
         const client: StreamrClient = yield call(getDelegatedClientSaga)
 
-        // client.publish(roomId, {})
-        console.log('Client', client)
-        console.log('Payload', roomId, content)
+        const createdBy: Address = yield call(getWalletAccountSaga)
+
+        yield client.publish(roomId, {
+            id: uuidv4(),
+            content,
+            createdBy,
+            type,
+        })
     } catch (e) {
         handleError(e)
     }

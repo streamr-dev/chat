@@ -4,14 +4,12 @@ import tw from 'twin.macro'
 import { selectRoom, syncRoom } from '../../../features/rooms/actions'
 import { IRoom } from '../../../features/rooms/types'
 import getIdenticon from '../../../getters/getIdenticon'
+import useIntercept from '../../../hooks/useIntercept'
 import useRecentMessage from '../../../hooks/useRecentMessage'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
 
-type Props = Omit<
-    ButtonHTMLAttributes<HTMLButtonElement>,
-    'type' | 'children'
-> & {
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
     room: IRoom
 }
@@ -26,6 +24,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
     useEffect(() => {
         dispatch(syncRoom(id))
     }, [dispatch, id])
+
+    useIntercept(id)
 
     return (
         <SidebarButton
@@ -75,11 +75,7 @@ function Icon({ id: roomId }: Pick<Props['room'], 'id'>) {
                 `,
             ]}
         >
-            <img
-                tw="block"
-                src={`data:image/png;base64,${getIdenticon(roomId)}`}
-                alt={roomId}
-            />
+            <img tw="block" src={`data:image/png;base64,${getIdenticon(roomId)}`} alt={roomId} />
         </div>
     )
 }

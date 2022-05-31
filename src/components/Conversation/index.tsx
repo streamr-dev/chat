@@ -112,13 +112,17 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     useLoadCurrentDelegationAbilityEffect(StreamPermission.PUBLISH)
 
+    const canDelegatedSubscribe = useCurrentDelegationAbility(StreamPermission.SUBSCRIBE)
+
+    useLoadCurrentDelegationAbilityEffect(StreamPermission.SUBSCRIBE)
+
     const dispatch = useDispatch()
 
     const delegatedAccount = useDelegatedAccount()
 
     const selectedRoomId = useSelectedRoomId()
 
-    if (canDelegatedPublish) {
+    if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.
         return <MessageInput />
     }
@@ -151,7 +155,10 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
                                 setMemberPermissions({
                                     roomId: selectedRoomId,
                                     address: delegatedAccount,
-                                    permissions: [StreamPermission.PUBLISH],
+                                    permissions: [
+                                        StreamPermission.PUBLISH,
+                                        StreamPermission.SUBSCRIBE,
+                                    ],
                                 })
                             )
                         }}

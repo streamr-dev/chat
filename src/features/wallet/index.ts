@@ -1,10 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { StorageKey } from '../../../types/common'
-import {
-    setWalletAccount,
-    setWalletIntegrationId,
-    setWalletProvider,
-} from './actions'
+import { setWalletAccount, setWalletIntegrationId, setWalletProvider } from './actions'
 import { WalletIntegrationId, WalletState } from './types'
 import StreamrClient from 'streamr-client'
 
@@ -13,9 +9,7 @@ const initialState: WalletState = {
     provider: undefined,
     client: undefined,
     integrationId:
-        (localStorage.getItem(
-            StorageKey.WalletIntegrationId
-        ) as WalletIntegrationId) || undefined,
+        (localStorage.getItem(StorageKey.WalletIntegrationId) as WalletIntegrationId) || undefined,
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -37,6 +31,7 @@ const reducer = createReducer(initialState, (builder) => {
                   auth: {
                       ethereum: payload,
                   },
+                  gapFill: false,
               })
             : undefined
     })

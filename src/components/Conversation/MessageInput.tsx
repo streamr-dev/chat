@@ -8,6 +8,7 @@ import Form from '../Form'
 import { storeDraft } from '../../features/drafts/actions'
 import db from '../../utils/db'
 import { publishMessage } from '../../features/messages/actions'
+import { MessageType } from '../../features/messages/types'
 
 type Props = {
     disabled?: boolean
@@ -53,6 +54,7 @@ export default function MessageInput({ disabled = false }: Props) {
             publishMessage({
                 roomId: selectedRoomId,
                 content,
+                type: MessageType.Text,
             })
         )
     }

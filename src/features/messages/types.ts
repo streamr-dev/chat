@@ -6,3 +6,15 @@ export interface IMessage extends IRecord {
     id: string
     roomId: string
 }
+
+export enum MessageType {
+    Text = 'text',
+    Metadata = 'metadata',
+}
+
+export interface StreamMessage {
+    content: string
+    createdBy: string
+    id: string
+    type: MessageType
+}

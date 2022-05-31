@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit'
 import { RoomId } from '../rooms/types'
-import { IMessage } from './types'
+import { IMessage, MessageType } from './types'
 
 export enum MessageAction {
     PublishMessage = 'publish a message',
@@ -10,6 +10,10 @@ export enum MessageAction {
 export const publishMessage = createAction<{
     roomId: RoomId
     content: string
+    type: MessageType
 }>(MessageAction.PublishMessage)
 
-export const registerMessage = createAction<IMessage>(MessageAction.RegisterMessage)
+export const registerMessage = createAction<{
+    type: MessageType
+    message: Omit<IMessage, 'owner'>
+}>(MessageAction.RegisterMessage)
