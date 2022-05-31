@@ -5,10 +5,11 @@ import { Address } from '../../../../types/common'
 import getWalletAccountSaga from '../../wallet/sagas/getWalletAccountSaga'
 import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
 import preflight from '../../../utils/preflight'
-import { detectMembers, MemberAction, setMemberPermissions } from '../actions'
+import { detectMembers, setMemberPermissions } from '../actions'
 import getWalletProviderSaga from '../../wallet/sagas/getWalletProviderSaga'
 import handleError from '../../../utils/handleError'
 import { invalidatePermissions } from '../../permissions/actions'
+import { MemberAction } from '../types'
 
 function* onSetMemberPermissionsAction({
     payload: { roomId: streamId, address: user, permissions },

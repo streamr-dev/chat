@@ -5,7 +5,8 @@ import RoomNotFoundError from '../../../errors/RoomNotFoundError'
 import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
 import getStream from '../../../utils/getStream'
 import handleError from '../../../utils/handleError'
-import { detectMembers, MemberAction, setMembers } from '../actions'
+import { detectMembers, setMembers } from '../actions'
+import { MemberAction } from '../types'
 
 function* onDetectMembersAction({ payload: roomId }: ReturnType<typeof detectMembers>) {
     try {
