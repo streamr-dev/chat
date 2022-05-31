@@ -162,7 +162,7 @@ function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: 
                     `,
                 ]}
             >
-                <Avatar account={address} />
+                <Avatar account={address} backgroundColor="white" />
             </div>
             <div
                 css={[
