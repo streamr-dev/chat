@@ -1,11 +1,14 @@
 import { ButtonHTMLAttributes, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
+import { retrieveIdenticon } from '../../../features/identicons/actions'
+import { useIdenticon } from '../../../features/identicons/hooks'
 import { selectRoom, syncRoom } from '../../../features/rooms/actions'
 import { IRoom } from '../../../features/rooms/types'
-import getIdenticon from '../../../getters/getIdenticon'
 import useIntercept from '../../../hooks/useIntercept'
 import useRecentMessage from '../../../hooks/useRecentMessage'
+import fallbackIdenticon from '../../../utils/fallbackIdenticon'
+import Avatar from '../../Avatar'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
 
@@ -63,19 +66,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
 function Icon({ id: roomId }: Pick<Props['room'], 'id'>) {
     return (
-        <div
-            css={[
-                tw`
-                    bg-white
-                    w-12
-                    h-12
-                    p-2
-                    overflow-hidden
-                    rounded-full
-                `,
-            ]}
-        >
-            <img tw="block" src={`data:image/png;base64,${getIdenticon(roomId)}`} alt={roomId} />
+        <div tw="p-1">
+            <Avatar account={roomId} backgroundColor="white" />
         </div>
     )
 }

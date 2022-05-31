@@ -2,6 +2,7 @@ import Dexie, { Table } from 'dexie'
 import { IRecord } from '../../types/common'
 import { IDelegation } from '../features/delegation/types'
 import { IDraft } from '../features/drafts/types'
+import { IdenticonSeed, IIdenticon } from '../features/identicons/types'
 import { IMessage } from '../features/messages/types'
 import { IRoom } from '../features/rooms/types'
 
@@ -21,15 +22,18 @@ class StreamrChatDatabase extends Dexie {
 
     delegations!: Table<IDelegation, number>
 
+    identicons!: Table<IIdenticon, IdenticonSeed>
+
     constructor() {
         super('StreamrChatDatabase')
 
-        this.version(3).stores({
+        this.version(4).stores({
             rooms: '++, owner, id, &[owner+id]',
             messages: '++, owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
             aliases: '++, owner, account, &[owner+account]',
             drafts: '++, owner, roomId, &[owner+roomId]',
             delegations: '++, &owner',
+            identicons: '++, &seed',
         })
     }
 }
