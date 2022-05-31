@@ -16,3 +16,7 @@ export const setMemberPermissions = createAction<{
     address: Address
     permissions: StreamPermission[]
 }>(MemberAction.SetMemberPermissions)
+
+export const setLastSeenAt = createAction<{ address: Address; value: number }>(
+    MemberAction.SetLastSeenAt
+)

@@ -8,6 +8,7 @@ import members from './features/members'
 import permissions from './features/permissions'
 import drafts from './features/drafts'
 import identicons from './features/identicons'
+import clock from './features/clock'
 import createSagaMiddleware from 'redux-saga'
 import walletSaga from './features/wallet/sagas'
 import delegationSaga from './features/delegation/sagas'
@@ -31,6 +32,7 @@ const store = configureStore({
         permissions,
         drafts,
         identicons,
+        clock,
     },
     middleware(getDefaultMiddleware) {
         return [

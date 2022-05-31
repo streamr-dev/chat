@@ -1,9 +1,10 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { detectMembers, setMemberPermissions, setMembers } from './actions'
+import { detectMembers, setLastSeenAt, setMemberPermissions, setMembers } from './actions'
 import { MembersState } from './types'
 
 const initialState: MembersState = {
     items: {},
+    lastSeenAt: {},
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -17,6 +18,10 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(setMemberPermissions, () => {
         // See `setMemberPermissionsSaga`.
+    })
+
+    builder.addCase(setLastSeenAt, (state, { payload: { address, value } }) => {
+        state.lastSeenAt[address.toLowerCase()] = value
     })
 })
 

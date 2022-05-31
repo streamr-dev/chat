@@ -1,7 +1,8 @@
 import { HTMLAttributes } from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '../../features/messages/types'
-import Avatar from '../Avatar'
+import useIsOnline from '../../hooks/useIsOnline'
+import Avatar, { AvatarStatus } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
 
@@ -12,6 +13,8 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 
 export default function Message({ payload, incoming = false, ...props }: Props) {
     const { createdBy, createdAt, content } = payload
+
+    const status = useIsOnline(createdBy) ? AvatarStatus.Online : AvatarStatus.Offline
 
     return (
         <div
@@ -26,7 +29,7 @@ export default function Message({ payload, incoming = false, ...props }: Props) 
                     `,
             ]}
         >
-            {incoming && <Avatar account={createdBy} tw="mr-4" />}
+            {incoming && <Avatar status={status} account={createdBy} tw="mr-4" />}
             <div
                 css={[
                     css`
@@ -60,7 +63,7 @@ export default function Message({ payload, incoming = false, ...props }: Props) 
                 <DateTooltip timestamp={createdAt} />
                 <Text>{content}</Text>
             </div>
-            {!incoming && <Avatar account={createdBy} tw="ml-4" />}
+            {!incoming && <Avatar status={status} account={createdBy} tw="ml-4" />}
         </div>
     )
 }

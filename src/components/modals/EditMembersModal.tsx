@@ -7,6 +7,7 @@ import { useMembers } from '../../features/members/hooks'
 import { useSelectedRoomId } from '../../features/rooms/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
 import useCopy from '../../hooks/useCopy'
+import useIsOnline from '../../hooks/useIsOnline'
 import CopyIcon from '../../icons/CopyIcon'
 import DeleteIcon from '../../icons/DeleteIcon'
 import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
@@ -15,7 +16,7 @@ import getExplorerURL from '../../utils/getExplorerURL'
 import isSameAddress from '../../utils/isSameAddress'
 import trunc from '../../utils/trunc'
 import ActionButton from '../ActionButton'
-import Avatar from '../Avatar'
+import Avatar, { AvatarStatus } from '../Avatar'
 import Menu, { MenuButtonItem, MenuLinkItem, MenuSeparatorItem } from '../Menu'
 import Modal, { ModalProps } from './Modal'
 
@@ -137,6 +138,8 @@ function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: 
 
     const { copy } = useCopy()
 
+    const status = useIsOnline(address) ? AvatarStatus.Online : AvatarStatus.Offline
+
     return (
         <div
             {...props}
@@ -162,7 +165,7 @@ function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: 
                     `,
                 ]}
             >
-                <Avatar account={address} backgroundColor="white" />
+                <Avatar account={address} backgroundColor="white" status={status} />
             </div>
             <div
                 css={[

@@ -33,7 +33,7 @@ function useAbilityCache(
     return useSelector(selectAbilityCache(roomId, address, permission))
 }
 
-function useLoadAbilityEffect(
+export function useLoadAbilityEffect(
     roomId: undefined | RoomId,
     address: OptionalAddress,
     permission: StreamPermission

@@ -5,6 +5,9 @@ export interface MembersState {
     items: {
         [index: RoomId]: string[]
     }
+    lastSeenAt: {
+        [index: Address]: number
+    }
 }
 
 export enum MemberAction {
@@ -13,4 +16,5 @@ export enum MemberAction {
     DetectMembers = 'detect room members',
     SetMembers = 'set room members',
     SetMemberPermissions = 'set member permissions',
+    SetLastSeenAt = 'set member last seen at',
 }

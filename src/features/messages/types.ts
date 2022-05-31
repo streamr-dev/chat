@@ -9,7 +9,7 @@ export interface IMessage extends IRecord {
 
 export enum MessageType {
     Text = 'text',
-    Metadata = 'metadata',
+    Instruction = 'instruction',
 }
 
 export interface StreamMessage {
@@ -17,4 +17,8 @@ export interface StreamMessage {
     createdBy: string
     id: string
     type: MessageType
+}
+
+export enum Instruction {
+    UpdateSeenAt = 'UPDATE_SEEN_AT',
 }

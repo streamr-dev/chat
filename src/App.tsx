@@ -7,6 +7,7 @@ import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from './store'
 import WalletIntegrationObserver from './components/WalletIntegrationObserver'
+import Clock from './components/Clock'
 
 const ToastContainer = styled(PrestyledToastContainer)`
     width: auto;
@@ -41,6 +42,7 @@ export default function App() {
             <GlobalStyles />
             <Global styles={customGlobalStyles} />
             <WalletIntegrationObserver />
+            <Clock />
             <div>
                 <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>

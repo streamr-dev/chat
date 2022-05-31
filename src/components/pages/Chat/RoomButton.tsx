@@ -1,13 +1,11 @@
 import { ButtonHTMLAttributes, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { retrieveIdenticon } from '../../../features/identicons/actions'
-import { useIdenticon } from '../../../features/identicons/hooks'
 import { selectRoom, syncRoom } from '../../../features/rooms/actions'
 import { IRoom } from '../../../features/rooms/types'
+import useEmitPresenceEffect from '../../../hooks/useEmitPresenceEffect'
 import useIntercept from '../../../hooks/useIntercept'
 import useRecentMessage from '../../../hooks/useRecentMessage'
-import fallbackIdenticon from '../../../utils/fallbackIdenticon'
 import Avatar from '../../Avatar'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
@@ -29,6 +27,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
     }, [dispatch, id])
 
     useIntercept(id)
+
+    useEmitPresenceEffect(id)
 
     return (
         <SidebarButton
