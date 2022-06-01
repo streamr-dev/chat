@@ -1,8 +1,9 @@
 import { OptionalAddress } from '../../types/common'
 import { useTickedAt } from '../features/clock/hooks'
 import { useLastSeenAt } from '../features/members/hooks'
+import Minute from '../utils/minute'
 
-const THRESHOLD = 60 * 1000 // 60s
+const THRESHOLD = 5 * Minute
 
 export default function useIsOnline(address: OptionalAddress) {
     const lastSeenAt = useLastSeenAt(address)
