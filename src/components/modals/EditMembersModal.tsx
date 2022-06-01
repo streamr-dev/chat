@@ -9,9 +9,9 @@ import { useWalletAccount } from '../../features/wallet/hooks'
 import useCopy from '../../hooks/useCopy'
 import useIsOnline from '../../hooks/useIsOnline'
 import CopyIcon from '../../icons/CopyIcon'
-import DeleteIcon from '../../icons/DeleteIcon'
 import ExternalLinkIcon from '../../icons/ExternalLinkIcon'
 import MoreIcon from '../../icons/MoreIcon'
+import RemoveUserIcon from '../../icons/RemoveUserIcon'
 import getExplorerURL from '../../utils/getExplorerURL'
 import isSameAddress from '../../utils/isSameAddress'
 import trunc from '../../utils/trunc'
@@ -225,7 +225,16 @@ function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: 
                             <>
                                 <MenuSeparatorItem />
                                 <MenuButtonItem
-                                    icon={<DeleteIcon />}
+                                    icon={
+                                        <RemoveUserIcon
+                                            css={[
+                                                tw`
+                                                    w-4
+                                                    h-4
+                                                `,
+                                            ]}
+                                        />
+                                    }
                                     onClick={() => {
                                         if (typeof onDeleteClick === 'function') {
                                             onDeleteClick(address)
