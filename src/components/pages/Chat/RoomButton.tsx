@@ -48,17 +48,19 @@ export default function RoomButton({ room, active, ...props }: Props) {
                 >
                     {name || 'Unnamed room'}
                 </div>
-                <div
-                    css={[
-                        tw`
+                {typeof recentMessage !== 'undefined' && (
+                    <div
+                        css={[
+                            tw`
                             text-[#59799C]
                             text-[14px]
                             font-plex
                         `,
-                    ]}
-                >
-                    <Text tw="truncate">{recentMessage || 'Empty room'}</Text>
-                </div>
+                        ]}
+                    >
+                        <Text tw="truncate">{recentMessage}</Text>
+                    </div>
+                )}
             </div>
         </SidebarButton>
     )
