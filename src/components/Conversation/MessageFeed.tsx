@@ -23,6 +23,8 @@ export default function MessageFeed({ messages = [] }: Props) {
 
     const account = useWalletAccount()
 
+    let previousCreatedBy: IMessage['createdBy']
+
     return (
         <div
             ref={rootRef}
@@ -36,13 +38,20 @@ export default function MessageFeed({ messages = [] }: Props) {
                 `,
             ]}
         >
-            {messages.map((message) => (
-                <Message
-                    key={message.id}
-                    payload={message}
-                    incoming={!isSameAddress(account, message.createdBy)}
-                />
-            ))}
+            {messages.map((message) => {
+                const hideAvatar = previousCreatedBy === message.createdBy
+
+                previousCreatedBy = message.createdBy
+
+                return (
+                    <Message
+                        key={message.id}
+                        payload={message}
+                        incoming={!isSameAddress(account, message.createdBy)}
+                        hideAvatar={hideAvatar}
+                    />
+                )
+            })}
         </div>
     )
 }

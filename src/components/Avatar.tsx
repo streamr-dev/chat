@@ -18,6 +18,22 @@ type Props = HTMLAttributes<HTMLDivElement> & {
     backgroundColor?: string
 }
 
+export function Wrap(props: HTMLAttributes<HTMLDivElement>) {
+    return (
+        <div
+            {...props}
+            css={[
+                tw`
+                    w-10
+                    h-10
+                    relative
+                    overflow-hidden
+        `,
+            ]}
+        />
+    )
+}
+
 export default function Avatar({ account, backgroundColor = '#EFF4F9', status, ...props }: Props) {
     const { current: maskId } = useRef(`mask-${uuidv4()}`)
 
@@ -34,18 +50,7 @@ export default function Avatar({ account, backgroundColor = '#EFF4F9', status, .
     }, [identicon, account])
 
     return (
-        <div
-            {...props}
-            css={[
-                tw`
-                    w-10
-                    h-10
-                    relative
-                    overflow-hidden
-                    flex-shrink-0
-                `,
-            ]}
-        >
+        <Wrap {...props}>
             {retrievingIdenticon && <Spinner strokeWidth={1.5} />}
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -74,6 +79,6 @@ export default function Avatar({ account, backgroundColor = '#EFF4F9', status, .
                 </g>
                 {!!status && <circle cx="35" cy="35" r="4" fill={status} />}
             </svg>
-        </div>
+        </Wrap>
     )
 }

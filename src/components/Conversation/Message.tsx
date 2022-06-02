@@ -2,19 +2,27 @@ import { HTMLAttributes } from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '../../features/messages/types'
 import useIsOnline from '../../hooks/useIsOnline'
-import Avatar, { AvatarStatus } from '../Avatar'
+import Avatar, { AvatarStatus, Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
     incoming?: boolean
+    hideAvatar?: boolean
 }
 
-export default function Message({ payload, incoming = false, ...props }: Props) {
+export default function Message({
+    payload,
+    incoming = false,
+    hideAvatar = false,
+    ...props
+}: Props) {
     const { createdBy, createdAt, content } = payload
 
     const status = useIsOnline(createdBy) ? AvatarStatus.Online : AvatarStatus.Offline
+
+    const avatar = hideAvatar ? <Wrap /> : <Avatar status={status} account={createdBy} />
 
     return (
         <div
@@ -29,7 +37,7 @@ export default function Message({ payload, incoming = false, ...props }: Props) 
                     `,
             ]}
         >
-            {incoming && <Avatar status={status} account={createdBy} tw="mr-4" />}
+            {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
             <div
                 css={[
                     css`
@@ -63,7 +71,7 @@ export default function Message({ payload, incoming = false, ...props }: Props) 
                 <DateTooltip timestamp={createdAt} />
                 <Text>{content}</Text>
             </div>
-            {!incoming && <Avatar status={status} account={createdBy} tw="ml-4" />}
+            {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
         </div>
     )
 }
