@@ -1,7 +1,7 @@
 import db from '../../../utils/db'
 import { call, put, takeEvery } from 'redux-saga/effects'
 import { createRoom, RoomAction, selectRoom } from '../actions'
-import StreamrClient, { Stream } from 'streamr-client'
+import StreamrClient, { Stream, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import handleError from '../../../utils/handleError'
 import preflight from '../../../utils/preflight'
 import { Provider } from '@web3-react/types'
@@ -10,6 +10,7 @@ import { Address } from '../../../../types/common'
 import createRoomStream from '../../../utils/createRoomStream'
 import getWalletClientSaga from '../../wallet/sagas/getWalletClientSaga'
 import getWalletProviderSaga from '../../wallet/sagas/getWalletProviderSaga'
+import { error, success } from '../../../utils/toaster'
 
 function* onCreateRoomAction({ payload: { owner, ...payload } }: ReturnType<typeof createRoom>) {
     try {
@@ -34,8 +35,20 @@ function* onCreateRoomAction({ payload: { owner, ...payload } }: ReturnType<type
             owner: owner.toLowerCase(),
         })
 
+        success(`Stream "${payload.name}" created.`)
+
         // Select newly created room.
         yield put(selectRoom(stream.id))
+
+        if (payload.useStorage) {
+            try {
+                yield stream.addToStorageNode(STREAMR_STORAGE_NODE_GERMANY)
+
+                success(`Storage for "${payload.name}" enabled.`)
+            } catch (e) {
+                error(`Failed to enable storage for "${payload.name}".`)
+            }
+        }
     } catch (e) {
         handleError(e)
     }
