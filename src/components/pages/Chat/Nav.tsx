@@ -1,6 +1,9 @@
-import tw from 'twin.macro'
+import tw, { css } from 'twin.macro'
 import { useWalletAccount } from '../../../features/wallet/hooks'
+import useSeenAgo from '../../../hooks/useSeenAgo'
+import useIsOnline from '../../../hooks/useIsOnline'
 import trunc from '../../../utils/trunc'
+import { AvatarStatus } from '../../Avatar'
 import Navbar, { NavButton } from '../../Navbar'
 import Text from '../../Text'
 
@@ -11,8 +14,32 @@ type Props = {
 export default function Nav({ onAccountClick }: Props) {
     const account = useWalletAccount()
 
+    const status = useIsOnline(account) ? AvatarStatus.Online : AvatarStatus.Offline
+
+    const seenAgo = useSeenAgo(account)
+
     return (
         <Navbar>
+            <div>
+                <div
+                    title={
+                        seenAgo === 'never'
+                            ? "Your presence hasn't been emited yet."
+                            : `You've been seen ${seenAgo}`
+                    }
+                    css={[
+                        css`
+                            background-color: ${status};
+                        `,
+                        tw`
+                            rounded-full
+                            w-4
+                            h-4
+                            transition-colors
+                        `,
+                    ]}
+                />
+            </div>
             <NavButton
                 onClick={onAccountClick}
                 css={[

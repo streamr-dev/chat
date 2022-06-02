@@ -1,24 +1,10 @@
 import tw, { css } from 'twin.macro'
+import formatDate from '../../utils/formatDate'
 import Text from '../Text'
 
 type Props = {
     className?: string
     timestamp: number | undefined
-}
-
-function formatDate(timestamp: number) {
-    const d = new Date(timestamp)
-
-    const [Y, M, D, h, m, s] = [
-        d.getFullYear(),
-        d.getMonth() + 1,
-        d.getDate(),
-        d.getHours(),
-        d.getMinutes(),
-        d.getSeconds(),
-    ].map((val: number) => `${val < 10 ? '0' : ''}${val}`)
-
-    return `${Y}/${M}/${D} ${h}:${m}:${s}`
 }
 
 export default function DateTooltip({ timestamp }: Props) {

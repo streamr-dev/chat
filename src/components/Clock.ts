@@ -21,7 +21,7 @@ export default function Clock() {
         function onTimeout() {
             dispatch(tick(Date.now()))
 
-            timeoutRef.current = window.setTimeout(onTimeout, Minute)
+            timeoutRef.current = window.setTimeout(onTimeout, 5000)
         }
 
         onTimeout()

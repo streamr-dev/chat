@@ -3,8 +3,7 @@ import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
 import { useTickedAt } from '../features/clock/hooks'
 import { useDelegatedAccount, useDelegatedClient } from '../features/delegation/hooks'
-import { publishMessage } from '../features/messages/actions'
-import { Instruction, MessageType } from '../features/messages/types'
+import { emitPresence } from '../features/messages/actions'
 import { useAbility, useLoadAbilityEffect } from '../features/permissions/hooks'
 import { RoomId } from '../features/rooms/types'
 import { useWalletAccount } from '../features/wallet/hooks'
@@ -29,12 +28,6 @@ export default function useEmitPresenceEffect(roomId: undefined | RoomId) {
             return
         }
 
-        dispatch(
-            publishMessage({
-                content: Instruction.UpdateSeenAt,
-                roomId,
-                type: MessageType.Instruction,
-            })
-        )
+        dispatch(emitPresence(roomId))
     }, [delegatedClient, tickedAt, roomId, address, canDelegatedPublish])
 }

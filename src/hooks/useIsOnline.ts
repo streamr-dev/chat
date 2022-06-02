@@ -3,7 +3,7 @@ import { useTickedAt } from '../features/clock/hooks'
 import { useLastSeenAt } from '../features/members/hooks'
 import Minute from '../utils/minute'
 
-const THRESHOLD = 5 * Minute
+const THRESHOLD = Minute
 
 export default function useIsOnline(address: OptionalAddress) {
     const lastSeenAt = useLastSeenAt(address)

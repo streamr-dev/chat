@@ -4,6 +4,7 @@ import { IMessage, MessageType } from './types'
 
 export enum MessageAction {
     PublishMessage = 'publish a message',
+    EmitPresence = 'emit presence',
     RegisterMessage = 'register a message',
 }
 
@@ -17,3 +18,5 @@ export const registerMessage = createAction<{
     type: MessageType
     message: Omit<IMessage, 'owner'>
 }>(MessageAction.RegisterMessage)
+
+export const emitPresence = createAction<RoomId>(MessageAction.EmitPresence)

@@ -9,6 +9,10 @@ const reducer = createReducer({}, (builder) => {
     builder.addCase(MessageAction.RegisterMessage, () => {
         // See `registerMessageSaga`.
     })
+
+    builder.addCase(MessageAction.EmitPresence, () => {
+        // See `createMessageSaga`.
+    })
 })
 
 export default reducer

@@ -82,7 +82,17 @@ export default function Navbar({ children, ...props }: Props) {
                     </div>
                 </h4>
             </div>
-            {children}
+            <div
+                css={[
+                    tw`
+                        flex
+                        items-center
+                        [> * + *]:ml-4
+                    `,
+                ]}
+            >
+                {children}
+            </div>
         </nav>
     )
 }

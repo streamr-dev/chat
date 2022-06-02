@@ -1,5 +1,5 @@
 import { Provider } from '@web3-react/types'
-import { call, select, takeEvery } from 'redux-saga/effects'
+import { all, call, select, takeEvery, throttle } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 import { Address } from '../../../../types/common'
 import MissingDelegatedClientError from '../../../errors/MissingDelegatedClientError'
@@ -8,9 +8,11 @@ import handleError from '../../../utils/handleError'
 import requestDelegatedPrivateKeySaga from '../../delegation/sagas/requestDelegatedPrivateKeySaga'
 import { selectDelegatedClient } from '../../delegation/selectors'
 import { DelegationState } from '../../delegation/types'
-import { publishMessage, MessageAction } from '../actions'
+import { publishMessage, MessageAction, emitPresence } from '../actions'
 import getWalletProviderSaga from '../../wallet/sagas/getWalletProviderSaga'
 import { v4 as uuidv4 } from 'uuid'
+import Minute from '../../../utils/minute'
+import { Instruction, MessageType } from '../types'
 
 function* getDelegatedClientSaga() {
     let client: DelegationState['client'] = yield select(selectDelegatedClient)
@@ -35,15 +37,13 @@ function* getDelegatedClientSaga() {
     return client
 }
 
-function* onPublishMessageAction({
-    payload: { roomId, content, type },
-}: ReturnType<typeof publishMessage>) {
+async function publish(
+    client: StreamrClient,
+    createdBy: Address,
+    { roomId, content, type }: ReturnType<typeof publishMessage>['payload']
+) {
     try {
-        const client: StreamrClient = yield call(getDelegatedClientSaga)
-
-        const createdBy: Address = yield call(getWalletAccountSaga)
-
-        yield client.publish(roomId, {
+        await client.publish(roomId, {
             id: uuidv4(),
             content,
             createdBy,
@@ -54,6 +54,29 @@ function* onPublishMessageAction({
     }
 }
 
+function* onPublishMessageAction({ payload }: ReturnType<typeof publishMessage>) {
+    const client: StreamrClient = yield call(getDelegatedClientSaga)
+
+    const createdBy: Address = yield call(getWalletAccountSaga)
+
+    yield publish(client, createdBy, payload)
+}
+
+function* onEmitPresence({ payload: roomId }: ReturnType<typeof emitPresence>) {
+    const client: StreamrClient = yield call(getDelegatedClientSaga)
+
+    const createdBy: Address = yield call(getWalletAccountSaga)
+
+    yield publish(client, createdBy, {
+        roomId,
+        content: Instruction.UpdateSeenAt,
+        type: MessageType.Instruction,
+    })
+}
+
 export default function* publishMessageSaga() {
-    yield takeEvery(MessageAction.PublishMessage, onPublishMessageAction)
+    yield all([
+        takeEvery(MessageAction.PublishMessage, onPublishMessageAction),
+        throttle(Minute / 2, MessageAction.EmitPresence, onEmitPresence),
+    ])
 }
