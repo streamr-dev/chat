@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { setWalletIntegrationId } from '../../../features/wallet/actions'
+import { WalletAction } from '../../../features/wallet'
 import { useWalletIntegrationId } from '../../../features/wallet/hooks'
 import { WalletIntegrationId } from '../../../features/wallet/types'
 import getConnector from '../../../utils/getConnector'
@@ -22,7 +22,7 @@ export default function WalletModal(props: ModalProps) {
 
     useEffect(() => {
         if (isActive) {
-            dispatch(setWalletIntegrationId(nextIntegrationId))
+            dispatch(WalletAction.setIntegrationId(nextIntegrationId))
         }
     }, [nextIntegrationId, isActive])
 

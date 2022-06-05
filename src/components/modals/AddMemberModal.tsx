@@ -7,9 +7,9 @@ import Submit from '../Submit'
 import TextField from '../TextField'
 import { Address } from '../../../types/common'
 import { useDispatch } from 'react-redux'
-import { useSelectedRoomId } from '../../features/rooms/hooks'
-import { setMemberPermissions } from '../../features/members/actions'
+import { useSelectedRoomId } from '../../features/room/hooks'
 import { StreamPermission } from 'streamr-client'
+import { MemberAction } from '../../features/member'
 
 type Props = ModalProps & {
     canModifyMembers?: boolean
@@ -37,7 +37,7 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
                     }
 
                     dispatch(
-                        setMemberPermissions({
+                        MemberAction.setPermissions({
                             roomId: selectedRoomId,
                             address,
                             permissions: [

@@ -1,10 +1,10 @@
 import { OptionalAddress } from '../../types/common'
 import { useTickedAt } from '../features/clock/hooks'
-import { useLastSeenAt } from '../features/members/hooks'
+import { useNoticedAt } from '../features/member/hooks'
 import formatDate from '../utils/formatDate'
 
 export default function useSeenAgo(address: OptionalAddress) {
-    const lastSeenAt = useLastSeenAt(address)
+    const lastSeenAt = useNoticedAt(address)
 
     const tickedAt = useTickedAt()
 

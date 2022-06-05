@@ -1,42 +1,18 @@
-import { createReducer } from '@reduxjs/toolkit'
-import {
-    createRoom,
-    deleteRoom,
-    getMissingRooms,
-    renameRoom,
-    selectRoom,
-    syncRoom,
-} from './actions'
-import { RoomsState } from './types'
+import { createAction, createReducer } from '@reduxjs/toolkit'
+import { all } from 'redux-saga/effects'
+import { SEE_SAGA } from '../../utils/consts'
+import fetch from './sagas/fetch'
 
-const initialState: RoomsState = {
-    selectedId: undefined,
+export const RoomsAction = {
+    fetch: createAction('rooms: fetch'),
 }
 
-const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(createRoom, () => {
-        // See `createRoomSaga`.
-    })
-
-    builder.addCase(renameRoom, () => {
-        // See `renameRoomSaga`.
-    })
-
-    builder.addCase(selectRoom, (state, { payload }) => {
-        state.selectedId = payload
-    })
-
-    builder.addCase(deleteRoom, () => {
-        // See `deleteRoomSaga`.
-    })
-
-    builder.addCase(syncRoom, () => {
-        // See `syncRoomSaga`.
-    })
-
-    builder.addCase(getMissingRooms, () => {
-        // See `getMissingRoomsSaga`.
-    })
+const reducer = createReducer({}, (builder) => {
+    builder.addCase(RoomsAction.fetch, SEE_SAGA)
 })
+
+export function* roomsSaga() {
+    yield all([fetch()])
+}
 
 export default reducer

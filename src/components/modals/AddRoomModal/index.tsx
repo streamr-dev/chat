@@ -1,7 +1,6 @@
 import { FC, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { createRoom } from '../../../features/rooms/actions'
 import { useWalletAccount } from '../../../features/wallet/hooks'
 import isBlank from '../../../utils/isBlank'
 import Form from '../../Form'
@@ -18,6 +17,7 @@ import PublicIcon from './icons/PublicIcon'
 import ViewOnlyIcon from './icons/ViewOnlyIcon'
 import { v4 as uuidv4 } from 'uuid'
 import { Prefix, PrivacySetting } from '../../../../types/common'
+import { RoomAction } from '../../../features/room'
 
 type PrivacyOption = {
     value: PrivacySetting
@@ -77,7 +77,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         const now = Date.now()
 
         dispatch(
-            createRoom({
+            RoomAction.create({
                 id: `/${Prefix.Room}/${uuidv4()}`,
                 createdAt: now,
                 updatedAt: now,

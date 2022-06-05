@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { setWalletAccount } from '../features/wallet/actions'
+import { WalletAction } from '../features/wallet'
 import { useWalletProvider } from '../features/wallet/hooks'
 
 export default function useProviderChangeEffect() {
@@ -16,7 +16,7 @@ export default function useProviderChangeEffect() {
         }
 
         function onAccountsChange(accounts: string[]) {
-            dispatch(setWalletAccount(accounts[0]))
+            dispatch(WalletAction.setAccount(accounts[0]))
         }
 
         provider.addListener('accountsChanged', onAccountsChange)

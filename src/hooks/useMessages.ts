@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useSelectedRoomId } from '../features/rooms/hooks'
+import { useSelectedRoomId } from '../features/room/hooks'
 import { useWalletAccount } from '../features/wallet/hooks'
 import db from '../utils/db'
 

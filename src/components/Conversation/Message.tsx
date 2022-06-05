@@ -1,6 +1,6 @@
 import { HTMLAttributes } from 'react'
 import tw, { css } from 'twin.macro'
-import { IMessage } from '../../features/messages/types'
+import { IMessage } from '../../features/message/types'
 import useIsOnline from '../../hooks/useIsOnline'
 import Avatar, { AvatarStatus, Wrap } from '../Avatar'
 import Text from '../Text'

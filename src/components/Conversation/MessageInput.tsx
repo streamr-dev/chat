@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { useSelectedRoomId } from '../../features/rooms/hooks'
+import { useSelectedRoomId } from '../../features/room/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
 import focus from '../../utils/focus'
 import Form from '../Form'
-import { storeDraft } from '../../features/drafts/actions'
 import db from '../../utils/db'
-import { publishMessage } from '../../features/messages/actions'
-import { MessageType } from '../../features/messages/types'
+import { DraftAction } from '../../features/drafts'
+import { MessageAction } from '../../features/message'
+import { MessageType } from '../../features/message/types'
 
 type Props = {
     disabled?: boolean
@@ -35,7 +35,7 @@ export default function MessageInput({ disabled = false }: Props) {
         const now = Date.now()
 
         dispatch(
-            storeDraft({
+            DraftAction.store({
                 content,
                 createdAt: now,
                 owner: account,
@@ -51,7 +51,7 @@ export default function MessageInput({ disabled = false }: Props) {
         }
 
         dispatch(
-            publishMessage({
+            MessageAction.publish({
                 roomId: selectedRoomId,
                 content,
                 type: MessageType.Text,
@@ -145,26 +145,26 @@ export default function MessageInput({ disabled = false }: Props) {
                 type="submit"
                 css={[
                     tw`
-                            bg-[transparent]
-                            block
-                            w-[60px]
-                            opacity-30
-                            cursor-default
-                            disabled:invisible
-                        `,
+                        bg-[transparent]
+                        block
+                        w-[60px]
+                        opacity-30
+                        cursor-default
+                        disabled:invisible
+                    `,
                     submittable &&
                         tw`
-                                opacity-100
-                                cursor-pointer
-                            `,
+                            opacity-100
+                            cursor-pointer
+                        `,
                 ]}
             >
                 <svg
                     css={[
                         tw`
-                                block
-                                mx-auto
-                            `,
+                            block
+                            mx-auto
+                        `,
                     ]}
                     width="20"
                     height="20"

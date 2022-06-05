@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { requestDelegatedPrivateKey } from '../../features/delegation/actions'
+import { DelegationAction } from '../../features/delegation'
 import SecondaryButton from '../SecondaryButton'
 import Text from '../Text'
 
@@ -39,7 +39,7 @@ export default function NeedDelegatedClientBanner() {
                 ]}
             >
                 <SecondaryButton
-                    onClick={() => void dispatch(requestDelegatedPrivateKey())}
+                    onClick={() => void dispatch(DelegationAction.requestPrivateKey())}
                     css={[
                         tw`
                             text-[0.875rem]

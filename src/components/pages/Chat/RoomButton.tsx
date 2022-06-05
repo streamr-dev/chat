@@ -1,8 +1,8 @@
 import { ButtonHTMLAttributes, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { selectRoom, syncRoom } from '../../../features/rooms/actions'
-import { IRoom } from '../../../features/rooms/types'
+import { RoomAction } from '../../../features/room'
+import { IRoom } from '../../../features/room/types'
 import useEmitPresenceEffect from '../../../hooks/useEmitPresenceEffect'
 import useIntercept from '../../../hooks/useIntercept'
 import useRecentMessage from '../../../hooks/useRecentMessage'
@@ -23,7 +23,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
     const { id, name } = room
 
     useEffect(() => {
-        dispatch(syncRoom(id))
+        dispatch(RoomAction.sync(id))
     }, [dispatch, id])
 
     useIntercept(id)
@@ -35,7 +35,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
             {...props}
             active={active}
             icon={<Icon id={id} />}
-            onClick={() => void dispatch(selectRoom(id))}
+            onClick={() => void dispatch(RoomAction.select(id))}
         >
             <div>
                 <div

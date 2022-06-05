@@ -2,9 +2,10 @@ import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Address } from '../../../types/common'
-import { detectMembers, setMemberPermissions } from '../../features/members/actions'
+import { MemberAction } from '../../features/member'
+import { MembersAction } from '../../features/members'
 import { useMembers } from '../../features/members/hooks'
-import { useSelectedRoomId } from '../../features/rooms/hooks'
+import { useSelectedRoomId } from '../../features/room/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
 import useCopy from '../../hooks/useCopy'
 import useIsOnline from '../../hooks/useIsOnline'
@@ -49,7 +50,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             }
 
             dispatch(
-                setMemberPermissions({
+                MemberAction.setPermissions({
                     roomId: selectedRoomId,
                     address,
                     permissions: [],
@@ -66,7 +67,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             return
         }
 
-        dispatch(detectMembers(selectedRoomId))
+        dispatch(MembersAction.detect(selectedRoomId))
     }, [dispatch, selectedRoomId, open])
 
     const account = useWalletAccount()

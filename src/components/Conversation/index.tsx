@@ -7,7 +7,7 @@ import {
     useCurrentDelegationAbility,
     useLoadCurrentAbilityEffect,
     useLoadCurrentDelegationAbilityEffect,
-} from '../../features/permissions/hooks'
+} from '../../features/permission/hooks'
 import useMessages from '../../hooks/useMessages'
 import AddMemberModal from '../modals/AddMemberModal'
 import EditMembersModal from '../modals/EditMembersModal'
@@ -19,9 +19,9 @@ import MessageInputPlaceholder from './MessageInputPlaceholder'
 import Text from '../Text'
 import SecondaryButton from '../SecondaryButton'
 import { useDispatch } from 'react-redux'
-import { requestDelegatedPrivateKey } from '../../features/delegation/actions'
-import { useSelectedRoomId } from '../../features/rooms/hooks'
-import { setMemberPermissions } from '../../features/members/actions'
+import { useSelectedRoomId } from '../../features/room/hooks'
+import { DelegationAction } from '../../features/delegation'
+import { MemberAction } from '../../features/member'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -131,7 +131,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
         return (
             <MessageInputPlaceholder
                 cta={
-                    <Cta onClick={() => void dispatch(requestDelegatedPrivateKey())}>
+                    <Cta onClick={() => void dispatch(DelegationAction.requestPrivateKey())}>
                         Delegate now
                     </Cta>
                 }
@@ -152,7 +152,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
                             }
 
                             dispatch(
-                                setMemberPermissions({
+                                MemberAction.setPermissions({
                                     roomId: selectedRoomId,
                                     address: delegatedAccount,
                                     permissions: [

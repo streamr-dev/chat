@@ -1,44 +1,39 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import wallet from './features/wallet'
-import delegation from './features/delegation'
-import rooms from './features/rooms'
-import messages from './features/messages'
-import members from './features/members'
-import permissions from './features/permissions'
-import drafts from './features/drafts'
-import identicons from './features/identicons'
+import wallet, { WalletAction, walletSaga } from './features/wallet'
+import delegation, { delegationSaga } from './features/delegation'
+import room, { roomSaga } from './features/room'
+import rooms, { roomsSaga } from './features/rooms'
+import members, { membersSaga } from './features/members'
+import member, { memberSaga } from './features/member'
+import permission, { permissionSaga } from './features/permission'
+import drafts, { draftsSaga } from './features/drafts'
+import identicons, { identiconsSaga } from './features/identicons'
 import clock from './features/clock'
 import createSagaMiddleware from 'redux-saga'
-import walletSaga from './features/wallet/sagas'
-import delegationSaga from './features/delegation/sagas'
-import roomsSaga from './features/rooms/sagas'
-import messagesSaga from './features/messages/sagas'
-import membersSaga from './features/members/sagas'
-import permissionsSaga from './features/permissions/sagas'
-import draftsSaga from './features/drafts/sagas'
-import identiconsSaga from './features/identicons/sagas'
-import { WalletAction } from './features/wallet/actions'
+import message, { messageSaga } from './features/message'
 
 const sagaMiddleware = createSagaMiddleware()
 
 const store = configureStore({
     reducer: {
+        clock,
         delegation,
-        wallet,
-        rooms,
-        messages,
-        members,
-        permissions,
         drafts,
         identicons,
-        clock,
+        member,
+        members,
+        message,
+        permission,
+        room,
+        rooms,
+        wallet,
     },
     middleware(getDefaultMiddleware) {
         return [
             ...getDefaultMiddleware({
                 serializableCheck: {
-                    ignoredActions: [WalletAction.SetWalletProvider],
+                    ignoredActions: [WalletAction.setProvider.toString()],
                     ignoredPaths: ['wallet.provider', 'wallet.client', 'delegation.client'],
                 },
             }),
@@ -49,14 +44,16 @@ const store = configureStore({
 
 sagaMiddleware.run(function* saga() {
     yield all([
-        walletSaga(),
         delegationSaga(),
-        roomsSaga(),
-        messagesSaga(),
-        membersSaga(),
-        permissionsSaga(),
         draftsSaga(),
         identiconsSaga(),
+        memberSaga(),
+        membersSaga(),
+        messageSaga(),
+        permissionSaga(),
+        roomSaga(),
+        roomsSaga(),
+        walletSaga(),
     ])
 })
 

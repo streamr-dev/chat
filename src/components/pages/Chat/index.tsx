@@ -15,8 +15,8 @@ import Text from '../../Text'
 import useRooms from '../../../hooks/useRooms'
 import useSelectedRoom from '../../../hooks/useSelectedRoom'
 import { useDispatch } from 'react-redux'
-import { getMissingRooms } from '../../../features/rooms/actions'
 import useProviderChangeEffect from '../../../hooks/useProviderChangeEffect'
+import { RoomsAction } from '../../../features/rooms'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -43,7 +43,7 @@ function UnwrappedChat() {
 
     useEffect(() => {
         if (account) {
-            dispatch(getMissingRooms())
+            dispatch(RoomsAction.fetch())
         }
     }, [dispatch, account])
 

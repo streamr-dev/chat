@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { RoomId } from '../features/rooms/types'
+import { RoomId } from '../features/room/types'
 import { MessageStreamOnMessage } from 'streamr-client'
-import { registerMessage } from '../features/messages/actions'
 import handleError from '../utils/handleError'
-import { IMessage, MessageType, StreamMessage } from '../features/messages/types'
 import { useDispatch } from 'react-redux'
 import { useDelegatedClient } from '../features/delegation/hooks'
+import { IMessage, MessageType, StreamMessage } from '../features/message/types'
+import { MessageAction } from '../features/message'
 
 export default function useIntercept(roomId: RoomId) {
     const client = useDelegatedClient()
@@ -14,7 +14,7 @@ export default function useIntercept(roomId: RoomId) {
 
     const { current: onMessage } = useRef((type: MessageType, message: Omit<IMessage, 'owner'>) => {
         dispatch(
-            registerMessage({
+            MessageAction.register({
                 type,
                 message,
             })

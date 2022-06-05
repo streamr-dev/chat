@@ -3,9 +3,9 @@ import tw from 'twin.macro'
 import { v4 as uuidv4 } from 'uuid'
 import { useIdenticon, useRetrievingIdenticon } from '../features/identicons/hooks'
 import { useDispatch } from 'react-redux'
-import { retrieveIdenticon } from '../features/identicons/actions'
 import fallbackIdenticon from '../utils/fallbackIdenticon'
 import Spinner from './Spinner'
+import { IdenticonAction } from '../features/identicons'
 
 export enum AvatarStatus {
     Online = '#00C85D',
@@ -45,7 +45,7 @@ export default function Avatar({ account, backgroundColor = '#EFF4F9', status, .
 
     useEffect(() => {
         if (!identicon) {
-            dispatch(retrieveIdenticon(account))
+            dispatch(IdenticonAction.retrieve(account))
         }
     }, [identicon, account])
 

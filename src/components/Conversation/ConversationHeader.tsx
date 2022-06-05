@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
 import tw, { css } from 'twin.macro'
-import { useCurrentAbility, useLoadCurrentAbilityEffect } from '../../features/permissions/hooks'
-import { deleteRoom, renameRoom } from '../../features/rooms/actions'
-import { useSelectedRoomId } from '../../features/rooms/hooks'
+import { useCurrentAbility, useLoadCurrentAbilityEffect } from '../../features/permission/hooks'
+import { RoomAction } from '../../features/room'
+import { useSelectedRoomId } from '../../features/room/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
 import useCopy from '../../hooks/useCopy'
 import useSelectedRoom from '../../hooks/useSelectedRoom'
@@ -87,7 +87,7 @@ export default function ConversationHeader({
 
     function onRenameSubmit() {
         if (selectedRoomId) {
-            dispatch(renameRoom({ roomId: selectedRoomId, name: newRoomName }))
+            dispatch(RoomAction.rename({ roomId: selectedRoomId, name: newRoomName }))
         }
 
         setIsRoomNameEditable(false)
@@ -259,13 +259,9 @@ export default function ConversationHeader({
                                         icon={<DeleteIcon />}
                                         onClick={() => {
                                             if (account && selectedRoomId) {
-                                                dispatch(
-                                                    deleteRoom({
-                                                        owner: account,
-                                                        roomId: selectedRoomId,
-                                                    })
-                                                )
+                                                dispatch(RoomAction.delete(selectedRoomId))
                                             }
+
                                             setRoomMenuOpen(false)
                                         }}
                                     >

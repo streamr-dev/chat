@@ -5,13 +5,6 @@ export interface IIdenticon {
     content: string
 }
 
-export enum IdenticonAction {
-    Retrieve = 'retrieve identicon',
-    Store = 'store identicon',
-    Set = 'set identicon',
-    SetRetrieving = 'set retrieving identicon',
-}
-
 export interface IdenticonsState {
     items: {
         [index: IdenticonSeed]: {

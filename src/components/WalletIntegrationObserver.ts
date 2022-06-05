@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
-import { setWalletProvider } from '../features/wallet/actions'
+import { WalletAction } from '../features/wallet'
 import { useWalletIntegrationId } from '../features/wallet/hooks'
 import getConnector from '../utils/getConnector'
 
@@ -14,11 +14,9 @@ export default function WalletIntegrationObserver() {
     const isActive = hooks.useIsActive()
 
     useEffect(() => {
-        const newProvider = isActive
-            ? getConnector(integrationId)[0].provider
-            : undefined
+        const newProvider = isActive ? getConnector(integrationId)[0].provider : undefined
 
-        dispatch(setWalletProvider(newProvider))
+        dispatch(WalletAction.setProvider(newProvider))
     }, [integrationId, isActive])
 
     const integrationIdRef = useRef(integrationId)

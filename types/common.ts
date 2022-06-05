@@ -1,6 +1,6 @@
 import { Provider } from '@web3-react/types'
 import { Stream } from 'streamr-client'
-import { IRoom } from '../src/features/rooms/types'
+import { IRoom } from '../src/features/room/types'
 
 export enum StorageKey {
     WalletIntegrationId = 'chat/walletIntegrationId',

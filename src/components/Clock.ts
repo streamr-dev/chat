@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
-import { tick } from '../features/clock/actions'
-import Minute from '../utils/minute'
+import { ClockAction } from '../features/clock'
 
 export default function Clock() {
     const dispatch = useDispatch()
@@ -19,7 +18,7 @@ export default function Clock() {
         teardown()
 
         function onTimeout() {
-            dispatch(tick(Date.now()))
+            dispatch(ClockAction.tick(Date.now()))
 
             timeoutRef.current = window.setTimeout(onTimeout, 5000)
         }
