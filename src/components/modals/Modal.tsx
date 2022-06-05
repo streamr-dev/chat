@@ -11,6 +11,7 @@ type Props = ModalProps & {
     children?: ReactNode
     title: string
     onClose?: () => void
+    subtitle?: string
 }
 
 const customStyles = {
@@ -24,6 +25,7 @@ export default function Modal({
     setOpen,
     children,
     title,
+    subtitle,
     onClose,
 }: Props) {
     function close() {
@@ -67,20 +69,35 @@ export default function Modal({
                         flex
                         items-center
                         mb-6
-                        font-medium
                     `,
                 ]}
             >
-                <h2
-                    css={[
-                        tw`
-                            flex-grow
-                            text-[1.25rem]
-                        `,
-                    ]}
-                >
-                    {title}
-                </h2>
+                <div tw="flex-grow min-w-0">
+                    <h2
+                        css={[
+                            tw`
+                                font-medium
+                                text-[1.25rem]
+                                truncate
+                            `,
+                        ]}
+                    >
+                        {title}
+                    </h2>
+                    {!!subtitle && (
+                        <p
+                            css={[
+                                tw`
+                                    text-[#59799C]
+                                    text-[0.875rem]
+                                    truncate
+                                `,
+                            ]}
+                        >
+                            {subtitle}
+                        </p>
+                    )}
+                </div>
                 <div>
                     <button
                         type="button"
