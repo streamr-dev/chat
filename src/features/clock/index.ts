@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { tick } from './actions'
+import { ClockAction } from './actions'
 import { ClockState } from './types'
 
 const initialState: ClockState = {
@@ -7,7 +7,7 @@ const initialState: ClockState = {
 }
 
 const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(tick, (state, { payload: tickedAd }) => {
+    builder.addCase(ClockAction.Tick, (state, { payload: tickedAd }) => {
         state.tickedAt = tickedAd
     })
 })
