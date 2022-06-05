@@ -60,6 +60,10 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     const [storage, setStorage] = useState<boolean>(false)
 
+    function onStorageToggleClick() {
+        setStorage((current) => !current)
+    }
+
     function onClose() {
         setRoomName('')
         setPrivacySetting(privacyOptions[0])
@@ -151,7 +155,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 `,
                             ]}
                         >
-                            <Toggle value={storage} onChange={setStorage} />
+                            <Toggle value={storage} onClick={onStorageToggleClick} />
                         </div>
                     </div>
                 </>

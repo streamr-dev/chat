@@ -1,47 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
 import tw, { css } from 'twin.macro'
+import Spinner from './Spinner'
 
 type Props = {
     value?: boolean
-    onChange?: (newValue: boolean) => void
+    onClick?: () => void
+    busy?: boolean
 }
 
-export default function Toggle({ value: valueProp = false, onChange }: Props) {
-    const [value, setValue] = useState<boolean>(!!valueProp)
-
-    const valuePropRef = useRef<Props['value']>(valueProp)
-
-    useEffect(() => {
-        setValue(!!valueProp)
-        valuePropRef.current = valueProp
-    }, [valueProp])
-
-    function toggle() {
-        setValue((current) => !current)
-    }
-
-    const onChangeRef = useRef<Props['onChange']>(onChange)
-
-    useEffect(() => {
-        onChangeRef.current = onChange
-    }, [onChange])
-
-    useEffect(() => {
-        if (typeof onChangeRef.current !== 'function') {
-            return
-        }
-
-        if (valuePropRef.current === value) {
-            return
-        }
-
-        onChangeRef.current(value)
-    }, [value])
-
+export default function Toggle({ value: value = false, busy = false, onClick }: Props) {
     return (
         <button
             type="button"
-            onClick={toggle}
+            onClick={onClick}
             css={[
                 tw`
                     appearance-none
@@ -70,13 +40,11 @@ export default function Toggle({ value: valueProp = false, onChange }: Props) {
                     css={[
                         value &&
                             css`
-                                transition: 200ms ease-in margin-left,
-                                    200ms ease-out margin-right;
+                                transition: 200ms ease-in margin-left, 200ms ease-out margin-right;
                             `,
                         !value &&
                             css`
-                                transition: 200ms ease-out margin-left,
-                                    200ms ease-in margin-right;
+                                transition: 200ms ease-out margin-left, 200ms ease-in margin-right;
                             `,
                         tw`
                             h-4
@@ -117,7 +85,9 @@ export default function Toggle({ value: valueProp = false, onChange }: Props) {
                                 ml-5
                             `,
                     ]}
-                />
+                >
+                    {busy && <Spinner r={4} />}
+                </div>
             </div>
         </button>
     )
