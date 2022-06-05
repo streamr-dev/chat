@@ -9,17 +9,21 @@ interface Props {
 export default function Spinner({ r = 6, strokeWidth = 2, strokeColor = '#59799C' }: Props) {
     const d = 2 * Math.PI * r
 
+    const size = r * 2 + strokeWidth
+
     return (
         <div
             css={[
+                css`
+                    width: ${size}px;
+                    height: ${size}px;
+                `,
                 tw`
                     absolute
                     top-1/2
                     left-1/2
                     -translate-x-1/2
                     -translate-y-1/2
-                    w-8
-                    h-8
                     z-10
                 `,
             ]}
@@ -30,11 +34,11 @@ export default function Spinner({ r = 6, strokeWidth = 2, strokeColor = '#59799C
                         animation: rotate 1s linear infinite;
                     `,
                 ]}
-                viewBox="0 0 32 32"
+                viewBox={`0 0 ${size} ${size}`}
             >
                 <circle
-                    cx="16"
-                    cy="16"
+                    cx={size / 2}
+                    cy={size / 2}
                     r={r}
                     fill="none"
                     strokeWidth={strokeWidth}
