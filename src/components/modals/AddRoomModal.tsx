@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { useWalletAccount } from '../../features/wallet/hooks'
@@ -14,41 +14,28 @@ import TextField from '../TextField'
 import Toggle from '../Toggle'
 import PrivateIcon from '../../icons/PrivateIcon'
 import PublicIcon from '../../icons/PublicIcon'
-import ViewOnlyIcon from '../../icons/ViewOnlyIcon'
 import { v4 as uuidv4 } from 'uuid'
-import { Prefix, PrivacySetting } from '../../../types/common'
+import { Prefix, PrivacyOption, PrivacySetting } from '../../../types/common'
 import { RoomAction } from '../../features/room'
 
-type PrivacyOption = {
-    value: PrivacySetting
-    label: string
-    desc: string
-    icon: FC
+const PrivateRoomOption: PrivacyOption = {
+    value: PrivacySetting.Private,
+    label: 'Private',
+    desc: 'Only invited members can post and view messages',
+    icon: PrivateIcon,
 }
 
-const privacyOptions: PrivacyOption[] = [
-    {
-        value: PrivacySetting.Private,
-        label: 'Private',
-        desc: 'Only invited members can post and view messages',
-        icon: PrivateIcon,
-    },
-    {
-        value: PrivacySetting.ViewOnly,
-        label: 'View only',
-        desc: 'Anyone can view other messages',
-        icon: ViewOnlyIcon,
-    },
-    {
-        value: PrivacySetting.Public,
-        label: 'Public',
-        desc: 'Anyone can post and view other messages',
-        icon: PublicIcon,
-    },
-]
+const PublicRoomOption: PrivacyOption = {
+    value: PrivacySetting.Public,
+    label: 'Public',
+    desc: 'Anyone can view messages',
+    icon: PublicIcon,
+}
+
+const privacyOptions: PrivacyOption[] = [PrivateRoomOption, PublicRoomOption]
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
-    const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(privacyOptions[0])
+    const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
 
     const [roomName, setRoomName] = useState<string>('')
 
@@ -66,7 +53,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     function onClose() {
         setRoomName('')
-        setPrivacySetting(privacyOptions[0])
+        setPrivacySetting(PrivateRoomOption)
     }
 
     function onSubmit() {

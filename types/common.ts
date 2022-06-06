@@ -1,4 +1,5 @@
 import { Provider } from '@web3-react/types'
+import { FC } from 'react'
 import { Stream } from 'streamr-client'
 import { IRoom } from '../src/features/room/types'
 
@@ -45,4 +46,11 @@ export type OptionalAddress = undefined | null | Address
 export interface PreflightParams {
     provider: Provider
     address: Address
+}
+
+export type PrivacyOption = {
+    value: PrivacySetting
+    label: string
+    desc: string
+    icon: FC
 }
