@@ -2,13 +2,14 @@ import db from '../../../utils/db'
 import { call, put, takeEvery } from 'redux-saga/effects'
 import StreamrClient, {
     Stream,
+    StreamPermission,
     StreamProperties,
     STREAMR_STORAGE_NODE_GERMANY,
 } from 'streamr-client'
 import handleError from '../../../utils/handleError'
 import preflight from '../../../utils/preflight'
 import { Provider } from '@web3-react/types'
-import { Address } from '../../../../types/common'
+import { Address, PrivacySetting } from '../../../../types/common'
 import { error, success } from '../../../utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
@@ -42,6 +43,20 @@ function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof R
             },
         } as StreamProperties)
 
+        if (payload.privacy === PrivacySetting.Public) {
+            try {
+                yield stream.grantPermissions({
+                    public: true,
+                    permissions: [StreamPermission.SUBSCRIBE],
+                })
+
+                // We don't bother the user with an extra "we made your room public"
+                // toast. That'd be too much.
+            } catch (e) {
+                error(`Failed to make "${payload.name}" public.`)
+            }
+        }
+
         yield db.rooms.add({
             ...payload,
             id: stream.id,
@@ -54,13 +69,13 @@ function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof R
         yield put(RoomAction.select(stream.id))
 
         if (payload.useStorage) {
-            try {
-                yield stream.addToStorageNode(STREAMR_STORAGE_NODE_GERMANY)
-
-                success(`Storage for "${payload.name}" enabled.`)
-            } catch (e) {
-                error(`Failed to enable storage for "${payload.name}".`)
-            }
+            yield put(
+                RoomAction.toggleStorageNode({
+                    roomId: stream.id,
+                    address: STREAMR_STORAGE_NODE_GERMANY,
+                    state: true,
+                })
+            )
         }
     } catch (e) {
         handleError(e)
