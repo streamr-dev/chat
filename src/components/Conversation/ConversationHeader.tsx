@@ -197,7 +197,7 @@ export default function ConversationHeader({
                     </ActionTextButton>
                 </div>
             ) : (
-                <div tw="flex">
+                <>
                     <div
                         title={privacyDesc}
                         css={[
@@ -210,115 +210,118 @@ export default function ConversationHeader({
                                 uppercase
                                 w-10
                                 h-10
+                                mr-3
                             `,
                         ]}
                     >
                         <PrivacyIcon />
                     </div>
-                    {canEdit && (
-                        <ActionButton tw="ml-3" onClick={() => void setIsRoomNameEditable(true)}>
-                            <svg
-                                tw="block"
-                                width="40"
-                                height="40"
-                                viewBox="0 0 40 40"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M22.8985 11.8152C23.2077 11.5061 23.709 11.5061 24.0181 11.8152L27.1848 14.9819C27.494 15.291 27.494 15.7923 27.1848 16.1015L16.8931 26.3931C16.7447 26.5416 16.5433 26.625 16.3333 26.625H13.1667C12.7294 26.625 12.375 26.2706 12.375 25.8333V22.6667C12.375 22.4567 12.4584 22.2554 12.6069 22.1069L20.5234 14.1904L22.8985 11.8152ZM21.0833 15.8696L13.9583 22.9946V25.0417H16.0054L23.1304 17.9167L21.0833 15.8696ZM24.25 16.7971L25.5054 15.5417L23.4583 13.4946L22.2029 14.75L24.25 16.7971Z"
-                                    fill="currentColor"
-                                />
-                            </svg>
-                        </ActionButton>
-                    )}
-                    <ActionButton
-                        tw="ml-3"
-                        active={roomMenuOpen}
-                        onClick={() => void setRoomMenuOpen((current) => !current)}
-                        ref={setMenuAnchorEl}
-                    >
-                        <MoreIcon />
-                    </ActionButton>
-                    {roomMenuOpen && (
-                        <Menu
-                            anchorEl={menuAnchorEl}
-                            onMouseDownOutside={() => void setRoomMenuOpen(false)}
+                    <div tw="flex min-w-[92px] justify-end">
+                        {canEdit && (
+                            <ActionButton onClick={() => void setIsRoomNameEditable(true)}>
+                                <svg
+                                    tw="block"
+                                    width="40"
+                                    height="40"
+                                    viewBox="0 0 40 40"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M22.8985 11.8152C23.2077 11.5061 23.709 11.5061 24.0181 11.8152L27.1848 14.9819C27.494 15.291 27.494 15.7923 27.1848 16.1015L16.8931 26.3931C16.7447 26.5416 16.5433 26.625 16.3333 26.625H13.1667C12.7294 26.625 12.375 26.2706 12.375 25.8333V22.6667C12.375 22.4567 12.4584 22.2554 12.6069 22.1069L20.5234 14.1904L22.8985 11.8152ZM21.0833 15.8696L13.9583 22.9946V25.0417H16.0054L23.1304 17.9167L21.0833 15.8696ZM24.25 16.7971L25.5054 15.5417L23.4583 13.4946L22.2029 14.75L24.25 16.7971Z"
+                                        fill="currentColor"
+                                    />
+                                </svg>
+                            </ActionButton>
+                        )}
+                        <ActionButton
+                            tw="ml-3"
+                            active={roomMenuOpen}
+                            onClick={() => void setRoomMenuOpen((current) => !current)}
+                            ref={setMenuAnchorEl}
                         >
-                            {canModifyMembers && (
-                                <>
-                                    <MenuButtonItem
-                                        icon={<AddMemberIcon />}
-                                        onClick={() => {
-                                            if (typeof onAddMemberClick === 'function') {
-                                                onAddMemberClick()
-                                            }
-
-                                            setRoomMenuOpen(false)
-                                        }}
-                                    >
-                                        Add member
-                                    </MenuButtonItem>
-                                    <MenuButtonItem
-                                        icon={<EditMembersIcon />}
-                                        onClick={() => {
-                                            if (typeof onEditMembersClick === 'function') {
-                                                onEditMembersClick()
-                                            }
-
-                                            setRoomMenuOpen(false)
-                                        }}
-                                    >
-                                        Edit members
-                                    </MenuButtonItem>
-                                    <MenuSeparatorItem />
-                                </>
-                            )}
-                            <MenuButtonItem
-                                icon={<CopyIcon />}
-                                onClick={() => {
-                                    if (selectedRoomId) {
-                                        copy(selectedRoomId)
-
-                                        success(`Copied.`)
-                                    }
-                                    setRoomMenuOpen(false)
-                                }}
+                            <MoreIcon />
+                        </ActionButton>
+                        {roomMenuOpen && (
+                            <Menu
+                                anchorEl={menuAnchorEl}
+                                onMouseDownOutside={() => void setRoomMenuOpen(false)}
                             >
-                                Copy room id
-                            </MenuButtonItem>
-                            {(canEdit || canDelete) && <MenuSeparatorItem />}
-                            {canEdit && (
-                                <MenuButtonItem
-                                    icon={<GearIcon />}
-                                    onClick={() => {
-                                        if (typeof onRoomPropertiesClick === 'function') {
-                                            onRoomPropertiesClick()
-                                        }
+                                {canModifyMembers && (
+                                    <>
+                                        <MenuButtonItem
+                                            icon={<AddMemberIcon />}
+                                            onClick={() => {
+                                                if (typeof onAddMemberClick === 'function') {
+                                                    onAddMemberClick()
+                                                }
 
+                                                setRoomMenuOpen(false)
+                                            }}
+                                        >
+                                            Add member
+                                        </MenuButtonItem>
+                                        <MenuButtonItem
+                                            icon={<EditMembersIcon />}
+                                            onClick={() => {
+                                                if (typeof onEditMembersClick === 'function') {
+                                                    onEditMembersClick()
+                                                }
+
+                                                setRoomMenuOpen(false)
+                                            }}
+                                        >
+                                            Edit members
+                                        </MenuButtonItem>
+                                        <MenuSeparatorItem />
+                                    </>
+                                )}
+                                <MenuButtonItem
+                                    icon={<CopyIcon />}
+                                    onClick={() => {
+                                        if (selectedRoomId) {
+                                            copy(selectedRoomId)
+
+                                            success(`Copied.`)
+                                        }
                                         setRoomMenuOpen(false)
                                     }}
                                 >
-                                    Properties
+                                    Copy room id
                                 </MenuButtonItem>
-                            )}
-                            {canDelete && (
-                                <MenuButtonItem
-                                    icon={<DeleteIcon />}
-                                    onClick={() => {
-                                        if (account && selectedRoomId) {
-                                            dispatch(RoomAction.delete(selectedRoomId))
-                                        }
+                                {(canEdit || canDelete) && <MenuSeparatorItem />}
+                                {canEdit && (
+                                    <MenuButtonItem
+                                        icon={<GearIcon />}
+                                        onClick={() => {
+                                            if (typeof onRoomPropertiesClick === 'function') {
+                                                onRoomPropertiesClick()
+                                            }
 
-                                        setRoomMenuOpen(false)
-                                    }}
-                                >
-                                    Delete room
-                                </MenuButtonItem>
-                            )}
-                        </Menu>
-                    )}
-                </div>
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
+                                        Properties
+                                    </MenuButtonItem>
+                                )}
+                                {canDelete && (
+                                    <MenuButtonItem
+                                        icon={<DeleteIcon />}
+                                        onClick={() => {
+                                            if (account && selectedRoomId) {
+                                                dispatch(RoomAction.delete(selectedRoomId))
+                                            }
+
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
+                                        Delete room
+                                    </MenuButtonItem>
+                                )}
+                            </Menu>
+                        )}
+                    </div>
+                </>
             )}
         </Form>
     )
