@@ -22,9 +22,12 @@ import { useDispatch } from 'react-redux'
 import { useSelectedRoomId } from '../../features/room/hooks'
 import { DelegationAction } from '../../features/delegation'
 import { MemberAction } from '../../features/member'
+import RoomPropertiesModal from '../modals/RoomPropertiesModal'
 
 export default function Conversation() {
     const messages = useMessages()
+
+    const [roomPropertiesModalOpen, setRoomPropertiesModalOpen] = useState<boolean>(false)
 
     const [addMemberModalOpen, setAddMemberModalOpen] = useState<boolean>(false)
 
@@ -40,6 +43,7 @@ export default function Conversation() {
                 canModifyMembers={canGrant}
                 onAddMemberClick={() => void setAddMemberModalOpen(true)}
                 onEditMembersClick={() => void setEditMembersModalOpen(true)}
+                onRoomPropertiesClick={() => void setRoomPropertiesModalOpen(true)}
             />
             <div
                 css={[
@@ -95,6 +99,10 @@ export default function Conversation() {
                     canModifyMembers={canGrant}
                     open={editMembersModalOpen}
                     setOpen={setEditMembersModalOpen}
+                />
+                <RoomPropertiesModal
+                    open={roomPropertiesModalOpen}
+                    setOpen={setRoomPropertiesModalOpen}
                 />
             </>
         </>

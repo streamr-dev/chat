@@ -18,21 +18,21 @@ import { v4 as uuidv4 } from 'uuid'
 import { Prefix, PrivacyOption, PrivacySetting } from '../../../types/common'
 import { RoomAction } from '../../features/room'
 
-const PrivateRoomOption: PrivacyOption = {
+export const PrivateRoomOption: PrivacyOption = {
     value: PrivacySetting.Private,
     label: 'Private',
     desc: 'Only invited members can post and view messages',
     icon: PrivateIcon,
 }
 
-const PublicRoomOption: PrivacyOption = {
+export const PublicRoomOption: PrivacyOption = {
     value: PrivacySetting.Public,
     label: 'Public',
     desc: 'Anyone can view messages',
     icon: PublicIcon,
 }
 
-const privacyOptions: PrivacyOption[] = [PrivateRoomOption, PublicRoomOption]
+export const privacyOptions: PrivacyOption[] = [PrivateRoomOption, PublicRoomOption]
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
@@ -154,7 +154,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     )
 }
 
-function SingleValue({ data: { icon: Icon }, children, ...props }: any) {
+export function SingleValue({ data: { icon: Icon }, children, ...props }: any) {
     return (
         <RawSingleValue {...props}>
             <div
@@ -187,7 +187,7 @@ function SingleValue({ data: { icon: Icon }, children, ...props }: any) {
     )
 }
 
-function Option({ data: { label, icon: Icon, desc }, ...props }: any) {
+export function Option({ data: { label, icon: Icon, desc }, ...props }: any) {
     return (
         <RawOption {...props}>
             <div

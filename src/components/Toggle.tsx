@@ -2,12 +2,14 @@ import tw, { css } from 'twin.macro'
 import Spinner from './Spinner'
 
 type Props = {
-    value?: boolean
+    value?: undefined | boolean
     onClick?: () => void
     busy?: boolean
 }
 
-export default function Toggle({ value: value = false, busy = false, onClick }: Props) {
+export default function Toggle({ value: value, busy = false, onClick }: Props) {
+    const undetermined = typeof value === 'undefined'
+
     return (
         <button
             type="button"
@@ -38,11 +40,11 @@ export default function Toggle({ value: value = false, busy = false, onClick }: 
             >
                 <div
                     css={[
-                        value &&
+                        ((value && !undetermined) || (!value && undetermined)) &&
                             css`
                                 transition: 200ms ease-in margin-left, 200ms ease-out margin-right;
                             `,
-                        !value &&
+                        ((!value && !undetermined) || (value && undetermined)) &&
                             css`
                                 transition: 200ms ease-out margin-left, 200ms ease-in margin-right;
                             `,
@@ -58,6 +60,11 @@ export default function Toggle({ value: value = false, busy = false, onClick }: 
                             tw`
                                 ml-5
                                 mr-0
+                            `,
+                        undetermined &&
+                            tw`
+                                ml-2.5
+                                mr-2.5
                             `,
                     ]}
                 />
@@ -83,6 +90,10 @@ export default function Toggle({ value: value = false, busy = false, onClick }: 
                         value &&
                             tw`
                                 ml-5
+                            `,
+                        undetermined &&
+                            tw`
+                                ml-2.5
                             `,
                     ]}
                 >

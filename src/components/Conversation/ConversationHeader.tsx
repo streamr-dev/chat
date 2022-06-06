@@ -12,6 +12,7 @@ import AddMemberIcon from '../../icons/AddMemberIcon'
 import CopyIcon from '../../icons/CopyIcon'
 import DeleteIcon from '../../icons/DeleteIcon'
 import EditMembersIcon from '../../icons/EditMembersIcon'
+import GearIcon from '../../icons/GearIcon'
 import MoreIcon from '../../icons/MoreIcon'
 import ActionButton from '../ActionButton'
 import Form from '../Form'
@@ -23,12 +24,14 @@ type Props = {
     canModifyMembers?: boolean
     onAddMemberClick?: () => void
     onEditMembersClick?: () => void
+    onRoomPropertiesClick?: () => void
 }
 
 export default function ConversationHeader({
     canModifyMembers = false,
     onAddMemberClick,
     onEditMembersClick,
+    onRoomPropertiesClick,
 }: Props) {
     const canEdit = useCurrentAbility(StreamPermission.EDIT)
 
@@ -252,22 +255,34 @@ export default function ConversationHeader({
                             >
                                 Copy room id
                             </MenuButtonItem>
-                            {canDelete && (
-                                <>
-                                    <MenuSeparatorItem />
-                                    <MenuButtonItem
-                                        icon={<DeleteIcon />}
-                                        onClick={() => {
-                                            if (account && selectedRoomId) {
-                                                dispatch(RoomAction.delete(selectedRoomId))
-                                            }
+                            {(canEdit || canDelete) && <MenuSeparatorItem />}
+                            {canEdit && (
+                                <MenuButtonItem
+                                    icon={<GearIcon />}
+                                    onClick={() => {
+                                        if (typeof onRoomPropertiesClick === 'function') {
+                                            onRoomPropertiesClick()
+                                        }
 
-                                            setRoomMenuOpen(false)
-                                        }}
-                                    >
-                                        Delete room
-                                    </MenuButtonItem>
-                                </>
+                                        setRoomMenuOpen(false)
+                                    }}
+                                >
+                                    Properties
+                                </MenuButtonItem>
+                            )}
+                            {canDelete && (
+                                <MenuButtonItem
+                                    icon={<DeleteIcon />}
+                                    onClick={() => {
+                                        if (account && selectedRoomId) {
+                                            dispatch(RoomAction.delete(selectedRoomId))
+                                        }
+
+                                        setRoomMenuOpen(false)
+                                    }}
+                                >
+                                    Delete room
+                                </MenuButtonItem>
                             )}
                         </Menu>
                     )}
