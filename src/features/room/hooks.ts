@@ -1,4 +1,6 @@
 import { useSelector } from 'react-redux'
+import { PrivacySetting } from '../../../types/common'
+import { PrivateRoomOption, PublicRoomOption } from '../../components/modals/AddRoomModal'
 import {
     selectGettingStorageNodes,
     selectPrivacy,
@@ -28,6 +30,10 @@ export function useGettingStorageNodes(roomId: undefined | RoomId) {
 
 export function usePrivacy(roomId: undefined | RoomId) {
     return useSelector(selectPrivacy(roomId))
+}
+
+export function usePrivacyOption(roomId: undefined | RoomId) {
+    return usePrivacy(roomId) === PrivacySetting.Private ? PrivateRoomOption : PublicRoomOption
 }
 
 export function useGettingPrivacy(roomId: undefined | RoomId) {

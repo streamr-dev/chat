@@ -1,6 +1,9 @@
-export default function PublicIcon() {
+import { SVGAttributes } from 'react'
+
+export default function PublicIcon(props: SVGAttributes<SVGElement>) {
     return (
         <svg
+            {...props}
             width="18"
             height="18"
             viewBox="0 0 18 18"

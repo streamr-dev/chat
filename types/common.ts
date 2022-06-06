@@ -1,7 +1,8 @@
 import { Provider } from '@web3-react/types'
-import { FC } from 'react'
 import { Stream } from 'streamr-client'
 import { IRoom } from '../src/features/room/types'
+import PrivateIcon from '../src/icons/PrivateIcon'
+import PublicIcon from '../src/icons/PublicIcon'
 
 export enum StorageKey {
     WalletIntegrationId = 'chat/walletIntegrationId',
@@ -52,5 +53,5 @@ export type PrivacyOption = {
     value: PrivacySetting
     label: string
     desc: string
-    icon: FC
+    icon: typeof PrivateIcon | typeof PublicIcon
 }

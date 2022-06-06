@@ -4,7 +4,7 @@ import { StreamPermission } from 'streamr-client'
 import tw, { css } from 'twin.macro'
 import { useCurrentAbility, useLoadCurrentAbilityEffect } from '../../features/permission/hooks'
 import { RoomAction } from '../../features/room'
-import { useSelectedRoomId } from '../../features/room/hooks'
+import { usePrivacyOption, useSelectedRoomId } from '../../features/room/hooks'
 import { useWalletAccount } from '../../features/wallet/hooks'
 import useCopy from '../../hooks/useCopy'
 import useSelectedRoom from '../../hooks/useSelectedRoom'
@@ -14,6 +14,7 @@ import DeleteIcon from '../../icons/DeleteIcon'
 import EditMembersIcon from '../../icons/EditMembersIcon'
 import GearIcon from '../../icons/GearIcon'
 import MoreIcon from '../../icons/MoreIcon'
+import { success } from '../../utils/toaster'
 import ActionButton from '../ActionButton'
 import Form from '../Form'
 import Menu, { MenuButtonItem, MenuSeparatorItem } from '../Menu'
@@ -97,6 +98,16 @@ export default function ConversationHeader({
     }
 
     const account = useWalletAccount()
+
+    const { icon: PrivacyIcon, desc: privacyDesc } = usePrivacyOption(selectedRoomId)
+
+    useEffect(() => {
+        if (!selectedRoomId) {
+            return
+        }
+
+        dispatch(RoomAction.getPrivacy(selectedRoomId))
+    }, [selectedRoomId])
 
     return (
         <Form
@@ -187,8 +198,25 @@ export default function ConversationHeader({
                 </div>
             ) : (
                 <div tw="flex">
+                    <div
+                        title={privacyDesc}
+                        css={[
+                            tw`
+                                flex
+                                items-center
+                                justify-center
+                                text-[#59799C]
+                                rounded-full
+                                uppercase
+                                w-10
+                                h-10
+                            `,
+                        ]}
+                    >
+                        <PrivacyIcon />
+                    </div>
                     {canEdit && (
-                        <ActionButton onClick={() => void setIsRoomNameEditable(true)}>
+                        <ActionButton tw="ml-3" onClick={() => void setIsRoomNameEditable(true)}>
                             <svg
                                 tw="block"
                                 width="40"
@@ -249,7 +277,11 @@ export default function ConversationHeader({
                             <MenuButtonItem
                                 icon={<CopyIcon />}
                                 onClick={() => {
-                                    copy(selectedRoomId!)
+                                    if (selectedRoomId) {
+                                        copy(selectedRoomId)
+
+                                        success(`Copied.`)
+                                    }
                                     setRoomMenuOpen(false)
                                 }}
                             >

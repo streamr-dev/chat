@@ -52,10 +52,10 @@ export default function RoomButton({ room, active, ...props }: Props) {
                     <div
                         css={[
                             tw`
-                            text-[#59799C]
-                            text-[14px]
-                            font-plex
-                        `,
+                                text-[#59799C]
+                                text-[14px]
+                                font-plex
+                            `,
                         ]}
                     >
                         <Text tw="truncate">{recentMessage}</Text>

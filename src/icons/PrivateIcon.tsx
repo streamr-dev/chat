@@ -1,6 +1,9 @@
-export default function PrivateIcon() {
+import { SVGAttributes } from 'react'
+
+export default function PrivateIcon(props: SVGAttributes<SVGElement>) {
     return (
         <svg
+            {...props}
             width="14"
             height="16"
             viewBox="0 0 14 16"

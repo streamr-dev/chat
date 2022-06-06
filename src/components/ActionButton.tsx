@@ -18,27 +18,27 @@ const ActionButton = forwardRef(
                 ref={ref}
                 css={[
                     tw`
-                    bg-[#F7F9FC]
-                    block
-                    p-0
-                    w-10
-                    h-10
-                    hover:bg-[#E0E7F2]
-                `,
+                        bg-[#F7F9FC]
+                        block
+                        p-0
+                        w-10
+                        h-10
+                        hover:bg-[#E0E7F2]
+                    `,
                     active &&
                         tw`
-                        bg-[#E0E7F2]
-                    `,
+                            bg-[#E0E7F2]
+                        `,
                     light &&
                         tw`
-                        bg-white
-                        hover:bg-[#F7F9FC]
-                    `,
+                            bg-white
+                            hover:bg-[#F7F9FC]
+                        `,
                     light &&
                         active &&
                         tw`
-                        bg-[#F7F9FC]
-                    `,
+                            bg-[#F7F9FC]
+                        `,
                 ]}
             />
         )
