@@ -15,7 +15,7 @@ export default function* setPermissions() {
     yield takeEvery(
         MemberAction.setPermissions,
         function* ({
-            payload: { roomId, address, permissions },
+            payload: { roomId, assignments },
         }: ReturnType<typeof MemberAction.setPermissions>) {
             try {
                 const provider: Provider = yield call(getWalletProvider)
@@ -31,17 +31,16 @@ export default function* setPermissions() {
 
                 yield client.setPermissions({
                     streamId: roomId,
-                    assignments: [
-                        {
-                            user: address,
-                            permissions,
-                        },
-                    ],
+                    assignments,
                 })
 
                 yield put(MembersAction.detect(roomId))
 
-                yield put(PermissionAction.invalidateAll({ roomId, address }))
+                for (let i = 0; i < assignments.length; i++) {
+                    yield put(
+                        PermissionAction.invalidateAll({ roomId, address: assignments[i].user })
+                    )
+                }
             } catch (e) {
                 handleError(e)
             }

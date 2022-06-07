@@ -7,7 +7,7 @@ import { IRoom } from '../../../features/room/types'
 import { useWalletAccount } from '../../../features/wallet/hooks'
 import useEmitPresenceEffect from '../../../hooks/useEmitPresenceEffect'
 import useIntercept from '../../../hooks/useIntercept'
-import useInvited from '../../../hooks/useInvited'
+import useJustInvited from '../../../hooks/useJustInvited'
 import useRecentMessage from '../../../hooks/useRecentMessage'
 import Avatar from '../../Avatar'
 import SidebarButton from '../../SidebarButton'
@@ -43,7 +43,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
         dispatch(PermissionAction.fetchAll({ roomId: id, address }))
     }, [id, address])
 
-    const invited = useInvited(id, address)
+    const justInvited = useJustInvited(id, address)
 
     return (
         <SidebarButton
@@ -52,7 +52,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
             icon={<Icon id={id} />}
             onClick={() => void dispatch(RoomAction.select(id))}
             misc={
-                invited && (
+                justInvited && (
                     <div
                         css={[
                             tw`

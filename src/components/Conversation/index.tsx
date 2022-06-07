@@ -23,6 +23,9 @@ import { useSelectedRoomId } from '../../features/room/hooks'
 import { DelegationAction } from '../../features/delegation'
 import { MemberAction } from '../../features/member'
 import RoomPropertiesModal from '../modals/RoomPropertiesModal'
+import useCanGrant from '../../hooks/useCanGrant'
+import useJustInvited from '../../hooks/useJustInvited'
+import { useWalletAccount } from '../../features/wallet/hooks'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -33,9 +36,7 @@ export default function Conversation() {
 
     const [editMembersModalOpen, setEditMembersModalOpen] = useState<boolean>(false)
 
-    const canGrant = useCurrentAbility(StreamPermission.GRANT)
-
-    useLoadCurrentAbilityEffect(StreamPermission.GRANT)
+    const canGrant = useCanGrant()
 
     return (
         <>
@@ -130,6 +131,10 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     const selectedRoomId = useSelectedRoomId()
 
+    const address = useWalletAccount()
+
+    const justInvited = useJustInvited(selectedRoomId, address)
+
     if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.
         return <MessageInput />
@@ -149,6 +154,48 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
         )
     }
 
+    if (justInvited) {
+        return (
+            <MessageInputPlaceholder
+                cta={
+                    <Cta
+                        onClick={() => {
+                            if (!selectedRoomId || !delegatedAccount || !address) {
+                                return
+                            }
+
+                            dispatch(
+                                MemberAction.setPermissions({
+                                    roomId: selectedRoomId,
+                                    assignments: [
+                                        {
+                                            user: delegatedAccount,
+                                            permissions: [
+                                                StreamPermission.PUBLISH,
+                                                StreamPermission.SUBSCRIBE,
+                                            ],
+                                        },
+                                        {
+                                            user: address,
+                                            permissions: [
+                                                StreamPermission.GRANT,
+                                                StreamPermission.EDIT,
+                                            ],
+                                        },
+                                    ],
+                                })
+                            )
+                        }}
+                    >
+                        Accept
+                    </Cta>
+                }
+            >
+                You've been invited into this room.
+            </MessageInputPlaceholder>
+        )
+    }
+
     if (canGrant) {
         return (
             <MessageInputPlaceholder
@@ -162,10 +209,14 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
                             dispatch(
                                 MemberAction.setPermissions({
                                     roomId: selectedRoomId,
-                                    address: delegatedAccount,
-                                    permissions: [
-                                        StreamPermission.PUBLISH,
-                                        StreamPermission.SUBSCRIBE,
+                                    assignments: [
+                                        {
+                                            user: delegatedAccount,
+                                            permissions: [
+                                                StreamPermission.PUBLISH,
+                                                StreamPermission.SUBSCRIBE,
+                                            ],
+                                        },
                                     ],
                                 })
                             )

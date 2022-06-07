@@ -1,6 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { StreamPermission } from 'streamr-client'
+import { UserPermissionAssignment } from 'streamr-client'
 import { Address } from '../../../types/common'
 import { SEE_SAGA } from '../../utils/consts'
 import { RoomId } from '../room/types'
@@ -15,8 +15,7 @@ export const MemberAction = {
     notice: createAction<{ address: Address; timestamp: number }>('member: notice'),
     setPermissions: createAction<{
         roomId: RoomId
-        address: Address
-        permissions: StreamPermission[]
+        assignments: UserPermissionAssignment[]
     }>('member: set permissions'),
 }
 

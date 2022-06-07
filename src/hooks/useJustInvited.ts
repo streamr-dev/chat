@@ -4,7 +4,7 @@ import { OptionalAddress } from '../../types/common'
 import { usePermissions } from '../features/permission/hooks'
 import { RoomId } from '../features/room/types'
 
-export default function useInvited(roomId: RoomId, address: OptionalAddress) {
+export default function useJustInvited(roomId: undefined | RoomId, address: OptionalAddress) {
     const permissions = usePermissions(roomId, address)
 
     return useMemo(() => {

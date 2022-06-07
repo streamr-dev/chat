@@ -52,8 +52,12 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             dispatch(
                 MemberAction.setPermissions({
                     roomId: selectedRoomId,
-                    address,
-                    permissions: [],
+                    assignments: [
+                        {
+                            user: address,
+                            permissions: [],
+                        },
+                    ],
                 })
             )
         },
