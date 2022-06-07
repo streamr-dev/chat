@@ -50,7 +50,7 @@ function* onToggleStorageNodeAction({
 
         dirty = true
 
-        const succeeded = false
+        let succeeded = false
 
         const client: StreamrClient = yield call(getWalletClient)
 
@@ -60,6 +60,8 @@ function* onToggleStorageNodeAction({
             } else {
                 yield client.removeStreamFromStorageNode(roomId, address)
             }
+
+            succeeded = true
         } catch (e) {
             console.warn(e)
         }
