@@ -21,6 +21,7 @@ export default function* setPermissions() {
                 const provider: Provider = yield call(getWalletProvider)
 
                 const account: Address = yield call(getWalletAccount)
+
                 yield preflight({
                     provider,
                     address: account,

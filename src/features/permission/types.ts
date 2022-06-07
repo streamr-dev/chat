@@ -5,9 +5,13 @@ export interface PermissionState {
     items: {
         [index: RoomId]: {
             [index: Address]: {
-                [index: string]: {
-                    cache?: number
-                    value?: boolean
+                fetchingAll: boolean
+                permissions: {
+                    [index: string]: {
+                        cache?: number
+                        value?: boolean
+                        fetching: boolean
+                    }
                 }
             }
         }

@@ -1,32 +1,49 @@
+import { Provider } from '@web3-react/types'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
-import { PrivacySetting } from '../../../../types/common'
+import { Address, PrivacySetting } from '../../../../types/common'
 import RoomNotFoundError from '../../../errors/RoomNotFoundError'
+import getWalletAccount from '../../../sagas/getWalletAccount.saga'
 import getWalletClient from '../../../sagas/getWalletClient.saga'
+import getWalletProvider from '../../../sagas/getWalletProvider.saga'
 import getStream from '../../../utils/getStream'
 import handleError from '../../../utils/handleError'
+import preflight from '../../../utils/preflight'
 import { error, success } from '../../../utils/toaster'
 import { selectPrivacyChanging } from '../selectors'
 
 function* onChangePrivacyAction({
     payload: { roomId, privacy },
 }: ReturnType<typeof RoomAction.changePrivacy>) {
-    const changing: boolean = yield select(selectPrivacyChanging(roomId))
-
-    if (changing) {
-        // Already changing. Skipping.
-        return
-    }
-
-    yield put(
-        RoomAction.setChangingPrivacy({
-            roomId,
-            state: true,
-        })
-    )
+    let dirty = false
 
     try {
+        const changing: boolean = yield select(selectPrivacyChanging(roomId))
+
+        if (changing) {
+            // Already changing. Skipping.
+            return
+        }
+
+        const provider: Provider = yield call(getWalletProvider)
+
+        const account: Address = yield call(getWalletAccount)
+
+        yield preflight({
+            provider,
+            address: account,
+        })
+
+        yield put(
+            RoomAction.setChangingPrivacy({
+                roomId,
+                state: true,
+            })
+        )
+
+        dirty = true
+
         const client: StreamrClient = yield call(getWalletClient)
 
         const stream: undefined | Stream = yield getStream(client, roomId)
@@ -65,14 +82,16 @@ function* onChangePrivacyAction({
         }
     } catch (e) {
         handleError(e)
+    } finally {
+        if (dirty) {
+            yield put(
+                RoomAction.setChangingPrivacy({
+                    roomId,
+                    state: false,
+                })
+            )
+        }
     }
-
-    yield put(
-        RoomAction.setChangingPrivacy({
-            roomId,
-            state: false,
-        })
-    )
 }
 
 export default function* changePrivacy() {

@@ -7,7 +7,7 @@ import { useDelegatedAccount } from '../delegation/hooks'
 import { useSelectedRoomId } from '../room/hooks'
 import { RoomId } from '../room/types'
 import { useWalletAccount } from '../wallet/hooks'
-import { selectAbility, selectAbilityCache } from './selectors'
+import { selectAbility, selectAbilityCache, selectPermissions } from './selectors'
 
 export function useAbility(
     roomId: undefined | RoomId,
@@ -75,4 +75,8 @@ export function useLoadCurrentDelegationAbilityEffect(permission: StreamPermissi
     const delegatedAccount = useDelegatedAccount()
 
     useLoadAbilityEffect(selectedRoomId, delegatedAccount, permission)
+}
+
+export function usePermissions(roomId: undefined | RoomId, address: OptionalAddress) {
+    return useSelector(selectPermissions(roomId, address))
 }

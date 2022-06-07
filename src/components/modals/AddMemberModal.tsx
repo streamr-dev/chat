@@ -40,11 +40,7 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
                         MemberAction.setPermissions({
                             roomId: selectedRoomId,
                             address,
-                            permissions: [
-                                StreamPermission.PUBLISH,
-                                StreamPermission.SUBSCRIBE,
-                                StreamPermission.GRANT,
-                            ],
+                            permissions: [StreamPermission.GRANT],
                         })
                     )
 

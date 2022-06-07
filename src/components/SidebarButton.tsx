@@ -4,12 +4,14 @@ import tw from 'twin.macro'
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
     icon?: ReactNode
     active?: boolean
+    misc?: ReactNode
 }
 
 export default function SidebarButton({
     icon = <FallbackIcon />,
     children,
     active = false,
+    misc,
     ...props
 }: Props) {
     return (
@@ -54,11 +56,13 @@ export default function SidebarButton({
                 css={[
                     tw`
                         min-w-0
+                        flex-grow
                     `,
                 ]}
             >
                 {children}
             </div>
+            <div>{misc}</div>
         </button>
     )
 }
