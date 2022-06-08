@@ -6,12 +6,13 @@ import handleError from '../../../utils/handleError'
 import { RoomAction } from '..'
 import getWalletClient from '../../../sagas/getWalletClient.saga'
 import getWalletAccount from '../../../sagas/getWalletAccount.saga'
+import isSameAddress from '../../../utils/isSameAddress'
 
 async function getUserPermissions(user: Address, stream: Stream) {
     const assignments: PermissionAssignment[] = await stream.getPermissions()
 
     const assignment = assignments.find(
-        (assignment) => 'user' in assignment && assignment.user.toLowerCase() === user.toLowerCase()
+        (assignment) => 'user' in assignment && isSameAddress(assignment.user, user)
     )
 
     return assignment ? assignment.permissions : []

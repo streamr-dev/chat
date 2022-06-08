@@ -17,6 +17,8 @@ import useSelectedRoom from '../../../hooks/useSelectedRoom'
 import { useDispatch } from 'react-redux'
 import useProviderChangeEffect from '../../../hooks/useProviderChangeEffect'
 import { RoomsAction } from '../../../features/rooms'
+import useListenForInvitesEffect from '../../../hooks/useListenForInvitesEffect'
+import { RoomAction } from '../../../features/room'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -48,6 +50,10 @@ function UnwrappedChat() {
     }, [dispatch, account])
 
     useProviderChangeEffect()
+
+    useListenForInvitesEffect(account, (roomId, address) => {
+        dispatch(RoomAction.registerInvite({ roomId, address }))
+    })
 
     return (
         <>
@@ -137,7 +143,6 @@ function UnwrappedChat() {
                 }}
             />
             <WalletModal open={walletModalOpen} setOpen={toggleWalletModal} />
-            <InvitationListener />
             <AddRoomModal open={roomModalOpen} setOpen={setRoomModalOpen} />
         </>
     )
@@ -161,8 +166,4 @@ export default function Chat() {
     }
 
     return <UnwrappedChat />
-}
-
-function InvitationListener() {
-    return null
 }

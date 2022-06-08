@@ -1,14 +1,16 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
 import { STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
-import { PrivacySetting } from '../../../types/common'
+import { Address, PrivacySetting } from '../../../types/common'
 import { SEE_SAGA } from '../../utils/consts'
 import changePrivacy from './sagas/changePrivacy.saga'
 import create from './sagas/create.saga'
 import del from './sagas/del.saga'
 import delLocal from './sagas/delLocal.saga'
+import fetch from './sagas/fetch.saga'
 import getPrivacy from './sagas/getPrivacy.saga'
 import getStorageNodes from './sagas/getStorageNodes.saga'
+import registerInvite from './sagas/registerInvite.saga'
 import rename from './sagas/rename.saga'
 import renameLocal from './sagas/renameLocal.saga'
 import sync from './sagas/sync.saga'
@@ -94,6 +96,8 @@ export const RoomAction = {
         'room: set getting privacy'
     ),
     getPrivacy: createAction<RoomId>('room: get privacy'),
+    registerInvite: createAction<{ roomId: RoomId; address: Address }>('room: register invite'),
+    fetch: createAction<{ roomId: RoomId; address: Address }>('room: fetch'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -178,6 +182,10 @@ const reducer = createReducer(initialState, (builder) => {
     )
 
     builder.addCase(RoomAction.getPrivacy, SEE_SAGA)
+
+    builder.addCase(RoomAction.registerInvite, SEE_SAGA)
+
+    builder.addCase(RoomAction.fetch, SEE_SAGA)
 })
 
 export function* roomSaga() {
@@ -186,8 +194,10 @@ export function* roomSaga() {
         create(),
         del(),
         delLocal(),
+        fetch(),
         getPrivacy(),
         getStorageNodes(),
+        registerInvite(),
         rename(),
         renameLocal(),
         sync(),

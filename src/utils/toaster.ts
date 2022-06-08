@@ -11,3 +11,7 @@ export function error(message: string) {
 export function success(message: string) {
     toast.success(message, Options)
 }
+
+export function info(message: string) {
+    toast.info(message, Options)
+}

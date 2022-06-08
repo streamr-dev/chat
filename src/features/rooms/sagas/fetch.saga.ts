@@ -1,12 +1,11 @@
-import { call, takeLatest } from 'redux-saga/effects'
+import { call, put, takeLatest } from 'redux-saga/effects'
 import StreamrClient, { StreamPermission } from 'streamr-client'
 import { RoomsAction } from '..'
-import { Address, EnhancedStream, Prefix } from '../../../../types/common'
+import { Address, Prefix } from '../../../../types/common'
 import getWalletAccount from '../../../sagas/getWalletAccount.saga'
 import getWalletClient from '../../../sagas/getWalletClient.saga'
-import db from '../../../utils/db'
-import getStream from '../../../utils/getStream'
 import handleError from '../../../utils/handleError'
+import { RoomAction } from '../../room'
 import { RoomId } from '../../room/types'
 
 async function getRoomIds(client: StreamrClient, account: string) {
@@ -25,26 +24,6 @@ async function getRoomIds(client: StreamrClient, account: string) {
     return ids
 }
 
-async function addLocalRoomFromStream(stream: EnhancedStream, owner: string) {
-    const metadata = stream.extensions['thechat.eth']
-
-    const alreadyExists = await db.rooms.where({ id: stream.id, owner }).first()
-
-    if (alreadyExists) {
-        return undefined
-    }
-
-    return db.rooms.add({
-        createdAt: metadata.createdAt,
-        createdBy: metadata.createdBy,
-        id: stream.id,
-        name: stream.description || '',
-        owner,
-        privacy: metadata.privacy,
-        useStorage: metadata.useStorage,
-    })
-}
-
 function* onFetchAction() {
     try {
         const client: StreamrClient = yield call(getWalletClient)
@@ -54,15 +33,12 @@ function* onFetchAction() {
         const ids: RoomId[] = yield getRoomIds(client, account)
 
         for (let i = 0; i < ids.length; i++) {
-            try {
-                const stream: undefined | EnhancedStream = yield getStream(client, ids[i])
-
-                if (stream) {
-                    yield addLocalRoomFromStream(stream, account.toLowerCase())
-                }
-            } catch (e) {
-                handleError(e)
-            }
+            yield put(
+                RoomAction.fetch({
+                    roomId: ids[i],
+                    address: account,
+                })
+            )
         }
     } catch (e) {
         handleError(e)
