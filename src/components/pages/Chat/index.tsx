@@ -1,100 +1,169 @@
-import Helmet from 'react-helmet'
-import styled from 'styled-components'
-import ChatWindow from './ChatWindow'
-import RoomList from './RoomList'
-import Navbar from '../../Navbar'
-import RoomItem from './RoomItem'
-import Background from '../Home/background.png'
-import Message from './Message'
-import { useStore } from '../../Store'
-import useExistingRooms from '../../../hooks/useExistingRooms'
-import useRoomIdsStorage from '../../../hooks/useRoomIdsStorage'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Fragment, useEffect } from 'react'
-import MessageTransmitter from './MessageTransmitter'
-import RoomNameLoader from './RoomNameLoader'
-import InvitationListener from './InvitationListener'
+import tw from 'twin.macro'
+import Page from '../../Page'
+import WalletModal from '../../modals/WalletModal'
+import AccountModal from '../../modals/AccountModal'
+import AddRoomButton from './AddRoomButton'
+import AddRoomModal from '../../modals/AddRoomModal'
+import Conversation from '../../Conversation'
+import Nav from './Nav'
+import RoomButton from './RoomButton'
+import { useWalletAccount } from '../../../features/wallet/hooks'
+import UtilityButton from '../../UtilityButton'
+import Text from '../../Text'
+import useRooms from '../../../hooks/useRooms'
+import useSelectedRoom from '../../../hooks/useSelectedRoom'
+import { useDispatch } from 'react-redux'
+import useProviderChangeEffect from '../../../hooks/useProviderChangeEffect'
+import { RoomsAction } from '../../../features/rooms'
+import useListenForInvitesEffect from '../../../hooks/useListenForInvitesEffect'
+import { RoomAction } from '../../../features/room'
 
-const Content = styled.div`
-    height: 100vh;
-    padding: 91px 40px 40px; /* 91px is Navbar's height. */
-    width: 100vw;
+function UnwrappedChat() {
+    const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
 
-    > div {
-        height: 100%;
-        position: relative;
-        width: 100%;
+    const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
 
-        @media only screen and (max-width: 768px) {
-            display: flex;
-            flex-direction: column;
+    const [roomModalOpen, setRoomModalOpen] = useState<boolean>(false)
+
+    function toggleWalletModal(state: boolean) {
+        setWalletModalOpen(state)
+
+        if (state === false) {
+            setAccountModalOpen(true)
         }
     }
-`
 
-type Props = {
-    className?: string
+    const selectedRoom = useSelectedRoom()
+
+    const rooms = useRooms()
+
+    const dispatch = useDispatch()
+
+    const account = useWalletAccount()
+
+    useEffect(() => {
+        if (account) {
+            dispatch(RoomsAction.fetch())
+        }
+    }, [dispatch, account])
+
+    useProviderChangeEffect()
+
+    useListenForInvitesEffect(account, (roomId, address) => {
+        dispatch(RoomAction.registerInvite({ roomId, address }))
+    })
+
+    return (
+        <>
+            <Page title="Let's chat!">
+                <Nav onAccountClick={() => void setAccountModalOpen(true)} />
+                <main
+                    css={[
+                        tw`
+                            w-screen
+                            h-screen
+                            p-10
+                            pt-[91px]
+                        `,
+                    ]}
+                >
+                    <div
+                        css={[
+                            tw`
+                                w-full
+                                h-full
+                                relative
+                            `,
+                        ]}
+                    >
+                        <aside
+                            css={[
+                                tw`
+                                    h-full
+                                    w-[22rem]
+                                    overflow-auto
+                                    [button + button]:mt-4
+                                `,
+                            ]}
+                        >
+                            <AddRoomButton onClick={() => void setRoomModalOpen(true)} />
+                            {(rooms || []).map((room) => (
+                                <RoomButton
+                                    key={room.id}
+                                    active={selectedRoom && selectedRoom.id === room.id}
+                                    room={room}
+                                />
+                            ))}
+                        </aside>
+                        <div
+                            css={[
+                                tw`
+                                    bg-white
+                                    rounded-[20px]
+                                    absolute
+                                    bottom-0
+                                    left-[24rem]
+                                    right-0
+                                    top-0
+                                `,
+                            ]}
+                        >
+                            {selectedRoom ? (
+                                <Conversation />
+                            ) : (
+                                <div
+                                    css={[
+                                        tw`
+                                            h-full
+                                            w-full
+                                            flex
+                                            flex-col
+                                            items-center
+                                            justify-center
+                                        `,
+                                    ]}
+                                >
+                                    <UtilityButton onClick={() => void setRoomModalOpen(true)}>
+                                        <Text>Add new room</Text>
+                                    </UtilityButton>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </main>
+            </Page>
+            <AccountModal
+                open={accountModalOpen}
+                setOpen={setAccountModalOpen}
+                onChangeClick={() => {
+                    setAccountModalOpen(false)
+                    setWalletModalOpen(true)
+                }}
+            />
+            <WalletModal open={walletModalOpen} setOpen={toggleWalletModal} />
+            <AddRoomModal open={roomModalOpen} setOpen={setRoomModalOpen} />
+        </>
+    )
 }
 
-const UnstyledChat = ({ className }: Props) => {
-    const {
-        roomIds = [],
-        session: { wallet },
-        messages,
-    } = useStore()
-
-    useRoomIdsStorage()
-
-    useExistingRooms()
-
-    const sessionAccount = wallet?.address
+export default function Chat() {
+    const account = useWalletAccount()
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (!sessionAccount) {
+        if (account === null) {
             navigate('/')
         }
-    }, [sessionAccount, navigate])
+    }, [navigate, account])
 
-    return (
-        <MessageTransmitter>
-            {roomIds.map((id) => (
-                <Fragment key={id}>
-                    <RoomNameLoader roomId={id} />
-                </Fragment>
-            ))}
-            <Helmet title="Let's chat!" />
-            <InvitationListener />
-            <main className={className}>
-                <Navbar />
-                <Content>
-                    <div>
-                        <RoomList>
-                            {roomIds.map((id) => (
-                                <RoomItem key={id} id={id} />
-                            ))}
-                        </RoomList>
-                        <ChatWindow>
-                            {messages.map((message) => (
-                                <Message key={message.id} payload={message} />
-                            ))}
-                        </ChatWindow>
-                    </div>
-                </Content>
-            </main>
-        </MessageTransmitter>
-    )
+    // No account? Render nothing and wait. The above `useEffect` will
+    // take us places.
+    if (!account) {
+        return null
+    }
+
+    return <UnwrappedChat />
 }
-
-const Chat = styled(UnstyledChat)`
-    background-attachment: fixed;
-    background-image: url(${Background});
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 100vh;
-    width: 100vw;
-`
-
-export default Chat
