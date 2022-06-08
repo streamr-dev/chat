@@ -30,11 +30,11 @@ export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = 
             <div
                 css={[
                     tw`
-                            block
-                            tracking-[0.02em]
-                            mb-8
-                            empty:hidden
-                        `,
+                        block
+                        tracking-[0.02em]
+                        mb-8
+                        empty:hidden
+                    `,
                 ]}
             >
                 <Credits />

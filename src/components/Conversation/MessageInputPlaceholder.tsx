@@ -36,8 +36,8 @@ export default function MessageInputPlaceholder({ cta, children }: Props) {
                 <div
                     css={[
                         tw`
-                        ml-4
-                    `,
+                            ml-4
+                        `,
                     ]}
                 >
                     {cta}

@@ -28,7 +28,7 @@ export function Wrap(props: HTMLAttributes<HTMLDivElement>) {
                     h-10
                     relative
                     overflow-hidden
-        `,
+                `,
             ]}
         />
     )

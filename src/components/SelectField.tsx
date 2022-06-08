@@ -90,8 +90,8 @@ function DropdownIndicator(props: any) {
             {...props}
             css={[
                 tw`
-                px-4
-            `,
+                    px-4
+                `,
             ]}
         >
             <svg
