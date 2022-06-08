@@ -6,3 +6,5 @@ function selectSelf(state: any): ClockState {
 }
 
 export const selectTickedAt = createSelector(selectSelf, ({ tickedAt }) => tickedAt)
+
+export const selectStartedAt = createSelector(selectSelf, ({ startedAt }) => startedAt)

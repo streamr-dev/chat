@@ -3,6 +3,7 @@ import { ClockState } from './types'
 
 const initialState: ClockState = {
     tickedAt: undefined,
+    startedAt: undefined,
 }
 
 export const ClockAction = {
@@ -12,6 +13,10 @@ export const ClockAction = {
 const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ClockAction.tick, (state, { payload: tickedAd }) => {
         state.tickedAt = tickedAd
+
+        if (typeof state.startedAt === 'undefined') {
+            state.startedAt = tickedAd
+        }
     })
 })
 
