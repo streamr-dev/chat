@@ -9,7 +9,7 @@ export default function useProviderChangeEffect() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!provider) {
+        if (!provider || typeof provider.addListener !== 'function') {
             return () => {
                 // Noop.
             }
