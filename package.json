@@ -9,7 +9,7 @@
         "start": "vite"
     },
     "dependencies": {
-        "@coinbase/wallet-sdk": "^3.1.0",
+        "@coinbase/wallet-sdk": "^3.2.0",
         "@emotion/react": "^11.9.0",
         "@emotion/styled": "^11.8.1",
         "@ethersproject/bignumber": "^5.6.2",
