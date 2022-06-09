@@ -33,6 +33,24 @@ const customGlobalStyles = css`
                 transform: rotate(360deg);
             }
         }
+
+        @keyframes loadingIndicator {
+            0% {
+                transform: translateX(-100%) translateZ(0);
+            }
+
+            45% {
+                transform: translateX(0%) translateZ(0);
+            }
+
+            55% {
+                transform: translateX(0%) translateZ(0);
+            }
+
+            100% {
+                transform: translateX(100%) translateZ(0);
+            }
+        }
     }
 `
 
