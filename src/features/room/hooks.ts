@@ -11,6 +11,7 @@ import {
     selectSelectedRoomId,
     selectStorageNodeState,
     selectStorageNodeToggling,
+    selectTransientRoomName,
 } from './selectors'
 import { RoomId } from './types'
 
@@ -52,4 +53,8 @@ export function useEditingRoomName(roomId: undefined | RoomId) {
 
 export function usePersistingRoomName(roomId: undefined | RoomId) {
     return useSelector(selectPersistingRoomName(roomId))
+}
+
+export function useTransientRoomName(roomId: undefined | RoomId) {
+    return useSelector(selectTransientRoomName(roomId))
 }

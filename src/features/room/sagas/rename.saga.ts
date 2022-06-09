@@ -11,12 +11,14 @@ import getWalletProvider from '$/sagas/getWalletProvider.saga'
 import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import getWalletClient from '$/sagas/getWalletClient.saga'
 import { selectPersistingRoomName } from '$/features/room/selectors'
-import { info } from '$/utils/toaster'
+import { error, info, success } from '$/utils/toaster'
 import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 
 function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAction.rename>) {
     let dirty = false
+
+    let succeeded = false
 
     try {
         const persisting: boolean = yield select(selectPersistingRoomName(roomId))
@@ -76,12 +78,20 @@ function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAc
             })
         )
 
-        yield put(RoomAction.setEditingName({ roomId, state: false }))
+        succeeded = true
     } catch (e) {
         handleError(e)
     } finally {
         if (dirty) {
             yield put(RoomAction.setPersistingName({ roomId, state: false }))
+        }
+
+        if (succeeded) {
+            yield put(RoomAction.setEditingName({ roomId, state: false }))
+
+            success('Room renamed successfully.')
+        } else {
+            error('Failed to rename the room.')
         }
     }
 }

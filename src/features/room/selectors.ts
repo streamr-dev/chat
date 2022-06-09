@@ -61,8 +61,9 @@ export function selectPersistingRoomName(roomId: undefined | RoomId) {
     )
 }
 
-export function selectTemporaryRoomName(roomId: undefined | RoomId) {
-    return createSelector(selectSelf, ({ temporaryNames }) =>
-        roomId && typeof temporaryNames[roomId] === 'string' ? temporaryNames[roomId] : undefined
+export function selectTransientRoomName(roomId: undefined | RoomId) {
+    return createSelector(
+        selectSelf,
+        ({ temporaryNames }) => (roomId ? temporaryNames[roomId]?.name : undefined) || ''
     )
 }

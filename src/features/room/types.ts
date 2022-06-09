@@ -24,6 +24,7 @@ export interface RoomState {
         [index: RoomId]: {
             editing: boolean
             persisting: boolean
+            name: string
         }
     }
 }

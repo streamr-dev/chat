@@ -63,6 +63,7 @@ function tempName(state: RoomState, roomId: RoomId) {
     if (!state.temporaryNames[roomId]) {
         state.temporaryNames[roomId] = {
             editing: false,
+            name: undefined,
             persisting: false,
         }
     }
@@ -113,6 +114,7 @@ export const RoomAction = {
     setPersistingName: createAction<{ roomId: RoomId; state: boolean }>(
         'room: set persisting name'
     ),
+    setTransientName: createAction<{ roomId: RoomId; name: string }>('room: set transient name'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -203,7 +205,13 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(RoomAction.fetch, SEE_SAGA)
 
     builder.addCase(RoomAction.setEditingName, (state, { payload: { roomId, state: editing } }) => {
-        tempName(state, roomId).editing = editing
+        const tn = tempName(state, roomId)
+
+        if (tn.persisting) {
+            return
+        }
+
+        tn.editing = editing
     })
 
     builder.addCase(
@@ -212,6 +220,10 @@ const reducer = createReducer(initialState, (builder) => {
             tempName(state, roomId).persisting = persisting
         }
     )
+
+    builder.addCase(RoomAction.setTransientName, (state, { payload: { roomId, name } }) => {
+        tempName(state, roomId).name = name
+    })
 })
 
 export function* roomSaga() {

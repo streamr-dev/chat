@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
 import tw, { css } from 'twin.macro'
@@ -9,6 +9,7 @@ import {
     usePersistingRoomName,
     usePrivacyOption,
     useSelectedRoomId,
+    useTransientRoomName,
 } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
@@ -53,24 +54,15 @@ export default function ConversationHeader({
 
     const selectedRoomId = useSelectedRoomId()
 
-    // We need to store this thing for later. Try
-    // 1. Edit name, press Save. Remember the new name.
-    // 2. Navigate to a different room.
-    // 3. Go back. The text "Renaming X to Y…" will say "Renaming X to X…".
-    const [newRoomName, setNewRoomName] = useState<string>(name)
-
     const isRoomNameEditable = useEditingRoomName(selectedRoomId)
 
     const isPersistingRoomName = usePersistingRoomName(selectedRoomId)
 
-    useEffect(() => {
-        if (isRoomNameEditable) {
-            setNewRoomName(name)
-        }
-    }, [name, isRoomNameEditable])
+    const transientRoomName = useTransientRoomName(selectedRoomId)
 
-    function onNameDoubleClick() {
+    function edit() {
         if (canEdit && selectedRoomId) {
+            dispatch(RoomAction.setTransientName({ roomId: selectedRoomId, name }))
             dispatch(RoomAction.setEditingName({ roomId: selectedRoomId, state: true }))
         }
     }
@@ -109,7 +101,7 @@ export default function ConversationHeader({
 
     function onRenameSubmit() {
         if (selectedRoomId) {
-            dispatch(RoomAction.rename({ roomId: selectedRoomId, name: newRoomName }))
+            dispatch(RoomAction.rename({ roomId: selectedRoomId, name: transientRoomName }))
         }
     }
 
@@ -161,13 +153,22 @@ export default function ConversationHeader({
                                 `,
                             ]}
                             autoFocus
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                void setNewRoomName(e.target.value)
-                            }
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                if (!selectedRoomId) {
+                                    return
+                                }
+
+                                dispatch(
+                                    RoomAction.setTransientName({
+                                        roomId: selectedRoomId,
+                                        name: e.target.value,
+                                    })
+                                )
+                            }}
                             onKeyDown={onKeyDown}
                             placeholder="e.g. random-giggly-bear"
                             type="text"
-                            value={newRoomName}
+                            value={transientRoomName}
                             disabled={isPersistingRoomName}
                         />
                         <div
@@ -180,7 +181,7 @@ export default function ConversationHeader({
                         >
                             {isPersistingRoomName ? (
                                 <>
-                                    Renaming "{name}" to "{newRoomName}"…
+                                    Renaming "{name}" to "{transientRoomName}"…
                                 </>
                             ) : (
                                 <>The room name will be publicly visible.</>
@@ -189,7 +190,7 @@ export default function ConversationHeader({
                     </div>
                 ) : (
                     <div
-                        onDoubleClick={onNameDoubleClick}
+                        onDoubleClick={edit}
                         css={[
                             css`
                                 line-height: normal;
@@ -215,6 +216,7 @@ export default function ConversationHeader({
                     ]}
                 >
                     <ActionTextButton
+                        disabled={isPersistingRoomName}
                         secondary
                         onClick={() => {
                             if (!selectedRoomId) {
@@ -231,7 +233,7 @@ export default function ConversationHeader({
                     >
                         <Text>Cancel</Text>
                     </ActionTextButton>
-                    <ActionTextButton type="submit">
+                    <ActionTextButton disabled={isPersistingRoomName} type="submit">
                         <Text>Save</Text>
                     </ActionTextButton>
                 </div>
@@ -257,20 +259,7 @@ export default function ConversationHeader({
                     </div>
                     <div tw="flex min-w-[92px] justify-end">
                         {canEdit && (
-                            <ActionButton
-                                onClick={() => {
-                                    if (!selectedRoomId) {
-                                        return
-                                    }
-
-                                    dispatch(
-                                        RoomAction.setEditingName({
-                                            roomId: selectedRoomId,
-                                            state: true,
-                                        })
-                                    )
-                                }}
-                            >
+                            <ActionButton onClick={edit}>
                                 <svg
                                     tw="block"
                                     width="40"
