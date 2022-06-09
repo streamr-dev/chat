@@ -55,3 +55,7 @@ export type PrivacyOption = {
     desc: string
     icon: typeof PrivateIcon | typeof PublicIcon
 }
+
+export enum Fallback {
+    RoomName = 'Unnamed room',
+}

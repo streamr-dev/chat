@@ -20,6 +20,7 @@ const initialState: RoomState = {
     selectedId: undefined,
     storageNodes: {},
     privacy: {},
+    temporaryNames: {},
 }
 
 function storageNodes(state: RoomState, roomId: RoomId) {
@@ -56,6 +57,18 @@ function privacy(state: RoomState, roomId: RoomId) {
     }
 
     return state.privacy[roomId]
+}
+
+function tempName(state: RoomState, roomId: RoomId) {
+    if (!state.temporaryNames[roomId]) {
+        state.temporaryNames[roomId] = {
+            editing: false,
+            name: '',
+            persisting: false,
+        }
+    }
+
+    return state.temporaryNames[roomId]
 }
 
 export const RoomAction = {
@@ -97,6 +110,11 @@ export const RoomAction = {
     getPrivacy: createAction<RoomId>('room: get privacy'),
     registerInvite: createAction<{ roomId: RoomId; address: Address }>('room: register invite'),
     fetch: createAction<{ roomId: RoomId; address: Address }>('room: fetch'),
+    setEditingName: createAction<{ roomId: RoomId; state: boolean }>('room: set editing name'),
+    setPersistingName: createAction<{ roomId: RoomId; state: boolean }>(
+        'room: set persisting name'
+    ),
+    setTransientName: createAction<{ roomId: RoomId; name: string }>('room: set transient name'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -185,6 +203,27 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(RoomAction.registerInvite, SEE_SAGA)
 
     builder.addCase(RoomAction.fetch, SEE_SAGA)
+
+    builder.addCase(RoomAction.setEditingName, (state, { payload: { roomId, state: editing } }) => {
+        const tn = tempName(state, roomId)
+
+        if (tn.persisting) {
+            return
+        }
+
+        tn.editing = editing
+    })
+
+    builder.addCase(
+        RoomAction.setPersistingName,
+        (state, { payload: { roomId, state: persisting } }) => {
+            tempName(state, roomId).persisting = persisting
+        }
+    )
+
+    builder.addCase(RoomAction.setTransientName, (state, { payload: { roomId, name } }) => {
+        tempName(state, roomId).name = name
+    })
 })
 
 export function* roomSaga() {

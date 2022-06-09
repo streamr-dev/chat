@@ -48,3 +48,22 @@ export function selectPrivacyGetting(roomId: undefined | RoomId) {
         roomId ? Boolean(privacy[roomId]?.getting) : false
     )
 }
+
+export function selectEditingRoomName(roomId: undefined | RoomId) {
+    return createSelector(selectSelf, ({ temporaryNames }) =>
+        roomId ? Boolean(temporaryNames[roomId]?.editing) : false
+    )
+}
+
+export function selectPersistingRoomName(roomId: undefined | RoomId) {
+    return createSelector(selectSelf, ({ temporaryNames }) =>
+        roomId ? Boolean(temporaryNames[roomId]?.persisting) : false
+    )
+}
+
+export function selectTransientRoomName(roomId: undefined | RoomId) {
+    return createSelector(
+        selectSelf,
+        ({ temporaryNames }) => (roomId ? temporaryNames[roomId]?.name : undefined) || ''
+    )
+}

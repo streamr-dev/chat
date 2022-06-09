@@ -20,6 +20,13 @@ export interface RoomState {
             getting: boolean
         }
     }
+    temporaryNames: {
+        [index: RoomId]: {
+            editing: boolean
+            persisting: boolean
+            name: string
+        }
+    }
 }
 
 export interface IRoom extends IRecord {

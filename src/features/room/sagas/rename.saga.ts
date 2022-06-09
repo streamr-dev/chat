@@ -1,5 +1,5 @@
 import { Provider } from '@web3-react/types'
-import { call, put, takeEvery } from 'redux-saga/effects'
+import { call, put, select, takeEvery } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 import { Address, EnhancedStream } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
@@ -10,17 +10,26 @@ import handleError from '$/utils/handleError'
 import getWalletProvider from '$/sagas/getWalletProvider.saga'
 import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import getWalletClient from '$/sagas/getWalletClient.saga'
+import { selectPersistingRoomName } from '$/features/room/selectors'
+import { error, info, success } from '$/utils/toaster'
+import { IRoom } from '$/features/room/types'
+import db from '$/utils/db'
 
 function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAction.rename>) {
+    let dirty = false
+
+    let succeeded = false
+
     try {
-        const provider: Provider = yield call(getWalletProvider)
+        const persisting: boolean = yield select(selectPersistingRoomName(roomId))
 
-        const address: Address = yield call(getWalletAccount)
+        if (persisting) {
+            return
+        }
 
-        yield preflight({
-            provider,
-            address,
-        })
+        yield put(RoomAction.setPersistingName({ roomId, state: true }))
+
+        dirty = true
 
         const client: StreamrClient = yield call(getWalletClient)
 
@@ -29,6 +38,32 @@ function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAc
         if (!stream) {
             throw new RoomNotFoundError(roomId)
         }
+
+        if (stream.description === name) {
+            info('Room name is already up-to-date.')
+
+            try {
+                const room: undefined | IRoom = yield db.rooms.where('id').equals(roomId).first()
+
+                if (room && room.name !== name) {
+                    // Current local name and current remote names don't match up. Let's sync.
+                    yield put(RoomAction.sync(roomId))
+                }
+            } catch (e) {
+                handleError(e)
+            }
+
+            return
+        }
+
+        const provider: Provider = yield call(getWalletProvider)
+
+        const address: Address = yield call(getWalletAccount)
+
+        yield preflight({
+            provider,
+            address,
+        })
 
         stream.description = name
 
@@ -42,8 +77,22 @@ function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAc
                 name,
             })
         )
+
+        succeeded = true
     } catch (e) {
         handleError(e)
+    } finally {
+        if (dirty) {
+            yield put(RoomAction.setPersistingName({ roomId, state: false }))
+        }
+
+        if (succeeded) {
+            yield put(RoomAction.setEditingName({ roomId, state: false }))
+
+            success('Room renamed successfully.')
+        } else {
+            error('Failed to rename the room.')
+        }
     }
 }
 

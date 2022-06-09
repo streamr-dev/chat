@@ -2,13 +2,16 @@ import { useSelector } from 'react-redux'
 import { PrivacySetting } from '$/types'
 import { PrivateRoomOption, PublicRoomOption } from '../../components/modals/AddRoomModal'
 import {
+    selectEditingRoomName,
     selectGettingStorageNodes,
+    selectPersistingRoomName,
     selectPrivacy,
     selectPrivacyChanging,
     selectPrivacyGetting,
     selectSelectedRoomId,
     selectStorageNodeState,
     selectStorageNodeToggling,
+    selectTransientRoomName,
 } from './selectors'
 import { RoomId } from './types'
 
@@ -42,4 +45,16 @@ export function useGettingPrivacy(roomId: undefined | RoomId) {
 
 export function useChangingPrivacy(roomId: undefined | RoomId) {
     return useSelector(selectPrivacyChanging(roomId))
+}
+
+export function useEditingRoomName(roomId: undefined | RoomId) {
+    return useSelector(selectEditingRoomName(roomId))
+}
+
+export function usePersistingRoomName(roomId: undefined | RoomId) {
+    return useSelector(selectPersistingRoomName(roomId))
+}
+
+export function useTransientRoomName(roomId: undefined | RoomId) {
+    return useSelector(selectTransientRoomName(roomId))
 }
