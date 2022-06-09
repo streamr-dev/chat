@@ -20,6 +20,8 @@ import ActionButton from '../ActionButton'
 import Avatar, { AvatarStatus } from '../Avatar'
 import Menu, { MenuButtonItem, MenuLinkItem, MenuSeparatorItem } from '../Menu'
 import Modal, { ModalProps } from './Modal'
+import { useDelegatedAccount } from '$/features/delegation/hooks'
+import Tag from '$/components/Tag'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -76,6 +78,8 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
 
     const account = useWalletAccount()
 
+    const delegatedAccount = useDelegatedAccount()
+
     return (
         <Modal {...props} open={open} title="Edit members">
             <div tw="relative">
@@ -107,8 +111,10 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                             key={address}
                             onMenuToggle={onMenuToggle}
                             address={address}
-                            canBeDeleted={canModifyMembers && !isSameAddress(account, address)}
+                            canBeDeleted={canModifyMembers}
                             onDeleteClick={onDeleteClick}
+                            isCurrentAccount={isSameAddress(address, account)}
+                            isCurrentDelegatedAccount={isSameAddress(address, delegatedAccount)}
                         />
                     ))}
                 </div>
@@ -122,9 +128,19 @@ type ItemProps = HTMLAttributes<HTMLDivElement> & {
     onMenuToggle?: (address: Address, state: boolean) => void
     canBeDeleted?: boolean
     onDeleteClick?: (address: Address) => void
+    isCurrentAccount?: boolean
+    isCurrentDelegatedAccount?: boolean
 }
 
-function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: ItemProps) {
+function Item({
+    address,
+    onMenuToggle,
+    canBeDeleted,
+    onDeleteClick,
+    isCurrentAccount = false,
+    isCurrentDelegatedAccount = false,
+    ...props
+}: ItemProps) {
     const [memberMenuOpen, setMemberMenuOpen] = useState<boolean>(false)
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -155,6 +171,7 @@ function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: 
                     rounded-lg
                     flex
                     items-center
+                    relative
                 `,
             ]}
         >
@@ -176,12 +193,35 @@ function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: 
                 css={[
                     tw`
                         flex-grow
-                        text-[1.125rem]
-                        font-medium
                     `,
                 ]}
             >
-                {trunc(address)}
+                {(isCurrentAccount || isCurrentDelegatedAccount) && (
+                    <Tag
+                        css={[
+                            tw`
+                                absolute
+                                top-0
+                                left-1/2
+                                -translate-y-1/4
+                                -translate-x-1/2
+                            `,
+                        ]}
+                    >
+                        {isCurrentAccount && <>You</>}
+                        {isCurrentDelegatedAccount && <>Your delegated account</>}
+                    </Tag>
+                )}
+                <div
+                    css={[
+                        tw`
+                            text-[1.125rem]
+                            font-medium
+                        `,
+                    ]}
+                >
+                    {trunc(address)}
+                </div>
             </div>
             <div
                 css={[
@@ -226,7 +266,7 @@ function Item({ address, onMenuToggle, canBeDeleted, onDeleteClick, ...props }: 
                         >
                             Copy address
                         </MenuButtonItem>
-                        {canBeDeleted && (
+                        {canBeDeleted && !isCurrentAccount && (
                             <>
                                 <MenuSeparatorItem />
                                 <MenuButtonItem
