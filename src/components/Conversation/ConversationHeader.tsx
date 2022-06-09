@@ -4,7 +4,12 @@ import { StreamPermission } from 'streamr-client'
 import tw, { css } from 'twin.macro'
 import { useCurrentAbility, useLoadCurrentAbilityEffect } from '$/features/permission/hooks'
 import { RoomAction } from '$/features/room'
-import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
+import {
+    useEditingRoomName,
+    usePersistingRoomName,
+    usePrivacyOption,
+    useSelectedRoomId,
+} from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
@@ -34,6 +39,8 @@ export default function ConversationHeader({
     onEditMembersClick,
     onRoomPropertiesClick,
 }: Props) {
+    const dispatch = useDispatch()
+
     const canEdit = useCurrentAbility(StreamPermission.EDIT)
 
     useLoadCurrentAbilityEffect(StreamPermission.EDIT)
@@ -46,38 +53,51 @@ export default function ConversationHeader({
 
     const selectedRoomId = useSelectedRoomId()
 
-    const [isRoomNameEditable, setIsRoomNameEditable] = useState<boolean>(false)
-
+    // We need to store this thing for later. Try
+    // 1. Edit name, press Save. Remember the new name.
+    // 2. Navigate to a different room.
+    // 3. Go back. The text "Renaming X to Y…" will say "Renaming X to X…".
     const [newRoomName, setNewRoomName] = useState<string>(name)
 
-    useEffect(() => {
-        setNewRoomName(name)
-    }, [name])
+    const isRoomNameEditable = useEditingRoomName(selectedRoomId)
+
+    const isPersistingRoomName = usePersistingRoomName(selectedRoomId)
 
     useEffect(() => {
-        setIsRoomNameEditable(false)
-    }, [selectedRoomId])
-
-    function abortNameEdit() {
-        setIsRoomNameEditable(false)
-        setNewRoomName(name)
-    }
+        if (isRoomNameEditable) {
+            setNewRoomName(name)
+        }
+    }, [name, isRoomNameEditable])
 
     function onNameDoubleClick() {
-        if (canEdit) {
-            setIsRoomNameEditable(true)
+        if (canEdit && selectedRoomId) {
+            dispatch(RoomAction.setEditingName({ roomId: selectedRoomId, state: true }))
         }
     }
 
     useEffect(() => {
-        if (!canEdit) {
-            setIsRoomNameEditable(false)
+        if (!selectedRoomId) {
+            return
         }
-    }, [canEdit])
+
+        if (!canEdit) {
+            dispatch(
+                RoomAction.setEditingName({
+                    roomId: selectedRoomId,
+                    state: false,
+                })
+            )
+        }
+    }, [canEdit, selectedRoomId])
 
     function onKeyDown(e: React.KeyboardEvent) {
-        if (e.key === 'Escape') {
-            abortNameEdit()
+        if (e.key === 'Escape' && selectedRoomId) {
+            dispatch(
+                RoomAction.setEditingName({
+                    roomId: selectedRoomId,
+                    state: false,
+                })
+            )
         }
     }
 
@@ -87,14 +107,10 @@ export default function ConversationHeader({
 
     const { copy } = useCopy()
 
-    const dispatch = useDispatch()
-
     function onRenameSubmit() {
         if (selectedRoomId) {
             dispatch(RoomAction.rename({ roomId: selectedRoomId, name: newRoomName }))
         }
-
-        setIsRoomNameEditable(false)
     }
 
     const account = useWalletAccount()
@@ -140,6 +156,8 @@ export default function ConversationHeader({
                                     w-full
                                     text-[1.375rem]
                                     placeholder:text-[#59799C]
+                                    disabled:bg-transparent
+                                    disabled:text-[#59799C]
                                 `,
                             ]}
                             autoFocus
@@ -150,6 +168,7 @@ export default function ConversationHeader({
                             placeholder="e.g. random-giggly-bear"
                             type="text"
                             value={newRoomName}
+                            disabled={isPersistingRoomName}
                         />
                         <div
                             css={[
@@ -159,7 +178,13 @@ export default function ConversationHeader({
                                 `,
                             ]}
                         >
-                            The room name will be publicly visible.
+                            {isPersistingRoomName ? (
+                                <>
+                                    Renaming "{name}" to "{newRoomName}"…
+                                </>
+                            ) : (
+                                <>The room name will be publicly visible.</>
+                            )}
                         </div>
                     </div>
                 ) : (
@@ -189,7 +214,21 @@ export default function ConversationHeader({
                         `,
                     ]}
                 >
-                    <ActionTextButton secondary onClick={abortNameEdit}>
+                    <ActionTextButton
+                        secondary
+                        onClick={() => {
+                            if (!selectedRoomId) {
+                                return
+                            }
+
+                            dispatch(
+                                RoomAction.setEditingName({
+                                    roomId: selectedRoomId,
+                                    state: false,
+                                })
+                            )
+                        }}
+                    >
                         <Text>Cancel</Text>
                     </ActionTextButton>
                     <ActionTextButton type="submit">
@@ -218,7 +257,20 @@ export default function ConversationHeader({
                     </div>
                     <div tw="flex min-w-[92px] justify-end">
                         {canEdit && (
-                            <ActionButton onClick={() => void setIsRoomNameEditable(true)}>
+                            <ActionButton
+                                onClick={() => {
+                                    if (!selectedRoomId) {
+                                        return
+                                    }
+
+                                    dispatch(
+                                        RoomAction.setEditingName({
+                                            roomId: selectedRoomId,
+                                            state: true,
+                                        })
+                                    )
+                                }}
+                            >
                                 <svg
                                     tw="block"
                                     width="40"

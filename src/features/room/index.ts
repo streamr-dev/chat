@@ -64,7 +64,6 @@ function tempName(state: RoomState, roomId: RoomId) {
         state.temporaryNames[roomId] = {
             editing: false,
             persisting: false,
-            value: undefined,
         }
     }
 
@@ -111,7 +110,6 @@ export const RoomAction = {
     registerInvite: createAction<{ roomId: RoomId; address: Address }>('room: register invite'),
     fetch: createAction<{ roomId: RoomId; address: Address }>('room: fetch'),
     setEditingName: createAction<{ roomId: RoomId; state: boolean }>('room: set editing name'),
-    setTemporaryName: createAction<{ roomId: RoomId; name: string }>('room: set temporary name'),
     setPersistingName: createAction<{ roomId: RoomId; state: boolean }>(
         'room: set persisting name'
     ),
@@ -206,10 +204,6 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RoomAction.setEditingName, (state, { payload: { roomId, state: editing } }) => {
         tempName(state, roomId).editing = editing
-    })
-
-    builder.addCase(RoomAction.setTemporaryName, (state, { payload: { roomId, name: value } }) => {
-        tempName(state, roomId).value = value
     })
 
     builder.addCase(
