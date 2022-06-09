@@ -95,21 +95,21 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             <div
                 css={[
                     tw`
-                            p-4
-                            bg-[#F7F9FC]
-                            text-[#59799C]
-                            flex
-                            items-center
-                            rounded-lg
-                            mb-3
-                        `,
+                        p-4
+                        bg-[#F7F9FC]
+                        text-[#59799C]
+                        flex
+                        items-center
+                        rounded-lg
+                        mb-3
+                    `,
                 ]}
             >
                 <div
                     css={[
                         tw`
-                                mr-3
-                            `,
+                            mr-3
+                        `,
                     ]}
                 >
                     <PrivacyIcon />
@@ -167,12 +167,12 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                                 <div
                                     css={[
                                         tw`
-                                        w-6
-                                        h-6
-                                        relative
-                                        mx-auto
-                                        mb-1
-                                    `,
+                                            w-6
+                                            h-6
+                                            relative
+                                            mx-auto
+                                            mb-1
+                                        `,
                                     ]}
                                 >
                                     <Spinner />
@@ -180,12 +180,12 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                                 <p
                                     css={[
                                         tw`
-                                        text-[#59799C]
-                                        uppercase
-                                        text-[0.625rem]
-                                        font-medium
-                                        text-center
-                                    `,
+                                            text-[#59799C]
+                                            uppercase
+                                            text-[0.625rem]
+                                            font-medium
+                                            text-center
+                                        `,
                                     ]}
                                 >
                                     Loading…
@@ -321,9 +321,9 @@ function Item({
                     <div
                         css={[
                             tw`
-                            text-[1.125rem]
-                            font-medium
-                        `,
+                                text-[1.125rem]
+                                font-medium
+                            `,
                         ]}
                     >
                         {trunc(address)}
@@ -332,13 +332,13 @@ function Item({
                 <div
                     css={[
                         tw`
-                        h-full
-                        flex
-                        items-center
-                        flex-shrink-0
-                        justify-center
-                        w-[72px]
-                    `,
+                            h-full
+                            flex
+                            items-center
+                            flex-shrink-0
+                            justify-center
+                            w-[72px]
+                        `,
                     ]}
                 >
                     <ActionButton
