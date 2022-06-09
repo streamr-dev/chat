@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { useSelectedRoomId } from '../../features/room/hooks'
-import { useWalletAccount } from '../../features/wallet/hooks'
-import focus from '../../utils/focus'
+import { useSelectedRoomId } from '$/features/room/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
+import focus from '$/utils/focus'
 import Form from '../Form'
-import db from '../../utils/db'
-import { DraftAction } from '../../features/drafts'
-import { MessageAction } from '../../features/message'
-import { MessageType } from '../../features/message/types'
+import db from '$/utils/db'
+import { DraftAction } from '$/features/drafts'
+import { MessageAction } from '$/features/message'
+import { MessageType } from '$/features/message/types'
 
 type Props = {
     disabled?: boolean

@@ -1,5 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { StorageKey } from '../../../types/common'
+import { StorageKey } from '$/types'
 import { WalletIntegrationId, WalletState } from './types'
 import StreamrClient from 'streamr-client'
 import { all } from 'redux-saga/effects'

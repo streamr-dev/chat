@@ -1,6 +1,6 @@
 import { Provider } from '@web3-react/types'
-import addNetwork from '../utils/addNetwork'
-import switchNetwork from '../utils/switchNetwork'
+import addNetwork from '$/utils/addNetwork'
+import switchNetwork from '$/utils/switchNetwork'
 import isCorrectNetwork from './isCorrectNetwork'
 
 export default async function networkPreflight(provider: Provider) {

@@ -1,4 +1,4 @@
-import { EnhancedStream, UnsafeStream } from '../../types/common'
+import { EnhancedStream, UnsafeStream } from '$/types'
 
 export default function sanitizeStream(stream: UnsafeStream): EnhancedStream {
     if (!stream.extensions) {

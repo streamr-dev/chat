@@ -1,5 +1,5 @@
 import StreamrClient from 'streamr-client'
-import { EnhancedStream } from '../../types/common'
+import { EnhancedStream } from '$/types'
 import sanitizeStream from './sanitizeStream'
 
 export default async function getStream(

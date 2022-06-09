@@ -1,4 +1,4 @@
-import { Address } from '../../../types/common'
+import { Address } from '$/types'
 
 export interface MemberState {
     notices: {

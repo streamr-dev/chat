@@ -1,11 +1,11 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 import StreamrClient, { PermissionAssignment, StreamPermission } from 'streamr-client'
-import { EnhancedStream, PrivacySetting } from '../../../../types/common'
-import RoomNotFoundError from '../../../errors/RoomNotFoundError'
-import getStream from '../../../utils/getStream'
-import handleError from '../../../utils/handleError'
+import { EnhancedStream, PrivacySetting } from '$/types'
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import getStream from '$/utils/getStream'
+import handleError from '$/utils/handleError'
 import { MembersAction } from '..'
-import getWalletClient from '../../../sagas/getWalletClient.saga'
+import getWalletClient from '$/sagas/getWalletClient.saga'
 
 function* onDetectAction({ payload: roomId }: ReturnType<typeof MembersAction.detect>) {
     const members: string[] = []

@@ -1,9 +1,9 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { RoomAction } from '..'
-import { Address } from '../../../../types/common'
-import getWalletAccount from '../../../sagas/getWalletAccount.saga'
-import db from '../../../utils/db'
-import handleError from '../../../utils/handleError'
+import { Address } from '$/types'
+import getWalletAccount from '$/sagas/getWalletAccount.saga'
+import db from '$/utils/db'
+import handleError from '$/utils/handleError'
 import { selectSelectedRoomId } from '../selectors'
 import { IRoom, RoomState } from '../types'
 

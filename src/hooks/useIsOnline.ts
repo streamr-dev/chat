@@ -1,7 +1,7 @@
-import { OptionalAddress } from '../../types/common'
-import { useTickedAt } from '../features/clock/hooks'
-import { useNoticedAt } from '../features/member/hooks'
-import Minute from '../utils/minute'
+import { OptionalAddress } from '$/types'
+import { useTickedAt } from '$/features/clock/hooks'
+import { useNoticedAt } from '$/features/member/hooks'
+import Minute from '$/utils/minute'
 
 const THRESHOLD = Minute
 

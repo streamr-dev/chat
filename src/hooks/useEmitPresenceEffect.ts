@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
-import { useTickedAt } from '../features/clock/hooks'
-import { useDelegatedAccount, useDelegatedClient } from '../features/delegation/hooks'
-import { MessageAction } from '../features/message'
-import { useAbility, useLoadAbilityEffect } from '../features/permission/hooks'
-import { RoomId } from '../features/room/types'
-import { useWalletAccount } from '../features/wallet/hooks'
+import { useTickedAt } from '$/features/clock/hooks'
+import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import { MessageAction } from '$/features/message'
+import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
+import { RoomId } from '$/features/room/types'
+import { useWalletAccount } from '$/features/wallet/hooks'
 
 export default function useEmitPresenceEffect(roomId: undefined | RoomId) {
     const address = useWalletAccount()

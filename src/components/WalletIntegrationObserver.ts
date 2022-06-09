@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
-import { WalletAction } from '../features/wallet'
-import { useWalletIntegrationId } from '../features/wallet/hooks'
-import getConnector from '../utils/getConnector'
+import { WalletAction } from '$/features/wallet'
+import { useWalletIntegrationId } from '$/features/wallet/hooks'
+import getConnector from '$/utils/getConnector'
 
 export default function WalletIntegrationObserver() {
     const integrationId = useWalletIntegrationId()

@@ -1,6 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { SEE_SAGA } from '../../utils/consts'
+import { SEE_SAGA } from '$/utils/consts'
 import retrieve from './sagas/retrieve.saga'
 import { IdenticonSeed, IdenticonsState, IIdenticon } from './types'
 

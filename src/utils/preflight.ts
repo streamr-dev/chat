@@ -1,4 +1,4 @@
-import { PreflightParams } from '../../types/common'
+import { PreflightParams } from '$/types'
 import networkPreflight from './networkPreflight'
 import requirePositiveBalance from './requirePositiveBalance'
 

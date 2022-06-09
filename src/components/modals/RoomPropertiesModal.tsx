@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import tw from 'twin.macro'
-import { PrivacySetting } from '../../../types/common'
-import { RoomAction } from '../../features/room'
+import { PrivacySetting } from '$/types'
+import { RoomAction } from '$/features/room'
 import {
     useChangingPrivacy,
     useGettingPrivacy,
@@ -12,8 +12,8 @@ import {
     useSelectedRoomId,
     useStorageNodeState,
     useStorageNodeToggling,
-} from '../../features/room/hooks'
-import useSelectedRoom from '../../hooks/useSelectedRoom'
+} from '$/features/room/hooks'
+import useSelectedRoom from '$/hooks/useSelectedRoom'
 import Form from '../Form'
 import Hint from '../Hint'
 import Label from '../Label'

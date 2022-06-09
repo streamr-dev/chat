@@ -1,14 +1,14 @@
 import { ButtonHTMLAttributes, ReactNode, useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import { useDelegatedAccount, useDelegatedClient } from '../../features/delegation/hooks'
+import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
 import {
     useCurrentAbility,
     useCurrentDelegationAbility,
     useLoadCurrentAbilityEffect,
     useLoadCurrentDelegationAbilityEffect,
-} from '../../features/permission/hooks'
-import useMessages from '../../hooks/useMessages'
+} from '$/features/permission/hooks'
+import useMessages from '$/hooks/useMessages'
 import AddMemberModal from '../modals/AddMemberModal'
 import EditMembersModal from '../modals/EditMembersModal'
 import ConversationHeader from './ConversationHeader'
@@ -19,13 +19,13 @@ import MessageInputPlaceholder from './MessageInputPlaceholder'
 import Text from '../Text'
 import SecondaryButton from '../SecondaryButton'
 import { useDispatch } from 'react-redux'
-import { useSelectedRoomId } from '../../features/room/hooks'
-import { DelegationAction } from '../../features/delegation'
-import { MemberAction } from '../../features/member'
+import { useSelectedRoomId } from '$/features/room/hooks'
+import { DelegationAction } from '$/features/delegation'
+import { MemberAction } from '$/features/member'
 import RoomPropertiesModal from '../modals/RoomPropertiesModal'
-import useCanGrant from '../../hooks/useCanGrant'
-import useJustInvited from '../../hooks/useJustInvited'
-import { useWalletAccount } from '../../features/wallet/hooks'
+import useCanGrant from '$/hooks/useCanGrant'
+import useJustInvited from '$/hooks/useJustInvited'
+import { useWalletAccount } from '$/features/wallet/hooks'
 
 export default function Conversation() {
     const messages = useMessages()

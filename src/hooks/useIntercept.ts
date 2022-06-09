@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { RoomId } from '../features/room/types'
+import { RoomId } from '$/features/room/types'
 import { MessageStreamOnMessage } from 'streamr-client'
-import handleError from '../utils/handleError'
+import handleError from '$/utils/handleError'
 import { useDispatch } from 'react-redux'
-import { useDelegatedClient } from '../features/delegation/hooks'
-import { IMessage, MessageType, StreamMessage } from '../features/message/types'
-import { MessageAction } from '../features/message'
+import { useDelegatedClient } from '$/features/delegation/hooks'
+import { IMessage, MessageType, StreamMessage } from '$/features/message/types'
+import { MessageAction } from '$/features/message'
 
 export default function useIntercept(roomId: RoomId) {
     const client = useDelegatedClient()

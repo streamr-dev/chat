@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
 import StreamrClient from 'streamr-client'
-import { SEE_SAGA } from '../../utils/consts'
+import { SEE_SAGA } from '$/utils/consts'
 import { DelegationState } from './types'
 
 const initialState: DelegationState = {

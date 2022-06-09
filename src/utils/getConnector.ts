@@ -1,6 +1,6 @@
 import { initializeConnector } from '@web3-react/core'
 import { EMPTY } from '@web3-react/empty'
-import { ConnectorMap, WalletState } from '../features/wallet/types'
+import { ConnectorMap, WalletState } from '$/features/wallet/types'
 import integrations from './integrations'
 
 let fallbackConnector: any

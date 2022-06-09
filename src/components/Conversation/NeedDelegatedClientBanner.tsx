@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { DelegationAction } from '../../features/delegation'
+import { DelegationAction } from '$/features/delegation'
 import SecondaryButton from '../SecondaryButton'
 import Text from '../Text'
 

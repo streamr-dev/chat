@@ -1,4 +1,4 @@
-import InsufficientFundsError from '../errors/InsufficientFundsError'
+import InsufficientFundsError from '$/errors/InsufficientFundsError'
 import { error } from './toaster'
 
 export default function handleError(e: any) {

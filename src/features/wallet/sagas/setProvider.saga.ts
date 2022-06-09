@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { takeLatest, put } from 'redux-saga/effects'
-import handleError from '../../../utils/handleError'
+import handleError from '$/utils/handleError'
 import { WalletAction } from '..'
 
 export function* onSetProviderAction({

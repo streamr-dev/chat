@@ -1,9 +1,9 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import StreamrClient, { PermissionAssignment, StreamPermission } from 'streamr-client'
 import { PermissionAction } from '..'
-import getWalletClientSaga from '../../../sagas/getWalletClient.saga'
-import handleError from '../../../utils/handleError'
-import isSameAddress from '../../../utils/isSameAddress'
+import getWalletClientSaga from '$/sagas/getWalletClient.saga'
+import handleError from '$/utils/handleError'
+import isSameAddress from '$/utils/isSameAddress'
 import { selectBulkFetching } from '../selectors'
 
 function* onFetchAllAction({

@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { PrivacySetting } from '../../../types/common'
+import { PrivacySetting } from '$/types'
 import { PrivateRoomOption, PublicRoomOption } from '../../components/modals/AddRoomModal'
 import {
     selectGettingStorageNodes,

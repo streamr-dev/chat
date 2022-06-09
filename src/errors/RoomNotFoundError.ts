@@ -1,4 +1,4 @@
-import { RoomId } from '../features/room/types'
+import { RoomId } from '$/features/room/types'
 
 export default class RoomNotFoundError extends Error {
     name = 'RoomNotFoundError'

@@ -1,10 +1,10 @@
 import tw from 'twin.macro'
 import { format } from 'date-fns'
 import Text from '../Text'
-import AddMemberIcon from '../../icons/AddMemberIcon'
-import trunc from '../../utils/trunc'
+import AddMemberIcon from '$/icons/AddMemberIcon'
+import trunc from '$/utils/trunc'
 import UtilityButton from '../UtilityButton'
-import useSelectedRoom from '../../hooks/useSelectedRoom'
+import useSelectedRoom from '$/hooks/useSelectedRoom'
 
 type Props = {
     onAddMemberClick?: () => void

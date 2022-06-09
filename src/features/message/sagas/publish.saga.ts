@@ -1,11 +1,11 @@
 import { call, takeEvery } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
-import { Address } from '../../../../types/common'
-import getDelegatedClient from '../../../sagas/getDelegatedClient.saga'
-import handleError from '../../../utils/handleError'
+import { Address } from '$/types'
+import getDelegatedClient from '$/sagas/getDelegatedClient.saga'
+import handleError from '$/utils/handleError'
 import { v4 as uuidv4 } from 'uuid'
 import { MessageAction } from '..'
-import getWalletAccount from '../../../sagas/getWalletAccount.saga'
+import getWalletAccount from '$/sagas/getWalletAccount.saga'
 
 export default function* publish() {
     yield takeEvery(

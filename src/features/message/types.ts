@@ -1,4 +1,4 @@
-import { IRecord } from '../../../types/common'
+import { IRecord } from '$/types'
 
 export interface IMessage extends IRecord {
     content: string

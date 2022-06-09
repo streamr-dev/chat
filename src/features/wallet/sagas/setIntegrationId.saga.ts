@@ -1,6 +1,6 @@
 import { takeLatest } from 'redux-saga/effects'
 import { WalletAction } from '..'
-import { StorageKey } from '../../../../types/common'
+import { StorageKey } from '$/types'
 
 function onSetIntegrationIdAction({
     payload: integrationId,

@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import isBlank from '../../utils/isBlank'
+import isBlank from '$/utils/isBlank'
 import Form from '../Form'
 import Label from '../Label'
 import Modal, { ModalProps } from './Modal'
 import Submit from '../Submit'
 import TextField from '../TextField'
-import { Address } from '../../../types/common'
+import { Address } from '$/types'
 import { useDispatch } from 'react-redux'
-import { useSelectedRoomId } from '../../features/room/hooks'
+import { useSelectedRoomId } from '$/features/room/hooks'
 import { StreamPermission } from 'streamr-client'
-import { MemberAction } from '../../features/member'
+import { MemberAction } from '$/features/member'
 
 type Props = ModalProps & {
     canModifyMembers?: boolean

@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { StreamPermission } from 'streamr-client'
-import { Address, OptionalAddress } from '../../../types/common'
+import { Address, OptionalAddress } from '$/types'
 import { RoomId } from '../room/types'
 import { PermissionState } from './types'
 

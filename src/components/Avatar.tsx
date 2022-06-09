@@ -1,11 +1,11 @@
 import { HTMLAttributes, useEffect, useRef } from 'react'
 import tw from 'twin.macro'
 import { v4 as uuidv4 } from 'uuid'
-import { useIdenticon, useRetrievingIdenticon } from '../features/identicons/hooks'
+import { useIdenticon, useRetrievingIdenticon } from '$/features/identicons/hooks'
 import { useDispatch } from 'react-redux'
-import fallbackIdenticon from '../utils/fallbackIdenticon'
+import fallbackIdenticon from '$/utils/fallbackIdenticon'
 import Spinner from './Spinner'
-import { IdenticonAction } from '../features/identicons'
+import { IdenticonAction } from '$/features/identicons'
 
 export enum AvatarStatus {
     Online = '#00C85D',

@@ -1,8 +1,8 @@
 import { useLayoutEffect, useRef } from 'react'
 import tw from 'twin.macro'
-import { IMessage } from '../../features/message/types'
-import { useWalletAccount } from '../../features/wallet/hooks'
-import isSameAddress from '../../utils/isSameAddress'
+import { IMessage } from '$/features/message/types'
+import { useWalletAccount } from '$/features/wallet/hooks'
+import isSameAddress from '$/utils/isSameAddress'
 import Message from './Message'
 
 type Props = {

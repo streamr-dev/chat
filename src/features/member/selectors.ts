@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { OptionalAddress } from '../../../types/common'
+import { OptionalAddress } from '$/types'
 import { MemberState } from './types'
 
 function selectSelf(state: any): MemberState {

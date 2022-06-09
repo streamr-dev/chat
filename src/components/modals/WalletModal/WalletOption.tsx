@@ -1,7 +1,7 @@
 import tw from 'twin.macro'
-import { WalletIntegrationId } from '../../../features/wallet/types'
-import { useWalletIntegrationId } from '../../../features/wallet/hooks'
-import integrations from '../../../utils/integrations'
+import { WalletIntegrationId } from '$/features/wallet/types'
+import { useWalletIntegrationId } from '$/features/wallet/hooks'
+import integrations from '$/utils/integrations'
 
 type Props = {
     integrationId: WalletIntegrationId

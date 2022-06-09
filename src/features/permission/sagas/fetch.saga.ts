@@ -1,10 +1,10 @@
 import { takeEvery, call, put, select } from 'redux-saga/effects'
 import StreamrClient, { Stream } from 'streamr-client'
-import handleError from '../../../utils/handleError'
+import handleError from '$/utils/handleError'
 import { PermissionAction } from '..'
-import getStream from '../../../utils/getStream'
-import RoomNotFoundError from '../../../errors/RoomNotFoundError'
-import getWalletClient from '../../../sagas/getWalletClient.saga'
+import getStream from '$/utils/getStream'
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import getWalletClient from '$/sagas/getWalletClient.saga'
 import { selectAbilityFetching, selectBulkFetching } from '../selectors'
 
 function* onFetchAction({

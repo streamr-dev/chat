@@ -4,8 +4,8 @@ import { keccak256 } from 'js-sha3'
 import { IdenticonAction } from '..'
 import { selectRetrievingIdenticon } from '../selectors'
 import { IIdenticon } from '../types'
-import db from '../../../utils/db'
-import handleError from '../../../utils/handleError'
+import db from '$/utils/db'
+import handleError from '$/utils/handleError'
 
 const AVATAR_OPTIONS: IdenticonOptions = {
     size: 40,

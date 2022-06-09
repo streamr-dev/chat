@@ -1,12 +1,12 @@
 import { call, takeEvery } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 import { RoomAction } from '..'
-import { EnhancedStream } from '../../../../types/common'
-import RoomNotFoundError from '../../../errors/RoomNotFoundError'
-import getWalletClient from '../../../sagas/getWalletClient.saga'
-import db from '../../../utils/db'
-import getStream from '../../../utils/getStream'
-import handleError from '../../../utils/handleError'
+import { EnhancedStream } from '$/types'
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import getWalletClient from '$/sagas/getWalletClient.saga'
+import db from '$/utils/db'
+import getStream from '$/utils/getStream'
+import handleError from '$/utils/handleError'
 import { IRoom } from '../types'
 
 function* onFetchAction({ payload: { roomId, address } }: ReturnType<typeof RoomAction.fetch>) {

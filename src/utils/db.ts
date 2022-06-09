@@ -1,10 +1,10 @@
 import Dexie, { Table } from 'dexie'
-import { IRecord } from '../../types/common'
-import { IDelegation } from '../features/delegation/types'
-import { IDraft } from '../features/drafts/types'
-import { IdenticonSeed, IIdenticon } from '../features/identicons/types'
-import { IMessage } from '../features/message/types'
-import { IRoom } from '../features/room/types'
+import { IRecord } from '$/types'
+import { IDelegation } from '$/features/delegation/types'
+import { IDraft } from '$/features/drafts/types'
+import { IdenticonSeed, IIdenticon } from '$/features/identicons/types'
+import { IMessage } from '$/features/message/types'
+import { IRoom } from '$/features/room/types'
 
 interface IAccountAlias extends IRecord {
     account: string

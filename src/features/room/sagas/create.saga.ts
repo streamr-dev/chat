@@ -1,4 +1,4 @@
-import db from '../../../utils/db'
+import db from '$/utils/db'
 import { call, put, takeEvery } from 'redux-saga/effects'
 import StreamrClient, {
     Stream,
@@ -6,16 +6,16 @@ import StreamrClient, {
     StreamProperties,
     STREAMR_STORAGE_NODE_GERMANY,
 } from 'streamr-client'
-import handleError from '../../../utils/handleError'
-import preflight from '../../../utils/preflight'
+import handleError from '$/utils/handleError'
+import preflight from '$/utils/preflight'
 import { Provider } from '@web3-react/types'
-import { Address, PrivacySetting } from '../../../../types/common'
-import { error, success } from '../../../utils/toaster'
+import { Address, PrivacySetting } from '$/types'
+import { error, success } from '$/utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
-import getWalletClient from '../../../sagas/getWalletClient.saga'
-import getWalletAccount from '../../../sagas/getWalletAccount.saga'
-import getWalletProvider from '../../../sagas/getWalletProvider.saga'
+import getWalletClient from '$/sagas/getWalletClient.saga'
+import getWalletAccount from '$/sagas/getWalletAccount.saga'
+import getWalletProvider from '$/sagas/getWalletProvider.saga'
 
 function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof RoomAction.create>) {
     try {

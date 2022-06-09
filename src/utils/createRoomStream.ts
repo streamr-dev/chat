@@ -1,5 +1,5 @@
 import StreamrClient, { Stream, StreamProperties } from 'streamr-client'
-import { IRoom } from '../features/room/types'
+import { IRoom } from '$/features/room/types'
 
 export default async function createRoomStream(
     client: StreamrClient,

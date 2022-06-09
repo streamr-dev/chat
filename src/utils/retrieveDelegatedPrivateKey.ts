@@ -1,5 +1,5 @@
 import { Provider } from '@web3-react/types'
-import { Address } from '../../types/common'
+import { Address } from '$/types'
 import getDelegation from './getDelegation'
 
 interface Params {

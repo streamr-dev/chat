@@ -1,4 +1,4 @@
-import { Address } from '../../../types/common'
+import { Address } from '$/types'
 import { RoomId } from '../room/types'
 
 export interface PermissionState {

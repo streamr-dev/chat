@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { WalletAction } from '../features/wallet'
-import { useWalletProvider } from '../features/wallet/hooks'
+import { WalletAction } from '$/features/wallet'
+import { useWalletProvider } from '$/features/wallet/hooks'
 
 export default function useProviderChangeEffect() {
     const provider = useWalletProvider()

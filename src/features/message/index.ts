@@ -1,6 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { SEE_SAGA } from '../../utils/consts'
+import { SEE_SAGA } from '$/utils/consts'
 import { RoomId } from '../room/types'
 import emitPresence from './sagas/emitPresence.saga'
 import publish from './sagas/publish.saga'

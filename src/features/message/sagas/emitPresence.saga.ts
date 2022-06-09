@@ -1,5 +1,5 @@
 import { put, throttle } from 'redux-saga/effects'
-import Minute from '../../../utils/minute'
+import Minute from '$/utils/minute'
 import { MessageAction } from '..'
 import { Instruction, MessageType } from '../types'
 

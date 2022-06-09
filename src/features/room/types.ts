@@ -1,4 +1,4 @@
-import { IRecord, PrivacySetting } from '../../../types/common'
+import { IRecord, PrivacySetting } from '$/types'
 
 export interface RoomState {
     selectedId: undefined | RoomId

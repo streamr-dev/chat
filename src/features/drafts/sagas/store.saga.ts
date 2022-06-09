@@ -1,7 +1,7 @@
 import { throttle } from 'redux-saga/effects'
 import { DraftAction } from '..'
-import db from '../../../utils/db'
-import handleError from '../../../utils/handleError'
+import db from '$/utils/db'
+import handleError from '$/utils/handleError'
 
 function* onStoreAction({ payload: draft }: ReturnType<typeof DraftAction.store>) {
     try {

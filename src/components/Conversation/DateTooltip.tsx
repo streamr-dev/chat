@@ -1,5 +1,5 @@
 import tw, { css } from 'twin.macro'
-import formatDate from '../../utils/formatDate'
+import formatDate from '$/utils/formatDate'
 import Text from '../Text'
 
 type Props = {

@@ -1,5 +1,5 @@
 import StreamrClient from 'streamr-client'
-import { IRecord } from '../../../types/common'
+import { IRecord } from '$/types'
 
 export interface DelegationState {
     privateKey: undefined | string

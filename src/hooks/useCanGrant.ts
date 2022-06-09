@@ -1,7 +1,7 @@
 import { StreamPermission } from 'streamr-client'
-import { useCurrentAbility, useLoadCurrentAbilityEffect } from '../features/permission/hooks'
-import { useSelectedRoomId } from '../features/room/hooks'
-import { useWalletAccount } from '../features/wallet/hooks'
+import { useCurrentAbility, useLoadCurrentAbilityEffect } from '$/features/permission/hooks'
+import { useSelectedRoomId } from '$/features/room/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import useJustInvited from './useJustInvited'
 
 export default function useCanGrant() {

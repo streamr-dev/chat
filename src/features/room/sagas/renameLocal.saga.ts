@@ -1,7 +1,7 @@
 import { takeEvery } from 'redux-saga/effects'
 import { RoomAction } from '..'
-import handleError from '../../../utils/handleError'
-import db from '../../../utils/db'
+import handleError from '$/utils/handleError'
+import db from '$/utils/db'
 
 function* onRenameLocalAction({ payload: { roomId, name } }: ReturnType<typeof RoomAction.rename>) {
     try {

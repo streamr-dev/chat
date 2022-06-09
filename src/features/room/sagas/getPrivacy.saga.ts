@@ -1,11 +1,11 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
-import { PrivacySetting } from '../../../../types/common'
-import RoomNotFoundError from '../../../errors/RoomNotFoundError'
-import getWalletClient from '../../../sagas/getWalletClient.saga'
-import getStream from '../../../utils/getStream'
-import handleError from '../../../utils/handleError'
+import { PrivacySetting } from '$/types'
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import getWalletClient from '$/sagas/getWalletClient.saga'
+import getStream from '$/utils/getStream'
+import handleError from '$/utils/handleError'
 import { selectPrivacyGetting } from '../selectors'
 
 function* onGetPrivacyAction({ payload: roomId }: ReturnType<typeof RoomAction.getPrivacy>) {

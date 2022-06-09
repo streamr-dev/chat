@@ -1,5 +1,5 @@
 import { Provider } from '@web3-react/types'
-import { Matic } from '../utils/chains'
+import { Matic } from '$/utils/chains'
 
 export default async function switchNetwork(provider: Provider) {
     const [chainId] = Matic

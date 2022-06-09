@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useSelectedRoomId } from '../features/room/hooks'
-import { useWalletAccount } from '../features/wallet/hooks'
-import db from '../utils/db'
+import { useSelectedRoomId } from '$/features/room/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
+import db from '$/utils/db'
 
 export default function useSelectedRoom() {
     const id = useSelectedRoomId()

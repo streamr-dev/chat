@@ -1,4 +1,4 @@
-import { Chain } from '../features/wallet/types'
+import { Chain } from '$/features/wallet/types'
 
 export const Matic: Chain = [
     137,

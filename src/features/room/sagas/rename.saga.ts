@@ -1,15 +1,15 @@
 import { Provider } from '@web3-react/types'
 import { call, put, takeEvery } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
-import { Address, EnhancedStream } from '../../../../types/common'
-import RoomNotFoundError from '../../../errors/RoomNotFoundError'
-import getStream from '../../../utils/getStream'
-import preflight from '../../../utils/preflight'
+import { Address, EnhancedStream } from '$/types'
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import getStream from '$/utils/getStream'
+import preflight from '$/utils/preflight'
 import { RoomAction } from '..'
-import handleError from '../../../utils/handleError'
-import getWalletProvider from '../../../sagas/getWalletProvider.saga'
-import getWalletAccount from '../../../sagas/getWalletAccount.saga'
-import getWalletClient from '../../../sagas/getWalletClient.saga'
+import handleError from '$/utils/handleError'
+import getWalletProvider from '$/sagas/getWalletProvider.saga'
+import getWalletAccount from '$/sagas/getWalletAccount.saga'
+import getWalletClient from '$/sagas/getWalletClient.saga'
 
 function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAction.rename>) {
     try {

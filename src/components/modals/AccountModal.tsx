@@ -1,13 +1,13 @@
 import tw from 'twin.macro'
-import integrations from '../../utils/integrations'
-import trunc from '../../utils/trunc'
+import integrations from '$/utils/integrations'
+import trunc from '$/utils/trunc'
 import Modal, { ModalProps } from './Modal'
 import Text from '../Text'
-import useCopy from '../../hooks/useCopy'
+import useCopy from '$/hooks/useCopy'
 import TextField from '../TextField'
 import SecondaryButton from '../SecondaryButton'
-import getExplorerURL from '../../utils/getExplorerURL'
-import { useWalletAccount, useWalletIntegrationId } from '../../features/wallet/hooks'
+import getExplorerURL from '$/utils/getExplorerURL'
+import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 
 type Props = ModalProps & {
     onChangeClick?: () => void

@@ -1,12 +1,12 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 import StreamrClient, { PermissionAssignment, Stream, StreamPermission } from 'streamr-client'
-import { Address } from '../../../../types/common'
-import getStream from '../../../utils/getStream'
-import handleError from '../../../utils/handleError'
+import { Address } from '$/types'
+import getStream from '$/utils/getStream'
+import handleError from '$/utils/handleError'
 import { RoomAction } from '..'
-import getWalletClient from '../../../sagas/getWalletClient.saga'
-import getWalletAccount from '../../../sagas/getWalletAccount.saga'
-import isSameAddress from '../../../utils/isSameAddress'
+import getWalletClient from '$/sagas/getWalletClient.saga'
+import getWalletAccount from '$/sagas/getWalletAccount.saga'
+import isSameAddress from '$/utils/isSameAddress'
 
 async function getUserPermissions(user: Address, stream: Stream) {
     const assignments: PermissionAssignment[] = await stream.getPermissions()

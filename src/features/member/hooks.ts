@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { OptionalAddress } from '../../../types/common'
+import { OptionalAddress } from '$/types'
 import { selectNoticedAt } from './selectors'
 
 export function useNoticedAt(address: OptionalAddress): number {
