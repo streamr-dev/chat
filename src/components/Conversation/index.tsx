@@ -3,9 +3,7 @@ import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
 import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
 import {
-    useCurrentAbility,
     useCurrentDelegationAbility,
-    useLoadCurrentAbilityEffect,
     useLoadCurrentDelegationAbilityEffect,
 } from '$/features/permission/hooks'
 import useMessages from '$/hooks/useMessages'

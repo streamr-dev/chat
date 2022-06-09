@@ -1,6 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import { Address, PrivacySetting } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
 import changePrivacy from './sagas/changePrivacy.saga'
