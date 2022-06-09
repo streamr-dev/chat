@@ -33,6 +33,7 @@ export default defineConfig({
             util: 'rollup-plugin-node-polyfills/polyfills/util',
             buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
             process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
+            $: `${__dirname}/src`,
         },
     },
     build: {
