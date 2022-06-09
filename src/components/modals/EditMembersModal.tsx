@@ -95,7 +95,8 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             <div
                 css={[
                     tw`
-                        p-4
+                        py-6
+                        pr-6
                         bg-[#F7F9FC]
                         text-[#59799C]
                         flex
@@ -108,11 +109,11 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                 <div
                     css={[
                         tw`
-                            mr-3
+                            w-[72px]
                         `,
                     ]}
                 >
-                    <PrivacyIcon />
+                    <PrivacyIcon tw="mx-auto" />
                 </div>
                 <div>
                     <p tw="text-[0.75rem]">
