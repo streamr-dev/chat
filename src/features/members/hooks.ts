@@ -1,7 +1,11 @@
 import { useSelector } from 'react-redux'
 import { RoomId } from '../room/types'
-import { selectMembers } from './selectors'
+import { selectFetching, selectMembers } from './selectors'
 
-export function useMembers(roomId: undefined | RoomId): string[] {
+export function useMembers(roomId: undefined | RoomId) {
     return useSelector(selectMembers(roomId))
+}
+
+export function useMembersFetching(roomId: undefined | RoomId) {
+    return useSelector(selectFetching(roomId))
 }

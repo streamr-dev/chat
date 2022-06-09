@@ -4,7 +4,7 @@ import tw from 'twin.macro'
 import { Address } from '$/types'
 import { MemberAction } from '$/features/member'
 import { MembersAction } from '$/features/members'
-import { useMembers } from '$/features/members/hooks'
+import { useMembers, useMembersFetching } from '$/features/members/hooks'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
@@ -22,6 +22,8 @@ import Menu, { MenuButtonItem, MenuLinkItem, MenuSeparatorItem } from '../Menu'
 import Modal, { ModalProps } from './Modal'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import Tag from '$/components/Tag'
+import { StreamPermission } from 'streamr-client'
+import Spinner from '$/components/Spinner'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -68,6 +70,8 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
 
     const members = useMembers(selectedRoomId)
 
+    const isFetchingMembers = useMembersFetching(selectedRoomId)
+
     useEffect(() => {
         if (!open || !selectedRoomId) {
             return
@@ -102,21 +106,76 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                         tw`
                             h-[320px]
                             overflow-auto
+                            py-1
+                            box-content
                             [> * + *]:mt-4
                         `,
                     ]}
                 >
-                    {members.map((address) => (
-                        <Item
-                            key={address}
-                            onMenuToggle={onMenuToggle}
-                            address={address}
-                            canBeDeleted={canModifyMembers}
-                            onDeleteClick={onDeleteClick}
-                            isCurrentAccount={isSameAddress(address, account)}
-                            isCurrentDelegatedAccount={isSameAddress(address, delegatedAccount)}
-                        />
-                    ))}
+                    {isFetchingMembers ? (
+                        <div
+                            css={[
+                                tw`
+                                    flex
+                                    flex-col
+                                    h-full
+                                    justify-center
+                                `,
+                            ]}
+                        >
+                            <div
+                                css={[
+                                    tw`
+                                        -translate-y-1/4
+                                    `,
+                                ]}
+                            >
+                                <div
+                                    css={[
+                                        tw`
+                                        w-10
+                                        h-10
+                                        relative
+                                        mx-auto
+                                    `,
+                                    ]}
+                                >
+                                    <Spinner />
+                                </div>
+                                <p
+                                    css={[
+                                        tw`
+                                        text-[#59799C]
+                                        uppercase
+                                        text-[0.625rem]
+                                        font-medium
+                                        text-center
+                                    `,
+                                    ]}
+                                >
+                                    Loading…
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            {members.map(({ address, permissions }) => (
+                                <Item
+                                    key={address}
+                                    onMenuToggle={onMenuToggle}
+                                    address={address}
+                                    canBeDeleted={canModifyMembers}
+                                    onDeleteClick={onDeleteClick}
+                                    isCurrentAccount={isSameAddress(address, account)}
+                                    isCurrentDelegatedAccount={isSameAddress(
+                                        address,
+                                        delegatedAccount
+                                    )}
+                                    permissions={permissions}
+                                />
+                            ))}
+                        </>
+                    )}
                 </div>
             </div>
         </Modal>
@@ -130,6 +189,7 @@ type ItemProps = HTMLAttributes<HTMLDivElement> & {
     onDeleteClick?: (address: Address) => void
     isCurrentAccount?: boolean
     isCurrentDelegatedAccount?: boolean
+    permissions: StreamPermission[]
 }
 
 function Item({
@@ -139,6 +199,7 @@ function Item({
     onDeleteClick,
     isCurrentAccount = false,
     isCurrentDelegatedAccount = false,
+    permissions,
     ...props
 }: ItemProps) {
     const [memberMenuOpen, setMemberMenuOpen] = useState<boolean>(false)
@@ -161,16 +222,15 @@ function Item({
 
     const status = useIsOnline(address) ? AvatarStatus.Online : AvatarStatus.Offline
 
+    const justInvited = permissions.length === 1 && permissions[0] === StreamPermission.GRANT
+
     return (
         <div
-            {...props}
             css={[
                 tw`
-                    bg-[#F1F4F7]
                     h-[96px]
+                    bg-[#F1F4F7]
                     rounded-lg
-                    flex
-                    items-center
                     relative
                 `,
             ]}
@@ -178,54 +238,65 @@ function Item({
             <div
                 css={[
                     tw`
+                        absolute
+                        top-0
+                        left-1/2
+                        -translate-y-1/4
+                        -translate-x-1/2
+                        flex
+                        [* + *]:ml-1
+                    `,
+                ]}
+            >
+                {justInvited && <Tag>Invite pending</Tag>}
+                {isCurrentAccount && <Tag>You</Tag>}
+                {isCurrentDelegatedAccount && <Tag>Your delegated account</Tag>}
+            </div>
+            <div
+                {...props}
+                css={[
+                    tw`
                         h-full
                         flex
                         items-center
-                        flex-shrink-0
-                        justify-center
-                        w-[72px]
                     `,
                 ]}
             >
-                <Avatar account={address} backgroundColor="white" status={status} />
-            </div>
-            <div
-                css={[
-                    tw`
-                        flex-grow
-                    `,
-                ]}
-            >
-                {(isCurrentAccount || isCurrentDelegatedAccount) && (
-                    <Tag
-                        css={[
-                            tw`
-                                absolute
-                                top-0
-                                left-1/2
-                                -translate-y-1/4
-                                -translate-x-1/2
-                            `,
-                        ]}
-                    >
-                        {isCurrentAccount && <>You</>}
-                        {isCurrentDelegatedAccount && <>Your delegated account</>}
-                    </Tag>
-                )}
                 <div
                     css={[
                         tw`
-                            text-[1.125rem]
-                            font-medium
+                            h-full
+                            flex
+                            items-center
+                            flex-shrink-0
+                            justify-center
+                            w-[72px]
                         `,
                     ]}
                 >
-                    {trunc(address)}
+                    <Avatar account={address} backgroundColor="white" status={status} />
                 </div>
-            </div>
-            <div
-                css={[
-                    tw`
+                <div
+                    css={[
+                        tw`
+                            flex-grow
+                        `,
+                    ]}
+                >
+                    <div
+                        css={[
+                            tw`
+                            text-[1.125rem]
+                            font-medium
+                        `,
+                        ]}
+                    >
+                        {trunc(address)}
+                    </div>
+                </div>
+                <div
+                    css={[
+                        tw`
                         h-full
                         flex
                         items-center
@@ -233,67 +304,68 @@ function Item({
                         justify-center
                         w-[72px]
                     `,
-                ]}
-            >
-                <ActionButton
-                    active={memberMenuOpen}
-                    light
-                    onClick={() => void setMemberMenuOpen((current) => !current)}
-                    ref={setMenuAnchorEl}
+                    ]}
                 >
-                    <MoreIcon />
-                </ActionButton>
-                {memberMenuOpen && (
-                    <Menu
-                        anchorEl={menuAnchorEl}
-                        onMouseDownOutside={() => void setMemberMenuOpen(false)}
+                    <ActionButton
+                        active={memberMenuOpen}
+                        light
+                        onClick={() => void setMemberMenuOpen((current) => !current)}
+                        ref={setMenuAnchorEl}
                     >
-                        <MenuLinkItem
-                            href={getExplorerURL(address)}
-                            icon={<ExternalLinkIcon />}
-                            onClick={() => void setMemberMenuOpen(false)}
-                            rel="noopener noreferrer"
-                            target="_blank"
+                        <MoreIcon />
+                    </ActionButton>
+                    {memberMenuOpen && (
+                        <Menu
+                            anchorEl={menuAnchorEl}
+                            onMouseDownOutside={() => void setMemberMenuOpen(false)}
                         >
-                            View on explorer
-                        </MenuLinkItem>
-                        <MenuButtonItem
-                            icon={<CopyIcon />}
-                            onClick={() => {
-                                copy(address)
-                                setMemberMenuOpen(false)
-                            }}
-                        >
-                            Copy address
-                        </MenuButtonItem>
-                        {canBeDeleted && !isCurrentAccount && (
-                            <>
-                                <MenuSeparatorItem />
-                                <MenuButtonItem
-                                    icon={
-                                        <RemoveUserIcon
-                                            css={[
-                                                tw`
+                            <MenuLinkItem
+                                href={getExplorerURL(address)}
+                                icon={<ExternalLinkIcon />}
+                                onClick={() => void setMemberMenuOpen(false)}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                View on explorer
+                            </MenuLinkItem>
+                            <MenuButtonItem
+                                icon={<CopyIcon />}
+                                onClick={() => {
+                                    copy(address)
+                                    setMemberMenuOpen(false)
+                                }}
+                            >
+                                Copy address
+                            </MenuButtonItem>
+                            {canBeDeleted && !isCurrentAccount && (
+                                <>
+                                    <MenuSeparatorItem />
+                                    <MenuButtonItem
+                                        icon={
+                                            <RemoveUserIcon
+                                                css={[
+                                                    tw`
                                                     w-4
                                                     h-4
                                                 `,
-                                            ]}
-                                        />
-                                    }
-                                    onClick={() => {
-                                        if (typeof onDeleteClick === 'function') {
-                                            onDeleteClick(address)
+                                                ]}
+                                            />
                                         }
+                                        onClick={() => {
+                                            if (typeof onDeleteClick === 'function') {
+                                                onDeleteClick(address)
+                                            }
 
-                                        setMemberMenuOpen(false)
-                                    }}
-                                >
-                                    Delete member
-                                </MenuButtonItem>
-                            </>
-                        )}
-                    </Menu>
-                )}
+                                            setMemberMenuOpen(false)
+                                        }}
+                                    >
+                                        Delete member
+                                    </MenuButtonItem>
+                                </>
+                            )}
+                        </Menu>
+                    )}
+                </div>
             </div>
         </div>
     )

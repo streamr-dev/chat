@@ -9,7 +9,7 @@ export default function Tag({ children, ...props }: HTMLAttributes<HTMLDivElemen
             css={[
                 tw`
                     text-[#59799C]
-                    bg-[#E0E7F2]
+                    bg-[#F7F9FC]
                     text-[0.5rem]
                     font-medium
                     tracking-wider
@@ -19,6 +19,7 @@ export default function Tag({ children, ...props }: HTMLAttributes<HTMLDivElemen
                     w-max
                     rounded-sm
                     shadow-sm
+                    select-none
                 `,
             ]}
         >
