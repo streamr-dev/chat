@@ -63,7 +63,7 @@ function tempName(state: RoomState, roomId: RoomId) {
     if (!state.temporaryNames[roomId]) {
         state.temporaryNames[roomId] = {
             editing: false,
-            name: undefined,
+            name: '',
             persisting: false,
         }
     }
