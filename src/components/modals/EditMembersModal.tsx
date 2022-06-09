@@ -5,7 +5,7 @@ import { Address } from '$/types'
 import { MemberAction } from '$/features/member'
 import { MembersAction } from '$/features/members'
 import { useMembers, useMembersFetching } from '$/features/members/hooks'
-import { useSelectedRoomId } from '$/features/room/hooks'
+import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useIsOnline from '$/hooks/useIsOnline'
@@ -84,8 +84,44 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
 
     const delegatedAccount = useDelegatedAccount()
 
+    const {
+        icon: PrivacyIcon,
+        desc: privacyDesc,
+        label: privacyLabel,
+    } = usePrivacyOption(selectedRoomId)
+
     return (
         <Modal {...props} open={open} title="Edit members">
+            <div
+                css={[
+                    tw`
+                            p-4
+                            bg-[#F7F9FC]
+                            text-[#59799C]
+                            flex
+                            items-center
+                            rounded-lg
+                            mb-3
+                        `,
+                ]}
+            >
+                <div
+                    css={[
+                        tw`
+                                mr-3
+                            `,
+                    ]}
+                >
+                    <PrivacyIcon />
+                </div>
+                <div>
+                    <p tw="text-[0.75rem]">
+                        <strong>{privacyLabel} room</strong>
+                        <br />
+                        {privacyDesc}
+                    </p>
+                </div>
+            </div>
             <div tw="relative">
                 {anyMenuOpen && (
                     // If any item has its menu open we block list's scroll by covering it
@@ -110,6 +146,10 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                             box-content
                             [> * + *]:mt-4
                         `,
+                        isFetchingMembers &&
+                            tw`
+                                bg-[#F7F9FC]
+                            `,
                     ]}
                 >
                     {isFetchingMembers ? (
@@ -123,20 +163,15 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                                 `,
                             ]}
                         >
-                            <div
-                                css={[
-                                    tw`
-                                        -translate-y-1/4
-                                    `,
-                                ]}
-                            >
+                            <div>
                                 <div
                                     css={[
                                         tw`
-                                        w-10
-                                        h-10
+                                        w-6
+                                        h-6
                                         relative
                                         mx-auto
+                                        mb-1
                                     `,
                                     ]}
                                 >
