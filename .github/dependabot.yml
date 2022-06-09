@@ -23,9 +23,10 @@ updates:
       - DaisyDomergue
   - package-ecosystem: npm
     directory: /
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     schedule:
-      interval: daily
+      interval: weekly
+      day: wednesday
       time: "08:00"
       timezone: Europe/Helsinki
     commit-message:
