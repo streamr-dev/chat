@@ -25,7 +25,7 @@ export default function CreateRoomButton(props: Props) {
             ]}
             type="button"
         >
-            <Text>Connect wallet</Text>
+            <Text>Connect a wallet</Text>
         </Button>
     )
 }
