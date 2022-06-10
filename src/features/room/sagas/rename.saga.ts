@@ -20,6 +20,8 @@ function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAc
 
     let succeeded = false
 
+    let skipped = false
+
     try {
         const persisting: boolean = yield select(selectPersistingRoomName(roomId))
 
@@ -52,6 +54,8 @@ function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAc
             } catch (e) {
                 handleError(e)
             }
+
+            skipped = true
 
             return
         }
@@ -91,7 +95,9 @@ function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAc
 
             success('Room renamed successfully.')
         } else {
-            error('Failed to rename the room.')
+            if (!skipped) {
+                error('Failed to rename the room.')
+            }
         }
     }
 }
