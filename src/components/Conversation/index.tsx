@@ -1,7 +1,11 @@
 import { ButtonHTMLAttributes, ReactNode, useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import {
+    useDelegatedAccount,
+    useDelegatedClient,
+    useIsDelegating,
+} from '$/features/delegation/hooks'
 import {
     useCurrentDelegationAbility,
     useLoadCurrentDelegationAbilityEffect,
@@ -24,6 +28,7 @@ import RoomPropertiesModal from '../modals/RoomPropertiesModal'
 import useCanGrant from '$/hooks/useCanGrant'
 import useJustInvited from '$/hooks/useJustInvited'
 import { useWalletAccount } from '$/features/wallet/hooks'
+import Spinner from '$/components/Spinner'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -133,6 +138,8 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     const justInvited = useJustInvited(selectedRoomId, address)
 
+    const isDelegating = useIsDelegating()
+
     if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.
         return <MessageInput />
@@ -142,8 +149,16 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
         return (
             <MessageInputPlaceholder
                 cta={
-                    <Cta onClick={() => void dispatch(DelegationAction.requestPrivateKey())}>
-                        Delegate now
+                    <Cta
+                        busy={isDelegating}
+                        disabled={isDelegating}
+                        onClick={() => {
+                            if (!isDelegating) {
+                                dispatch(DelegationAction.requestPrivateKey())
+                            }
+                        }}
+                    >
+                        {isDelegating ? <>Delegating…</> : <>Delegate now</>}
                     </Cta>
                 }
             >
@@ -233,10 +248,10 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 }
 
 type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-    children?: ReactNode
+    busy?: boolean
 }
 
-function Cta({ children, ...props }: CtaProps) {
+function Cta({ children, busy = false, ...props }: CtaProps) {
     return (
         <SecondaryButton
             {...props}
@@ -248,7 +263,32 @@ function Cta({ children, ...props }: CtaProps) {
                 `,
             ]}
         >
-            <Text>{children}</Text>
+            <div
+                css={[
+                    tw`
+                        flex
+                        items-center
+                    `,
+                ]}
+            >
+                <div>
+                    <Text>{children}</Text>
+                </div>
+                {busy && (
+                    <div
+                        css={[
+                            tw`
+                            ml-2
+                            relative
+                            w-4
+                            h-4
+                        `,
+                        ]}
+                    >
+                        <Spinner r={5} strokeWidth={1} />
+                    </div>
+                )}
+            </div>
         </SecondaryButton>
     )
 }

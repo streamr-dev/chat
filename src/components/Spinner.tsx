@@ -9,7 +9,7 @@ interface Props {
 export default function Spinner({ r = 6, strokeWidth = 2, strokeColor = '#59799C' }: Props) {
     const d = 2 * Math.PI * r
 
-    const size = r * 2 + strokeWidth
+    const size = (r + strokeWidth) * 2
 
     return (
         <div

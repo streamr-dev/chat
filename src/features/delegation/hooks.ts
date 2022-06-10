@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { selectDelegatedAccount, selectDelegatedClient } from './selectors'
+import { selectDelegatedAccount, selectDelegatedClient, selectIsDelegating } from './selectors'
 
 export function useDelegatedClient() {
     return useSelector(selectDelegatedClient)
@@ -7,4 +7,8 @@ export function useDelegatedClient() {
 
 export function useDelegatedAccount() {
     return useSelector(selectDelegatedAccount)
+}
+
+export function useIsDelegating() {
+    return useSelector(selectIsDelegating)
 }

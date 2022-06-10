@@ -6,6 +6,7 @@ import { DelegationState } from './types'
 const initialState: DelegationState = {
     privateKey: undefined,
     client: undefined,
+    delegating: false,
 }
 
 import { createAction } from '@reduxjs/toolkit'
@@ -15,6 +16,7 @@ import requestPrivateKey from './sagas/requestPrivateKey.saga'
 export const DelegationAction = {
     setPrivateKey: createAction<string | undefined>('delegation: set delegated private key'),
     requestPrivateKey: createAction('delegation: request private key'),
+    setDelegating: createAction<boolean>('delegation: set delegating'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -28,9 +30,15 @@ const reducer = createReducer(initialState, (builder) => {
                   },
               })
             : undefined
+
+        state.delegating = false
     })
 
     builder.addCase(DelegationAction.requestPrivateKey, SEE_SAGA)
+
+    builder.addCase(DelegationAction.setDelegating, (state, { payload: delegating }) => {
+        state.delegating = delegating
+    })
 })
 
 export function* delegationSaga() {

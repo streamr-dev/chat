@@ -16,3 +16,5 @@ export const selectDelegatedAccount = createSelector(selectSelf, ({ privateKey }
 
     return new Wallet(privateKey).address
 })
+
+export const selectIsDelegating = createSelector(selectSelf, ({ delegating }) => delegating)
