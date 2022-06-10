@@ -24,6 +24,7 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
+import { useIsMemberBeingRemoved } from '$/features/member/hooks'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -54,14 +55,9 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             }
 
             dispatch(
-                MemberAction.setPermissions({
+                MemberAction.remove({
                     roomId: selectedRoomId,
-                    assignments: [
-                        {
-                            user: address,
-                            permissions: [],
-                        },
-                    ],
+                    address,
                 })
             )
         },
@@ -260,6 +256,10 @@ function Item({
 
     const justInvited = permissions.length === 1 && permissions[0] === StreamPermission.GRANT
 
+    const selectedRoomId = useSelectedRoomId()
+
+    const isBeingRemoved = useIsMemberBeingRemoved(selectedRoomId, address)
+
     return (
         <div
             css={[
@@ -343,12 +343,44 @@ function Item({
                     ]}
                 >
                     <ActionButton
-                        active={memberMenuOpen}
+                        active={memberMenuOpen || isBeingRemoved}
                         light
-                        onClick={() => void setMemberMenuOpen((current) => !current)}
+                        onClick={() => {
+                            if (!isBeingRemoved) {
+                                setMemberMenuOpen((current) => !current)
+                            }
+                        }}
                         ref={setMenuAnchorEl}
                     >
-                        <MoreIcon />
+                        {isBeingRemoved ? (
+                            <>
+                                <Spinner r={20} strokeWidth={1} />
+                                <div
+                                    css={[
+                                        tw`
+                                            flex
+                                            items-center
+                                            justify-center
+                                            w-10
+                                            h-10
+                                        `,
+                                    ]}
+                                >
+                                    <RemoveUserIcon
+                                        css={[
+                                            tw`
+                                                w-4
+                                                h-4
+                                                translate-x-[1px]
+                                                translate-y-[-1px]
+                                            `,
+                                        ]}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <MoreIcon />
+                        )}
                     </ActionButton>
                     {memberMenuOpen && (
                         <Menu

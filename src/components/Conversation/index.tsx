@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, ReactNode, useState } from 'react'
+import { ButtonHTMLAttributes, useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
 import {

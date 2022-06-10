@@ -1,5 +1,8 @@
-const DeleteIcon = () => (
+import { SVGAttributes } from 'react'
+
+const DeleteIcon = (props: SVGAttributes<SVGElement>) => (
     <svg
+        {...props}
         width="16"
         height="16"
         viewBox="0 0 16 16"
