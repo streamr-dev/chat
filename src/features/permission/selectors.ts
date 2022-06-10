@@ -1,10 +1,10 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { StreamPermission } from 'streamr-client'
-import { Address, OptionalAddress } from '$/types'
+import { Address, OptionalAddress, State } from '$/types'
 import { RoomId } from '../room/types'
 import { PermissionState } from './types'
 
-function selectSelf(state: any): PermissionState {
+function selectSelf(state: State): PermissionState {
     return state.permission
 }
 
@@ -12,7 +12,7 @@ export function selectAbility(
     roomId: undefined | RoomId,
     address: undefined | null | Address,
     permission: StreamPermission
-): (state: any) => boolean {
+): (state: State) => boolean {
     return createSelector(selectSelf, ({ items }) =>
         roomId && address
             ? Boolean(items[roomId]?.[address.toLowerCase()]?.permissions[permission]?.value)

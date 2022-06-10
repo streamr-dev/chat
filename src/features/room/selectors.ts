@@ -1,8 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { PrivacySetting } from '$/types'
+import { PrivacySetting, State } from '$/types'
 import { RoomId, RoomState } from './types'
 
-function selectSelf(state: any): RoomState {
+function selectSelf(state: State): RoomState {
     return state.room
 }
 

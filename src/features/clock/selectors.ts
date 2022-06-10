@@ -1,7 +1,8 @@
+import { State } from '$/types'
 import { createSelector } from '@reduxjs/toolkit'
 import { ClockState } from './types'
 
-function selectSelf(state: any): ClockState {
+function selectSelf(state: State): ClockState {
     return state.clock
 }
 

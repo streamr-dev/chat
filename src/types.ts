@@ -1,3 +1,4 @@
+import store from '$/store'
 import { Provider } from '@web3-react/types'
 import { Stream } from 'streamr-client'
 import { IRoom } from '../src/features/room/types'
@@ -59,3 +60,5 @@ export type PrivacyOption = {
 export enum Fallback {
     RoomName = 'Unnamed room',
 }
+
+export type State = ReturnType<typeof store.getState>
