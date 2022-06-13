@@ -20,11 +20,7 @@ function getRect(element: HTMLElement | null | undefined) {
     return element ? element.getBoundingClientRect() : undefined
 }
 
-export default function Menu({
-    anchorEl,
-    onMouseDownOutside,
-    ...props
-}: Props) {
+export default function Menu({ anchorEl, onMouseDownOutside, ...props }: Props) {
     const [rect, setRect] = useState(getRect(anchorEl))
 
     const portalRootRef = useRef<HTMLDivElement>(document.createElement('div'))
@@ -96,9 +92,8 @@ export default function Menu({
             css={[
                 rect &&
                     css`
-                        transform: translateX(${rect.x}px)
-                            translateX(${rect.width}px) translateX(-100%)
-                            translateY(${rect.y}px) translateY(${rect.height}px);
+                        transform: translateX(${rect.x}px) translateX(${rect.width}px)
+                            translateX(-100%) translateY(${rect.y}px) translateY(${rect.height}px);
                     `,
                 tw`
                     bg-white
@@ -129,12 +124,7 @@ type MenuItemProps<T = ClickableHTMLElementProps> = T & {
     icon?: ReactNode
 }
 
-function MenuItem({
-    tag: Tag = 'button',
-    icon,
-    children,
-    ...propsProp
-}: MenuItemProps) {
+function MenuItem({ tag: Tag = 'button', icon, children, ...propsProp }: MenuItemProps) {
     let props: unknown
 
     if (Tag === 'button') {
@@ -181,9 +171,7 @@ function MenuItem({
     )
 }
 
-export function MenuLinkItem(
-    props: MenuItemProps<AnchorHTMLAttributes<HTMLAnchorElement>>
-) {
+export function MenuLinkItem(props: MenuItemProps<AnchorHTMLAttributes<HTMLAnchorElement>>) {
     return <MenuItem {...props} tag="a" />
 }
 

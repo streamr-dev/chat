@@ -1,9 +1,5 @@
 import { useSelector } from 'react-redux'
-import {
-    selectWalletAccount,
-    selectWalletIntegrationId,
-    selectWalletProvider,
-} from './selectors'
+import { selectWalletAccount, selectWalletIntegrationId, selectWalletProvider } from './selectors'
 
 export function useWalletIntegrationId() {
     return useSelector(selectWalletIntegrationId)

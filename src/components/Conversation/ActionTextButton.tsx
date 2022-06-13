@@ -6,10 +6,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
     secondary?: boolean
 }
 
-export default function ActionTextButton({
-    secondary = false,
-    ...props
-}: Props) {
+export default function ActionTextButton({ secondary = false, ...props }: Props) {
     return (
         <SecondaryButton
             {...props}

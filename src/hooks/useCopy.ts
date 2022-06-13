@@ -1,11 +1,4 @@
-import {
-    useState,
-    useCallback,
-    useEffect,
-    useMemo,
-    useReducer,
-    useRef,
-} from 'react'
+import { useState, useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import copyToClipboard from 'copy-to-clipboard'
 
 const SUSTAIN_IN_MILLIS = 3000
