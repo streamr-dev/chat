@@ -27,6 +27,9 @@ export interface RoomState {
             name: string
         }
     }
+    ongoingDeletion: {
+        [roomId: RoomId]: true
+    }
 }
 
 export interface IRoom extends IRecord {

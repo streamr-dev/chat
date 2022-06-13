@@ -11,12 +11,10 @@ import useCopy from '$/hooks/useCopy'
 import useIsOnline from '$/hooks/useIsOnline'
 import CopyIcon from '$/icons/CopyIcon'
 import ExternalLinkIcon from '$/icons/ExternalLinkIcon'
-import MoreIcon from '$/icons/MoreIcon'
 import RemoveUserIcon from '$/icons/RemoveUserIcon'
 import getExplorerURL from '$/utils/getExplorerURL'
 import isSameAddress from '$/utils/isSameAddress'
 import trunc from '$/utils/trunc'
-import ActionButton from '../ActionButton'
 import Avatar, { AvatarStatus } from '../Avatar'
 import Menu, { MenuButtonItem, MenuLinkItem, MenuSeparatorItem } from '../Menu'
 import Modal, { ModalProps } from './Modal'
@@ -25,6 +23,7 @@ import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
 import { useIsMemberBeingRemoved } from '$/features/member/hooks'
+import MoreActionButton from '$/components/MoreActionButton'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -342,8 +341,21 @@ function Item({
                         `,
                     ]}
                 >
-                    <ActionButton
-                        active={memberMenuOpen || isBeingRemoved}
+                    <MoreActionButton
+                        icon={
+                            <RemoveUserIcon
+                                css={[
+                                    tw`
+                                        w-4
+                                        h-4
+                                        translate-x-[1px]
+                                        translate-y-[-1px]
+                                    `,
+                                ]}
+                            />
+                        }
+                        deleting={isBeingRemoved}
+                        active={memberMenuOpen}
                         light
                         onClick={() => {
                             if (!isBeingRemoved) {
@@ -351,37 +363,7 @@ function Item({
                             }
                         }}
                         ref={setMenuAnchorEl}
-                    >
-                        {isBeingRemoved ? (
-                            <>
-                                <Spinner r={20} strokeWidth={1} />
-                                <div
-                                    css={[
-                                        tw`
-                                            flex
-                                            items-center
-                                            justify-center
-                                            w-10
-                                            h-10
-                                        `,
-                                    ]}
-                                >
-                                    <RemoveUserIcon
-                                        css={[
-                                            tw`
-                                                w-4
-                                                h-4
-                                                translate-x-[1px]
-                                                translate-y-[-1px]
-                                            `,
-                                        ]}
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <MoreIcon />
-                        )}
-                    </ActionButton>
+                    />
                     {memberMenuOpen && (
                         <Menu
                             anchorEl={menuAnchorEl}
@@ -413,9 +395,9 @@ function Item({
                                             <RemoveUserIcon
                                                 css={[
                                                     tw`
-                                                    w-4
-                                                    h-4
-                                                `,
+                                                        w-4
+                                                        h-4
+                                                    `,
                                                 ]}
                                             />
                                         }
