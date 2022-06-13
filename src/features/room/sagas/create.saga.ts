@@ -80,7 +80,7 @@ function* onCreateAction({
             owner: owner.toLowerCase(),
         })
 
-        success(`Stream "${params.name}" created.`)
+        success(`Room "${params.name}" created.`)
 
         // Select newly created room.
         yield put(RoomAction.select(stream.id))
