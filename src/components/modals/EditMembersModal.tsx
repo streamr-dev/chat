@@ -24,6 +24,13 @@ import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
 import { useIsMemberBeingRemoved } from '$/features/member/hooks'
 import MoreActionButton from '$/components/MoreActionButton'
+import { useAlias } from '$/features/alias/hooks'
+import ActionButton from '$/components/ActionButton'
+import Text from '$/components/Text'
+import CheckIcon from '$/icons/CheckIcon'
+import { AliasAction } from '$/features/alias'
+import focus from '$/utils/focus'
+import Form from '$/components/Form'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -259,8 +266,42 @@ function Item({
 
     const isBeingRemoved = useIsMemberBeingRemoved(selectedRoomId, address)
 
+    const owner = useWalletAccount()
+
+    const alias = useAlias(address)
+
+    const [isAddingNickname, setIsAddingNickname] = useState<boolean>(false)
+
+    const [nickname, setNickname] = useState<string>('')
+
+    const dispatch = useDispatch()
+
+    function editAlias() {
+        setNickname(alias || '')
+        setIsAddingNickname(true)
+    }
+
+    const [input, setInput] = useState<HTMLInputElement | null>(null)
+
+    useEffect(() => {
+        focus(input)
+    }, [input])
+
     return (
-        <div
+        <Form
+            onSubmit={() => {
+                if (isAddingNickname && owner) {
+                    dispatch(
+                        AliasAction.set({
+                            owner,
+                            address,
+                            value: nickname,
+                        })
+                    )
+                }
+
+                setIsAddingNickname(false)
+            }}
             css={[
                 tw`
                     h-[96px]
@@ -321,12 +362,81 @@ function Item({
                     <div
                         css={[
                             tw`
-                                text-[1.125rem]
-                                font-medium
+                                flex
+                                items-center
+                                h-[28px]
+                                w-full
                             `,
                         ]}
                     >
-                        {trunc(address)}
+                        {isAddingNickname ? (
+                            <input
+                                ref={(el) => void setInput(el)}
+                                type="text"
+                                value={nickname}
+                                placeholder={trunc(address)}
+                                onChange={(e) => void setNickname(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Escape') {
+                                        setIsAddingNickname(false)
+                                        e.stopPropagation()
+                                    }
+                                }}
+                                css={[
+                                    tw`
+                                        text-[1.125rem]
+                                        placeholder:text-[#DEE6EE]
+                                        border
+                                        border-[#DEE6EE]
+                                        rounded-lg
+                                        w-[90%]
+                                        px-3
+                                        outline-none
+                                        focus:border-[#59799C]
+                                    `,
+                                ]}
+                            />
+                        ) : (
+                            <div
+                                onDoubleClick={editAlias}
+                                css={[
+                                    tw`
+                                        text-[1.125rem]
+                                        font-medium
+                                    `,
+                                ]}
+                            >
+                                {alias ? alias : trunc(address)}
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        {isAddingNickname ? (
+                            <div
+                                css={[
+                                    tw`
+                                        text-[0.875rem]
+                                        text-[#59799C]
+                                    `,
+                                ]}
+                            >
+                                <Text>Nickname is only visible to you</Text>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                css={[
+                                    tw`
+                                        appearance-none
+                                        text-[0.875rem]
+                                        text-[#59799C]
+                                    `,
+                                ]}
+                                onClick={editAlias}
+                            >
+                                <Text>{alias ? <>Edit nickname</> : <>Set nickname</>}</Text>
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div
@@ -341,29 +451,35 @@ function Item({
                         `,
                     ]}
                 >
-                    <MoreActionButton
-                        icon={
-                            <RemoveUserIcon
-                                css={[
-                                    tw`
-                                        w-4
-                                        h-4
-                                        translate-x-[1px]
-                                        translate-y-[-1px]
-                                    `,
-                                ]}
-                            />
-                        }
-                        deleting={isBeingRemoved}
-                        active={memberMenuOpen}
-                        light
-                        onClick={() => {
-                            if (!isBeingRemoved) {
-                                setMemberMenuOpen((current) => !current)
+                    {isAddingNickname ? (
+                        <ActionButton type="submit" light>
+                            <CheckIcon tw="w-10" />
+                        </ActionButton>
+                    ) : (
+                        <MoreActionButton
+                            icon={
+                                <RemoveUserIcon
+                                    css={[
+                                        tw`
+                                            w-4
+                                            h-4
+                                            translate-x-[1px]
+                                            translate-y-[-1px]
+                                        `,
+                                    ]}
+                                />
                             }
-                        }}
-                        ref={setMenuAnchorEl}
-                    />
+                            deleting={isBeingRemoved}
+                            active={memberMenuOpen}
+                            light
+                            onClick={() => {
+                                if (!isBeingRemoved) {
+                                    setMemberMenuOpen((current) => !current)
+                                }
+                            }}
+                            ref={setMenuAnchorEl}
+                        />
+                    )}
                     {memberMenuOpen && (
                         <Menu
                             anchorEl={menuAnchorEl}
@@ -417,6 +533,6 @@ function Item({
                     )}
                 </div>
             </div>
-        </div>
+        </Form>
     )
 }
