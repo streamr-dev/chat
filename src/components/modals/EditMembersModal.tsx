@@ -25,6 +25,7 @@ import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
 import { useIsMemberBeingRemoved } from '$/features/member/hooks'
+import { success } from '$/utils/toaster'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -144,7 +145,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                             [> * + *]:mt-4
                         `,
                         isFetchingMembers &&
-                            tw`
+                        tw`
                                 bg-[#F7F9FC]
                             `,
                     ]}
@@ -401,6 +402,7 @@ function Item({
                                 onClick={() => {
                                     copy(address)
                                     setMemberMenuOpen(false)
+                                    success('Copied to clipboard.')
                                 }}
                             >
                                 Copy address
