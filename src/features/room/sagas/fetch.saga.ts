@@ -35,8 +35,6 @@ function* onFetchAction({ payload: { roomId, address } }: ReturnType<typeof Room
             id: stream.id,
             name: stream.description || '',
             owner,
-            privacy: metadata.privacy,
-            useStorage: metadata.useStorage,
         })
     } catch (e) {
         handleError(e)

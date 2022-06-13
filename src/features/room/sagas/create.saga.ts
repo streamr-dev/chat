@@ -18,11 +18,17 @@ import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import getWalletProvider from '$/sagas/getWalletProvider.saga'
 import { toast } from 'react-toastify'
 
-function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof RoomAction.create>) {
+function* onCreateAction({
+    payload: {
+        privacy,
+        storage,
+        params: { owner, ...params },
+    },
+}: ReturnType<typeof RoomAction.create>) {
     let toastId
 
     try {
-        toastId = toast.loading(`Creating "${payload.name}"…`, {
+        toastId = toast.loading(`Creating "${params.name}"…`, {
             position: 'bottom-left',
             autoClose: false,
             type: 'info',
@@ -44,7 +50,7 @@ function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof R
         // `payload.id` is a partial room id. The real room id gets constructed by the
         // client from the given value and the account address that creates the stream.
 
-        const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = payload
+        const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
         const stream: Stream = yield client.createStream({
             id,
@@ -54,7 +60,7 @@ function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof R
             },
         } as StreamProperties)
 
-        if (payload.privacy === PrivacySetting.Public) {
+        if (privacy === PrivacySetting.Public) {
             try {
                 yield stream.grantPermissions({
                     public: true,
@@ -64,22 +70,22 @@ function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof R
                 // We don't bother the user with an extra "we made your room public"
                 // toast. That'd be too much.
             } catch (e) {
-                error(`Failed to make "${payload.name}" public.`)
+                error(`Failed to make "${params.name}" public.`)
             }
         }
 
         yield db.rooms.add({
-            ...payload,
+            ...params,
             id: stream.id,
             owner: owner.toLowerCase(),
         })
 
-        success(`Stream "${payload.name}" created.`)
+        success(`Stream "${params.name}" created.`)
 
         // Select newly created room.
         yield put(RoomAction.select(stream.id))
 
-        if (payload.useStorage) {
+        if (storage) {
             yield put(
                 RoomAction.toggleStorageNode({
                     roomId: stream.id,
@@ -91,7 +97,7 @@ function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof R
     } catch (e) {
         handleError(e)
 
-        error(`Failed to create "${payload.name}".`)
+        error(`Failed to create "${params.name}".`)
     } finally {
         if (toastId) {
             toast.dismiss(toastId)

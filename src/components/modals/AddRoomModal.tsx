@@ -65,14 +65,16 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
         dispatch(
             RoomAction.create({
-                id: `/${Prefix.Room}/${uuidv4()}`,
-                createdAt: now,
-                updatedAt: now,
-                createdBy: account!,
-                owner: account!,
-                name: roomName,
+                params: {
+                    createdAt: now,
+                    createdBy: account!,
+                    id: `/${Prefix.Room}/${uuidv4()}`,
+                    name: roomName,
+                    owner: account!,
+                    updatedAt: now,
+                },
                 privacy: privacySetting.value,
-                useStorage: storage,
+                storage,
             })
         )
 

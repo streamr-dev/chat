@@ -73,7 +73,9 @@ function tempName(state: RoomState, roomId: RoomId) {
 }
 
 export const RoomAction = {
-    create: createAction<IRoom>('room: create'),
+    create: createAction<{ params: IRoom; privacy: PrivacySetting; storage: boolean }>(
+        'room: create'
+    ),
     delete: createAction<RoomId>('room: delete'),
     setOngoingDeletion: createAction<{ roomId: RoomId; state: boolean }>(
         'room: set ongoing deletion'
