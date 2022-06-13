@@ -16,9 +16,20 @@ import { RoomAction } from '..'
 import getWalletClient from '$/sagas/getWalletClient.saga'
 import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import getWalletProvider from '$/sagas/getWalletProvider.saga'
+import { toast } from 'react-toastify'
 
 function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof RoomAction.create>) {
+    let toastId
+
     try {
+        toastId = toast.loading(`Creating "${payload.name}"…`, {
+            position: 'bottom-left',
+            autoClose: false,
+            type: 'info',
+            closeOnClick: false,
+            hideProgressBar: true,
+        })
+
         const provider: Provider = yield call(getWalletProvider)
 
         const account: Address = yield call(getWalletAccount)
@@ -79,6 +90,12 @@ function* onCreateAction({ payload: { owner, ...payload } }: ReturnType<typeof R
         }
     } catch (e) {
         handleError(e)
+
+        error(`Failed to create "${payload.name}".`)
+    } finally {
+        if (toastId) {
+            toast.dismiss(toastId)
+        }
     }
 }
 
