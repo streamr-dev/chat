@@ -345,7 +345,6 @@ export default function ConversationHeader({
                                                 copy(selectedRoomId)
 
                                                 success('Copied to clipboard.')
-
                                             }
                                             setRoomMenuOpen(false)
                                         }}

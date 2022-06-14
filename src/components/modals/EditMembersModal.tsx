@@ -151,7 +151,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                             [> * + *]:mt-4
                         `,
                         isFetchingMembers &&
-                        tw`
+                            tw`
                                 bg-[#F7F9FC]
                             `,
                     ]}
