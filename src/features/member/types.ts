@@ -15,4 +15,14 @@ export interface MemberState {
             [address: Address]: true
         }
     }
+    ongoingInviteAcceptances: {
+        [roomId: RoomId]: {
+            [address: Address]: true
+        }
+    }
+    ongoingPromotions: {
+        [roomId: RoomId]: {
+            [delegatedAddress: Address]: true
+        }
+    }
 }

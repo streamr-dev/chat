@@ -24,3 +24,22 @@ export function selectIsBeingAdded(roomId: undefined | RoomId, address: Optional
         roomId && address ? Boolean(ongoingAddition[roomId]?.[address.toLowerCase().trim()]) : false
     )
 }
+
+export function selectIsInviteBeingAccepted(roomId: undefined | RoomId, address: OptionalAddress) {
+    return createSelector(selectSelf, ({ ongoingInviteAcceptances }) =>
+        roomId && address
+            ? Boolean(ongoingInviteAcceptances[roomId]?.[address.toLowerCase()])
+            : false
+    )
+}
+
+export function selectIsDelegatedAccountBeingPromoted(
+    roomId: undefined | RoomId,
+    delegatedAddress: OptionalAddress
+) {
+    return createSelector(selectSelf, ({ ongoingPromotions }) =>
+        roomId && delegatedAddress
+            ? Boolean(ongoingPromotions[roomId]?.[delegatedAddress.toLowerCase()])
+            : false
+    )
+}

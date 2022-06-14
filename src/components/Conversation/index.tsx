@@ -29,6 +29,10 @@ import useCanGrant from '$/hooks/useCanGrant'
 import useJustInvited from '$/hooks/useJustInvited'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import Spinner from '$/components/Spinner'
+import {
+    useIsDelegatedAccountBeingPromoted,
+    useIsInviteBeingAccepted,
+} from '$/features/member/hooks'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -140,6 +144,10 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     const isDelegating = useIsDelegating()
 
+    const isBeingAccepted = useIsInviteBeingAccepted(selectedRoomId, address)
+
+    const isPromoting = useIsDelegatedAccountBeingPromoted(selectedRoomId, delegatedAccount)
+
     if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.
         return <MessageInput />
@@ -172,35 +180,23 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
             <MessageInputPlaceholder
                 cta={
                     <Cta
+                        busy={isBeingAccepted}
+                        disabled={isBeingAccepted}
                         onClick={() => {
                             if (!selectedRoomId || !delegatedAccount || !address) {
                                 return
                             }
 
                             dispatch(
-                                MemberAction.setPermissions({
+                                MemberAction.acceptInvite({
+                                    address,
+                                    delegatedAddress: delegatedAccount,
                                     roomId: selectedRoomId,
-                                    assignments: [
-                                        {
-                                            user: delegatedAccount,
-                                            permissions: [
-                                                StreamPermission.PUBLISH,
-                                                StreamPermission.SUBSCRIBE,
-                                            ],
-                                        },
-                                        {
-                                            user: address,
-                                            permissions: [
-                                                StreamPermission.GRANT,
-                                                StreamPermission.EDIT,
-                                            ],
-                                        },
-                                    ],
                                 })
                             )
                         }}
                     >
-                        Accept
+                        {isBeingAccepted ? <>Accepting the invite…</> : <>Accept</>}
                     </Cta>
                 }
             >
@@ -214,28 +210,22 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
             <MessageInputPlaceholder
                 cta={
                     <Cta
+                        busy={isPromoting}
+                        disabled={isPromoting}
                         onClick={() => {
                             if (!selectedRoomId || !delegatedAccount) {
                                 return
                             }
 
                             dispatch(
-                                MemberAction.setPermissions({
+                                MemberAction.promoteDelegatedAccount({
                                     roomId: selectedRoomId,
-                                    assignments: [
-                                        {
-                                            user: delegatedAccount,
-                                            permissions: [
-                                                StreamPermission.PUBLISH,
-                                                StreamPermission.SUBSCRIBE,
-                                            ],
-                                        },
-                                    ],
+                                    delegatedAddress: delegatedAccount,
                                 })
                             )
                         }}
                     >
-                        Promote it
+                        {isPromoting ? <>Promoting…</> : <>Promote it</>}
                     </Cta>
                 }
             >
@@ -278,11 +268,11 @@ function Cta({ children, busy = false, ...props }: CtaProps) {
                     <div
                         css={[
                             tw`
-                            ml-2
-                            relative
-                            w-4
-                            h-4
-                        `,
+                                ml-2
+                                relative
+                                w-4
+                                h-4
+                            `,
                         ]}
                     >
                         <Spinner r={5} strokeWidth={1} />
