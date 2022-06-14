@@ -67,3 +67,9 @@ export function selectTransientRoomName(roomId: undefined | RoomId) {
         ({ temporaryNames }) => (roomId ? temporaryNames[roomId]?.name : undefined) || ''
     )
 }
+
+export function selectIsBeingDeleted(roomId: undefined | RoomId) {
+    return createSelector(selectSelf, ({ ongoingDeletion }) =>
+        roomId ? Boolean(ongoingDeletion[roomId]) : false
+    )
+}

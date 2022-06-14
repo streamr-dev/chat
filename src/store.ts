@@ -12,6 +12,7 @@ import identicons, { identiconsSaga } from '$/features/identicons'
 import clock from '$/features/clock'
 import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
+import { aliasSaga } from '$/features/alias'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -54,6 +55,7 @@ sagaMiddleware.run(function* saga() {
         roomSaga(),
         roomsSaga(),
         walletSaga(),
+        aliasSaga(),
     ])
 })
 

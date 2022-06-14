@@ -1,8 +1,6 @@
 type Account = string | undefined | null
 
-export default async function getDefaultWeb3Account(
-    ethereumProvider: any
-): Promise<Account> {
+export default async function getDefaultWeb3Account(ethereumProvider: any): Promise<Account> {
     if (!ethereumProvider) {
         return undefined
     }

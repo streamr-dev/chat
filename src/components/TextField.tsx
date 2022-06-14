@@ -1,9 +1,7 @@
 import { InputHTMLAttributes } from 'react'
 import tw from 'twin.macro'
 
-export default function TextField(
-    props: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>
-) {
+export default function TextField(props: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>) {
     return (
         <input
             {...props}

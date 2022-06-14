@@ -4,6 +4,7 @@ import { PrivateRoomOption, PublicRoomOption } from '../../components/modals/Add
 import {
     selectEditingRoomName,
     selectGettingStorageNodes,
+    selectIsBeingDeleted,
     selectPersistingRoomName,
     selectPrivacy,
     selectPrivacyChanging,
@@ -57,4 +58,8 @@ export function usePersistingRoomName(roomId: undefined | RoomId) {
 
 export function useTransientRoomName(roomId: undefined | RoomId) {
     return useSelector(selectTransientRoomName(roomId))
+}
+
+export function useIsBeingDeleted(roomId: undefined | RoomId) {
+    return useSelector(selectIsBeingDeleted(roomId))
 }

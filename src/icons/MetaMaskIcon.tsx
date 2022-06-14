@@ -7,11 +7,7 @@ export default function MetaMaskIcon() {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
         >
-            <g
-                clipPath="url(#clip0_2_41)"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            >
+            <g clipPath="url(#clip0_2_41)" strokeLinecap="round" strokeLinejoin="round">
                 <path
                     d="M138.417 6.61L83.452 47.435 93.616 23.35l44.801-16.738z"
                     fill="#E2761B"

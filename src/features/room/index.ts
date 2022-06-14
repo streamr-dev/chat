@@ -21,6 +21,7 @@ const initialState: RoomState = {
     storageNodes: {},
     privacy: {},
     temporaryNames: {},
+    ongoingDeletion: {},
 }
 
 function storageNodes(state: RoomState, roomId: RoomId) {
@@ -72,8 +73,13 @@ function tempName(state: RoomState, roomId: RoomId) {
 }
 
 export const RoomAction = {
-    create: createAction<IRoom>('room: create'),
+    create: createAction<{ params: IRoom; privacy: PrivacySetting; storage: boolean }>(
+        'room: create'
+    ),
     delete: createAction<RoomId>('room: delete'),
+    setOngoingDeletion: createAction<{ roomId: RoomId; state: boolean }>(
+        'room: set ongoing deletion'
+    ),
     deleteLocal: createAction<RoomId>('room: delete local'),
     rename: createAction<{ roomId: RoomId; name: string }>('room: rename'),
     renameLocal: createAction<{ roomId: RoomId; name: string }>('room: rename local'),
@@ -129,6 +135,18 @@ const reducer = createReducer(initialState, (builder) => {
     })
 
     builder.addCase(RoomAction.delete, SEE_SAGA)
+
+    builder.addCase(
+        RoomAction.setOngoingDeletion,
+        (state, { payload: { roomId, state: deleting } }) => {
+            if (!deleting) {
+                delete state.ongoingDeletion[roomId]
+                return
+            }
+
+            state.ongoingDeletion[roomId] = true
+        }
+    )
 
     builder.addCase(RoomAction.deleteLocal, SEE_SAGA)
 

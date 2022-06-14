@@ -27,14 +27,15 @@ export interface RoomState {
             name: string
         }
     }
+    ongoingDeletion: {
+        [roomId: RoomId]: true
+    }
 }
 
 export interface IRoom extends IRecord {
     createdBy?: string
     id: string
     name: string
-    privacy?: string
-    useStorage?: boolean
 }
 
 export type RoomId = IRoom['id']

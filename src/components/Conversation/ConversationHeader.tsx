@@ -6,6 +6,7 @@ import { useCurrentAbility, useLoadCurrentAbilityEffect } from '$/features/permi
 import { RoomAction } from '$/features/room'
 import {
     useEditingRoomName,
+    useIsBeingDeleted,
     usePersistingRoomName,
     usePrivacyOption,
     useSelectedRoomId,
@@ -19,7 +20,6 @@ import CopyIcon from '$/icons/CopyIcon'
 import DeleteIcon from '$/icons/DeleteIcon'
 import EditMembersIcon from '$/icons/EditMembersIcon'
 import GearIcon from '$/icons/GearIcon'
-import MoreIcon from '$/icons/MoreIcon'
 import { success } from '$/utils/toaster'
 import ActionButton from '../ActionButton'
 import Form from '../Form'
@@ -27,6 +27,7 @@ import Menu, { MenuButtonItem, MenuSeparatorItem } from '../Menu'
 import Text from '../Text'
 import ActionTextButton from './ActionTextButton'
 import LoadingIndicator, { LoadingState } from '$/components/LoadingIndicator'
+import MoreActionButton from '$/components/MoreActionButton'
 
 type Props = {
     canModifyMembers?: boolean
@@ -61,8 +62,10 @@ export default function ConversationHeader({
 
     const transientRoomName = useTransientRoomName(selectedRoomId)
 
+    const isRoomBeingDeleted = useIsBeingDeleted(selectedRoomId)
+
     function edit() {
-        if (canEdit && selectedRoomId) {
+        if (canEdit && selectedRoomId && !isRoomBeingDeleted) {
             dispatch(RoomAction.setTransientName({ roomId: selectedRoomId, name }))
             dispatch(RoomAction.setEditingName({ roomId: selectedRoomId, state: true }))
         }
@@ -118,6 +121,8 @@ export default function ConversationHeader({
         dispatch(RoomAction.getPrivacy(selectedRoomId))
     }, [selectedRoomId])
 
+    const showProgress = isPersistingRoomName || isRoomBeingDeleted
+
     return (
         <div
             css={[
@@ -132,7 +137,7 @@ export default function ConversationHeader({
         >
             <LoadingIndicator
                 tw="absolute bottom-0 left-0 w-full"
-                state={isPersistingRoomName ? LoadingState.Busy : undefined}
+                state={showProgress ? LoadingState.Busy : undefined}
             />
             <Form
                 css={[
@@ -270,7 +275,7 @@ export default function ConversationHeader({
                             <PrivacyIcon />
                         </div>
                         <div tw="flex min-w-[92px] justify-end">
-                            {canEdit && (
+                            {canEdit && !isRoomBeingDeleted && (
                                 <ActionButton onClick={edit}>
                                     <svg
                                         tw="block"
@@ -287,14 +292,18 @@ export default function ConversationHeader({
                                     </svg>
                                 </ActionButton>
                             )}
-                            <ActionButton
-                                tw="ml-3"
+                            <MoreActionButton
+                                icon={<DeleteIcon />}
+                                deleting={isRoomBeingDeleted}
                                 active={roomMenuOpen}
-                                onClick={() => void setRoomMenuOpen((current) => !current)}
+                                tw="ml-3"
+                                onClick={() => {
+                                    if (!isRoomBeingDeleted) {
+                                        setRoomMenuOpen((current) => !current)
+                                    }
+                                }}
                                 ref={setMenuAnchorEl}
-                            >
-                                <MoreIcon />
-                            </ActionButton>
+                            />
                             {roomMenuOpen && (
                                 <Menu
                                     anchorEl={menuAnchorEl}
