@@ -23,6 +23,7 @@ import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
 import { useIsMemberBeingRemoved } from '$/features/member/hooks'
+import { success } from '$/utils/toaster'
 import MoreActionButton from '$/components/MoreActionButton'
 import { useAlias } from '$/features/alias/hooks'
 import ActionButton from '$/components/ActionButton'
@@ -499,6 +500,7 @@ function Item({
                                 onClick={() => {
                                     copy(address)
                                     setMemberMenuOpen(false)
+                                    success('Copied to clipboard.')
                                 }}
                             >
                                 Copy address

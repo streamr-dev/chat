@@ -8,6 +8,7 @@ import TextField from '../TextField'
 import SecondaryButton from '../SecondaryButton'
 import getExplorerURL from '$/utils/getExplorerURL'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
+import { success } from '$/utils/toaster'
 
 type Props = ModalProps & {
     onChangeClick?: () => void
@@ -90,6 +91,7 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
                     onClick={(e) => {
                         e.preventDefault()
                         copy(account!)
+                        success('Copied to clipboard.')
                     }}
                 >
                     <svg
