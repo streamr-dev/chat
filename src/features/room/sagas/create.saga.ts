@@ -82,7 +82,7 @@ function* onCreateAction({
 
         success(`Room "${params.name}" created.`)
 
-        // Select newly created room.
+        // Select the newly created room.
         yield put(RoomAction.select(stream.id))
 
         if (storage) {

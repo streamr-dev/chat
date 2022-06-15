@@ -9,7 +9,7 @@ export default function useSelectedRoom() {
     const account = useWalletAccount()
 
     return useLiveQuery(
-        () => db.rooms.where({ owner: (account || '').toLowerCase(), id: id || '' }).first(),
+        () => db.rooms.where({ owner: account?.toLowerCase() || '', id: id || '' }).first(),
         [id, account]
     )
 }
