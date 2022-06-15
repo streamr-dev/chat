@@ -13,6 +13,9 @@ import Avatar from '../../Avatar'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
 import { PreferencesAction } from '$/features/preferences'
+import Tag from '$/components/Tag'
+import useIsRoomVisible from '$/hooks/useIsRoomVisible'
+import EyeIcon from '$/icons/EyeIcon'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -45,6 +48,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
     }, [id, address])
 
     const justInvited = useJustInvited(id, address)
+
+    const isVisible = useIsRoomVisible(id)
 
     return (
         <SidebarButton
@@ -86,6 +91,30 @@ export default function RoomButton({ room, active, ...props }: Props) {
                 )
             }
         >
+            {!isVisible && (
+                <Tag
+                    css={[
+                        tw`
+                            absolute
+                            top-0
+                            left-1/2
+                            -translate-x-1/2
+                            -translate-y-1
+                        `,
+                    ]}
+                    icon={
+                        <EyeIcon
+                            css={[
+                                tw`
+                                w-2.5
+                            `,
+                            ]}
+                        />
+                    }
+                >
+                    Hidden
+                </Tag>
+            )}
             <div>
                 <div
                     css={[

@@ -380,7 +380,7 @@ export default function ConversationHeader({
                                             setRoomMenuOpen(false)
                                         }}
                                     >
-                                        {isVisible ? <>Hide room</> : <>Show room</>}
+                                        {isVisible ? <>Hide room</> : <>Unhide room</>}
                                     </MenuButtonItem>
                                     {(canEdit || canDelete) && <MenuSeparatorItem />}
                                     {canEdit && (
