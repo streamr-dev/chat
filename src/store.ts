@@ -12,6 +12,7 @@ import identicons, { identiconsSaga } from '$/features/identicons'
 import clock from '$/features/clock'
 import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
+import preferences, { preferencesSaga } from '$/features/preferences'
 import { aliasSaga } from '$/features/alias'
 
 const sagaMiddleware = createSagaMiddleware()
@@ -26,6 +27,7 @@ const store = configureStore({
         members,
         message,
         permission,
+        preferences,
         room,
         rooms,
         wallet,
@@ -45,6 +47,7 @@ const store = configureStore({
 
 sagaMiddleware.run(function* saga() {
     yield all([
+        aliasSaga(),
         delegationSaga(),
         draftsSaga(),
         identiconsSaga(),
@@ -52,10 +55,10 @@ sagaMiddleware.run(function* saga() {
         membersSaga(),
         messageSaga(),
         permissionSaga(),
+        preferencesSaga(),
         roomSaga(),
         roomsSaga(),
         walletSaga(),
-        aliasSaga(),
     ])
 })
 

@@ -15,6 +15,7 @@ import renameLocal from './sagas/renameLocal.saga'
 import sync from './sagas/sync.saga'
 import toggleStorageNode from './sagas/toggleStorageNode.saga'
 import { IRoom, RoomId, RoomState } from './types'
+import setVisibility from '$/features/room/sagas/setVisibility.saga'
 
 const initialState: RoomState = {
     selectedId: undefined,
@@ -121,6 +122,9 @@ export const RoomAction = {
         'room: set persisting name'
     ),
     setTransientName: createAction<{ roomId: RoomId; name: string }>('room: set transient name'),
+    setVisibility: createAction<{ roomId: RoomId; owner: Address; visible: boolean }>(
+        'room: set visibility'
+    ),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -242,6 +246,8 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(RoomAction.setTransientName, (state, { payload: { roomId, name } }) => {
         tempName(state, roomId).name = name
     })
+
+    builder.addCase(RoomAction.setVisibility, SEE_SAGA)
 })
 
 export function* roomSaga() {
@@ -258,6 +264,7 @@ export function* roomSaga() {
         renameLocal(),
         sync(),
         toggleStorageNode(),
+        setVisibility(),
     ])
 }
 

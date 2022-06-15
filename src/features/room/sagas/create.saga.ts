@@ -17,6 +17,7 @@ import getWalletClient from '$/sagas/getWalletClient.saga'
 import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import getWalletProvider from '$/sagas/getWalletProvider.saga'
 import { toast } from 'react-toastify'
+import { PreferencesAction } from '$/features/preferences'
 
 function* onCreateAction({
     payload: {
@@ -82,8 +83,13 @@ function* onCreateAction({
 
         success(`Room "${params.name}" created.`)
 
-        // Select newly created room.
-        yield put(RoomAction.select(stream.id))
+        // Select the newly created room.
+        yield put(
+            PreferencesAction.set({
+                owner,
+                selectedRoomId: stream.id,
+            })
+        )
 
         if (storage) {
             yield put(

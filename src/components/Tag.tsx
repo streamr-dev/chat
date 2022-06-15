@@ -1,8 +1,12 @@
-import { HTMLAttributes } from 'react'
+import { HTMLAttributes, ReactNode } from 'react'
 import Text from './Text'
 import tw from 'twin.macro'
 
-export default function Tag({ children, ...props }: HTMLAttributes<HTMLDivElement>) {
+type Props = HTMLAttributes<HTMLDivElement> & {
+    icon?: ReactNode
+}
+
+export default function Tag({ icon, children, ...props }: Props) {
     return (
         <div
             {...props}
@@ -20,10 +24,25 @@ export default function Tag({ children, ...props }: HTMLAttributes<HTMLDivElemen
                     rounded-sm
                     shadow-sm
                     select-none
+                    flex
+                    items-center
                 `,
             ]}
         >
-            <Text>{children}</Text>
+            {!!icon && (
+                <div
+                    css={[
+                        tw`
+                            mr-1
+                        `,
+                    ]}
+                >
+                    {icon}
+                </div>
+            )}
+            <div>
+                <Text>{children}</Text>
+            </div>
         </div>
     )
 }

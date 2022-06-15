@@ -1,11 +1,10 @@
-import { all, put, select, takeEvery } from 'redux-saga/effects'
+import { all, put, takeEvery } from 'redux-saga/effects'
 import { WalletAction } from '..'
-import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import { DelegationAction } from '../../delegation'
-import { RoomAction } from '../../room'
-import { selectSelectedRoomId } from '../../room/selectors'
-import { IRoom, RoomId } from '../../room/types'
+import { RoomAction } from '$/features/room'
+import { IPreference } from '$/features/preferences/types'
+import db from '$/utils/db'
 
 function* preselectRoom({ payload: account }: ReturnType<typeof WalletAction.setAccount>) {
     try {
@@ -14,26 +13,17 @@ function* preselectRoom({ payload: account }: ReturnType<typeof WalletAction.set
             return
         }
 
-        const rooms: IRoom[] = yield db.rooms.where('owner').equals(account.toLowerCase()).toArray()
+        const preferences: null | IPreference = yield db.preferences
+            .where('owner')
+            .equals(account.toLowerCase())
+            .first()
 
-        const selectedRoomId: undefined | RoomId = yield select(selectSelectedRoomId)
-
-        if (!rooms.length) {
+        if (!preferences) {
             yield put(RoomAction.select(undefined))
             return
         }
 
-        if (!selectedRoomId) {
-            yield put(RoomAction.select(rooms[0].id))
-            return
-        }
-
-        if (rooms.find(({ id }) => id === selectedRoomId)) {
-            // Previous selection exists in the new set.
-            return
-        }
-
-        yield put(RoomAction.select(rooms[0].id))
+        yield put(RoomAction.select(preferences.selectedRoomId))
     } catch (e) {
         handleError(e)
     }
