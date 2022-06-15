@@ -9,6 +9,11 @@ import SecondaryButton from '../SecondaryButton'
 import getExplorerURL from '$/utils/getExplorerURL'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import { success } from '$/utils/toaster'
+import Hint from '$/components/Hint'
+import Toggle from '$/components/Toggle'
+import { useShowHiddenRooms } from '$/features/preferences/hooks'
+import { useDispatch } from 'react-redux'
+import { PreferencesAction } from '$/features/preferences'
 
 type Props = ModalProps & {
     onChangeClick?: () => void
@@ -22,6 +27,10 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
     const account = useWalletAccount()
 
     const { copy, isCopied } = useCopy()
+
+    const showHiddenRooms = useShowHiddenRooms()
+
+    const dispatch = useDispatch()
 
     return (
         <Modal {...props} title="Account">
@@ -61,7 +70,7 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
             <div
                 css={[
                     tw`
-                        mt-2
+                        mt-3
                         flex
                         [> a + a]:ml-10
                     `,
@@ -108,6 +117,55 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
                     </svg>
                     <Text>{isCopied ? 'Copied!' : 'Copy address'}</Text>
                 </ExternalLink>
+            </div>
+            <hr tw="my-3" />
+            <div
+                css={[
+                    tw`
+                        flex
+                    `,
+                ]}
+            >
+                <div
+                    css={[
+                        tw`
+                            flex-grow
+                        `,
+                    ]}
+                >
+                    <Hint
+                        css={[
+                            tw`
+                                pr-16
+                            `,
+                        ]}
+                    >
+                        <Text>Show hidden rooms</Text>
+                    </Hint>
+                </div>
+                <div
+                    css={[
+                        tw`
+                            mt-2
+                        `,
+                    ]}
+                >
+                    <Toggle
+                        value={showHiddenRooms}
+                        onClick={() => {
+                            if (!account) {
+                                return
+                            }
+
+                            dispatch(
+                                PreferencesAction.set({
+                                    owner: account,
+                                    showHiddenRooms: !showHiddenRooms,
+                                })
+                            )
+                        }}
+                    />
+                </div>
             </div>
         </Modal>
     )

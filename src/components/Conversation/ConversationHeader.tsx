@@ -28,6 +28,8 @@ import Text from '../Text'
 import ActionTextButton from './ActionTextButton'
 import LoadingIndicator, { LoadingState } from '$/components/LoadingIndicator'
 import MoreActionButton from '$/components/MoreActionButton'
+import EyeIcon from '$/icons/EyeIcon'
+import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 
 type Props = {
     canModifyMembers?: boolean
@@ -122,6 +124,8 @@ export default function ConversationHeader({
     }, [selectedRoomId])
 
     const showProgress = isPersistingRoomName || isRoomBeingDeleted
+
+    const isVisible = useIsRoomVisible(selectedRoomId)
 
     return (
         <div
@@ -350,6 +354,33 @@ export default function ConversationHeader({
                                         }}
                                     >
                                         Copy room id
+                                    </MenuButtonItem>
+                                    <MenuButtonItem
+                                        icon={
+                                            <EyeIcon
+                                                open={!isVisible}
+                                                css={[
+                                                    tw`
+                                                        w-4
+                                                    `,
+                                                ]}
+                                            />
+                                        }
+                                        onClick={() => {
+                                            if (selectedRoomId && account) {
+                                                dispatch(
+                                                    RoomAction.setVisibility({
+                                                        roomId: selectedRoomId,
+                                                        owner: account,
+                                                        visible: !isVisible,
+                                                    })
+                                                )
+                                            }
+
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
+                                        {isVisible ? <>Hide room</> : <>Show room</>}
                                     </MenuButtonItem>
                                     {(canEdit || canDelete) && <MenuSeparatorItem />}
                                     {canEdit && (

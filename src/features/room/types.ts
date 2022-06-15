@@ -36,6 +36,7 @@ export interface IRoom extends IRecord {
     createdBy?: string
     id: string
     name: string
+    hidden?: boolean
 }
 
 export type RoomId = IRoom['id']

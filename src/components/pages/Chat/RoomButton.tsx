@@ -12,6 +12,7 @@ import useRecentMessage from '$/hooks/useRecentMessage'
 import Avatar from '../../Avatar'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
+import { PreferencesAction } from '$/features/preferences'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -50,7 +51,18 @@ export default function RoomButton({ room, active, ...props }: Props) {
             {...props}
             active={active}
             icon={<Icon id={id} />}
-            onClick={() => void dispatch(RoomAction.select(id))}
+            onClick={() => {
+                if (!address) {
+                    return
+                }
+
+                dispatch(
+                    PreferencesAction.set({
+                        owner: address,
+                        selectedRoomId: id,
+                    })
+                )
+            }}
             misc={
                 justInvited && (
                     <div
