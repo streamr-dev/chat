@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { PrivacySetting, State } from '$/types'
+import { OptionalAddress, PrivacySetting, State } from '$/types'
 import { RoomId, RoomState } from './types'
 
 function selectSelf(state: State): RoomState {
@@ -71,5 +71,11 @@ export function selectTransientRoomName(roomId: undefined | RoomId) {
 export function selectIsBeingDeleted(roomId: undefined | RoomId) {
     return createSelector(selectSelf, ({ ongoingDeletion }) =>
         roomId ? Boolean(ongoingDeletion[roomId]) : false
+    )
+}
+
+export function selectIsPinning(owner: OptionalAddress, roomId: undefined | RoomId) {
+    return createSelector(selectSelf, ({ ongoingPinning }) =>
+        owner && roomId ? Boolean(ongoingPinning[owner.toLowerCase()]?.[roomId]) : false
     )
 }

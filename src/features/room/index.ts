@@ -16,6 +16,7 @@ import sync from './sagas/sync.saga'
 import toggleStorageNode from './sagas/toggleStorageNode.saga'
 import { IRoom, RoomId, RoomState } from './types'
 import setVisibility from '$/features/room/sagas/setVisibility.saga'
+import pin from '$/features/room/sagas/pin.saga'
 
 const initialState: RoomState = {
     selectedId: undefined,
@@ -23,6 +24,7 @@ const initialState: RoomState = {
     privacy: {},
     temporaryNames: {},
     ongoingDeletion: {},
+    ongoingPinning: {},
 }
 
 function storageNodes(state: RoomState, roomId: RoomId) {
@@ -124,6 +126,11 @@ export const RoomAction = {
     setTransientName: createAction<{ roomId: RoomId; name: string }>('room: set transient name'),
     setVisibility: createAction<{ roomId: RoomId; owner: Address; visible: boolean }>(
         'room: set visibility'
+    ),
+    pin: createAction<{ owner: Address; roomId: RoomId }>('room: pin'),
+    unpin: createAction<{ owner: Address; roomId: RoomId }>('room: unpin'),
+    setPinning: createAction<{ owner: Address; roomId: RoomId; state: boolean }>(
+        'room: set pinning'
     ),
 }
 
@@ -248,6 +255,23 @@ const reducer = createReducer(initialState, (builder) => {
     })
 
     builder.addCase(RoomAction.setVisibility, SEE_SAGA)
+
+    builder.addCase(RoomAction.pin, SEE_SAGA)
+
+    builder.addCase(RoomAction.unpin, SEE_SAGA)
+
+    builder.addCase(
+        RoomAction.setPinning,
+        (state, { payload: { owner, roomId, state: pinning } }) => {
+            const addr = owner.toLowerCase()
+
+            if (!state.ongoingPinning[addr]) {
+                state.ongoingPinning[addr] = {}
+            }
+
+            state.ongoingPinning[addr][roomId] = pinning
+        }
+    )
 })
 
 export function* roomSaga() {
@@ -259,12 +283,13 @@ export function* roomSaga() {
         fetch(),
         getPrivacy(),
         getStorageNodes(),
+        pin(),
         registerInvite(),
         rename(),
         renameLocal(),
+        setVisibility(),
         sync(),
         toggleStorageNode(),
-        setVisibility(),
     ])
 }
 
