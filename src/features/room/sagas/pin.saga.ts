@@ -97,10 +97,9 @@ function* onPinUnpinAction({
                 closeOnClick: false,
                 hideProgressBar: true,
             })
-        }
 
-        if (pinned) {
             yield call(pinRemote, owner, roomId)
+
             return
         }
 
