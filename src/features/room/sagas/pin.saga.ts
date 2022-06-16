@@ -39,7 +39,9 @@ function* pinRemote(owner: Address, roomId: RoomId) {
         return
     }
 
-    if (!room) {
+    if (room) {
+        yield db.rooms.where({ owner, id: roomId }).modify({ pinned: true, hidden: false })
+    } else {
         yield db.rooms.add({
             createdAt: metadata.createdAt,
             createdBy: metadata.createdBy,
@@ -49,8 +51,6 @@ function* pinRemote(owner: Address, roomId: RoomId) {
             pinned: true,
         })
     }
-
-    yield db.rooms.where({ owner, id: roomId }).modify({ pinned: true, hidden: false })
 
     yield put(
         PreferencesAction.set({
