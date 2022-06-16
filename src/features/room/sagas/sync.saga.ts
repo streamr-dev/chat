@@ -1,22 +1,14 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
-import StreamrClient, { PermissionAssignment, Stream, StreamPermission } from 'streamr-client'
+import StreamrClient, { Stream } from 'streamr-client'
 import { Address } from '$/types'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { RoomAction } from '..'
 import getWalletClient from '$/sagas/getWalletClient.saga'
 import getWalletAccount from '$/sagas/getWalletAccount.saga'
-import isSameAddress from '$/utils/isSameAddress'
-
-async function getUserPermissions(user: Address, stream: Stream) {
-    const assignments: PermissionAssignment[] = await stream.getPermissions()
-
-    const assignment = assignments.find(
-        (assignment) => 'user' in assignment && isSameAddress(assignment.user, user)
-    )
-
-    return assignment ? assignment.permissions : []
-}
+import { IRoom } from '$/features/room/types'
+import db from '$/utils/db'
+import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 
 function* onSyncAction({ payload: roomId }: ReturnType<typeof RoomAction.sync>) {
     try {
@@ -27,9 +19,22 @@ function* onSyncAction({ payload: roomId }: ReturnType<typeof RoomAction.sync>) 
         const stream: undefined | Stream = yield getStream(client, roomId)
 
         if (stream) {
-            const permissions: StreamPermission[] = yield getUserPermissions(account, stream)
+            const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
+                account,
+                stream
+            )
 
-            if (permissions.length) {
+            let pinned = false
+
+            if (isPublic) {
+                const room: undefined | IRoom = yield db.rooms
+                    .where({ owner: account?.toLowerCase() || '', id: roomId })
+                    .first()
+
+                pinned = Boolean(room?.pinned)
+            }
+
+            if (permissions.length || pinned) {
                 yield put(
                     RoomAction.renameLocal({
                         roomId,

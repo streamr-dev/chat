@@ -30,6 +30,8 @@ import LoadingIndicator, { LoadingState } from '$/components/LoadingIndicator'
 import MoreActionButton from '$/components/MoreActionButton'
 import EyeIcon from '$/icons/EyeIcon'
 import useIsRoomVisible from '$/hooks/useIsRoomVisible'
+import useIsRoomPinned from '$/hooks/useIsRoomPinned'
+import PinIcon from '$/icons/PinIcon'
 
 type Props = {
     canModifyMembers?: boolean
@@ -126,6 +128,8 @@ export default function ConversationHeader({
     const showProgress = isPersistingRoomName || isRoomBeingDeleted
 
     const isVisible = useIsRoomVisible(selectedRoomId)
+
+    const isPinned = useIsRoomPinned(selectedRoomId)
 
     return (
         <div
@@ -382,6 +386,33 @@ export default function ConversationHeader({
                                     >
                                         {isVisible ? <>Hide room</> : <>Unhide room</>}
                                     </MenuButtonItem>
+                                    {isPinned && (
+                                        <MenuButtonItem
+                                            icon={
+                                                <PinIcon
+                                                    css={[
+                                                        tw`
+                                                            w-2.5
+                                                        `,
+                                                    ]}
+                                                />
+                                            }
+                                            onClick={() => {
+                                                if (selectedRoomId && account) {
+                                                    dispatch(
+                                                        RoomAction.unpin({
+                                                            owner: account,
+                                                            roomId: selectedRoomId,
+                                                        })
+                                                    )
+                                                }
+
+                                                setRoomMenuOpen(false)
+                                            }}
+                                        >
+                                            Unpin
+                                        </MenuButtonItem>
+                                    )}
                                     {(canEdit || canDelete) && <MenuSeparatorItem />}
                                     {canEdit && (
                                         <MenuButtonItem

@@ -46,3 +46,13 @@ export default function Tag({ icon, children, ...props }: Props) {
         </div>
     )
 }
+
+export const TagContainer = tw.div`
+    absolute
+    top-0
+    left-1/2
+    -translate-y-1/4
+    -translate-x-1/2
+    flex
+    [* + *]:ml-1
+`
