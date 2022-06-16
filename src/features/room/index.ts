@@ -258,7 +258,7 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RoomAction.pin, SEE_SAGA)
 
-    builder.addCase(RoomAction.unpin, SEE_SAGA)
+    builder.addCase(RoomAction.unpin, SEE_SAGA) // See `pin` saga.
 
     builder.addCase(
         RoomAction.setPinning,
