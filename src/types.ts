@@ -11,6 +11,10 @@ export enum StorageKey {
     RoomIds = 'chat/room-ids',
 }
 
+export interface IOwnable {
+    owner: Address
+}
+
 export interface IRecord {
     owner: string
     createdAt?: number
