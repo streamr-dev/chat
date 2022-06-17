@@ -6,6 +6,8 @@ function selectSelf(state: State): FlagState {
     return state.flag
 }
 
-export function selectFlag(key: string) {
-    return createSelector(selectSelf, (substate: FlagState) => Boolean(substate[key]))
+export function selectFlag(key: undefined | string) {
+    return createSelector(selectSelf, (substate: FlagState) =>
+        key ? Boolean(substate[key]) : false
+    )
 }

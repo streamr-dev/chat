@@ -15,9 +15,9 @@ export default function* getDelegatedClient() {
     if (!client) {
         const provider: Provider = yield call(getWalletProvider)
 
-        const address: Address = yield call(getWalletAccount)
+        const owner: Address = yield call(getWalletAccount)
 
-        const privateKey: string = yield requestDelegatedPrivateKey(provider, address)
+        const privateKey: string = yield requestDelegatedPrivateKey(provider, owner)
 
         yield put(DelegationAction.setPrivateKey(privateKey))
 

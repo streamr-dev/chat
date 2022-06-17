@@ -4,7 +4,8 @@ import tw from 'twin.macro'
 import {
     useDelegatedAccount,
     useDelegatedClient,
-    useIsDelegating,
+    useIsDelegatingAccess,
+    useRequestPrivateKey,
 } from '$/features/delegation/hooks'
 import {
     useCurrentDelegationAbility,
@@ -22,7 +23,6 @@ import Text from '../Text'
 import SecondaryButton from '../SecondaryButton'
 import { useDispatch } from 'react-redux'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { DelegationAction } from '$/features/delegation'
 import { MemberAction } from '$/features/member'
 import RoomPropertiesModal from '../modals/RoomPropertiesModal'
 import useCanGrant from '$/hooks/useCanGrant'
@@ -142,11 +142,13 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     const justInvited = useJustInvited(selectedRoomId, address)
 
-    const isDelegating = useIsDelegating()
+    const isDelegatingAccess = useIsDelegatingAccess()
 
     const isBeingAccepted = useIsInviteBeingAccepted(selectedRoomId, address)
 
     const isPromoting = useIsDelegatedAccountBeingPromoted(selectedRoomId, delegatedAccount)
+
+    const requestPrivateKey = useRequestPrivateKey()
 
     if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.
@@ -158,15 +160,11 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
             <MessageInputPlaceholder
                 cta={
                     <Cta
-                        busy={isDelegating}
-                        disabled={isDelegating}
-                        onClick={() => {
-                            if (!isDelegating) {
-                                dispatch(DelegationAction.requestPrivateKey())
-                            }
-                        }}
+                        busy={isDelegatingAccess}
+                        disabled={isDelegatingAccess}
+                        onClick={requestPrivateKey}
                     >
-                        {isDelegating ? <>Delegating…</> : <>Delegate now</>}
+                        {isDelegatingAccess ? <>Delegating…</> : <>Delegate now</>}
                     </Cta>
                 }
             >

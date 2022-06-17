@@ -6,20 +6,20 @@ import db from './db'
 
 interface Params {
     provider: Provider
-    address: Address
+    owner: Address
     privateKey: string
 }
 
-export default async function storeDelegatedPrivateKey({ provider, address, privateKey }: Params) {
+export default async function storeDelegatedPrivateKey({ provider, owner, privateKey }: Params) {
     const encryptionPublicKey = (await provider.request({
         method: 'eth_getEncryptionPublicKey',
-        params: [address],
+        params: [owner],
     })) as string
 
     const now = Date.now()
 
     await db.delegations.add({
-        owner: address.toLowerCase(),
+        owner: owner.toLowerCase(),
         createdAt: now,
         updatedAt: now,
         encryptedPrivateKey: Buffer.from(

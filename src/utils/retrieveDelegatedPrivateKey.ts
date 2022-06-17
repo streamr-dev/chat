@@ -4,15 +4,15 @@ import getDelegation from './getDelegation'
 
 interface Params {
     provider: Provider
-    address: Address
+    owner: Address
 }
 
-export default async function retrieveDelegatedPrivateKey({ provider, address }: Params) {
-    const { encryptedPrivateKey } = await getDelegation(address)
+export default async function retrieveDelegatedPrivateKey({ provider, owner }: Params) {
+    const { encryptedPrivateKey } = await getDelegation(owner)
 
     const payload = (await provider.request({
         method: 'eth_decrypt',
-        params: [encryptedPrivateKey, address],
+        params: [encryptedPrivateKey, owner],
     })) as string
 
     return JSON.parse(payload).privateKey as string
