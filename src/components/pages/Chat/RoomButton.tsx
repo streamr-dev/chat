@@ -145,7 +145,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
 function Icon({ id: roomId }: Pick<Props['room'], 'id'>) {
     return (
         <div tw="p-1">
-            <Avatar account={roomId} backgroundColor="white" />
+            <Avatar seed={roomId} backgroundColor="white" />
         </div>
     )
 }

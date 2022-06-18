@@ -351,7 +351,7 @@ function Item({
                         `,
                     ]}
                 >
-                    <Avatar account={address} backgroundColor="white" status={status} />
+                    <Avatar seed={address.toLowerCase()} backgroundColor="white" status={status} />
                 </div>
                 <div
                     css={[

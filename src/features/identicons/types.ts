@@ -6,10 +6,5 @@ export interface IIdenticon {
 }
 
 export interface IdenticonsState {
-    items: {
-        [index: IdenticonSeed]: {
-            content: undefined | IIdenticon['content']
-            retrieving: boolean
-        }
-    }
+    [index: IdenticonSeed]: undefined | IIdenticon['content']
 }

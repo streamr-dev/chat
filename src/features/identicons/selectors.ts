@@ -7,9 +7,5 @@ function selectSelf(state: State): IdenticonsState {
 }
 
 export function selectIdenticon(seed: IdenticonSeed): (state: State) => undefined | string {
-    return createSelector(selectSelf, ({ items }) => items[seed.toLowerCase()]?.content)
-}
-
-export function selectRetrievingIdenticon(seed: IdenticonSeed): (state: State) => boolean {
-    return createSelector(selectSelf, ({ items }) => Boolean(items[seed.toLowerCase()]?.retrieving))
+    return createSelector(selectSelf, (substate) => substate[seed])
 }

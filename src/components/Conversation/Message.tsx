@@ -22,7 +22,7 @@ export default function Message({
 
     const status = useIsOnline(createdBy) ? AvatarStatus.Online : AvatarStatus.Offline
 
-    const avatar = hideAvatar ? <Wrap /> : <Avatar status={status} account={createdBy} />
+    const avatar = hideAvatar ? <Wrap /> : <Avatar status={status} seed={createdBy.toLowerCase()} />
 
     return (
         <div
