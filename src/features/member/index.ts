@@ -1,10 +1,8 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { UserPermissionAssignment } from 'streamr-client'
 import { Address } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
 import { RoomId } from '../room/types'
-import setPermissions from './sagas/setPermissions.saga'
 import { MemberState } from './types'
 import add from '$/features/member/sagas/add.saga'
 import remove from '$/features/member/sagas/remove.saga'
@@ -21,10 +19,6 @@ const initialState: MemberState = {
 
 export const MemberAction = {
     notice: createAction<{ address: Address; timestamp: number }>('member: notice'),
-    setPermissions: createAction<{
-        roomId: RoomId
-        assignments: UserPermissionAssignment[]
-    }>('member: set permissions'),
     setOngoingRemoval: createAction<{ roomId: RoomId; address: Address; state: boolean }>(
         'member: set ongoing removal'
     ),
@@ -85,8 +79,6 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(MemberAction.notice, (state, { payload: { address, timestamp } }) => {
         state.notices[address.toLowerCase()] = timestamp
     })
-
-    builder.addCase(MemberAction.setPermissions, SEE_SAGA)
 
     builder.addCase(
         MemberAction.setOngoingRemoval,
@@ -162,7 +154,7 @@ const reducer = createReducer(initialState, (builder) => {
 })
 
 export function* memberSaga() {
-    yield all([setPermissions(), add(), remove(), acceptInvite(), promoteDelegatedAccount()])
+    yield all([add(), remove(), acceptInvite(), promoteDelegatedAccount()])
 }
 
 export default reducer
