@@ -9,6 +9,7 @@ import { Address } from '$/types'
 import { useDispatch } from 'react-redux'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { MemberAction } from '$/features/member'
+import formatFingerprint from '$/utils/formatFingerprint'
 
 type Props = ModalProps & {
     canModifyMembers?: boolean
@@ -25,20 +26,25 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
         setAddress('')
     }
 
-    const selectedRoomId = useSelectedRoomId()
+    const roomId = useSelectedRoomId()
 
     return (
         <Modal {...props} setOpen={setOpen} onClose={onClose} title="Add member">
             <Form
                 onSubmit={() => {
-                    if (!canSubmit || !selectedRoomId) {
+                    if (!canSubmit || !roomId) {
                         return
                     }
 
                     dispatch(
                         MemberAction.add({
-                            roomId: selectedRoomId,
+                            roomId,
                             address,
+                            fingerprint: formatFingerprint(
+                                MemberAction.add.toString(),
+                                roomId,
+                                address.toLowerCase()
+                            ),
                         })
                     )
 

@@ -2,7 +2,6 @@ import { ButtonHTMLAttributes, useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
 import {
-    useDelegatedAccount,
     useDelegatedClient,
     useIsDelegatingAccess,
     useRequestPrivateKey,
@@ -21,17 +20,17 @@ import MessageInput from './MessageInput'
 import MessageInputPlaceholder from './MessageInputPlaceholder'
 import Text from '../Text'
 import SecondaryButton from '../SecondaryButton'
-import { useDispatch } from 'react-redux'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { MemberAction } from '$/features/member'
 import RoomPropertiesModal from '../modals/RoomPropertiesModal'
 import useCanGrant from '$/hooks/useCanGrant'
 import useJustInvited from '$/hooks/useJustInvited'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import Spinner from '$/components/Spinner'
 import {
+    useAcceptInvite,
     useIsDelegatedAccountBeingPromoted,
     useIsInviteBeingAccepted,
+    usePromoteDelegatedAccount,
 } from '$/features/member/hooks'
 
 export default function Conversation() {
@@ -132,23 +131,19 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     useLoadCurrentDelegationAbilityEffect(StreamPermission.SUBSCRIBE)
 
-    const dispatch = useDispatch()
-
-    const delegatedAccount = useDelegatedAccount()
-
-    const selectedRoomId = useSelectedRoomId()
-
-    const address = useWalletAccount()
-
-    const justInvited = useJustInvited(selectedRoomId, address)
+    const justInvited = useJustInvited(useSelectedRoomId(), useWalletAccount())
 
     const isDelegatingAccess = useIsDelegatingAccess()
 
-    const isBeingAccepted = useIsInviteBeingAccepted(selectedRoomId, address)
+    const isBeingAccepted = useIsInviteBeingAccepted()
 
-    const isPromoting = useIsDelegatedAccountBeingPromoted(selectedRoomId, delegatedAccount)
+    const isPromoting = useIsDelegatedAccountBeingPromoted()
 
     const requestPrivateKey = useRequestPrivateKey()
+
+    const acceptInvite = useAcceptInvite()
+
+    const promoteDelegatedAccount = usePromoteDelegatedAccount()
 
     if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.
@@ -177,23 +172,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
         return (
             <MessageInputPlaceholder
                 cta={
-                    <Cta
-                        busy={isBeingAccepted}
-                        disabled={isBeingAccepted}
-                        onClick={() => {
-                            if (!selectedRoomId || !delegatedAccount || !address) {
-                                return
-                            }
-
-                            dispatch(
-                                MemberAction.acceptInvite({
-                                    address,
-                                    delegatedAddress: delegatedAccount,
-                                    roomId: selectedRoomId,
-                                })
-                            )
-                        }}
-                    >
+                    <Cta busy={isBeingAccepted} disabled={isBeingAccepted} onClick={acceptInvite}>
                         {isBeingAccepted ? <>Accepting the invite…</> : <>Accept</>}
                     </Cta>
                 }
@@ -210,18 +189,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
                     <Cta
                         busy={isPromoting}
                         disabled={isPromoting}
-                        onClick={() => {
-                            if (!selectedRoomId || !delegatedAccount) {
-                                return
-                            }
-
-                            dispatch(
-                                MemberAction.promoteDelegatedAccount({
-                                    roomId: selectedRoomId,
-                                    delegatedAddress: delegatedAccount,
-                                })
-                            )
-                        }}
+                        onClick={promoteDelegatedAccount}
                     >
                         {isPromoting ? <>Promoting…</> : <>Promote it</>}
                     </Cta>

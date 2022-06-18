@@ -32,6 +32,7 @@ import CheckIcon from '$/icons/CheckIcon'
 import { AliasAction } from '$/features/alias'
 import focus from '$/utils/focus'
 import Form from '$/components/Form'
+import formatFingerprint from '$/utils/formatFingerprint'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -65,6 +66,11 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                 MemberAction.remove({
                     roomId: selectedRoomId,
                     address,
+                    fingerprint: formatFingerprint(
+                        MemberAction.remove.toString(),
+                        selectedRoomId,
+                        address.toLowerCase()
+                    ),
                 })
             )
         },
