@@ -7,21 +7,30 @@ import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 function* onAcceptInviteAction({
-    payload: { roomId, address, delegatedAddress },
+    payload: { roomId, member, delegatedAddress, provider, requester, streamrClient },
 }: ReturnType<typeof MemberAction.acceptInvite>) {
     let succeeded = false
 
     try {
-        yield call(setMultiplePermissions, roomId, [
+        yield call(
+            setMultiplePermissions,
+            roomId,
+            [
+                {
+                    user: delegatedAddress,
+                    permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
+                },
+                {
+                    user: member,
+                    permissions: [StreamPermission.GRANT, StreamPermission.EDIT],
+                },
+            ],
             {
-                user: delegatedAddress,
-                permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
-            },
-            {
-                user: address,
-                permissions: [StreamPermission.GRANT, StreamPermission.EDIT],
-            },
-        ])
+                provider,
+                requester,
+                streamrClient,
+            }
+        )
 
         succeeded = true
     } catch (e) {

@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { MemberAction } from '$/features/member'
 import formatFingerprint from '$/utils/formatFingerprint'
+import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 
 type Props = ModalProps & {
     canModifyMembers?: boolean
@@ -28,18 +29,27 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
 
     const roomId = useSelectedRoomId()
 
+    const provider = useWalletProvider()
+
+    const streamrClient = useWalletClient()
+
+    const requester = useWalletAccount()
+
     return (
         <Modal {...props} setOpen={setOpen} onClose={onClose} title="Add member">
             <Form
                 onSubmit={() => {
-                    if (!canSubmit || !roomId) {
+                    if (!canSubmit || !roomId || !provider || !streamrClient || !requester) {
                         return
                     }
 
                     dispatch(
                         MemberAction.add({
                             roomId,
-                            address,
+                            member: address,
+                            provider,
+                            requester,
+                            streamrClient,
                             fingerprint: formatFingerprint(
                                 MemberAction.add.toString(),
                                 roomId,

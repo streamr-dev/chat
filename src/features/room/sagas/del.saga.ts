@@ -32,7 +32,7 @@ function* onDeleteAction({ payload: roomId }: ReturnType<typeof RoomAction.delet
 
         yield preflight({
             provider,
-            address: account,
+            requester: account,
         })
 
         const client: StreamrClient = yield call(getWalletClient)

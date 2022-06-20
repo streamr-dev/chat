@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import focus from '$/utils/focus'
 import Form from '../Form'
 import db from '$/utils/db'
@@ -45,8 +45,10 @@ export default function MessageInput({ disabled = false }: Props) {
         )
     }
 
+    const streamrClient = useWalletClient()
+
     function send(content: string) {
-        if (!selectedRoomId) {
+        if (!selectedRoomId || !streamrClient || !account) {
             return
         }
 
@@ -55,6 +57,8 @@ export default function MessageInput({ disabled = false }: Props) {
                 roomId: selectedRoomId,
                 content,
                 type: MessageType.Text,
+                requester: account,
+                streamrClient,
             })
         )
     }

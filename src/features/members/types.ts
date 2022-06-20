@@ -8,10 +8,5 @@ export interface IMember {
 }
 
 export interface MembersState {
-    items: {
-        [index: RoomId]: {
-            members: IMember[]
-            fetching: boolean
-        }
-    }
+    [index: RoomId]: IMember[]
 }

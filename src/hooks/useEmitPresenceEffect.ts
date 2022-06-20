@@ -6,7 +6,7 @@ import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/h
 import { MessageAction } from '$/features/message'
 import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
 import { RoomId } from '$/features/room/types'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 
 export default function useEmitPresenceEffect(roomId: undefined | RoomId) {
     const address = useWalletAccount()
@@ -23,11 +23,26 @@ export default function useEmitPresenceEffect(roomId: undefined | RoomId) {
 
     useLoadAbilityEffect(roomId, delegatedAccount, StreamPermission.PUBLISH)
 
+    const streamrClient = useWalletClient()
+
     useEffect(() => {
-        if (!delegatedClient || !tickedAt || !roomId || !address || !canDelegatedPublish) {
+        if (
+            !delegatedClient ||
+            !tickedAt ||
+            !roomId ||
+            !address ||
+            !canDelegatedPublish ||
+            !streamrClient
+        ) {
             return
         }
 
-        dispatch(MessageAction.emitPresence(roomId))
-    }, [delegatedClient, tickedAt, roomId, address, canDelegatedPublish])
+        dispatch(
+            MessageAction.emitPresence({
+                roomId,
+                requester: address,
+                streamrClient,
+            })
+        )
+    }, [delegatedClient, tickedAt, roomId, address, canDelegatedPublish, streamrClient])
 }

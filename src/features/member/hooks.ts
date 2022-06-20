@@ -8,7 +8,7 @@ import { MemberAction } from '$/features/member'
 import { useCallback } from 'react'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 
 export function useNoticedAt(address: OptionalAddress): number {
     return useSelector(selectNoticedAt(address)) || Number.NEGATIVE_INFINITY
@@ -25,7 +25,7 @@ export function useIsMemberBeingRemoved(roomId: undefined | RoomId, address: Opt
 }
 
 export function useIsInviteBeingAccepted() {
-    const address = useWalletAccount()
+    const member = useWalletAccount()
 
     const delegatedAddress = useDelegatedAccount()
 
@@ -33,11 +33,11 @@ export function useIsInviteBeingAccepted() {
 
     return useSelector(
         selectFlag(
-            roomId && address && delegatedAddress
+            roomId && member && delegatedAddress
                 ? formatFingerprint(
                       MemberAction.acceptInvite.toString(),
                       roomId,
-                      address.toLowerCase(),
+                      member.toLowerCase(),
                       delegatedAddress.toLowerCase()
                   )
                 : undefined
@@ -52,27 +52,36 @@ export function useAcceptInvite() {
 
     const roomId = useSelectedRoomId()
 
-    const address = useWalletAccount()
+    const member = useWalletAccount()
+
+    const provider = useWalletProvider()
+
+    const requester = useWalletAccount()
+
+    const streamrClient = useWalletClient()
 
     return useCallback(() => {
-        if (!address || !delegatedAddress || !roomId) {
+        if (!member || !delegatedAddress || !roomId || !provider || !requester || !streamrClient) {
             return
         }
 
         dispatch(
             MemberAction.acceptInvite({
-                address,
+                member,
                 delegatedAddress,
                 roomId,
+                provider,
+                requester,
+                streamrClient,
                 fingerprint: formatFingerprint(
                     MemberAction.acceptInvite.toString(),
                     roomId,
-                    address.toLowerCase(),
+                    member.toLowerCase(),
                     delegatedAddress.toLowerCase()
                 ),
             })
         )
-    }, [address, delegatedAddress, roomId])
+    }, [member, delegatedAddress, roomId, provider, requester, streamrClient])
 }
 
 export function useIsDelegatedAccountBeingPromoted() {
@@ -100,8 +109,14 @@ export function usePromoteDelegatedAccount() {
 
     const delegatedAddress = useDelegatedAccount()
 
+    const provider = useWalletProvider()
+
+    const requester = useWalletAccount()
+
+    const streamrClient = useWalletClient()
+
     return useCallback(() => {
-        if (!roomId || !delegatedAddress) {
+        if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient) {
             return
         }
 
@@ -109,6 +124,9 @@ export function usePromoteDelegatedAccount() {
             MemberAction.promoteDelegatedAccount({
                 roomId,
                 delegatedAddress,
+                provider,
+                requester,
+                streamrClient,
                 fingerprint: formatFingerprint(
                     MemberAction.promoteDelegatedAccount.toString(),
                     roomId,
@@ -116,5 +134,5 @@ export function usePromoteDelegatedAccount() {
                 ),
             })
         )
-    }, [roomId, delegatedAddress])
+    }, [roomId, delegatedAddress, provider, requester, streamrClient])
 }

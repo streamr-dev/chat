@@ -7,13 +7,15 @@ import { StreamPermission } from 'streamr-client'
 import { toast } from 'react-toastify'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 
-function* onAddAction({ payload: { roomId, address } }: ReturnType<typeof MemberAction.add>) {
+function* onAddAction({
+    payload: { roomId, member, provider, requester, streamrClient },
+}: ReturnType<typeof MemberAction.add>) {
     let toastId
 
     let succeeded = false
 
     try {
-        toastId = toast.loading(`Adding "${address}"…`, {
+        toastId = toast.loading(`Adding "${member}"…`, {
             position: 'bottom-left',
             autoClose: false,
             type: 'info',
@@ -21,12 +23,21 @@ function* onAddAction({ payload: { roomId, address } }: ReturnType<typeof Member
             hideProgressBar: true,
         })
 
-        yield call(setMultiplePermissions, roomId, [
+        yield call(
+            setMultiplePermissions,
+            roomId,
+            [
+                {
+                    user: member,
+                    permissions: [StreamPermission.GRANT],
+                },
+            ],
             {
-                user: address,
-                permissions: [StreamPermission.GRANT],
-            },
-        ])
+                provider,
+                requester,
+                streamrClient,
+            }
+        )
 
         succeeded = true
     } catch (e) {
@@ -38,11 +49,11 @@ function* onAddAction({ payload: { roomId, address } }: ReturnType<typeof Member
     }
 
     if (succeeded) {
-        success(`"${address}" successfully added.`)
+        success(`"${member}" successfully added.`)
         return
     }
 
-    error(`Failed to add "${address}".`)
+    error(`Failed to add "${member}".`)
 }
 
 export default function* add() {

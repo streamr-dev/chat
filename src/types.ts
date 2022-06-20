@@ -54,7 +54,7 @@ export type EnhancedStream = Stream & {
 
 export interface PreflightParams {
     provider: Provider
-    address: Address
+    requester: Address
 }
 
 export type PrivacyOption = {

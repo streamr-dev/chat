@@ -33,11 +33,11 @@ function* onToggleStorageNodeAction({
 
         const provider: Provider = yield call(getWalletProvider)
 
-        const account: Address = yield call(getWalletAccount)
+        const requester: Address = yield call(getWalletAccount)
 
         yield preflight({
             provider,
-            address: account,
+            requester,
         })
 
         yield put(

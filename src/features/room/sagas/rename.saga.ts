@@ -62,11 +62,11 @@ function* onRenameAction({ payload: { roomId, name } }: ReturnType<typeof RoomAc
 
         const provider: Provider = yield call(getWalletProvider)
 
-        const address: Address = yield call(getWalletAccount)
+        const requester: Address = yield call(getWalletAccount)
 
         yield preflight({
             provider,
-            address,
+            requester,
         })
 
         stream.description = name

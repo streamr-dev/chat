@@ -7,17 +7,26 @@ import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 function* onPromoteDelegatedAccountAction({
-    payload: { roomId, delegatedAddress },
+    payload: { roomId, delegatedAddress, provider, requester, streamrClient },
 }: ReturnType<typeof MemberAction.promoteDelegatedAccount>) {
     let succeeded = false
 
     try {
-        yield call(setMultiplePermissions, roomId, [
+        yield call(
+            setMultiplePermissions,
+            roomId,
+            [
+                {
+                    user: delegatedAddress,
+                    permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
+                },
+            ],
             {
-                user: delegatedAddress,
-                permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
-            },
-        ])
+                provider,
+                requester,
+                streamrClient,
+            }
+        )
 
         succeeded = true
     } catch (e) {

@@ -43,7 +43,7 @@ function* onCreateAction({
 
         yield preflight({
             provider,
-            address: account,
+            requester: account,
         })
 
         const client: StreamrClient = yield call(getWalletClient)

@@ -8,14 +8,5 @@ function selectSelf(state: State): MembersState {
 }
 
 export function selectMembers(roomId: undefined | RoomId): (state: State) => IMember[] {
-    return createSelector(
-        selectSelf,
-        ({ items }) => (roomId ? items[roomId]?.members : undefined) || []
-    )
-}
-
-export function selectFetching(roomId: undefined | RoomId): (state: State) => boolean {
-    return createSelector(selectSelf, ({ items }) =>
-        roomId ? Boolean(items[roomId]?.fetching) : false
-    )
+    return createSelector(selectSelf, (substate) => (roomId ? substate[roomId] : undefined) || [])
 }

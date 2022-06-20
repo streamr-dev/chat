@@ -32,7 +32,7 @@ function* onChangePrivacyAction({
 
         yield preflight({
             provider,
-            address: account,
+            requester: account,
         })
 
         yield put(

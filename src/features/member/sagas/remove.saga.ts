@@ -5,16 +5,27 @@ import { call } from 'redux-saga/effects'
 import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 
-function* onRemoveAction({ payload: { roomId, address } }: ReturnType<typeof MemberAction.remove>) {
+function* onRemoveAction({
+    payload: { roomId, member, provider, requester, streamrClient },
+}: ReturnType<typeof MemberAction.remove>) {
     let succeeded = false
 
     try {
-        yield call(setMultiplePermissions, roomId, [
+        yield call(
+            setMultiplePermissions,
+            roomId,
+            [
+                {
+                    user: member,
+                    permissions: [],
+                },
+            ],
             {
-                user: address,
-                permissions: [],
-            },
-        ])
+                provider,
+                requester,
+                streamrClient,
+            }
+        )
 
         succeeded = true
     } catch (e) {
@@ -22,11 +33,11 @@ function* onRemoveAction({ payload: { roomId, address } }: ReturnType<typeof Mem
     }
 
     if (succeeded) {
-        success(`"${address}" successfully removed.`)
+        success(`"${member}" successfully removed.`)
         return
     }
 
-    error(`Failed to remove "${address}".`)
+    error(`Failed to remove "${member}".`)
 }
 
 export default function* remove() {
