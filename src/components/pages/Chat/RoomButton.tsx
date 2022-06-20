@@ -4,7 +4,7 @@ import tw from 'twin.macro'
 import { PermissionAction } from '$/features/permission'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useEmitPresenceEffect from '$/hooks/useEmitPresenceEffect'
 import useIntercept from '$/hooks/useIntercept'
 import useJustInvited from '$/hooks/useJustInvited'
@@ -18,6 +18,7 @@ import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import EyeIcon from '$/icons/EyeIcon'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import PinIcon from '$/icons/PinIcon'
+import formatFingerprint from '$/utils/formatFingerprint'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -41,13 +42,26 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const address = useWalletAccount()
 
+    const streamrClient = useWalletClient()
+
     useEffect(() => {
-        if (!address) {
+        if (!address || !streamrClient) {
             return
         }
 
-        dispatch(PermissionAction.fetchAll({ roomId: id, address }))
-    }, [id, address])
+        dispatch(
+            PermissionAction.fetchAll({
+                roomId: id,
+                address,
+                streamrClient,
+                fingerprint: formatFingerprint(
+                    PermissionAction.fetchAll.toString(),
+                    id,
+                    address.toLowerCase()
+                ),
+            })
+        )
+    }, [id, address, streamrClient])
 
     const justInvited = useJustInvited(id, address)
 

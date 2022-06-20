@@ -6,8 +6,9 @@ import { Address, OptionalAddress } from '$/types'
 import { useDelegatedAccount } from '../delegation/hooks'
 import { useSelectedRoomId } from '../room/hooks'
 import { RoomId } from '../room/types'
-import { useWalletAccount } from '../wallet/hooks'
-import { selectAbility, selectAbilityCache, selectPermissions } from './selectors'
+import { useWalletAccount, useWalletClient } from '../wallet/hooks'
+import { selectAbility, selectPermissionCache, selectPermissions } from './selectors'
+import formatFingerprint from '$/utils/formatFingerprint'
 
 export function useAbility(
     roomId: undefined | RoomId,
@@ -30,7 +31,7 @@ function useAbilityCache(
     address: OptionalAddress,
     permission: StreamPermission
 ) {
-    return useSelector(selectAbilityCache(roomId, address, permission))
+    return useSelector(selectPermissionCache(roomId, address, permission))
 }
 
 export function useLoadAbilityEffect(
@@ -42,8 +43,10 @@ export function useLoadAbilityEffect(
 
     const cache = useAbilityCache(roomId, address, permission)
 
+    const streamrClient = useWalletClient()
+
     useEffect(() => {
-        if (!roomId || !address) {
+        if (!roomId || !address || !streamrClient) {
             return
         }
 
@@ -52,9 +55,16 @@ export function useLoadAbilityEffect(
                 roomId,
                 address,
                 permission,
+                streamrClient,
+                fingerprint: formatFingerprint(
+                    PermissionAction.fetch.toString(),
+                    roomId,
+                    address.toLowerCase(),
+                    permission
+                ),
             })
         )
-    }, [roomId, address, permission, cache])
+    }, [roomId, address, permission, cache, streamrClient])
 }
 
 export function useLoadCurrentAbilityEffect(permission: StreamPermission) {

@@ -3,6 +3,9 @@ import { StreamPermission } from 'streamr-client'
 import { Address, OptionalAddress, State } from '$/types'
 import { RoomId } from '../room/types'
 import { PermissionState } from './types'
+import { selectFlag } from '$/features/flag/selectors'
+import formatFingerprint from '$/utils/formatFingerprint'
+import { PermissionAction } from '$/features/permission'
 
 function selectSelf(state: State): PermissionState {
     return state.permission
@@ -13,48 +16,52 @@ export function selectAbility(
     address: undefined | null | Address,
     permission: StreamPermission
 ): (state: State) => boolean {
-    return createSelector(selectSelf, ({ items }) =>
+    return createSelector(selectSelf, (substate) =>
         roomId && address
-            ? Boolean(items[roomId]?.[address.toLowerCase()]?.permissions[permission]?.value)
+            ? Boolean(substate[roomId]?.[address.toLowerCase()]?.[permission]?.value)
             : false
     )
 }
 
-export function selectAbilityCache(
+export function selectPermissionCache(
     roomId: undefined | RoomId,
     address: OptionalAddress,
     permission: StreamPermission
 ) {
-    return createSelector(selectSelf, ({ items }) =>
-        roomId && address
-            ? items[roomId]?.[address.toLowerCase()]?.permissions[permission]?.cache || 0
-            : 0
+    return createSelector(selectSelf, (substate) =>
+        roomId && address ? substate[roomId]?.[address.toLowerCase()]?.[permission]?.cache || 0 : 0
     )
 }
 
-export function selectAbilityFetching(
+export function selectIsFetchingPermission(
     roomId: undefined | RoomId,
     address: OptionalAddress,
     permission: StreamPermission
 ) {
-    return createSelector(selectSelf, ({ items }) =>
+    return selectFlag(
         roomId && address
-            ? Boolean(items[roomId]?.[address.toLowerCase()]?.permissions[permission]?.fetching)
-            : false
+            ? formatFingerprint(
+                  PermissionAction.fetch.toString(),
+                  roomId,
+                  address.toLowerCase(),
+                  permission
+              )
+            : undefined
     )
 }
 
-export function selectBulkFetching(roomId: undefined | RoomId, address: OptionalAddress) {
-    return createSelector(selectSelf, ({ items }) =>
-        roomId && address ? Boolean(items[roomId]?.[address.toLowerCase()]?.fetchingAll) : false
+export function selectIsFetchingAll(roomId: undefined | RoomId, address: OptionalAddress) {
+    return selectFlag(
+        roomId && address
+            ? formatFingerprint(PermissionAction.fetchAll.toString(), roomId, address.toLowerCase())
+            : undefined
     )
 }
 
 export function selectPermissions(roomId: undefined | RoomId, address: OptionalAddress) {
     return createSelector(
         selectSelf,
-        ({ items }) =>
-            (roomId && address ? items[roomId]?.[address.toLowerCase()]?.permissions : undefined) ||
-            {}
+        (substate) =>
+            (roomId && address ? substate[roomId]?.[address.toLowerCase()] : undefined) || {}
     )
 }
