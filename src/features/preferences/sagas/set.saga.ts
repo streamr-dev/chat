@@ -1,61 +1,42 @@
 import { PreferencesAction } from '$/features/preferences'
-import { selectIsSetting } from '$/features/preferences/selectors'
 import { RoomAction } from '$/features/room'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import { error } from '$/utils/toaster'
-import { put, select, takeEvery } from 'redux-saga/effects'
+import { put, takeEvery } from 'redux-saga/effects'
 
-export default function* set() {
-    yield takeEvery(PreferencesAction.set, function* ({ payload }) {
-        let dirty = false
+function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
+    let succeeded = false
 
+    try {
         const owner = payload.owner.toLowerCase()
 
-        try {
-            const isSetting: boolean = yield select(selectIsSetting(owner))
+        const numUpdated: number = yield db.preferences
+            .where('owner')
+            .equals(owner)
+            .modify({
+                ...payload,
+                owner,
+            })
 
-            if (isSetting) {
-                return
-            }
-
-            yield put(
-                PreferencesAction.setIsSetting({
-                    owner,
-                    state: true,
-                })
-            )
-
-            dirty = true
-
-            const numUpdated: number = yield db.preferences
-                .where('owner')
-                .equals(owner)
-                .modify({
-                    ...payload,
-                    owner,
-                })
-
-            if (numUpdated === 0) {
-                yield db.preferences.add({ ...payload, owner })
-            }
-
-            if ('selectedRoomId' in payload) {
-                yield put(RoomAction.select(payload.selectedRoomId))
-            }
-        } catch (e) {
-            handleError(e)
-
-            error('Failed to update preferences.')
-        } finally {
-            if (dirty) {
-                yield put(
-                    PreferencesAction.setIsSetting({
-                        owner,
-                        state: false,
-                    })
-                )
-            }
+        if (numUpdated === 0) {
+            yield db.preferences.add({ ...payload, owner })
         }
-    })
+
+        if ('selectedRoomId' in payload) {
+            yield put(RoomAction.select(payload.selectedRoomId))
+        }
+
+        succeeded = true
+    } catch (e) {
+        handleError(e)
+    }
+
+    if (!succeeded) {
+        error('Failed to update preferences.')
+    }
+}
+
+export default function* set() {
+    yield takeEvery(PreferencesAction.set, onSetAction)
 }
