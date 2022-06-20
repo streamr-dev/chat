@@ -24,19 +24,17 @@ async function getRoomIds(client: StreamrClient, account: string) {
     return ids
 }
 
-function* onFetchAction() {
+function* onFetchAction({
+    payload: { requester, streamrClient },
+}: ReturnType<typeof RoomsAction.fetch>) {
     try {
-        const client: StreamrClient = yield call(getWalletClient)
-
-        const account: Address = yield call(getWalletAccount)
-
-        const ids: RoomId[] = yield getRoomIds(client, account)
+        const ids: RoomId[] = yield getRoomIds(streamrClient, requester)
 
         for (let i = 0; i < ids.length; i++) {
             yield put(
                 RoomAction.fetch({
                     roomId: ids[i],
-                    address: account,
+                    address: requester,
                 })
             )
         }

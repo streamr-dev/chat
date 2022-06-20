@@ -9,7 +9,7 @@ import AddRoomModal from '../../modals/AddRoomModal'
 import Conversation from '../../Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import UtilityButton from '../../UtilityButton'
 import Text from '../../Text'
 import useRooms from '$/hooks/useRooms'
@@ -43,11 +43,20 @@ function UnwrappedChat() {
 
     const account = useWalletAccount()
 
+    const streamrClient = useWalletClient()
+
     useEffect(() => {
-        if (account) {
-            dispatch(RoomsAction.fetch())
+        if (!account || !streamrClient) {
+            return
         }
-    }, [dispatch, account])
+
+        dispatch(
+            RoomsAction.fetch({
+                requester: account,
+                streamrClient,
+            })
+        )
+    }, [dispatch, account, streamrClient])
 
     useProviderChangeEffect()
 
