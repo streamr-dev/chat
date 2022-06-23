@@ -1,23 +1,24 @@
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PreferencesAction } from '$/features/preferences'
 import { RoomAction } from '$/features/room'
-import { selectIsPinning } from '$/features/room/selectors'
 import { IRoom, RoomId } from '$/features/room/types'
-import getWalletClient from '$/sagas/getWalletClient.saga'
 import { Address, EnhancedStream } from '$/types'
 import db from '$/utils/db'
 import getStream from '$/utils/getStream'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
+import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error } from '$/utils/toaster'
 import { toast } from 'react-toastify'
-import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 
-function* pinRemote(owner: Address, roomId: RoomId) {
-    const client: StreamrClient = yield call(getWalletClient)
+interface PinRemoteOptions {
+    streamrClient: StreamrClient
+}
 
-    const stream: undefined | EnhancedStream = yield getStream(client, roomId)
+function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemoteOptions) {
+    const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
 
     if (!stream) {
         throw new RoomNotFoundError(roomId)
@@ -60,67 +61,26 @@ function* pinRemote(owner: Address, roomId: RoomId) {
     )
 }
 
-function* onPinUnpinAction({
-    type,
-    payload: { owner: address, roomId },
-}: ReturnType<typeof RoomAction.pin | typeof RoomAction.unpin>) {
-    let dirty = false
-
+function* onPinAction({
+    payload: { roomId, requester, streamrClient },
+}: ReturnType<typeof RoomAction.pin>) {
     let toastId
 
-    const owner = address.toLowerCase()
-
-    const pinned = type === RoomAction.pin.toString()
-
     try {
-        const isPinning: boolean = yield select(selectIsPinning(owner, roomId))
+        toastId = toast.loading(`Pinning "${roomId}"…`, {
+            position: 'bottom-left',
+            autoClose: false,
+            type: 'info',
+            closeOnClick: false,
+            hideProgressBar: true,
+        })
 
-        if (isPinning) {
-            return
-        }
-
-        yield put(
-            RoomAction.setPinning({
-                owner,
-                roomId,
-                state: true,
-            })
-        )
-
-        dirty = true
-
-        if (pinned) {
-            toastId = toast.loading(`Pinning "${roomId}"…`, {
-                position: 'bottom-left',
-                autoClose: false,
-                type: 'info',
-                closeOnClick: false,
-                hideProgressBar: true,
-            })
-
-            yield call(pinRemote, owner, roomId)
-
-            return
-        }
-
-        yield db.rooms.where({ owner, id: roomId }).modify({ pinned })
-
-        yield put(RoomAction.sync(roomId))
+        yield call(pinRemote, requester.toLowerCase(), roomId, { streamrClient })
     } catch (e) {
         handleError(e)
 
-        error(pinned ? 'Pinning failed.' : 'Unpinning failed.')
+        error('Pinning failed.')
     } finally {
-        if (dirty) {
-            yield put(
-                RoomAction.setPinning({
-                    owner,
-                    roomId,
-                    state: false,
-                })
-            )
-        }
-
         if (toastId) {
             toast.dismiss(toastId)
         }
@@ -128,6 +88,5 @@ function* onPinUnpinAction({
 }
 
 export default function* pin() {
-    yield takeEvery(RoomAction.pin, onPinUnpinAction)
-    yield takeEvery(RoomAction.unpin, onPinUnpinAction)
+    yield takeEveryUnique(RoomAction.pin, onPinAction)
 }

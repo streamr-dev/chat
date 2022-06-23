@@ -32,7 +32,8 @@ function* onFetchAction({
             yield put(
                 RoomAction.fetch({
                     roomId: ids[i],
-                    address: requester,
+                    requester,
+                    streamrClient,
                 })
             )
         }

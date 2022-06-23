@@ -19,6 +19,7 @@ import EyeIcon from '$/icons/EyeIcon'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import PinIcon from '$/icons/PinIcon'
 import formatFingerprint from '$/utils/formatFingerprint'
+import { Flag } from '$/features/flag/types'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -32,17 +33,30 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const { id, name } = room
 
+    const requester = useWalletAccount()
+
+    const streamrClient = useWalletClient()
+
     useEffect(() => {
-        dispatch(RoomAction.sync(id))
-    }, [dispatch, id])
+        if (!requester || !streamrClient) {
+            return
+        }
+
+        dispatch(
+            RoomAction.sync({
+                roomId: id,
+                requester,
+                streamrClient,
+                fingerprint: Flag.isSyncingRoom(id),
+            })
+        )
+    }, [dispatch, id, requester])
 
     useIntercept(id)
 
     useEmitPresenceEffect(id)
 
     const address = useWalletAccount()
-
-    const streamrClient = useWalletClient()
 
     useEffect(() => {
         if (!address || !streamrClient) {

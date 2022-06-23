@@ -19,6 +19,7 @@ import useProviderChangeEffect from '$/hooks/useProviderChangeEffect'
 import { RoomsAction } from '$/features/rooms'
 import useListenForInvitesEffect from '$/hooks/useListenForInvitesEffect'
 import { RoomAction } from '$/features/room'
+import { Flag } from '$/features/flag/types'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -60,8 +61,19 @@ function UnwrappedChat() {
 
     useProviderChangeEffect()
 
-    useListenForInvitesEffect(account, (roomId, address) => {
-        dispatch(RoomAction.registerInvite({ roomId, address }))
+    useListenForInvitesEffect(account, (roomId, invitee) => {
+        if (!streamrClient) {
+            return
+        }
+
+        dispatch(
+            RoomAction.registerInvite({
+                roomId,
+                invitee,
+                streamrClient,
+                fingerprint: Flag.isInviteBeingRegistered(roomId, invitee),
+            })
+        )
     })
 
     return (

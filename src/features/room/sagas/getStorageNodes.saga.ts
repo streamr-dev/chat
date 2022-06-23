@@ -1,33 +1,16 @@
-import { call, put, select, takeEvery } from 'redux-saga/effects'
-import StreamrClient, { Stream } from 'streamr-client'
+import { put } from 'redux-saga/effects'
+import { Stream } from 'streamr-client'
 import { RoomAction } from '..'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getWalletClient from '$/sagas/getWalletClient.saga'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
-import { selectGettingStorageNodes } from '../selectors'
+import takeEveryUnique from '$/utils/takeEveryUnique'
 
 function* onGetStorageNodesAction({
-    payload: roomId,
+    payload: { roomId, streamrClient },
 }: ReturnType<typeof RoomAction.getStorageNodes>) {
-    const getting: boolean = yield select(selectGettingStorageNodes(roomId))
-
-    if (getting) {
-        // Already in the middle of getting the nodes. Skipping.
-        return
-    }
-
-    yield put(
-        RoomAction.setGettingStorageNodes({
-            roomId,
-            state: true,
-        })
-    )
-
     try {
-        const client: StreamrClient = yield call(getWalletClient)
-
-        const stream: Stream = yield getStream(client, roomId)
+        const stream: Stream = yield getStream(streamrClient, roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)
@@ -44,15 +27,8 @@ function* onGetStorageNodesAction({
     } catch (e) {
         handleError(e)
     }
-
-    yield put(
-        RoomAction.setGettingStorageNodes({
-            roomId,
-            state: false,
-        })
-    )
 }
 
 export default function* getStorageNodes() {
-    yield takeEvery(RoomAction.getStorageNodes, onGetStorageNodesAction)
+    yield takeEveryUnique(RoomAction.getStorageNodes, onGetStorageNodesAction)
 }

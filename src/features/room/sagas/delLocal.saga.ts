@@ -1,15 +1,13 @@
-import { call, takeEvery } from 'redux-saga/effects'
+import { takeEvery } from 'redux-saga/effects'
 import { RoomAction } from '..'
-import { Address } from '$/types'
-import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 
-function* onDeleteLocalAction({ payload: roomId }: ReturnType<typeof RoomAction.deleteLocal>) {
+function* onDeleteLocalAction({
+    payload: { roomId, requester },
+}: ReturnType<typeof RoomAction.deleteLocal>) {
     try {
-        const address: Address = yield call(getWalletAccount)
-
-        const owner = address.toLowerCase()
+        const owner = requester.toLowerCase()
 
         // Delete room messages for a given record owner.
         yield db.messages.where({ owner, roomId }).delete()

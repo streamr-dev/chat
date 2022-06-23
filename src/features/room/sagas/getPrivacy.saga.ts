@@ -1,27 +1,17 @@
-import { call, put, select, takeEvery } from 'redux-saga/effects'
-import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
+import { put } from 'redux-saga/effects'
+import { Stream, StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
 import { PrivacySetting } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getWalletClient from '$/sagas/getWalletClient.saga'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
-import { selectPrivacyGetting } from '../selectors'
+import takeEveryUnique from '$/utils/takeEveryUnique'
 
-function* onGetPrivacyAction({ payload: roomId }: ReturnType<typeof RoomAction.getPrivacy>) {
-    const getting: boolean = yield select(selectPrivacyGetting(roomId))
-
-    if (getting) {
-        // Already in the process. Skipping.
-        return
-    }
-
-    yield put(RoomAction.setGettingPrivacy({ roomId, state: true }))
-
+function* onGetPrivacyAction({
+    payload: { roomId, streamrClient },
+}: ReturnType<typeof RoomAction.getPrivacy>) {
     try {
-        const client: StreamrClient = yield call(getWalletClient)
-
-        const stream: undefined | Stream = yield getStream(client, roomId)
+        const stream: undefined | Stream = yield getStream(streamrClient, roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)
@@ -41,10 +31,8 @@ function* onGetPrivacyAction({ payload: roomId }: ReturnType<typeof RoomAction.g
     } catch (e) {
         handleError(e)
     }
-
-    yield put(RoomAction.setGettingPrivacy({ roomId, state: false }))
 }
 
 export default function* getPrivacy() {
-    yield takeEvery(RoomAction.getPrivacy, onGetPrivacyAction)
+    yield takeEveryUnique(RoomAction.getPrivacy, onGetPrivacyAction)
 }
