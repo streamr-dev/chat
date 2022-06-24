@@ -2,20 +2,27 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import db from '$/utils/db'
+import handleError from '$/utils/handleError'
 
 export default function useMessages() {
-    const selectedRoomId = useSelectedRoomId() || ''
+    const roomId = useSelectedRoomId()
 
-    const account = useWalletAccount() || ''
+    const owner = useWalletAccount()?.toLowerCase()
 
-    return useLiveQuery(
-        () =>
-            db.messages
-                .where({
-                    owner: account.toLowerCase(),
-                    roomId: selectedRoomId,
-                })
-                .toArray(),
-        [selectedRoomId, account]
-    )
+    return useLiveQuery(async () => {
+        if (owner && roomId) {
+            try {
+                return await db.messages
+                    .where({
+                        owner,
+                        roomId,
+                    })
+                    .toArray()
+            } catch (e) {
+                handleError
+            }
+        }
+
+        return []
+    }, [roomId, owner])
 }
