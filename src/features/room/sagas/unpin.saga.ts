@@ -29,6 +29,6 @@ function* onUnpinAction({
     }
 }
 
-export default function* pin() {
+export default function* unpin() {
     yield takeEveryUnique(RoomAction.unpin, onUnpinAction)
 }

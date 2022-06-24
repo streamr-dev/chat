@@ -18,6 +18,7 @@ import { IRoom, RoomId, RoomState } from './types'
 import setVisibility from '$/features/room/sagas/setVisibility.saga'
 import pin from '$/features/room/sagas/pin.saga'
 import StreamrClient from 'streamr-client'
+import unpin from '$/features/room/sagas/unpin.saga'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -241,6 +242,7 @@ export function* roomSaga() {
         setVisibility(),
         sync(),
         toggleStorageNode(),
+        unpin(),
     ])
 }
 
