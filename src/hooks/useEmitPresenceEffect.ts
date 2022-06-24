@@ -35,5 +35,5 @@ export default function useEmitPresenceEffect(roomId: undefined | RoomId) {
                 streamrClient: delegatedClient,
             })
         )
-    }, [delegatedClient, tickedAt, roomId, address, canDelegatedPublish, streamrClient])
+    }, [delegatedClient, tickedAt, roomId, address, canDelegatedPublish])
 }
