@@ -135,8 +135,6 @@ export const RoomAction = {
         'room: fetch'
     ),
 
-    setEditingName: createAction<{ roomId: RoomId; state: boolean }>('room: set editing name'),
-
     setPersistingName: createAction<{ roomId: RoomId; state: boolean }>(
         'room: set persisting name'
     ),

@@ -11,6 +11,7 @@ import db from '$/utils/db'
 import RedundantRenameError from '$/errors/RedundantRenameError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Flag } from '$/features/flag/types'
+import { FlagAction } from '$/features/flag'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },
@@ -64,7 +65,7 @@ function* onRenameAction({
             })
         )
 
-        yield put(RoomAction.setEditingName({ roomId, state: false }))
+        yield put(FlagAction.unset(Flag.isRoomNameBeingEdited(roomId)))
 
         success('Room renamed successfully.')
     } catch (e) {

@@ -33,6 +33,7 @@ import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import PinIcon from '$/icons/PinIcon'
 import { Flag } from '$/features/flag/types'
+import { FlagAction } from '$/features/flag'
 
 type Props = {
     canModifyMembers?: boolean
@@ -72,7 +73,7 @@ export default function ConversationHeader({
     function edit() {
         if (canEdit && selectedRoomId && !isRoomBeingDeleted) {
             dispatch(RoomAction.setTransientName({ roomId: selectedRoomId, name }))
-            dispatch(RoomAction.setEditingName({ roomId: selectedRoomId, state: true }))
+            dispatch(FlagAction.set(Flag.isRoomNameBeingEdited(selectedRoomId)))
         }
     }
 
@@ -82,23 +83,13 @@ export default function ConversationHeader({
         }
 
         if (!canEdit) {
-            dispatch(
-                RoomAction.setEditingName({
-                    roomId: selectedRoomId,
-                    state: false,
-                })
-            )
+            dispatch(FlagAction.unset(Flag.isRoomNameBeingEdited(selectedRoomId)))
         }
     }, [canEdit, selectedRoomId])
 
     function onKeyDown(e: React.KeyboardEvent) {
         if (e.key === 'Escape' && selectedRoomId) {
-            dispatch(
-                RoomAction.setEditingName({
-                    roomId: selectedRoomId,
-                    state: false,
-                })
-            )
+            dispatch(FlagAction.unset(Flag.isRoomNameBeingEdited(selectedRoomId)))
         }
     }
 
@@ -271,10 +262,7 @@ export default function ConversationHeader({
                                 }
 
                                 dispatch(
-                                    RoomAction.setEditingName({
-                                        roomId: selectedRoomId,
-                                        state: false,
-                                    })
+                                    FlagAction.unset(Flag.isRoomNameBeingEdited(selectedRoomId))
                                 )
                             }}
                         >
