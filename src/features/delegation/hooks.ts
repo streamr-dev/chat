@@ -17,11 +17,7 @@ export function useDelegatedAccount() {
 export function useIsDelegatingAccess() {
     const delegator = useWalletAccount()
 
-    if (!delegator) {
-        return false
-    }
-
-    return useSelector(selectFlag(Flag.isAccessBeingDelegated(delegator)))
+    return useSelector(selectFlag(delegator ? Flag.isAccessBeingDelegated(delegator) : undefined))
 }
 
 export function useRequestPrivateKey() {
@@ -42,7 +38,7 @@ export function useRequestPrivateKey() {
             DelegationAction.requestPrivateKey({
                 owner,
                 provider,
-                fingerprint: Flag.isPrivateKeyBeingRequested(owner),
+                fingerprint: Flag.isAccessBeingDelegated(owner),
             })
         )
     }, [owner, provider, isDelegatingAccess])

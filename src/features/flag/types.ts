@@ -77,10 +77,6 @@ export const Flag = {
         ])
     },
 
-    isPrivateKeyBeingRequested(requester: Address): string {
-        return JSON.stringify(['isPrivateKeyBeingRequested', requester.toLowerCase()])
-    },
-
     isDetectingMembers(roomId: RoomId): string {
         return JSON.stringify(['isDetectingMembers', roomId])
     },

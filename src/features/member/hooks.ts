@@ -15,11 +15,9 @@ export function useNoticedAt(address: OptionalAddress): number {
 }
 
 export function useIsMemberBeingRemoved(roomId: undefined | RoomId, address: OptionalAddress) {
-    if (!roomId || !address) {
-        return false
-    }
-
-    return useSelector(selectFlag(Flag.isMemberBeingRemoved(roomId, address)))
+    return useSelector(
+        selectFlag(roomId && address ? Flag.isMemberBeingRemoved(roomId, address) : undefined)
+    )
 }
 
 export function useIsInviteBeingAccepted() {
@@ -29,11 +27,13 @@ export function useIsInviteBeingAccepted() {
 
     const roomId = useSelectedRoomId()
 
-    if (!roomId || !member || !delegatedAddress) {
-        return false
-    }
-
-    return useSelector(selectFlag(Flag.isInviteBeingAccepted(roomId, member, delegatedAddress)))
+    return useSelector(
+        selectFlag(
+            roomId && member && delegatedAddress
+                ? Flag.isInviteBeingAccepted(roomId, member, delegatedAddress)
+                : undefined
+        )
+    )
 }
 
 export function useAcceptInvite() {
@@ -75,11 +75,13 @@ export function useIsDelegatedAccountBeingPromoted() {
 
     const delegatedAddress = useDelegatedAccount()
 
-    if (!roomId || !delegatedAddress) {
-        return false
-    }
-
-    return useSelector(selectFlag(Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress)))
+    return useSelector(
+        selectFlag(
+            roomId && delegatedAddress
+                ? Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress)
+                : undefined
+        )
+    )
 }
 
 export function usePromoteDelegatedAccount() {

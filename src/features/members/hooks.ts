@@ -9,9 +9,5 @@ export function useMembers(roomId: undefined | RoomId) {
 }
 
 export function useMembersFetching(roomId: undefined | RoomId) {
-    if (!roomId) {
-        return false
-    }
-
-    return useSelector(selectFlag(Flag.areMembersBeingFetched(roomId)))
+    return useSelector(selectFlag(roomId ? Flag.areMembersBeingFetched(roomId) : undefined))
 }
