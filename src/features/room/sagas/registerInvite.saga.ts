@@ -6,6 +6,7 @@ import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { info } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import getUserPermissions from '$/utils/getUserPermissions'
 
 function* onRegisterInviteAction({
     payload: { roomId, invitee, streamrClient },
@@ -21,13 +22,9 @@ function* onRegisterInviteAction({
                 throw new RoomNotFoundError(roomId)
             }
 
-            const hasPermission: boolean = yield stream.hasPermission({
-                user: invitee,
-                permission: StreamPermission.GRANT,
-                allowPublic: false,
-            })
+            const [permissions] = yield getUserPermissions(invitee, stream)
 
-            if (!hasPermission) {
+            if (permissions.length !== 1 || permissions[0] !== StreamPermission.GRANT) {
                 throw new Error('`GRANT` permission could not be found')
             }
         })
