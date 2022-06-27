@@ -9,8 +9,6 @@ import { StreamPermission } from 'streamr-client'
 function* onPromoteDelegatedAccountAction({
     payload: { roomId, delegatedAddress, provider, requester, streamrClient },
 }: ReturnType<typeof MemberAction.promoteDelegatedAccount>) {
-    let succeeded = false
-
     try {
         yield call(
             setMultiplePermissions,
@@ -28,17 +26,12 @@ function* onPromoteDelegatedAccountAction({
             }
         )
 
-        succeeded = true
+        success('Delegated account has been promoted.')
     } catch (e) {
         handleError(e)
-    }
 
-    if (succeeded) {
-        success('Delegated account has been promoted.')
-        return
+        error('Failed to promote the delegated account.')
     }
-
-    error('Failed to promote the delegated account.')
 }
 
 export default function* promoteDelegatedAccount() {

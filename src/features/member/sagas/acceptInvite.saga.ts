@@ -9,8 +9,6 @@ import { StreamPermission } from 'streamr-client'
 function* onAcceptInviteAction({
     payload: { roomId, member, delegatedAddress, provider, requester, streamrClient },
 }: ReturnType<typeof MemberAction.acceptInvite>) {
-    let succeeded = false
-
     try {
         yield call(
             setMultiplePermissions,
@@ -32,17 +30,12 @@ function* onAcceptInviteAction({
             }
         )
 
-        succeeded = true
+        success('Invite accepted.')
     } catch (e) {
         handleError(e)
-    }
 
-    if (succeeded) {
-        success('Invite accepted.')
-        return
+        error('Failed to accept an invite.')
     }
-
-    error('Failed to accept an invite.')
 }
 
 export default function* acceptInvite() {

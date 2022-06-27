@@ -6,8 +6,6 @@ import { error } from '$/utils/toaster'
 import { put, takeEvery } from 'redux-saga/effects'
 
 function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
-    let succeeded = false
-
     try {
         const owner = payload.owner.toLowerCase()
 
@@ -26,13 +24,9 @@ function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
         if ('selectedRoomId' in payload) {
             yield put(RoomAction.select(payload.selectedRoomId))
         }
-
-        succeeded = true
     } catch (e) {
         handleError(e)
-    }
 
-    if (!succeeded) {
         error('Failed to update preferences.')
     }
 }

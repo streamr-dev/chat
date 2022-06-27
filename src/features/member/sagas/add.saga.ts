@@ -12,8 +12,6 @@ function* onAddAction({
 }: ReturnType<typeof MemberAction.add>) {
     let toastId
 
-    let succeeded = false
-
     try {
         toastId = toast.loading(`Adding "${member}"…`, {
             position: 'bottom-left',
@@ -39,21 +37,16 @@ function* onAddAction({
             }
         )
 
-        succeeded = true
+        success(`"${member}" successfully added.`)
     } catch (e) {
         handleError(e)
+
+        error(`Failed to add "${member}".`)
     } finally {
         if (toastId) {
             toast.dismiss(toastId)
         }
     }
-
-    if (succeeded) {
-        success(`"${member}" successfully added.`)
-        return
-    }
-
-    error(`Failed to add "${member}".`)
 }
 
 export default function* add() {

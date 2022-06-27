@@ -1,7 +1,5 @@
 import { IRecord, PrivacySetting } from '$/types'
 
-// @TODO That's the new state shape. Refactor accordingly.
-
 export interface RoomState {
     selectedRoomId?: RoomId
     cache: {

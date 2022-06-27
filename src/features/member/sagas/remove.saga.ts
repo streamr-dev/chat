@@ -8,8 +8,6 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 function* onRemoveAction({
     payload: { roomId, member, provider, requester, streamrClient },
 }: ReturnType<typeof MemberAction.remove>) {
-    let succeeded = false
-
     try {
         yield call(
             setMultiplePermissions,
@@ -27,17 +25,12 @@ function* onRemoveAction({
             }
         )
 
-        succeeded = true
+        success(`"${member}" successfully removed.`)
     } catch (e) {
         handleError(e)
-    }
 
-    if (succeeded) {
-        success(`"${member}" successfully removed.`)
-        return
+        error(`Failed to remove "${member}".`)
     }
-
-    error(`Failed to remove "${member}".`)
 }
 
 export default function* remove() {
