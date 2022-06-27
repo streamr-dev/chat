@@ -24,7 +24,7 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
 
     const { label } = integrations.get(integrationId!)!
 
-    const account = useWalletAccount()
+    const account = useWalletAccount() || ''
 
     const { copy, isCopied } = useCopy()
 
@@ -60,7 +60,7 @@ export default function AccountModal({ onChangeClick, ...props }: Props) {
             </div>
             <TextField
                 readOnly
-                defaultValue={trunc(account!)}
+                value={trunc(account)}
                 css={[
                     tw`
                         mt-3
