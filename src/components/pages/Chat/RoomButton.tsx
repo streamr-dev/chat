@@ -18,7 +18,6 @@ import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import EyeIcon from '$/icons/EyeIcon'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import PinIcon from '$/icons/PinIcon'
-import formatFingerprint from '$/utils/formatFingerprint'
 import { Flag } from '$/features/flag/types'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
@@ -68,11 +67,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
                 roomId: id,
                 address,
                 streamrClient,
-                fingerprint: formatFingerprint(
-                    PermissionAction.fetchAll.toString(),
-                    id,
-                    address.toLowerCase()
-                ),
+                fingerprint: Flag.isFetchingAllPermissions(id, address),
             })
         )
     }, [id, address, streamrClient])

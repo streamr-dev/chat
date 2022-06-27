@@ -1,6 +1,6 @@
 import { selectFlag } from '$/features/flag/selectors'
+import { Flag } from '$/features/flag/types'
 import { IdenticonAction } from '$/features/identicons'
-import formatFingerprint from '$/utils/formatFingerprint'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIdenticon } from './selectors'
@@ -10,12 +10,8 @@ export function useIdenticon(seed: IdenticonSeed) {
     return useSelector(selectIdenticon(seed))
 }
 
-function retrieveFingerprint(seed: IdenticonSeed) {
-    return formatFingerprint(IdenticonAction.retrieve.toString(), seed)
-}
-
 export function useIsRetrievingIdenticon(seed: IdenticonSeed) {
-    return useSelector(selectFlag(retrieveFingerprint(seed)))
+    return useSelector(selectFlag(Flag.isIdenticonBeingRetrieved(seed)))
 }
 
 export function useRetrieveIdenticon() {
@@ -25,7 +21,7 @@ export function useRetrieveIdenticon() {
         dispatch(
             IdenticonAction.retrieve({
                 seed,
-                fingerprint: retrieveFingerprint(seed),
+                fingerprint: Flag.isIdenticonBeingRetrieved(seed),
             })
         )
     }, [])

@@ -32,7 +32,7 @@ import CheckIcon from '$/icons/CheckIcon'
 import { AliasAction } from '$/features/alias'
 import focus from '$/utils/focus'
 import Form from '$/components/Form'
-import formatFingerprint from '$/utils/formatFingerprint'
+import { Flag } from '$/features/flag/types'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -75,11 +75,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                     provider,
                     requester,
                     streamrClient,
-                    fingerprint: formatFingerprint(
-                        MemberAction.remove.toString(),
-                        selectedRoomId,
-                        member.toLowerCase()
-                    ),
+                    fingerprint: Flag.isMemberBeingRemoved(selectedRoomId, member),
                 })
             )
         },
@@ -99,7 +95,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             MembersAction.detect({
                 roomId: selectedRoomId,
                 streamrClient,
-                fingerprint: formatFingerprint(MembersAction.detect.toString(), selectedRoomId),
+                fingerprint: Flag.isDetectingMembers(selectedRoomId),
             })
         )
     }, [dispatch, selectedRoomId, open, streamrClient])

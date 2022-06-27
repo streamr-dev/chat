@@ -3,25 +3,23 @@ import { OptionalAddress } from '$/types'
 import { selectNoticedAt } from './selectors'
 import { RoomId } from '$/features/room/types'
 import { selectFlag } from '$/features/flag/selectors'
-import formatFingerprint from '$/utils/formatFingerprint'
 import { MemberAction } from '$/features/member'
 import { useCallback } from 'react'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { Flag } from '$/features/flag/types'
 
 export function useNoticedAt(address: OptionalAddress): number {
     return useSelector(selectNoticedAt(address)) || Number.NEGATIVE_INFINITY
 }
 
 export function useIsMemberBeingRemoved(roomId: undefined | RoomId, address: OptionalAddress) {
-    return useSelector(
-        selectFlag(
-            roomId && address
-                ? formatFingerprint(MemberAction.remove.toString(), roomId, address.toLowerCase())
-                : undefined
-        )
-    )
+    if (!roomId || !address) {
+        return false
+    }
+
+    return useSelector(selectFlag(Flag.isMemberBeingRemoved(roomId, address)))
 }
 
 export function useIsInviteBeingAccepted() {
@@ -31,18 +29,11 @@ export function useIsInviteBeingAccepted() {
 
     const roomId = useSelectedRoomId()
 
-    return useSelector(
-        selectFlag(
-            roomId && member && delegatedAddress
-                ? formatFingerprint(
-                      MemberAction.acceptInvite.toString(),
-                      roomId,
-                      member.toLowerCase(),
-                      delegatedAddress.toLowerCase()
-                  )
-                : undefined
-        )
-    )
+    if (!roomId || !member || !delegatedAddress) {
+        return false
+    }
+
+    return useSelector(selectFlag(Flag.isInviteBeingAccepted(roomId, member, delegatedAddress)))
 }
 
 export function useAcceptInvite() {
@@ -73,12 +64,7 @@ export function useAcceptInvite() {
                 provider,
                 requester,
                 streamrClient,
-                fingerprint: formatFingerprint(
-                    MemberAction.acceptInvite.toString(),
-                    roomId,
-                    member.toLowerCase(),
-                    delegatedAddress.toLowerCase()
-                ),
+                fingerprint: Flag.isInviteBeingAccepted(roomId, member, delegatedAddress),
             })
         )
     }, [member, delegatedAddress, roomId, provider, requester, streamrClient])
@@ -89,17 +75,11 @@ export function useIsDelegatedAccountBeingPromoted() {
 
     const delegatedAddress = useDelegatedAccount()
 
-    return useSelector(
-        selectFlag(
-            roomId && delegatedAddress
-                ? formatFingerprint(
-                      MemberAction.promoteDelegatedAccount.toString(),
-                      roomId,
-                      delegatedAddress.toLowerCase()
-                  )
-                : undefined
-        )
-    )
+    if (!roomId || !delegatedAddress) {
+        return false
+    }
+
+    return useSelector(selectFlag(Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress)))
 }
 
 export function usePromoteDelegatedAccount() {
@@ -127,11 +107,7 @@ export function usePromoteDelegatedAccount() {
                 provider,
                 requester,
                 streamrClient,
-                fingerprint: formatFingerprint(
-                    MemberAction.promoteDelegatedAccount.toString(),
-                    roomId,
-                    delegatedAddress.toLowerCase()
-                ),
+                fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
             })
         )
     }, [roomId, delegatedAddress, provider, requester, streamrClient])

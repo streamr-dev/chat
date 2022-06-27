@@ -113,7 +113,7 @@ function UnwrappedChat() {
                             {(rooms || []).map((room) => (
                                 <RoomButton
                                     key={room.id}
-                                    active={selectedRoom && selectedRoom.id === room.id}
+                                    active={selectedRoom ? selectedRoom.id === room.id : false}
                                     room={room}
                                 />
                             ))}

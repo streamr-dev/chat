@@ -1,8 +1,8 @@
+import { Flag } from '$/features/flag/types'
 import { MembersAction } from '$/features/members'
 import { PermissionAction } from '$/features/permission'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
-import formatFingerprint from '$/utils/formatFingerprint'
 import preflight from '$/utils/preflight'
 import { Provider } from '@web3-react/types'
 import { put } from 'redux-saga/effects'
@@ -33,7 +33,7 @@ export default function* setMultiplePermissions(
         MembersAction.detect({
             roomId,
             streamrClient,
-            fingerprint: formatFingerprint(MembersAction.detect.toString(), roomId),
+            fingerprint: Flag.isDetectingMembers(roomId),
         })
     )
 

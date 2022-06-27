@@ -4,8 +4,7 @@ import { Address, OptionalAddress, State } from '$/types'
 import { RoomId } from '../room/types'
 import { PermissionState } from './types'
 import { selectFlag } from '$/features/flag/selectors'
-import formatFingerprint from '$/utils/formatFingerprint'
-import { PermissionAction } from '$/features/permission'
+import { Flag } from '$/features/flag/types'
 
 function selectSelf(state: State): PermissionState {
     return state.permission
@@ -38,24 +37,19 @@ export function selectIsFetchingPermission(
     address: OptionalAddress,
     permission: StreamPermission
 ) {
-    return selectFlag(
-        roomId && address
-            ? formatFingerprint(
-                  PermissionAction.fetch.toString(),
-                  roomId,
-                  address.toLowerCase(),
-                  permission
-              )
-            : undefined
-    )
+    if (!roomId || !address) {
+        return () => false
+    }
+
+    return selectFlag(Flag.isPermissionBeingFetched(roomId, address, permission))
 }
 
 export function selectIsFetchingAll(roomId: undefined | RoomId, address: OptionalAddress) {
-    return selectFlag(
-        roomId && address
-            ? formatFingerprint(PermissionAction.fetchAll.toString(), roomId, address.toLowerCase())
-            : undefined
-    )
+    if (!roomId || !address) {
+        return () => false
+    }
+
+    return selectFlag(Flag.isFetchingAllPermissions(roomId, address))
 }
 
 export function selectPermissions(roomId: undefined | RoomId, address: OptionalAddress) {

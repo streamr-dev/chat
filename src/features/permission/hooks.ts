@@ -8,7 +8,7 @@ import { useSelectedRoomId } from '../room/hooks'
 import { RoomId } from '../room/types'
 import { useWalletAccount, useWalletClient } from '../wallet/hooks'
 import { selectAbility, selectPermissionCache, selectPermissions } from './selectors'
-import formatFingerprint from '$/utils/formatFingerprint'
+import { Flag } from '$/features/flag/types'
 
 export function useAbility(
     roomId: undefined | RoomId,
@@ -56,12 +56,7 @@ export function useLoadAbilityEffect(
                 address,
                 permission,
                 streamrClient,
-                fingerprint: formatFingerprint(
-                    PermissionAction.fetch.toString(),
-                    roomId,
-                    address.toLowerCase(),
-                    permission
-                ),
+                fingerprint: Flag.isPermissionBeingFetched(roomId, address, permission),
             })
         )
     }, [roomId, address, permission, cache, streamrClient])

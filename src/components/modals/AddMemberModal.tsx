@@ -9,8 +9,8 @@ import { Address } from '$/types'
 import { useDispatch } from 'react-redux'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { MemberAction } from '$/features/member'
-import formatFingerprint from '$/utils/formatFingerprint'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { Flag } from '$/features/flag/types'
 
 type Props = ModalProps & {
     canModifyMembers?: boolean
@@ -50,11 +50,7 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
                             provider,
                             requester,
                             streamrClient,
-                            fingerprint: formatFingerprint(
-                                MemberAction.add.toString(),
-                                roomId,
-                                address.toLowerCase()
-                            ),
+                            fingerprint: Flag.isMemberBeingAdded(roomId, address),
                         })
                     )
 
