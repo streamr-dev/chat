@@ -121,7 +121,7 @@ export default function ConversationHeader({
         )
     }
 
-    const { icon: PrivacyIcon, desc: privacyDesc } = usePrivacyOption(selectedRoomId)
+    const { icon: PrivacyIcon, label: privacyLabel } = usePrivacyOption(selectedRoomId)
 
     useEffect(() => {
         if (!selectedRoomId || !streamrClient) {
@@ -186,6 +186,7 @@ export default function ConversationHeader({
                                         outline-none
                                         p-0
                                         w-full
+                                        h-9
                                         text-[1.375rem]
                                         placeholder:text-[#59799C]
                                         disabled:bg-transparent
@@ -218,30 +219,47 @@ export default function ConversationHeader({
                                     `,
                                 ]}
                             >
-                                {isPersistingRoomName ? (
-                                    <>
-                                        Renaming "{name}" to "{transientRoomName}"…
-                                    </>
-                                ) : (
-                                    <>The room name will be publicly visible.</>
-                                )}
+                                <Text>
+                                    {isPersistingRoomName ? (
+                                        <>
+                                            Renaming "{name}" to "{transientRoomName}"…
+                                        </>
+                                    ) : (
+                                        <>The room name will be publicly visible.</>
+                                    )}
+                                </Text>
                             </div>
                         </div>
                     ) : (
-                        <div
-                            onDoubleClick={edit}
-                            css={[
-                                css`
-                                    line-height: normal;
-                                `,
-                                tw`
-                                    text-[1.625rem]
-                                    font-medium
-                                    select-none
-                                `,
-                            ]}
-                        >
-                            <Text tw="truncate">{name || 'Unnamed room'}&zwnj;</Text>
+                        <div onDoubleClick={edit}>
+                            <div
+                                css={[
+                                    css`
+                                        line-height: normal;
+                                    `,
+                                    tw`
+                                        h-9
+                                        text-[1.625rem]
+                                        font-medium
+                                        select-none
+                                    `,
+                                ]}
+                            >
+                                <Text tw="truncate">{name || 'Unnamed room'}&zwnj;</Text>
+                            </div>
+                            <div
+                                css={[
+                                    tw`
+                                        flex
+                                        items-center
+                                        text-[#59799C]
+                                        text-[0.875rem]
+                                    `,
+                                ]}
+                            >
+                                <PrivacyIcon tw="w-3 mr-1.5 ml-0.5" />
+                                <Text>{privacyLabel} room</Text>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -275,107 +293,119 @@ export default function ConversationHeader({
                     </div>
                 ) : (
                     <>
-                        <div
-                            title={privacyDesc}
-                            css={[
-                                tw`
-                                    flex
-                                    items-center
-                                    justify-center
-                                    text-[#59799C]
-                                    rounded-full
-                                    uppercase
-                                    w-10
-                                    h-10
-                                    mr-3
-                                `,
-                            ]}
-                        >
-                            <PrivacyIcon />
-                        </div>
-                        <div tw="flex min-w-[92px] justify-end">
-                            {canEdit && !isRoomBeingDeleted && (
-                                <ActionButton onClick={edit}>
-                                    <EditIcon />
-                                </ActionButton>
-                            )}
-                            <MoreActionButton
-                                icon={<DeleteIcon />}
-                                deleting={isRoomBeingDeleted}
-                                active={roomMenuOpen}
-                                tw="ml-3"
-                                onClick={() => {
-                                    if (!isRoomBeingDeleted) {
-                                        setRoomMenuOpen((current) => !current)
-                                    }
-                                }}
-                                ref={setMenuAnchorEl}
-                            />
-                            {roomMenuOpen && (
-                                <Menu
-                                    anchorEl={menuAnchorEl}
-                                    onMouseDownOutside={() => void setRoomMenuOpen(false)}
+                        {canEdit && !isRoomBeingDeleted && (
+                            <ActionButton onClick={edit}>
+                                <EditIcon />
+                            </ActionButton>
+                        )}
+                        <MoreActionButton
+                            icon={<DeleteIcon />}
+                            deleting={isRoomBeingDeleted}
+                            active={roomMenuOpen}
+                            tw="ml-3"
+                            onClick={() => {
+                                if (!isRoomBeingDeleted) {
+                                    setRoomMenuOpen((current) => !current)
+                                }
+                            }}
+                            ref={setMenuAnchorEl}
+                        />
+                        {roomMenuOpen && (
+                            <Menu
+                                anchorEl={menuAnchorEl}
+                                onMouseDownOutside={() => void setRoomMenuOpen(false)}
+                            >
+                                {canModifyMembers && (
+                                    <>
+                                        <MenuButtonItem
+                                            icon={<AddMemberIcon />}
+                                            onClick={() => {
+                                                if (typeof onAddMemberClick === 'function') {
+                                                    onAddMemberClick()
+                                                }
+
+                                                setRoomMenuOpen(false)
+                                            }}
+                                        >
+                                            Add member
+                                        </MenuButtonItem>
+                                        <MenuButtonItem
+                                            icon={<EditMembersIcon />}
+                                            onClick={() => {
+                                                if (typeof onEditMembersClick === 'function') {
+                                                    onEditMembersClick()
+                                                }
+
+                                                setRoomMenuOpen(false)
+                                            }}
+                                        >
+                                            Edit members
+                                        </MenuButtonItem>
+                                        <MenuSeparatorItem />
+                                    </>
+                                )}
+                                <MenuButtonItem
+                                    icon={<CopyIcon />}
+                                    onClick={() => {
+                                        if (selectedRoomId) {
+                                            copy(selectedRoomId)
+
+                                            success('Copied to clipboard.')
+                                        }
+                                        setRoomMenuOpen(false)
+                                    }}
                                 >
-                                    {canModifyMembers && (
-                                        <>
-                                            <MenuButtonItem
-                                                icon={<AddMemberIcon />}
-                                                onClick={() => {
-                                                    if (typeof onAddMemberClick === 'function') {
-                                                        onAddMemberClick()
-                                                    }
-
-                                                    setRoomMenuOpen(false)
-                                                }}
-                                            >
-                                                Add member
-                                            </MenuButtonItem>
-                                            <MenuButtonItem
-                                                icon={<EditMembersIcon />}
-                                                onClick={() => {
-                                                    if (typeof onEditMembersClick === 'function') {
-                                                        onEditMembersClick()
-                                                    }
-
-                                                    setRoomMenuOpen(false)
-                                                }}
-                                            >
-                                                Edit members
-                                            </MenuButtonItem>
-                                            <MenuSeparatorItem />
-                                        </>
-                                    )}
-                                    <MenuButtonItem
-                                        icon={<CopyIcon />}
-                                        onClick={() => {
-                                            if (selectedRoomId) {
-                                                copy(selectedRoomId)
-
-                                                success('Copied to clipboard.')
-                                            }
-                                            setRoomMenuOpen(false)
-                                        }}
-                                    >
-                                        Copy room id
-                                    </MenuButtonItem>
-                                    <MenuButtonItem
-                                        icon={
-                                            <EyeIcon
-                                                open={!isVisible}
-                                                css={[
-                                                    tw`
+                                    Copy room id
+                                </MenuButtonItem>
+                                <MenuButtonItem
+                                    icon={
+                                        <EyeIcon
+                                            open={!isVisible}
+                                            css={[
+                                                tw`
                                                         w-4
                                                     `,
+                                            ]}
+                                        />
+                                    }
+                                    onClick={() => {
+                                        if (selectedRoomId && account) {
+                                            dispatch(
+                                                RoomAction.setVisibility({
+                                                    roomId: selectedRoomId,
+                                                    owner: account,
+                                                    visible: !isVisible,
+                                                })
+                                            )
+                                        }
+
+                                        setRoomMenuOpen(false)
+                                    }}
+                                >
+                                    {isVisible ? <>Hide room</> : <>Unhide room</>}
+                                </MenuButtonItem>
+                                {isPinned && (
+                                    <MenuButtonItem
+                                        icon={
+                                            <PinIcon
+                                                css={[
+                                                    tw`
+                                                            w-2.5
+                                                        `,
                                                 ]}
                                             />
                                         }
                                         onClick={() => {
-                                            if (selectedRoomId && account) {
+                                            if (selectedRoomId && account && streamrClient) {
                                                 dispatch(
-                                                    RoomAction.setVisibility({
+                                                    RoomAction.unpin({
                                                         roomId: selectedRoomId,
-                                                        owner: account,
-                                                        visible: !isVisible,
+                                                        requester: account,
+                                                        streamrClient,
+                                                        fingerprint: Flag.isRoomBeingUnpinned(
+                                                            selectedRoomId,
+                                                            account
+                                                        ),
                                                     })
                                                 )
                                             }
@@ -383,88 +413,54 @@ export default function ConversationHeader({
                                             setRoomMenuOpen(false)
                                         }}
                                     >
-                                        {isVisible ? <>Hide room</> : <>Unhide room</>}
+                                        Unpin
                                     </MenuButtonItem>
-                                    {isPinned && (
-                                        <MenuButtonItem
-                                            icon={
-                                                <PinIcon
-                                                    css={[
-                                                        tw`
-                                                            w-2.5
-                                                        `,
-                                                    ]}
-                                                />
+                                )}
+                                {(canEdit || canDelete) && <MenuSeparatorItem />}
+                                {canEdit && (
+                                    <MenuButtonItem
+                                        icon={<GearIcon />}
+                                        onClick={() => {
+                                            if (typeof onRoomPropertiesClick === 'function') {
+                                                onRoomPropertiesClick()
                                             }
-                                            onClick={() => {
-                                                if (selectedRoomId && account && streamrClient) {
-                                                    dispatch(
-                                                        RoomAction.unpin({
-                                                            roomId: selectedRoomId,
-                                                            requester: account,
-                                                            streamrClient,
-                                                            fingerprint: Flag.isRoomBeingUnpinned(
-                                                                selectedRoomId,
-                                                                account
-                                                            ),
-                                                        })
-                                                    )
-                                                }
 
-                                                setRoomMenuOpen(false)
-                                            }}
-                                        >
-                                            Unpin
-                                        </MenuButtonItem>
-                                    )}
-                                    {(canEdit || canDelete) && <MenuSeparatorItem />}
-                                    {canEdit && (
-                                        <MenuButtonItem
-                                            icon={<GearIcon />}
-                                            onClick={() => {
-                                                if (typeof onRoomPropertiesClick === 'function') {
-                                                    onRoomPropertiesClick()
-                                                }
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
+                                        Properties
+                                    </MenuButtonItem>
+                                )}
+                                {canDelete && (
+                                    <MenuButtonItem
+                                        icon={<DeleteIcon />}
+                                        onClick={() => {
+                                            if (
+                                                account &&
+                                                selectedRoomId &&
+                                                provider &&
+                                                streamrClient
+                                            ) {
+                                                dispatch(
+                                                    RoomAction.delete({
+                                                        roomId: selectedRoomId,
+                                                        provider,
+                                                        requester: account,
+                                                        streamrClient,
+                                                        fingerprint:
+                                                            Flag.isRoomBeingDeleted(selectedRoomId),
+                                                    })
+                                                )
+                                            }
 
-                                                setRoomMenuOpen(false)
-                                            }}
-                                        >
-                                            Properties
-                                        </MenuButtonItem>
-                                    )}
-                                    {canDelete && (
-                                        <MenuButtonItem
-                                            icon={<DeleteIcon />}
-                                            onClick={() => {
-                                                if (
-                                                    account &&
-                                                    selectedRoomId &&
-                                                    provider &&
-                                                    streamrClient
-                                                ) {
-                                                    dispatch(
-                                                        RoomAction.delete({
-                                                            roomId: selectedRoomId,
-                                                            provider,
-                                                            requester: account,
-                                                            streamrClient,
-                                                            fingerprint:
-                                                                Flag.isRoomBeingDeleted(
-                                                                    selectedRoomId
-                                                                ),
-                                                        })
-                                                    )
-                                                }
-
-                                                setRoomMenuOpen(false)
-                                            }}
-                                        >
-                                            Delete room
-                                        </MenuButtonItem>
-                                    )}
-                                </Menu>
-                            )}
-                        </div>
+                                            setRoomMenuOpen(false)
+                                        }}
+                                    >
+                                        Delete room
+                                    </MenuButtonItem>
+                                )}
+                            </Menu>
+                        )}
                     </>
                 )}
             </Form>
