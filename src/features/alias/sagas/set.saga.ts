@@ -49,10 +49,6 @@ async function update(owner: Address, address: Address, value: string) {
         numModded = await db.aliases
             .where({ owner: owner.toLowerCase(), address: address.toLowerCase() })
             .modify({ alias: value, updatedAt: Date.now() })
-
-        if (numModded > 0) {
-            success(`Updated a nickname for ${address}.`)
-        }
     } catch (e) {
         error(`Failed to update a nickname for ${address}.`)
 
