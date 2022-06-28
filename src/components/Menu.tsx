@@ -125,14 +125,16 @@ type MenuItemProps<T = ClickableHTMLElementProps> = T & {
 }
 
 function MenuItem({ tag: Tag = 'button', icon, children, ...propsProp }: MenuItemProps) {
-    let props: unknown
+    let props = {}
 
-    if (Tag === 'button') {
-        props = propsProp as ButtonHTMLAttributes<HTMLButtonElement>
-    }
-
-    if (Tag === 'a') {
-        props = propsProp as AnchorHTMLAttributes<HTMLAnchorElement>
+    switch (Tag) {
+        case 'button':
+            props = propsProp as ButtonHTMLAttributes<HTMLButtonElement>
+            break
+        case 'a':
+            props = propsProp as AnchorHTMLAttributes<HTMLAnchorElement>
+            break
+        default:
     }
 
     return (
