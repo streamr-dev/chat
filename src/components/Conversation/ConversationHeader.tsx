@@ -363,8 +363,8 @@ export default function ConversationHeader({
                                             open={!isVisible}
                                             css={[
                                                 tw`
-                                                        w-4
-                                                    `,
+                                                    w-4
+                                                `,
                                             ]}
                                         />
                                     }
@@ -390,8 +390,8 @@ export default function ConversationHeader({
                                             <PinIcon
                                                 css={[
                                                     tw`
-                                                            w-2.5
-                                                        `,
+                                                        w-2.5
+                                                    `,
                                                 ]}
                                             />
                                         }

@@ -1,11 +1,25 @@
 import { SVGAttributes } from 'react'
+import tw from 'twin.macro'
 
 export default function PinIcon(props: SVGAttributes<SVGElement>) {
     return (
-        <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-            {/* Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. */}
+        <svg
+            {...props}
+            width="9"
+            height="12"
+            viewBox="0 0 9 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            css={[
+                tw`
+                    translate-y-[5%]
+                `,
+            ]}
+        >
             <path
-                d="M32 32C32 14.33 46.33 0 64 0H320C337.7 0 352 14.33 352 32C352 49.67 337.7 64 320 64H290.5L301.9 212.2C338.6 232.1 367.5 265.4 381.4 306.9L382.4 309.9C385.6 319.6 383.1 330.4 377.1 338.7C371.9 347.1 362.3 352 352 352H32C21.71 352 12.05 347.1 6.04 338.7C.0259 330.4-1.611 319.6 1.642 309.9L2.644 306.9C16.47 265.4 45.42 232.1 82.14 212.2L93.54 64H64C46.33 64 32 49.67 32 32zM224 384V480C224 497.7 209.7 512 192 512C174.3 512 160 497.7 160 480V384H224z"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M8.167 6.34c0-.273-.199-.495-.467-.57a1.748 1.748 0 0 1-1.283-1.687V1.167H7c.32 0 .583-.263.583-.584A.585.585 0 0 0 7 0H1.167a.585.585 0 0 0-.584.583c0 .321.263.584.584.584h.583v2.916c0 .805-.542 1.482-1.283 1.686-.269.076-.467.298-.467.572v.076C0 6.737.263 7 .583 7h2.905l.012 4.083c0 .321.263.584.583.584a.586.586 0 0 0 .584-.584L4.655 7h2.928a.586.586 0 0 0 .584-.583V6.34z"
                 fill="currentColor"
             />
         </svg>
