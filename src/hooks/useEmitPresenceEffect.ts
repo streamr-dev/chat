@@ -28,6 +28,12 @@ export default function useEmitPresenceEffect(roomId: undefined | RoomId) {
             return
         }
 
-        dispatch(MessageAction.emitPresence(roomId))
+        dispatch(
+            MessageAction.emitPresence({
+                roomId,
+                requester: address,
+                streamrClient: delegatedClient,
+            })
+        )
     }, [delegatedClient, tickedAt, roomId, address, canDelegatedPublish])
 }

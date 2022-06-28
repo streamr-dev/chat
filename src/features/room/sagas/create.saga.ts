@@ -1,6 +1,6 @@
 import db from '$/utils/db'
-import { call, put, takeEvery } from 'redux-saga/effects'
-import StreamrClient, {
+import { put, takeEvery } from 'redux-saga/effects'
+import {
     Stream,
     StreamPermission,
     StreamProperties,
@@ -8,22 +8,22 @@ import StreamrClient, {
 } from 'streamr-client'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
-import { Provider } from '@web3-react/types'
-import { Address, PrivacySetting } from '$/types'
+import { PrivacySetting } from '$/types'
 import { error, success } from '$/utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
-import getWalletClient from '$/sagas/getWalletClient.saga'
-import getWalletAccount from '$/sagas/getWalletAccount.saga'
-import getWalletProvider from '$/sagas/getWalletProvider.saga'
 import { toast } from 'react-toastify'
 import { PreferencesAction } from '$/features/preferences'
+import { Flag } from '$/features/flag/types'
 
 function* onCreateAction({
     payload: {
         privacy,
         storage,
         params: { owner, ...params },
+        provider,
+        requester,
+        streamrClient,
     },
 }: ReturnType<typeof RoomAction.create>) {
     let toastId
@@ -37,23 +37,17 @@ function* onCreateAction({
             hideProgressBar: true,
         })
 
-        const provider: Provider = yield call(getWalletProvider)
-
-        const account: Address = yield call(getWalletAccount)
-
         yield preflight({
             provider,
-            address: account,
+            requester,
         })
-
-        const client: StreamrClient = yield call(getWalletClient)
 
         // `payload.id` is a partial room id. The real room id gets constructed by the
         // client from the given value and the account address that creates the stream.
 
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
-        const stream: Stream = yield client.createStream({
+        const stream: Stream = yield streamrClient.createStream({
             id,
             description,
             extensions: {
@@ -97,6 +91,13 @@ function* onCreateAction({
                     roomId: stream.id,
                     address: STREAMR_STORAGE_NODE_GERMANY,
                     state: true,
+                    provider,
+                    requester,
+                    streamrClient,
+                    fingerprint: Flag.isTogglingStorageNode(
+                        stream.id,
+                        STREAMR_STORAGE_NODE_GERMANY
+                    ),
                 })
             )
         }

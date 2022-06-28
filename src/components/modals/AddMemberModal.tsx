@@ -9,6 +9,8 @@ import { Address } from '$/types'
 import { useDispatch } from 'react-redux'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { MemberAction } from '$/features/member'
+import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { Flag } from '$/features/flag/types'
 
 type Props = ModalProps & {
     canModifyMembers?: boolean
@@ -25,20 +27,30 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
         setAddress('')
     }
 
-    const selectedRoomId = useSelectedRoomId()
+    const roomId = useSelectedRoomId()
+
+    const provider = useWalletProvider()
+
+    const streamrClient = useWalletClient()
+
+    const requester = useWalletAccount()
 
     return (
         <Modal {...props} setOpen={setOpen} onClose={onClose} title="Add member">
             <Form
                 onSubmit={() => {
-                    if (!canSubmit || !selectedRoomId) {
+                    if (!canSubmit || !roomId || !provider || !streamrClient || !requester) {
                         return
                     }
 
                     dispatch(
                         MemberAction.add({
-                            roomId: selectedRoomId,
-                            address,
+                            roomId,
+                            member: address,
+                            provider,
+                            requester,
+                            streamrClient,
+                            fingerprint: Flag.isMemberBeingAdded(roomId, address),
                         })
                     )
 

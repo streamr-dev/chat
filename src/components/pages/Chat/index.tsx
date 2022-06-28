@@ -9,7 +9,7 @@ import AddRoomModal from '../../modals/AddRoomModal'
 import Conversation from '../../Conversation'
 import Nav from './Nav'
 import RoomButton from './RoomButton'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import UtilityButton from '../../UtilityButton'
 import Text from '../../Text'
 import useRooms from '$/hooks/useRooms'
@@ -19,6 +19,7 @@ import useProviderChangeEffect from '$/hooks/useProviderChangeEffect'
 import { RoomsAction } from '$/features/rooms'
 import useListenForInvitesEffect from '$/hooks/useListenForInvitesEffect'
 import { RoomAction } from '$/features/room'
+import { Flag } from '$/features/flag/types'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -43,16 +44,36 @@ function UnwrappedChat() {
 
     const account = useWalletAccount()
 
+    const streamrClient = useWalletClient()
+
     useEffect(() => {
-        if (account) {
-            dispatch(RoomsAction.fetch())
+        if (!account || !streamrClient) {
+            return
         }
-    }, [dispatch, account])
+
+        dispatch(
+            RoomsAction.fetch({
+                requester: account,
+                streamrClient,
+            })
+        )
+    }, [dispatch, account, streamrClient])
 
     useProviderChangeEffect()
 
-    useListenForInvitesEffect(account, (roomId, address) => {
-        dispatch(RoomAction.registerInvite({ roomId, address }))
+    useListenForInvitesEffect(account, (roomId, invitee) => {
+        if (!streamrClient) {
+            return
+        }
+
+        dispatch(
+            RoomAction.registerInvite({
+                roomId,
+                invitee,
+                streamrClient,
+                fingerprint: Flag.isInviteBeingRegistered(roomId, invitee),
+            })
+        )
     })
 
     return (
@@ -92,7 +113,7 @@ function UnwrappedChat() {
                             {(rooms || []).map((room) => (
                                 <RoomButton
                                     key={room.id}
-                                    active={selectedRoom && selectedRoom.id === room.id}
+                                    active={selectedRoom ? selectedRoom.id === room.id : false}
                                     room={room}
                                 />
                             ))}

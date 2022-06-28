@@ -11,8 +11,19 @@ export enum StorageKey {
     RoomIds = 'chat/room-ids',
 }
 
-export interface IRecord {
-    owner: string
+export type Address = string
+
+export type OptionalAddress = undefined | null | Address
+
+export interface IOwnable {
+    owner: Address
+}
+
+export interface IFingerprinted {
+    fingerprint: string
+}
+
+export interface IRecord extends IOwnable {
     createdAt?: number
     updatedAt?: number
 }
@@ -41,13 +52,9 @@ export type EnhancedStream = Stream & {
     }
 }
 
-export type Address = string
-
-export type OptionalAddress = undefined | null | Address
-
 export interface PreflightParams {
     provider: Provider
-    address: Address
+    requester: Address
 }
 
 export type PrivacyOption = {

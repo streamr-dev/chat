@@ -1,5 +1,10 @@
 import { useSelector } from 'react-redux'
-import { selectWalletAccount, selectWalletIntegrationId, selectWalletProvider } from './selectors'
+import {
+    selectWalletAccount,
+    selectWalletClient,
+    selectWalletIntegrationId,
+    selectWalletProvider,
+} from './selectors'
 
 export function useWalletIntegrationId() {
     return useSelector(selectWalletIntegrationId)
@@ -11,4 +16,8 @@ export function useWalletAccount() {
 
 export function useWalletProvider() {
     return useSelector(selectWalletProvider)
+}
+
+export function useWalletClient() {
+    return useSelector(selectWalletClient)
 }

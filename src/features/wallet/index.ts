@@ -17,7 +17,9 @@ const initialState: WalletState = {
 
 export const WalletAction = {
     setIntegrationId: createAction<WalletState['integrationId']>('wallet: set integration id'),
+
     setAccount: createAction<WalletState['account']>('wallet: set account'),
+
     setProvider: createAction<WalletState['provider']>('wallet: set provider'),
 }
 

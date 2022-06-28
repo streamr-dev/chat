@@ -1,9 +1,7 @@
-import { call, put, takeLatest } from 'redux-saga/effects'
+import { put, takeLatest } from 'redux-saga/effects'
 import StreamrClient, { StreamPermission } from 'streamr-client'
 import { RoomsAction } from '..'
-import { Address, Prefix } from '$/types'
-import getWalletAccount from '$/sagas/getWalletAccount.saga'
-import getWalletClient from '$/sagas/getWalletClient.saga'
+import { Prefix } from '$/types'
 import handleError from '$/utils/handleError'
 import { RoomAction } from '../../room'
 import { RoomId } from '../../room/types'
@@ -24,19 +22,18 @@ async function getRoomIds(client: StreamrClient, account: string) {
     return ids
 }
 
-function* onFetchAction() {
+function* onFetchAction({
+    payload: { requester, streamrClient },
+}: ReturnType<typeof RoomsAction.fetch>) {
     try {
-        const client: StreamrClient = yield call(getWalletClient)
-
-        const account: Address = yield call(getWalletAccount)
-
-        const ids: RoomId[] = yield getRoomIds(client, account)
+        const ids: RoomId[] = yield getRoomIds(streamrClient, requester)
 
         for (let i = 0; i < ids.length; i++) {
             yield put(
                 RoomAction.fetch({
                     roomId: ids[i],
-                    address: account,
+                    requester,
+                    streamrClient,
                 })
             )
         }

@@ -29,6 +29,8 @@ import {
     PublicRoomOption,
 } from './AddRoomModal'
 import Modal, { ModalProps } from './Modal'
+import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { Flag } from '$/features/flag/types'
 
 export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
@@ -48,8 +50,14 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
 
     const dispatch = useDispatch()
 
+    const streamrClient = useWalletClient()
+
+    const provider = useWalletProvider()
+
+    const requester = useWalletAccount()
+
     function onStorageToggleClick() {
-        if (!selectedRoomId || isStorageBusy) {
+        if (!selectedRoomId || isStorageBusy || !provider || !requester || !streamrClient) {
             return
         }
 
@@ -58,18 +66,37 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                 roomId: selectedRoomId,
                 address: STREAMR_STORAGE_NODE_GERMANY,
                 state: !isStorageEnabled,
+                provider,
+                requester,
+                streamrClient,
+                fingerprint: Flag.isTogglingStorageNode(
+                    selectedRoomId,
+                    STREAMR_STORAGE_NODE_GERMANY
+                ),
             })
         )
     }
 
     useEffect(() => {
-        if (!open || !selectedRoomId) {
+        if (!open || !selectedRoomId || !streamrClient) {
             return
         }
 
-        dispatch(RoomAction.getStorageNodes(selectedRoomId))
+        dispatch(
+            RoomAction.getStorageNodes({
+                roomId: selectedRoomId,
+                streamrClient,
+                fingerprint: Flag.isGettingStorageNodes(selectedRoomId),
+            })
+        )
 
-        dispatch(RoomAction.getPrivacy(selectedRoomId))
+        dispatch(
+            RoomAction.getPrivacy({
+                roomId: selectedRoomId,
+                streamrClient,
+                fingerprint: Flag.isGettingPrivacy(selectedRoomId),
+            })
+        )
     }, [open, selectedRoomId])
 
     const privacyOption =
@@ -103,7 +130,7 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                         options={privacyOptions}
                         value={privacyOption}
                         onChange={(option: any) => {
-                            if (!selectedRoomId) {
+                            if (!selectedRoomId || !provider || !requester || !streamrClient) {
                                 return
                             }
 
@@ -111,6 +138,10 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                                 RoomAction.changePrivacy({
                                     roomId: selectedRoomId,
                                     privacy: option.value,
+                                    provider,
+                                    requester,
+                                    streamrClient,
+                                    fingerprint: Flag.isPrivacyBeingChanged(selectedRoomId),
                                 })
                             )
                         }}

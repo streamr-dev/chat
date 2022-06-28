@@ -1,11 +1,13 @@
 import { HTMLAttributes, useEffect, useRef } from 'react'
 import tw from 'twin.macro'
 import { v4 as uuidv4 } from 'uuid'
-import { useIdenticon, useRetrievingIdenticon } from '$/features/identicons/hooks'
-import { useDispatch } from 'react-redux'
+import {
+    useIdenticon,
+    useIsRetrievingIdenticon,
+    useRetrieveIdenticon,
+} from '$/features/identicons/hooks'
 import fallbackIdenticon from '$/utils/fallbackIdenticon'
 import Spinner from './Spinner'
-import { IdenticonAction } from '$/features/identicons'
 
 export enum AvatarStatus {
     Online = '#00C85D',
@@ -13,7 +15,7 @@ export enum AvatarStatus {
 }
 
 type Props = HTMLAttributes<HTMLDivElement> & {
-    account: string
+    seed: string
     status?: AvatarStatus
     backgroundColor?: string
 }
@@ -34,24 +36,24 @@ export function Wrap(props: HTMLAttributes<HTMLDivElement>) {
     )
 }
 
-export default function Avatar({ account, backgroundColor = '#EFF4F9', status, ...props }: Props) {
+export default function Avatar({ seed, backgroundColor = '#EFF4F9', status, ...props }: Props) {
     const { current: maskId } = useRef(`mask-${uuidv4()}`)
 
-    const identicon = useIdenticon(account)
+    const identicon = useIdenticon(seed)
 
-    const retrievingIdenticon = useRetrievingIdenticon(account)
+    const isRetrievingIdenticon = useIsRetrievingIdenticon(seed)
 
-    const dispatch = useDispatch()
+    const retrieveIdenticon = useRetrieveIdenticon()
 
     useEffect(() => {
         if (!identicon) {
-            dispatch(IdenticonAction.retrieve(account))
+            retrieveIdenticon(seed)
         }
-    }, [identicon, account])
+    }, [identicon, seed])
 
     return (
         <Wrap {...props}>
-            {retrievingIdenticon && <Spinner strokeWidth={1.5} />}
+            {isRetrievingIdenticon && <Spinner strokeWidth={1.5} />}
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <mask id={maskId}>

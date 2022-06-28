@@ -1,52 +1,26 @@
-import { Provider } from '@web3-react/types'
-import { call, put, select, takeEvery } from 'redux-saga/effects'
-import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
+import { put } from 'redux-saga/effects'
+import { Stream, StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
-import { Address, PrivacySetting } from '$/types'
+import { PrivacySetting } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getWalletAccount from '$/sagas/getWalletAccount.saga'
-import getWalletClient from '$/sagas/getWalletClient.saga'
-import getWalletProvider from '$/sagas/getWalletProvider.saga'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { error, success } from '$/utils/toaster'
-import { selectPrivacyChanging } from '../selectors'
+import takeEveryUnique from '$/utils/takeEveryUnique'
 
 function* onChangePrivacyAction({
-    payload: { roomId, privacy },
+    payload: { roomId, privacy, provider, requester, streamrClient },
 }: ReturnType<typeof RoomAction.changePrivacy>) {
-    let dirty = false
+    let name
 
     try {
-        const changing: boolean = yield select(selectPrivacyChanging(roomId))
-
-        if (changing) {
-            // Already changing. Skipping.
-            return
-        }
-
-        const provider: Provider = yield call(getWalletProvider)
-
-        const account: Address = yield call(getWalletAccount)
-
         yield preflight({
             provider,
-            address: account,
+            requester,
         })
 
-        yield put(
-            RoomAction.setChangingPrivacy({
-                roomId,
-                state: true,
-            })
-        )
-
-        dirty = true
-
-        const client: StreamrClient = yield call(getWalletClient)
-
-        const stream: undefined | Stream = yield getStream(client, roomId)
+        const stream: undefined | Stream = yield getStream(streamrClient, roomId)
 
         const permissions: StreamPermission[] =
             privacy === PrivacySetting.Public ? [StreamPermission.SUBSCRIBE] : []
@@ -55,45 +29,40 @@ function* onChangePrivacyAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const { description: name = 'Unnamed room' } = stream
+        const { description = 'Unnamed room' } = stream
 
-        try {
-            yield client.setPermissions({
-                streamId: roomId,
-                assignments: [
-                    {
-                        public: true,
-                        permissions,
-                    },
-                ],
+        name = description
+
+        yield streamrClient.setPermissions({
+            streamId: roomId,
+            assignments: [
+                {
+                    public: true,
+                    permissions,
+                },
+            ],
+        })
+
+        yield put(
+            RoomAction.setLocalPrivacy({
+                roomId,
+                privacy,
             })
+        )
 
-            yield put(
-                RoomAction.setLocalPrivacy({
-                    roomId,
-                    privacy,
-                })
-            )
-
-            success(`Update privacy for "${name}".`)
-        } catch (e) {
-            console.warn(e)
-            error(`Failed to update privacy for "${name}".`)
-        }
+        success(`Update privacy for "${name}".`)
     } catch (e) {
         handleError(e)
-    } finally {
-        if (dirty) {
-            yield put(
-                RoomAction.setChangingPrivacy({
-                    roomId,
-                    state: false,
-                })
-            )
+
+        if (name) {
+            error(`Failed to update privacy for "${name}".`)
+            return
         }
+
+        error('Failed to update privacy.')
     }
 }
 
 export default function* changePrivacy() {
-    yield takeEvery(RoomAction.changePrivacy, onChangePrivacyAction)
+    yield takeEveryUnique(RoomAction.changePrivacy, onChangePrivacyAction)
 }

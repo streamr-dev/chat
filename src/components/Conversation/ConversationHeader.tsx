@@ -12,7 +12,7 @@ import {
     useSelectedRoomId,
     useTransientRoomName,
 } from '$/features/room/hooks'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import AddMemberIcon from '$/icons/AddMemberIcon'
@@ -32,6 +32,8 @@ import EyeIcon from '$/icons/EyeIcon'
 import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import PinIcon from '$/icons/PinIcon'
+import { Flag } from '$/features/flag/types'
+import { FlagAction } from '$/features/flag'
 
 type Props = {
     canModifyMembers?: boolean
@@ -71,7 +73,7 @@ export default function ConversationHeader({
     function edit() {
         if (canEdit && selectedRoomId && !isRoomBeingDeleted) {
             dispatch(RoomAction.setTransientName({ roomId: selectedRoomId, name }))
-            dispatch(RoomAction.setEditingName({ roomId: selectedRoomId, state: true }))
+            dispatch(FlagAction.set(Flag.isRoomNameBeingEdited(selectedRoomId)))
         }
     }
 
@@ -81,23 +83,13 @@ export default function ConversationHeader({
         }
 
         if (!canEdit) {
-            dispatch(
-                RoomAction.setEditingName({
-                    roomId: selectedRoomId,
-                    state: false,
-                })
-            )
+            dispatch(FlagAction.unset(Flag.isRoomNameBeingEdited(selectedRoomId)))
         }
     }, [canEdit, selectedRoomId])
 
     function onKeyDown(e: React.KeyboardEvent) {
         if (e.key === 'Escape' && selectedRoomId) {
-            dispatch(
-                RoomAction.setEditingName({
-                    roomId: selectedRoomId,
-                    state: false,
-                })
-            )
+            dispatch(FlagAction.unset(Flag.isRoomNameBeingEdited(selectedRoomId)))
         }
     }
 
@@ -107,22 +99,41 @@ export default function ConversationHeader({
 
     const { copy } = useCopy()
 
-    function onRenameSubmit() {
-        if (selectedRoomId) {
-            dispatch(RoomAction.rename({ roomId: selectedRoomId, name: transientRoomName }))
-        }
-    }
-
     const account = useWalletAccount()
+
+    const streamrClient = useWalletClient()
+
+    function onRenameSubmit() {
+        if (!selectedRoomId || !provider || !account || !streamrClient) {
+            return
+        }
+
+        dispatch(
+            RoomAction.rename({
+                roomId: selectedRoomId,
+                name: transientRoomName,
+                provider,
+                requester: account,
+                streamrClient,
+                fingerprint: Flag.isPersistingRoomName(selectedRoomId),
+            })
+        )
+    }
 
     const { icon: PrivacyIcon, desc: privacyDesc } = usePrivacyOption(selectedRoomId)
 
     useEffect(() => {
-        if (!selectedRoomId) {
+        if (!selectedRoomId || !streamrClient) {
             return
         }
 
-        dispatch(RoomAction.getPrivacy(selectedRoomId))
+        dispatch(
+            RoomAction.getPrivacy({
+                roomId: selectedRoomId,
+                streamrClient,
+                fingerprint: Flag.isGettingPrivacy(selectedRoomId),
+            })
+        )
     }, [selectedRoomId])
 
     const showProgress = isPersistingRoomName || isRoomBeingDeleted
@@ -130,6 +141,8 @@ export default function ConversationHeader({
     const isVisible = useIsRoomVisible(selectedRoomId)
 
     const isPinned = useIsRoomPinned(selectedRoomId)
+
+    const provider = useWalletProvider()
 
     return (
         <div
@@ -249,10 +262,7 @@ export default function ConversationHeader({
                                 }
 
                                 dispatch(
-                                    RoomAction.setEditingName({
-                                        roomId: selectedRoomId,
-                                        state: false,
-                                    })
+                                    FlagAction.unset(Flag.isRoomNameBeingEdited(selectedRoomId))
                                 )
                             }}
                         >
@@ -398,11 +408,16 @@ export default function ConversationHeader({
                                                 />
                                             }
                                             onClick={() => {
-                                                if (selectedRoomId && account) {
+                                                if (selectedRoomId && account && streamrClient) {
                                                     dispatch(
                                                         RoomAction.unpin({
-                                                            owner: account,
                                                             roomId: selectedRoomId,
+                                                            requester: account,
+                                                            streamrClient,
+                                                            fingerprint: Flag.isRoomBeingUnpinned(
+                                                                selectedRoomId,
+                                                                account
+                                                            ),
                                                         })
                                                     )
                                                 }
@@ -432,8 +447,24 @@ export default function ConversationHeader({
                                         <MenuButtonItem
                                             icon={<DeleteIcon />}
                                             onClick={() => {
-                                                if (account && selectedRoomId) {
-                                                    dispatch(RoomAction.delete(selectedRoomId))
+                                                if (
+                                                    account &&
+                                                    selectedRoomId &&
+                                                    provider &&
+                                                    streamrClient
+                                                ) {
+                                                    dispatch(
+                                                        RoomAction.delete({
+                                                            roomId: selectedRoomId,
+                                                            provider,
+                                                            requester: account,
+                                                            streamrClient,
+                                                            fingerprint:
+                                                                Flag.isRoomBeingDeleted(
+                                                                    selectedRoomId
+                                                                ),
+                                                        })
+                                                    )
                                                 }
 
                                                 setRoomMenuOpen(false)

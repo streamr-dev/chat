@@ -1,4 +1,4 @@
-import { all, put, takeEvery } from 'redux-saga/effects'
+import { put, takeEvery } from 'redux-saga/effects'
 import { WalletAction } from '..'
 import handleError from '$/utils/handleError'
 import { DelegationAction } from '../../delegation'
@@ -38,8 +38,6 @@ function* resetDelegatedPrivateKey() {
 }
 
 export default function* setAccount() {
-    yield all([
-        takeEvery(WalletAction.setAccount, preselectRoom),
-        takeEvery(WalletAction.setAccount, resetDelegatedPrivateKey),
-    ])
+    yield takeEvery(WalletAction.setAccount, preselectRoom)
+    yield takeEvery(WalletAction.setAccount, resetDelegatedPrivateKey)
 }

@@ -2,21 +2,22 @@ import { createReducer } from '@reduxjs/toolkit'
 import StreamrClient from 'streamr-client'
 import { SEE_SAGA } from '$/utils/consts'
 import { DelegationState } from './types'
+import { createAction } from '@reduxjs/toolkit'
+import { all } from 'redux-saga/effects'
+import requestPrivateKey from './sagas/requestPrivateKey.saga'
+import { Provider } from '@web3-react/types'
+import { IFingerprinted, IOwnable } from '$/types'
 
 const initialState: DelegationState = {
     privateKey: undefined,
     client: undefined,
-    delegating: false,
 }
-
-import { createAction } from '@reduxjs/toolkit'
-import { all } from 'redux-saga/effects'
-import requestPrivateKey from './sagas/requestPrivateKey.saga'
 
 export const DelegationAction = {
     setPrivateKey: createAction<string | undefined>('delegation: set delegated private key'),
-    requestPrivateKey: createAction('delegation: request private key'),
-    setDelegating: createAction<boolean>('delegation: set delegating'),
+    requestPrivateKey: createAction<IOwnable & IFingerprinted & { provider: Provider }>(
+        'delegation: request private key'
+    ),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -30,15 +31,9 @@ const reducer = createReducer(initialState, (builder) => {
                   },
               })
             : undefined
-
-        state.delegating = false
     })
 
     builder.addCase(DelegationAction.requestPrivateKey, SEE_SAGA)
-
-    builder.addCase(DelegationAction.setDelegating, (state, { payload: delegating }) => {
-        state.delegating = delegating
-    })
 })
 
 export function* delegationSaga() {

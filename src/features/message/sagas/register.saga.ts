@@ -1,7 +1,5 @@
-import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { put, select, takeEvery } from 'redux-saga/effects'
 import { MessageAction } from '..'
-import { Address } from '$/types'
-import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import { selectStartedAt } from '../../clock/selectors'
@@ -9,15 +7,13 @@ import { MemberAction } from '../../member'
 import { Instruction, MessageType } from '../types'
 
 function* onRegisterAction({
-    payload: { type, message },
+    payload: { type, message, owner },
 }: ReturnType<typeof MessageAction.register>) {
     try {
-        const account: Address = yield call(getWalletAccount)
-
         if (type === MessageType.Text) {
             yield db.messages.add({
                 ...message,
-                owner: account.toLowerCase(),
+                owner: owner.toLowerCase(),
             })
             return
         }

@@ -6,7 +6,7 @@ import { MemberAction } from '$/features/member'
 import { MembersAction } from '$/features/members'
 import { useMembers, useMembersFetching } from '$/features/members/hooks'
 import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useIsOnline from '$/hooks/useIsOnline'
 import CopyIcon from '$/icons/CopyIcon'
@@ -32,6 +32,7 @@ import CheckIcon from '$/icons/CheckIcon'
 import { AliasAction } from '$/features/alias'
 import focus from '$/utils/focus'
 import Form from '$/components/Form'
+import { Flag } from '$/features/flag/types'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -55,20 +56,30 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
 
     const selectedRoomId = useSelectedRoomId()
 
+    const provider = useWalletProvider()
+
+    const requester = useWalletAccount()
+
+    const streamrClient = useWalletClient()
+
     const onDeleteClick = useCallback(
-        (address: Address) => {
-            if (!selectedRoomId) {
+        (member: Address) => {
+            if (!selectedRoomId || !provider || !requester || !streamrClient) {
                 return
             }
 
             dispatch(
                 MemberAction.remove({
                     roomId: selectedRoomId,
-                    address,
+                    member,
+                    provider,
+                    requester,
+                    streamrClient,
+                    fingerprint: Flag.isMemberBeingRemoved(selectedRoomId, member),
                 })
             )
         },
-        [dispatch, selectedRoomId]
+        [dispatch, selectedRoomId, provider, requester, streamrClient]
     )
 
     const members = useMembers(selectedRoomId)
@@ -76,12 +87,18 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
     const isFetchingMembers = useMembersFetching(selectedRoomId)
 
     useEffect(() => {
-        if (!open || !selectedRoomId) {
+        if (!open || !selectedRoomId || !streamrClient) {
             return
         }
 
-        dispatch(MembersAction.detect(selectedRoomId))
-    }, [dispatch, selectedRoomId, open])
+        dispatch(
+            MembersAction.detect({
+                roomId: selectedRoomId,
+                streamrClient,
+                fingerprint: Flag.isDetectingMembers(selectedRoomId),
+            })
+        )
+    }, [dispatch, selectedRoomId, open, streamrClient])
 
     const account = useWalletAccount()
 
@@ -351,7 +368,7 @@ function Item({
                         `,
                     ]}
                 >
-                    <Avatar account={address} backgroundColor="white" status={status} />
+                    <Avatar seed={address.toLowerCase()} backgroundColor="white" status={status} />
                 </div>
                 <div
                     css={[

@@ -3,20 +3,27 @@ import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import db from '$/utils/db'
 import { useShowHiddenRooms } from '$/features/preferences/hooks'
+import handleError from '$/utils/handleError'
 
 export default function useSelectedRoom() {
-    const id = useSelectedRoomId() || ''
+    const roomId = useSelectedRoomId()
 
-    const owner = useWalletAccount()?.toLowerCase() || ''
+    const owner = useWalletAccount()?.toLowerCase()
 
     const showHiddenRooms = useShowHiddenRooms()
 
-    return useLiveQuery(
-        () =>
-            db.rooms
-                .where({ owner, id })
-                .and(({ hidden }) => showHiddenRooms || hidden !== true)
-                .first(),
-        [id, owner, showHiddenRooms]
-    )
+    return useLiveQuery(async () => {
+        if (roomId && owner) {
+            try {
+                return await db.rooms
+                    .where({ owner, id: roomId })
+                    .and(({ hidden }) => showHiddenRooms || hidden !== true)
+                    .first()
+            } catch (e) {
+                handleError(e)
+            }
+        }
+
+        return null
+    }, [roomId, owner, showHiddenRooms])
 }

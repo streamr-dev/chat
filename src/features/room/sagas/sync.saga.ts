@@ -1,26 +1,22 @@
-import { call, put, takeLatest } from 'redux-saga/effects'
-import StreamrClient, { Stream } from 'streamr-client'
-import { Address } from '$/types'
+import { put } from 'redux-saga/effects'
+import { Stream } from 'streamr-client'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { RoomAction } from '..'
-import getWalletClient from '$/sagas/getWalletClient.saga'
-import getWalletAccount from '$/sagas/getWalletAccount.saga'
 import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
+import takeEveryUnique from '$/utils/takeEveryUnique'
 
-function* onSyncAction({ payload: roomId }: ReturnType<typeof RoomAction.sync>) {
+function* onSyncAction({
+    payload: { roomId, requester, streamrClient },
+}: ReturnType<typeof RoomAction.sync>) {
     try {
-        const client: StreamrClient = yield call(getWalletClient)
-
-        const account: Address = yield call(getWalletAccount)
-
-        const stream: undefined | Stream = yield getStream(client, roomId)
+        const stream: undefined | Stream = yield getStream(streamrClient, roomId)
 
         if (stream) {
             const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
-                account,
+                requester,
                 stream
             )
 
@@ -28,7 +24,7 @@ function* onSyncAction({ payload: roomId }: ReturnType<typeof RoomAction.sync>) 
 
             if (isPublic) {
                 const room: undefined | IRoom = yield db.rooms
-                    .where({ owner: account?.toLowerCase() || '', id: roomId })
+                    .where({ owner: requester.toLowerCase() || '', id: roomId })
                     .first()
 
                 pinned = Boolean(room?.pinned)
@@ -49,12 +45,12 @@ function* onSyncAction({ payload: roomId }: ReturnType<typeof RoomAction.sync>) 
         // At this point we know that the stream isn't there, or we don't have anything to do with
         // it (no explicit permissions). Let's remove it from the navigation sidebar.
 
-        yield put(RoomAction.deleteLocal(roomId))
+        yield put(RoomAction.deleteLocal({ roomId, requester }))
     } catch (e) {
         handleError(e)
     }
 }
 
 export default function* sync() {
-    yield takeLatest(RoomAction.sync, onSyncAction)
+    yield takeEveryUnique(RoomAction.sync, onSyncAction)
 }

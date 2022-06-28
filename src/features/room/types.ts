@@ -1,38 +1,14 @@
-import { Address, IRecord, PrivacySetting } from '$/types'
+import { IRecord, PrivacySetting } from '$/types'
 
 export interface RoomState {
-    selectedId: undefined | RoomId
-    privacy: {
-        [index: RoomId]: {
-            value: PrivacySetting
-            changing: boolean
-            getting: boolean
-        }
-    }
-    storageNodes: {
-        [index: RoomId]: {
-            addresses: {
-                [address: string]: {
-                    state: boolean
-                    toggling: boolean
-                }
+    selectedRoomId?: RoomId
+    cache: {
+        [roomId: RoomId]: {
+            privacy?: PrivacySetting
+            storageNodes: {
+                [address: string]: boolean
             }
-            getting: boolean
-        }
-    }
-    temporaryNames: {
-        [index: RoomId]: {
-            editing: boolean
-            persisting: boolean
-            name: string
-        }
-    }
-    ongoingDeletion: {
-        [roomId: RoomId]: true
-    }
-    ongoingPinning: {
-        [owner: Address]: {
-            [roomId: RoomId]: boolean
+            temporaryName?: string
         }
     }
 }

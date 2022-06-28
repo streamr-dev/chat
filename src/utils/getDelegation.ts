@@ -3,15 +3,15 @@ import MissingDelegationError from '$/errors/MissingDelegationError'
 import { IDelegation } from '$/features/delegation/types'
 import db from '$/utils/db'
 
-export default async function getDelegation(address: Address) {
+export default async function getDelegation(owner: Address) {
     const delegation: undefined | IDelegation = await db.delegations
         .where({
-            owner: address.toLowerCase(),
+            owner: owner.toLowerCase(),
         })
         .first()
 
     if (!delegation) {
-        throw new MissingDelegationError(address)
+        throw new MissingDelegationError(owner)
     }
 
     return delegation

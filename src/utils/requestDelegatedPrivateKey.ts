@@ -6,7 +6,7 @@ import networkPreflight from './networkPreflight'
 import retrieveDelegatedPrivateKey from './retrieveDelegatedPrivateKey'
 import storeDelegatedPrivateKey from './storeDelegatedPrivateKey'
 
-export default async function requestDelegatedPrivateKey(provider: Provider, address: Address) {
+export default async function requestDelegatedPrivateKey(provider: Provider, owner: Address) {
     let privateKey: string
 
     await networkPreflight(provider)
@@ -14,7 +14,7 @@ export default async function requestDelegatedPrivateKey(provider: Provider, add
     try {
         privateKey = await retrieveDelegatedPrivateKey({
             provider,
-            address,
+            owner,
         })
     } catch (e: any) {
         if (!(e instanceof MissingDelegationError)) {
@@ -25,7 +25,7 @@ export default async function requestDelegatedPrivateKey(provider: Provider, add
 
         await storeDelegatedPrivateKey({
             provider,
-            address,
+            owner,
             privateKey,
         })
     }

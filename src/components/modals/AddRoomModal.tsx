@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import isBlank from '$/utils/isBlank'
 import Form from '../Form'
 import Hint from '../Hint'
@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Prefix, PrivacyOption, PrivacySetting } from '$/types'
 import { RoomAction } from '$/features/room'
 import ButtonGroup, { GroupedButton } from '$/components/ButtonGroup'
+import { Flag } from '$/features/flag/types'
 
 export const PrivateRoomOption: PrivacyOption = {
     value: PrivacySetting.Private,
@@ -64,8 +65,12 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         setRoomId('')
     }
 
+    const provider = useWalletProvider()
+
+    const streamrClient = useWalletClient()
+
     function onSubmitCreate() {
-        if (!canCreate) {
+        if (!canCreate || !provider || !streamrClient || !account) {
             return
         }
 
@@ -83,6 +88,9 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                 },
                 privacy: privacySetting.value,
                 storage,
+                provider,
+                requester: account,
+                streamrClient,
             })
         )
 
@@ -93,14 +101,16 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     }
 
     function onSubmitPin() {
-        if (!canPin || !account) {
+        if (!canPin || !account || !streamrClient) {
             return
         }
 
         dispatch(
             RoomAction.pin({
-                owner: account,
                 roomId,
+                requester: account,
+                streamrClient,
+                fingerprint: Flag.isRoomBeingPinned(roomId, account),
             })
         )
 

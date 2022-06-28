@@ -14,6 +14,7 @@ import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
 import preferences, { preferencesSaga } from '$/features/preferences'
 import { aliasSaga } from '$/features/alias'
+import flag from '$/features/flag'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -31,11 +32,13 @@ const store = configureStore({
         room,
         rooms,
         wallet,
+        flag,
     },
     middleware(getDefaultMiddleware) {
         return [
             ...getDefaultMiddleware({
                 serializableCheck: {
+                    ignoredActionPaths: ['payload.provider', 'payload.streamrClient'],
                     ignoredActions: [WalletAction.setProvider.toString()],
                     ignoredPaths: ['wallet.provider', 'wallet.client', 'delegation.client'],
                 },

@@ -9,14 +9,11 @@ function* onStoreAction({ payload: draft }: ReturnType<typeof DraftAction.store>
 
         const owner = draft.owner.toLowerCase()
 
-        const count: number = yield db.drafts.where({ owner, roomId }).count()
+        const numModded: number = yield db.drafts.where({ owner, roomId }).modify({ content })
 
-        if (!count) {
+        if (numModded === 0) {
             yield db.drafts.add({ ...draft, owner })
-            return
         }
-
-        yield db.drafts.where({ owner, roomId }).modify({ content })
     } catch (e) {
         handleError(e)
     }

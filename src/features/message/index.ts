@@ -6,22 +6,29 @@ import emitPresence from './sagas/emitPresence.saga'
 import publish from './sagas/publish.saga'
 import register from './sagas/register.saga'
 import { IMessage, MessageType } from './types'
-
-interface PublishParams {
-    roomId: RoomId
-    content: string
-    type: MessageType
-}
-
-interface RegisterParams {
-    type: MessageType
-    message: Omit<IMessage, 'owner'>
-}
+import StreamrClient from 'streamr-client'
+import { Address } from '$/types'
 
 export const MessageAction = {
-    publish: createAction<PublishParams>('message: publish'),
-    emitPresence: createAction<RoomId>('message: emit presence'),
-    register: createAction<RegisterParams>('message: register'),
+    publish: createAction<{
+        roomId: RoomId
+        content: string
+        type: MessageType
+        requester: Address
+        streamrClient: StreamrClient
+    }>('message: publish'),
+
+    emitPresence: createAction<{
+        roomId: RoomId
+        requester: Address
+        streamrClient: StreamrClient
+    }>('message: emit presence'),
+
+    register: createAction<{
+        type: MessageType
+        message: Omit<IMessage, 'owner'>
+        owner: Address
+    }>('message: register'),
 }
 
 const reducer = createReducer({}, (builder) => {

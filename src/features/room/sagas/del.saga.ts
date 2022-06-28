@@ -1,58 +1,31 @@
-import { Provider } from '@web3-react/types'
-import { call, put, select, takeEvery } from 'redux-saga/effects'
-import StreamrClient from 'streamr-client'
+import { put } from 'redux-saga/effects'
 import { RoomAction } from '..'
-import { Address } from '$/types'
-import getWalletAccount from '$/sagas/getWalletAccount.saga'
-import getWalletClient from '$/sagas/getWalletClient.saga'
-import getWalletProvider from '$/sagas/getWalletProvider.saga'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
-import { selectIsBeingDeleted } from '$/features/room/selectors'
 import { error, success } from '$/utils/toaster'
+import takeEveryUnique from '$/utils/takeEveryUnique'
 
-function* onDeleteAction({ payload: roomId }: ReturnType<typeof RoomAction.delete>) {
-    let dirty = false
-
+function* onDeleteAction({
+    payload: { roomId, provider, requester, streamrClient },
+}: ReturnType<typeof RoomAction.delete>) {
     try {
-        const isBeingDeleted: boolean = yield select(selectIsBeingDeleted(roomId))
-
-        if (isBeingDeleted) {
-            error('Room is already being deleted.')
-            return
-        }
-
-        yield put(RoomAction.setOngoingDeletion({ roomId, state: true }))
-
-        dirty = true
-
-        const provider: Provider = yield call(getWalletProvider)
-
-        const account: Address = yield call(getWalletAccount)
-
         yield preflight({
             provider,
-            address: account,
+            requester,
         })
 
-        const client: StreamrClient = yield call(getWalletClient)
+        yield streamrClient.deleteStream(roomId)
 
-        yield client.deleteStream(roomId)
-
-        yield put(RoomAction.deleteLocal(roomId))
+        yield put(RoomAction.deleteLocal({ roomId, requester }))
 
         success('Room has been deleted.')
     } catch (e) {
         handleError(e)
 
         error('Failed to delete room.')
-    } finally {
-        if (dirty) {
-            yield put(RoomAction.setOngoingDeletion({ roomId, state: false }))
-        }
     }
 }
 
 export default function* del() {
-    yield takeEvery(RoomAction.delete, onDeleteAction)
+    yield takeEveryUnique(RoomAction.delete, onDeleteAction)
 }

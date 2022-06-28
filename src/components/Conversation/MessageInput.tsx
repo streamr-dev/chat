@@ -9,6 +9,7 @@ import db from '$/utils/db'
 import { DraftAction } from '$/features/drafts'
 import { MessageAction } from '$/features/message'
 import { MessageType } from '$/features/message/types'
+import { useDelegatedClient } from '$/features/delegation/hooks'
 
 type Props = {
     disabled?: boolean
@@ -45,8 +46,10 @@ export default function MessageInput({ disabled = false }: Props) {
         )
     }
 
+    const delegatedClient = useDelegatedClient()
+
     function send(content: string) {
-        if (!selectedRoomId) {
+        if (!selectedRoomId || !delegatedClient || !account) {
             return
         }
 
@@ -55,6 +58,8 @@ export default function MessageInput({ disabled = false }: Props) {
                 roomId: selectedRoomId,
                 content,
                 type: MessageType.Text,
+                requester: account,
+                streamrClient: delegatedClient,
             })
         )
     }

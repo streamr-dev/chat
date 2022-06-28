@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect } from 'react'
 import { RoomId } from '$/features/room/types'
 import { MessageStreamOnMessage } from 'streamr-client'
 import handleError from '$/utils/handleError'
@@ -6,20 +6,31 @@ import { useDispatch } from 'react-redux'
 import { useDelegatedClient } from '$/features/delegation/hooks'
 import { IMessage, MessageType, StreamMessage } from '$/features/message/types'
 import { MessageAction } from '$/features/message'
+import { useWalletAccount } from '$/features/wallet/hooks'
 
 export default function useIntercept(roomId: RoomId) {
     const client = useDelegatedClient()
 
     const dispatch = useDispatch()
 
-    const { current: onMessage } = useRef((type: MessageType, message: Omit<IMessage, 'owner'>) => {
-        dispatch(
-            MessageAction.register({
-                type,
-                message,
-            })
-        )
-    })
+    const owner = useWalletAccount()
+
+    const onMessage = useCallback(
+        (type: MessageType, message: Omit<IMessage, 'owner'>) => {
+            if (!owner) {
+                return
+            }
+
+            dispatch(
+                MessageAction.register({
+                    type,
+                    message,
+                    owner,
+                })
+            )
+        },
+        [owner]
+    )
 
     useEffect(() => {
         let mounted = true

@@ -1,19 +1,17 @@
-import { call, takeEvery } from 'redux-saga/effects'
-import StreamrClient from 'streamr-client'
+import { takeEvery } from 'redux-saga/effects'
 import { RoomAction } from '..'
 import { EnhancedStream } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getWalletClient from '$/sagas/getWalletClient.saga'
 import db from '$/utils/db'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { IRoom } from '../types'
 
-function* onFetchAction({ payload: { roomId, address } }: ReturnType<typeof RoomAction.fetch>) {
+function* onFetchAction({
+    payload: { roomId, requester, streamrClient },
+}: ReturnType<typeof RoomAction.fetch>) {
     try {
-        const client: StreamrClient = yield call(getWalletClient)
-
-        const stream: undefined | EnhancedStream = yield getStream(client, roomId)
+        const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)
@@ -21,7 +19,7 @@ function* onFetchAction({ payload: { roomId, address } }: ReturnType<typeof Room
 
         const metadata = stream.extensions['thechat.eth']
 
-        const owner = address.toLowerCase()
+        const owner = requester.toLowerCase()
 
         const existing: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()
 

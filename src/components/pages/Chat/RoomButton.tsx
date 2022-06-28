@@ -4,7 +4,7 @@ import tw from 'twin.macro'
 import { PermissionAction } from '$/features/permission'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useEmitPresenceEffect from '$/hooks/useEmitPresenceEffect'
 import useIntercept from '$/hooks/useIntercept'
 import useJustInvited from '$/hooks/useJustInvited'
@@ -18,6 +18,7 @@ import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import EyeIcon from '$/icons/EyeIcon'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import PinIcon from '$/icons/PinIcon'
+import { Flag } from '$/features/flag/types'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -31,9 +32,24 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const { id, name } = room
 
+    const requester = useWalletAccount()
+
+    const streamrClient = useWalletClient()
+
     useEffect(() => {
-        dispatch(RoomAction.sync(id))
-    }, [dispatch, id])
+        if (!requester || !streamrClient) {
+            return
+        }
+
+        dispatch(
+            RoomAction.sync({
+                roomId: id,
+                requester,
+                streamrClient,
+                fingerprint: Flag.isSyncingRoom(id),
+            })
+        )
+    }, [dispatch, id, requester])
 
     useIntercept(id)
 
@@ -42,12 +58,19 @@ export default function RoomButton({ room, active, ...props }: Props) {
     const address = useWalletAccount()
 
     useEffect(() => {
-        if (!address) {
+        if (!address || !streamrClient) {
             return
         }
 
-        dispatch(PermissionAction.fetchAll({ roomId: id, address }))
-    }, [id, address])
+        dispatch(
+            PermissionAction.fetchAll({
+                roomId: id,
+                address,
+                streamrClient,
+                fingerprint: Flag.isFetchingAllPermissions(id, address),
+            })
+        )
+    }, [id, address, streamrClient])
 
     const justInvited = useJustInvited(id, address)
 
@@ -145,7 +168,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
 function Icon({ id: roomId }: Pick<Props['room'], 'id'>) {
     return (
         <div tw="p-1">
-            <Avatar account={roomId} backgroundColor="white" />
+            <Avatar seed={roomId} backgroundColor="white" />
         </div>
     )
 }
