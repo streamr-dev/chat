@@ -1,27 +1,24 @@
 import Text from '$/components/Text'
 import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
-import tw, { css } from 'twin.macro'
+import tw from 'twin.macro'
 
 export default function ButtonGroup(props: HTMLAttributes<HTMLDivElement>) {
     return (
         <div
             {...props}
             css={[
-                css`
-                    button:first-of-type {
-                        border-top-left-radius: 0.5rem;
-                        border-bottom-left-radius: 0.5rem;
-                    }
-                    button:last-of-type {
-                        border-top-right-radius: 0.5rem;
-                        border-bottom-right-radius: 0.5rem;
-                    }
-                `,
                 tw`
+                    bg-[#F1F4F7]
                     flex
+                    h-10
                     items-center
                     justify-center
                     mb-4
+                    p-1
+                    rounded-full
+                    w-max
+
+                    [button + button]:ml-1
                 `,
             ]}
         />
@@ -45,19 +42,19 @@ export function GroupedButton({
             css={[
                 tw`
                     appearance-none
-                    text-center
-                    bg-[#F7F9FC]
-                    text-[0.875rem]
-                    h-8
-                    text-[#59799C]
+                    bg-none
                     block
+                    font-medium
+                    h-8
                     px-4
+                    rounded-full
+                    text-[#36404E]
+                    text-[0.75rem]
+                    text-center
                 `,
                 active &&
                     tw`
-                        bg-[#E0E7F2]
-                        text-[black]
-                        shadow-[inset 0 1px 1px rgba(0, 0, 0, 0.05)]
+                        bg-white
                     `,
             ]}
         >

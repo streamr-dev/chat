@@ -124,7 +124,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         <Modal {...props} title="Add new room" setOpen={setOpen} onClose={onClose}>
             <ButtonGroup>
                 <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>
-                    Create a room
+                    Add a room
                 </GroupedButton>
                 <GroupedButton active={!createNew} onClick={() => void setCreateNew(false)}>
                     Pin existing room
