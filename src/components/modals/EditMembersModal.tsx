@@ -33,6 +33,7 @@ import { AliasAction } from '$/features/alias'
 import focus from '$/utils/focus'
 import Form from '$/components/Form'
 import { Flag } from '$/features/flag/types'
+import EditIcon from '$/icons/EditIcon'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -343,8 +344,6 @@ function Item({
                 ]}
             >
                 {justInvited && <Tag>Invite pending</Tag>}
-                {isCurrentAccount && <Tag>You</Tag>}
-                {isCurrentDelegatedAccount && <Tag>Your delegated account</Tag>}
             </div>
             <div
                 {...props}
@@ -428,32 +427,34 @@ function Item({
                             </div>
                         )}
                     </div>
-                    <div>
+                    <div
+                        css={[
+                            tw`
+                                text-[#59799C]
+                                text-[0.875rem]
+                            `,
+                        ]}
+                    >
                         {isAddingNickname ? (
-                            <div
-                                css={[
-                                    tw`
-                                        text-[0.875rem]
-                                        text-[#59799C]
-                                    `,
-                                ]}
-                            >
+                            <div css={[tw``]}>
                                 <Text>Nickname is only visible to you</Text>
                             </div>
                         ) : (
-                            <button
-                                type="button"
-                                css={[
-                                    tw`
-                                        appearance-none
-                                        text-[0.875rem]
-                                        text-[#59799C]
-                                    `,
-                                ]}
-                                onClick={editAlias}
-                            >
-                                <Text>{alias ? <>Edit nickname</> : <>Set nickname</>}</Text>
-                            </button>
+                            <div>
+                                <Text>
+                                    {isCurrentAccount ? (
+                                        <>You</>
+                                    ) : (
+                                        <>
+                                            {isCurrentDelegatedAccount ? (
+                                                <>Your delegated account</>
+                                            ) : (
+                                                <>Room member</>
+                                            )}
+                                        </>
+                                    )}
+                                </Text>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -521,6 +522,17 @@ function Item({
                                 }}
                             >
                                 Copy address
+                            </MenuButtonItem>
+                            <MenuSeparatorItem />
+                            <MenuButtonItem
+                                icon={<EditIcon />}
+                                onClick={() => {
+                                    editAlias()
+
+                                    setMemberMenuOpen(false)
+                                }}
+                            >
+                                {alias ? <>Edit nickname</> : <>Set nickname</>}
                             </MenuButtonItem>
                             {canBeDeleted && !isCurrentAccount && (
                                 <>
