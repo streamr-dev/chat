@@ -96,46 +96,74 @@ export default function RoomButton({ room, active, ...props }: Props) {
                 )
             }}
             misc={
-                justInvited && (
+                <>
                     <div
                         css={[
                             tw`
-                                bg-[#E0E7F2]
-                                text-[#59799C]
-                                text-[0.625rem]
-                                font-medium
-                                tracking-wider
-                                uppercase
-                                w-max
-                                px-3
-                                py-1
-                                rounded-full
-                            `,
+                            text-[#59799C]
+                            flex
+                            items-center
+                            ml-2
+
+                            empty:hidden
+                            [* + *]:ml-3
+                        `,
                         ]}
                     >
-                        <Text>Invite</Text>
-                    </div>
-                )
-            }
-        >
-            <TagContainer>
-                {isPinned && <Tag icon={<PinIcon css={[tw`w-1.5`]} />}>Pinned</Tag>}
-                {!isVisible && (
-                    <Tag
-                        icon={
-                            <EyeIcon
+                        {justInvited && (
+                            <div
                                 css={[
                                     tw`
-                                        w-2.5
+                                        bg-[#E0E7F2]
+                                        text-[#59799C]
+                                        text-[0.625rem]
+                                        font-medium
+                                        tracking-wider
+                                        uppercase
+                                        w-max
+                                        px-3
+                                        py-1
+                                        rounded-full
                                     `,
                                 ]}
-                            />
-                        }
-                    >
-                        Hidden
-                    </Tag>
-                )}
-            </TagContainer>
+                            >
+                                <Text>Invite</Text>
+                            </div>
+                        )}
+                        {isPinned && (
+                            <svg
+                                width="9"
+                                height="12"
+                                viewBox="0 0 9 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M8.167 6.34c0-.273-.199-.495-.467-.57a1.748 1.748 0 0 1-1.283-1.687V1.167H7c.32 0 .583-.263.583-.584A.585.585 0 0 0 7 0H1.167a.585.585 0 0 0-.584.583c0 .321.263.584.584.584h.583v2.916c0 .805-.542 1.482-1.283 1.686-.269.076-.467.298-.467.572v.076C0 6.737.263 7 .583 7h2.905l.012 4.083c0 .321.263.584.583.584a.586.586 0 0 0 .584-.584L4.655 7h2.928a.586.586 0 0 0 .584-.583V6.34z"
+                                    fill="currentColor"
+                                />
+                            </svg>
+                        )}
+                        {!isVisible && (
+                            <svg
+                                width="14"
+                                height="11"
+                                viewBox="0 0 14 11"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M13.085 5.068c-.017-.044-.481-1.072-1.51-2.105C10.204 1.595 8.47.868 6.562.868a7.24 7.24 0 0 0-1.203.098.443.443 0 0 0-.252.728l5.54 6.092a.437.437 0 0 0 .322.142.47.47 0 0 0 .296-.11c1.247-1.12 1.8-2.345 1.82-2.395a.447.447 0 0 0 0-.355zM2.509.135a.438.438 0 0 0-.646.59l1.05 1.155C.928 3.1.075 4.98.037 5.068a.448.448 0 0 0 0 .355c.016.039.481 1.067 1.51 2.1C2.918 8.891 4.651 9.618 6.56 9.618a6.94 6.94 0 0 0 2.85-.59l1.202 1.323a.438.438 0 1 0 .646-.59L2.509.134zM6.56 7.212a1.969 1.969 0 0 1-1.613-3.096l2.58 2.839a1.938 1.938 0 0 1-.967.257z"
+                                    fill="currentColor"
+                                />
+                            </svg>
+                        )}
+                    </div>
+                </>
+            }
+        >
             <div>
                 <div
                     css={[
