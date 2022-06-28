@@ -17,6 +17,7 @@ import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import { Flag } from '$/features/flag/types'
 import PinIcon from '$/icons/PinIcon'
+import useAgo from '$/hooks/useAgo'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -24,7 +25,7 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> 
 }
 
 export default function RoomButton({ room, active, ...props }: Props) {
-    const recentMessage = useRecentMessage(room.id)?.content
+    const recentMessage = useRecentMessage(room.id)
 
     const dispatch = useDispatch()
 
@@ -75,6 +76,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
     const isVisible = useIsRoomVisible(id)
 
     const isPinned = useIsRoomPinned(id)
+
+    const ago = useAgo(recentMessage?.createdAt)
 
     return (
         <SidebarButton
@@ -158,17 +161,42 @@ export default function RoomButton({ room, active, ...props }: Props) {
                 >
                     {name || 'Unnamed room'}
                 </div>
-                {typeof recentMessage !== 'undefined' && (
+                {typeof recentMessage?.content !== 'undefined' && (
                     <div
                         css={[
                             tw`
                                 text-[#59799C]
                                 text-[14px]
                                 font-plex
+                                flex
                             `,
                         ]}
                     >
-                        <Text tw="truncate">{recentMessage}</Text>
+                        <div
+                            css={[
+                                tw`
+                                    min-w-0
+                                `,
+                            ]}
+                        >
+                            <Text tw="truncate">{recentMessage.content}</Text>
+                        </div>
+                        {typeof ago !== 'undefined' && (
+                            <>
+                                <div
+                                    css={[
+                                        tw`
+                                            px-1
+                                        `,
+                                    ]}
+                                >
+                                    <Text>·</Text>
+                                </div>
+                                <div>
+                                    <Text>{ago}</Text>
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
