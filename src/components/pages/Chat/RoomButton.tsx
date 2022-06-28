@@ -13,11 +13,8 @@ import Avatar from '../../Avatar'
 import SidebarButton from '../../SidebarButton'
 import Text from '../../Text'
 import { PreferencesAction } from '$/features/preferences'
-import Tag, { TagContainer } from '$/components/Tag'
 import useIsRoomVisible from '$/hooks/useIsRoomVisible'
-import EyeIcon from '$/icons/EyeIcon'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
-import PinIcon from '$/icons/PinIcon'
 import { Flag } from '$/features/flag/types'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
