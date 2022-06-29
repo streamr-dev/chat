@@ -3,11 +3,15 @@ import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 
-async function onStoreAction({ payload: { record } }: ReturnType<typeof EnsAction.store>) {
+async function onStoreAction({
+    payload: {
+        record: { address, content },
+    },
+}: ReturnType<typeof EnsAction.store>) {
     try {
         const entry = {
-            ...record,
-            content: record.content.toLowerCase(),
+            address: address.toLowerCase(),
+            content: content.toLowerCase(),
         }
 
         const numUpdated = await db.ensNames.where({ content: entry.content }).modify(entry)
