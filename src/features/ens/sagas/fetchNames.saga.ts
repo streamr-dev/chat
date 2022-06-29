@@ -63,7 +63,7 @@ function* onFetchNamesAction({ payload: addresses }: ReturnType<typeof EnsAction
                     EnsAction.store({
                         record: {
                             content,
-                            address: address.toLowerCase(),
+                            address,
                         },
                         fingerprint: Flag.isENSNameBeingStored(content),
                     })

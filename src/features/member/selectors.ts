@@ -7,7 +7,9 @@ function selectSelf(state: State): MemberState {
 }
 
 export function selectNoticedAt(address: OptionalAddress): (state: State) => undefined | number {
-    return createSelector(selectSelf, ({ notices }) =>
-        address ? notices[address.toLowerCase()] : undefined
-    )
+    if (!address) {
+        return () => undefined
+    }
+
+    return createSelector(selectSelf, ({ notices }) => notices[address.toLowerCase()])
 }
