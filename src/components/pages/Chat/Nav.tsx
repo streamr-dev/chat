@@ -5,8 +5,7 @@ import useIsOnline from '$/hooks/useIsOnline'
 import { AvatarStatus } from '../../Avatar'
 import Navbar, { NavButton } from '../../Navbar'
 import Text from '../../Text'
-import { useAlias } from '$/features/alias/hooks'
-import useDisplayName from '$/hooks/useDisplayName'
+import useDisplayUsername from '$/hooks/useDisplayUsername'
 
 type Props = {
     onAccountClick?: () => void
@@ -19,11 +18,7 @@ export default function Nav({ onAccountClick }: Props) {
 
     const seenAgo = useSeenAgo(account)
 
-    const alias = useAlias(account)
-
-    const displayName = useDisplayName(account || '')
-
-    const name = alias || displayName
+    const name = useDisplayUsername(account)
 
     return (
         <Navbar>

@@ -4,26 +4,14 @@ import { error, success } from '$/utils/toaster'
 import { call } from 'redux-saga/effects'
 import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import trunc from '$/utils/trunc'
-import { IENSName } from '$/features/ens/types'
-import db from '$/utils/db'
+import getDisplayUsername from '$/utils/getDisplayUsername'
 
 function* onRemoveAction({
     payload: { roomId, member, provider, requester, streamrClient },
 }: ReturnType<typeof MemberAction.remove>) {
-    let domain: undefined | string
+    const displayName: string = yield getDisplayUsername(member)
 
     try {
-        try {
-            const ens: null | IENSName = yield db.ensNames
-                .where({ address: member.toLowerCase() })
-                .first()
-
-            domain = ens?.content
-        } catch (e) {
-            // Ignore.
-        }
-
         yield call(
             setMultiplePermissions,
             roomId,
@@ -42,7 +30,7 @@ function* onRemoveAction({
 
         success(
             <>
-                <strong>{domain || trunc(member)}</strong> has gotten removed.
+                <strong>{displayName}</strong> has gotten removed.
             </>
         )
     } catch (e) {
@@ -50,7 +38,7 @@ function* onRemoveAction({
 
         error(
             <>
-                Failed to remove <strong>{domain || trunc(member)}</strong>.
+                Failed to remove <strong>{displayName}</strong>.
             </>
         )
     }

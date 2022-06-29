@@ -32,7 +32,8 @@ import focus from '$/utils/focus'
 import Form from '$/components/Form'
 import { Flag } from '$/features/flag/types'
 import EditIcon from '$/icons/EditIcon'
-import useDisplayName from '$/hooks/useDisplayName'
+import useENSName from '$/hooks/useENSName'
+import trunc from '$/utils/trunc'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -272,7 +273,7 @@ function Item({
 
     const owner = useWalletAccount()
 
-    const displayName = useDisplayName(address)
+    const displayName = useENSName(address) || trunc(address)
 
     const alias = useAlias(address)
 
