@@ -4,6 +4,7 @@ import { error, success } from '$/utils/toaster'
 import { call } from 'redux-saga/effects'
 import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import trunc from '$/utils/trunc'
 
 function* onRemoveAction({
     payload: { roomId, member, provider, requester, streamrClient },
@@ -25,11 +26,11 @@ function* onRemoveAction({
             }
         )
 
-        success(`"${member}" successfully removed.`)
+        success(`"${trunc(member)}" successfully removed.`)
     } catch (e) {
         handleError(e)
 
-        error(`Failed to remove "${member}".`)
+        error(`Failed to remove "${trunc(member)}".`)
     }
 }
 

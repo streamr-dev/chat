@@ -3,7 +3,7 @@ import { Address } from '$/types'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import isBlank from '$/utils/isBlank'
-import { error, success } from '$/utils/toaster'
+import { error } from '$/utils/toaster'
 import { takeEvery } from 'redux-saga/effects'
 
 async function create(owner: Address, address: Address, value: string) {
@@ -17,10 +17,8 @@ async function create(owner: Address, address: Address, value: string) {
             address: address.toLowerCase(),
             alias: value,
         })
-
-        success(`Nickname for ${address} created.`)
     } catch (e) {
-        error(`Failed to create a nickname for ${address}.`)
+        error(`Failed to create a nickname.`)
 
         throw e
     }
@@ -28,15 +26,11 @@ async function create(owner: Address, address: Address, value: string) {
 
 async function destroy(owner: Address, address: Address) {
     try {
-        const numDeleted = await db.aliases
+        await db.aliases
             .where({ owner: owner.toLowerCase(), address: address.toLowerCase() })
             .delete()
-
-        if (numDeleted > 0) {
-            success(`Removed a nickname for ${address}.`)
-        }
     } catch (e) {
-        error(`Failed to remove a nickname for ${address}.`)
+        error(`Failed to remove a nickname.`)
 
         throw e
     }
@@ -50,7 +44,7 @@ async function update(owner: Address, address: Address, value: string) {
             .where({ owner: owner.toLowerCase(), address: address.toLowerCase() })
             .modify({ alias: value, updatedAt: Date.now() })
     } catch (e) {
-        error(`Failed to update a nickname for ${address}.`)
+        error(`Failed to update a nickname.`)
 
         throw e
     }
