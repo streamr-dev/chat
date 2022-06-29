@@ -46,7 +46,7 @@ export default function Message({
                         :hover div:first-of-type {
                             opacity: 1;
                             visibility: visible;
-                            transition-delay: 1s, 1s;
+                            transition-delay: 0.25s;
                         }
                     `,
                     tw`

@@ -1,6 +1,11 @@
+import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
 
-export default function Text(props: React.HTMLAttributes<HTMLSpanElement>) {
+type Props = HTMLAttributes<HTMLSpanElement> & {
+    truncate?: boolean
+}
+
+export default function Text({ truncate = false, ...props }: Props) {
     return (
         <span
             {...props}
@@ -9,6 +14,7 @@ export default function Text(props: React.HTMLAttributes<HTMLSpanElement>) {
                     block
                     translate-y-[-0.06em]
                 `,
+                truncate && tw`truncate`,
             ]}
         />
     )

@@ -60,7 +60,7 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
                     }
                 }}
             >
-                <Label>Member address</Label>
+                <Label>ENS name or 0x address</Label>
                 <TextField
                     autoFocus
                     placeholder="0x…"

@@ -7,6 +7,7 @@ import handleError from '$/utils/handleError'
 import { MembersAction } from '..'
 import { IMember } from '$/features/members/types'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import { EnsAction } from '$/features/ens'
 
 function* onDetectAction({
     payload: { roomId, streamrClient },
@@ -39,6 +40,8 @@ function* onDetectAction({
         }
 
         yield put(MembersAction.set({ roomId, members }))
+
+        yield put(EnsAction.fetchNames(members.map(({ address }) => address)))
     } catch (e) {
         handleError(e)
     }

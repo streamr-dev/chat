@@ -5,6 +5,7 @@ import AddMemberIcon from '$/icons/AddMemberIcon'
 import trunc from '$/utils/trunc'
 import UtilityButton from '../UtilityButton'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
+import useDisplayUsername from '$/hooks/useDisplayUsername'
 
 type Props = {
     onAddMemberClick?: () => void
@@ -34,6 +35,7 @@ export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = 
                         tracking-[0.02em]
                         mb-8
                         empty:hidden
+                        px-16
                     `,
                 ]}
             >
@@ -63,6 +65,10 @@ export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = 
 function Credits() {
     const { createdAt, createdBy } = useSelectedRoom() || {}
 
+    const displayName = useDisplayUsername(createdBy, {
+        fallback: 'Someone',
+    })
+
     if (createdAt) {
         return (
             <>
@@ -71,10 +77,11 @@ function Credits() {
                         !!createdBy &&
                             tw`
                                 font-medium
+                                break-all
                             `,
                     ]}
                 >
-                    {createdBy ? trunc(createdBy) : 'Someone'}
+                    {displayName}
                 </span>{' '}
                 created this room on {format(createdAt, 'iiii, LLL do yyyy')}.
             </>

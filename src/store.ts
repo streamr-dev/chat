@@ -15,6 +15,7 @@ import message, { messageSaga } from '$/features/message'
 import preferences, { preferencesSaga } from '$/features/preferences'
 import { aliasSaga } from '$/features/alias'
 import flag from '$/features/flag'
+import ens, { ensSaga } from '$/features/ens'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -23,6 +24,8 @@ const store = configureStore({
         clock,
         delegation,
         drafts,
+        ens,
+        flag,
         identicons,
         member,
         members,
@@ -32,7 +35,6 @@ const store = configureStore({
         room,
         rooms,
         wallet,
-        flag,
     },
     middleware(getDefaultMiddleware) {
         return [
@@ -53,6 +55,7 @@ sagaMiddleware.run(function* saga() {
         aliasSaga(),
         delegationSaga(),
         draftsSaga(),
+        ensSaga(),
         identiconsSaga(),
         memberSaga(),
         membersSaga(),

@@ -1,11 +1,58 @@
 import { MemberAction } from '$/features/member'
 import handleError from '$/utils/handleError'
 import { error, success } from '$/utils/toaster'
-import { call } from 'redux-saga/effects'
-import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
+import { put } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import { toast } from 'react-toastify'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import axios from 'axios'
+import { Address } from '$/types'
+import { EnsAction } from '$/features/ens'
+import { Flag } from '$/features/flag/types'
+import setMultiplePermissions from '$/utils/setMultiplePermissions'
+
+function isENS(user: any): boolean {
+    return typeof user === 'string' && /\.eth$/.test(user)
+}
+
+async function resolveName(user: Address): Promise<null | string> {
+    if (!isENS(user)) {
+        return user
+    }
+
+    const query = `
+        query {
+            domains(where: { name_in: ${JSON.stringify([user]).toLowerCase()} }) {
+                name
+                resolvedAddress {
+                    id
+                }
+            }
+        }
+    `
+
+    try {
+        const {
+            data: {
+                data: {
+                    domains: [
+                        {
+                            resolvedAddress: { id },
+                        },
+                    ],
+                },
+            },
+        } = await axios.post('https://api.thegraph.com/subgraphs/name/ensdomains/ens', {
+            query,
+        })
+
+        return id
+    } catch (e) {
+        // Ignore.
+    }
+
+    return null
+}
 
 function* onAddAction({
     payload: { roomId, member, provider, requester, streamrClient },
@@ -21,12 +68,17 @@ function* onAddAction({
             hideProgressBar: true,
         })
 
-        yield call(
-            setMultiplePermissions,
+        const user: null | string = yield resolveName(member)
+
+        if (!user) {
+            throw new Error('Address could not be resolved')
+        }
+
+        yield setMultiplePermissions(
             roomId,
             [
                 {
-                    user: member,
+                    user,
                     permissions: [StreamPermission.GRANT],
                 },
             ],
@@ -37,7 +89,19 @@ function* onAddAction({
             }
         )
 
-        success(`"${member}" successfully added.`)
+        success(`"${member}" has gotten added.`)
+
+        if (isENS(member)) {
+            yield put(
+                EnsAction.store({
+                    record: {
+                        address: user,
+                        content: member,
+                    },
+                    fingerprint: Flag.isENSNameBeingStored(member),
+                })
+            )
+        }
     } catch (e) {
         handleError(e)
 
