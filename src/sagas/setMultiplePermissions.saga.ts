@@ -1,5 +1,3 @@
-import { Flag } from '$/features/flag/types'
-import { MembersAction } from '$/features/members'
 import { PermissionAction } from '$/features/permission'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
@@ -28,14 +26,6 @@ export default function* setMultiplePermissions(
         streamId: roomId,
         assignments,
     })
-
-    yield put(
-        MembersAction.detect({
-            roomId,
-            streamrClient,
-            fingerprint: Flag.isDetectingMembers(roomId),
-        })
-    )
 
     for (let i = 0; i < assignments.length; i++) {
         yield put(PermissionAction.invalidateAll({ roomId, address: assignments[i].user }))

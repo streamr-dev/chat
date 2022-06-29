@@ -1,9 +1,11 @@
+import { Flag } from '$/features/flag/types'
 import { MemberAction } from '$/features/member'
+import { MembersAction } from '$/features/members'
 import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error, success } from '$/utils/toaster'
-import { call } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 function* onAcceptInviteAction({
@@ -28,6 +30,14 @@ function* onAcceptInviteAction({
                 requester,
                 streamrClient,
             }
+        )
+
+        yield put(
+            MembersAction.detect({
+                roomId,
+                streamrClient,
+                fingerprint: Flag.isDetectingMembers(roomId),
+            })
         )
 
         success('Invite accepted.')

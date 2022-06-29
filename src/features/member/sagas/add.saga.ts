@@ -10,6 +10,7 @@ import axios from 'axios'
 import { Address } from '$/types'
 import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
+import { MembersAction } from '$/features/members'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -88,6 +89,14 @@ function* onAddAction({
                 requester,
                 streamrClient,
             }
+        )
+
+        yield put(
+            MembersAction.detect({
+                roomId,
+                streamrClient,
+                fingerprint: Flag.isDetectingMembers(roomId),
+            })
         )
 
         success(`"${member}" has gotten added.`)
