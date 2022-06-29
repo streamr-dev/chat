@@ -1,6 +1,5 @@
 import { useSelector } from 'react-redux'
 import { PrivacySetting } from '$/types'
-import { PrivateRoomOption, PublicRoomOption } from '../../components/modals/AddRoomModal'
 import {
     selectEditingRoomName,
     selectGettingStorageNodes,
@@ -15,6 +14,7 @@ import {
     selectTransientRoomName,
 } from './selectors'
 import { RoomId } from './types'
+import { PrivateRoomOption, PublicRoomOption } from '$/components/PrivacySelectField'
 
 export function useSelectedRoomId() {
     return useSelector(selectSelectedRoomId)

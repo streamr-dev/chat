@@ -1,5 +1,7 @@
+import GatedIcon from '$/icons/GatedIcon'
 import store from '$/store'
 import { Provider } from '@web3-react/types'
+import { ReactNode } from 'react'
 import { Stream } from 'streamr-client'
 import { IRoom } from '../src/features/room/types'
 import PrivateIcon from '../src/icons/PrivateIcon'
@@ -34,8 +36,8 @@ export enum Prefix {
 
 export enum PrivacySetting {
     Private = 'private',
-    ViewOnly = 'viewOnly',
     Public = 'public',
+    TokenGated = 'tokenGated',
 }
 
 export type RoomMetadata = Omit<IRoom, 'id' | 'name' | 'owner'>
@@ -60,8 +62,9 @@ export interface PreflightParams {
 export type PrivacyOption = {
     value: PrivacySetting
     label: string
-    desc: string
-    icon: typeof PrivateIcon | typeof PublicIcon
+    desc: ReactNode
+    icon: typeof PrivateIcon | typeof PublicIcon | typeof GatedIcon
+    disabled?: boolean
 }
 
 export enum Fallback {

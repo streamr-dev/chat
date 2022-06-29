@@ -17,20 +17,16 @@ import useSelectedRoom from '$/hooks/useSelectedRoom'
 import Form from '../Form'
 import Hint from '../Hint'
 import Label from '../Label'
-import SelectField from '../SelectField'
 import Submit from '../Submit'
 import Text from '../Text'
 import Toggle from '../Toggle'
-import {
-    privacyOptions,
-    SingleValue,
-    Option,
-    PrivateRoomOption,
-    PublicRoomOption,
-} from './AddRoomModal'
 import Modal, { ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
+import PrivacySelectField, {
+    PrivateRoomOption,
+    PublicRoomOption,
+} from '$/components/PrivacySelectField'
 
 export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
@@ -125,9 +121,8 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
             <Form onSubmit={onSubmit}>
                 <>
                     <Label>Privacy</Label>
-                    <SelectField
+                    <PrivacySelectField
                         isDisabled={isPrivacyBusy}
-                        options={privacyOptions}
                         value={privacyOption}
                         onChange={(option: any) => {
                             if (!selectedRoomId || !provider || !requester || !streamrClient) {
@@ -145,8 +140,6 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                                 })
                             )
                         }}
-                        optionComponent={Option}
-                        singleValueComponent={SingleValue}
                     />
                 </>
                 <>

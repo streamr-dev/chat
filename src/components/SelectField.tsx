@@ -3,14 +3,15 @@ import { StateManagerProps } from 'react-select/dist/declarations/src/useStateMa
 import tw from 'twin.macro'
 import CheckIcon from '$/icons/CheckIcon'
 
-export function Option({ children, isSelected, ...props }: OptionProps) {
+export function Option({ children, isSelected, isDisabled, ...props }: OptionProps) {
     return (
         <components.Option
             {...props}
             isSelected={isSelected}
+            isDisabled={isDisabled}
             css={[
                 tw`
-                    bg-[white]
+                    bg-white
                     text-[#36404E]
                     py-3
                     px-4
@@ -19,6 +20,11 @@ export function Option({ children, isSelected, ...props }: OptionProps) {
                     duration-300
                     hover:duration-100
                 `,
+                isDisabled &&
+                    tw`
+                        hover:bg-white
+                        text-[#59799C]
+                    `,
             ]}
         >
             <div
@@ -128,6 +134,7 @@ function ValueContainer(props: ValueContainerProps) {
             css={[
                 tw`
                     p-0
+                    font-medium
                 `,
             ]}
         />

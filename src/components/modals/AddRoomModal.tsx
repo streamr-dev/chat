@@ -7,34 +7,16 @@ import Form from '../Form'
 import Hint from '../Hint'
 import Label from '../Label'
 import Modal, { ModalProps } from './Modal'
-import SelectField, { Option as RawOption, SingleValue as RawSingleValue } from '../SelectField'
 import Submit from '../Submit'
 import Text from '../Text'
 import TextField from '../TextField'
 import Toggle from '../Toggle'
-import PrivateIcon from '$/icons/PrivateIcon'
-import PublicIcon from '$/icons/PublicIcon'
 import { v4 as uuidv4 } from 'uuid'
-import { Prefix, PrivacyOption, PrivacySetting } from '$/types'
+import { Prefix, PrivacyOption } from '$/types'
 import { RoomAction } from '$/features/room'
 import ButtonGroup, { GroupedButton } from '$/components/ButtonGroup'
 import { Flag } from '$/features/flag/types'
-
-export const PrivateRoomOption: PrivacyOption = {
-    value: PrivacySetting.Private,
-    label: 'Private',
-    desc: 'Only invited members can post and view messages',
-    icon: PrivateIcon,
-}
-
-export const PublicRoomOption: PrivacyOption = {
-    value: PrivacySetting.Public,
-    label: 'Public',
-    desc: 'Anyone can view messages',
-    icon: PublicIcon,
-}
-
-export const privacyOptions: PrivacyOption[] = [PrivateRoomOption, PublicRoomOption]
+import PrivacySelectField, { PrivateRoomOption } from '$/components/PrivacySelectField'
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
@@ -145,12 +127,9 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                     </>
                     <>
                         <Label>Choose privacy</Label>
-                        <SelectField
-                            options={privacyOptions}
+                        <PrivacySelectField
                             value={privacySetting}
                             onChange={(option) => void setPrivacySetting(option as PrivacyOption)}
-                            optionComponent={Option}
-                            singleValueComponent={SingleValue}
                         />
                     </>
                     <>
@@ -215,99 +194,5 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                 </Form>
             )}
         </Modal>
-    )
-}
-
-export function SingleValue({ data: { icon: Icon }, children, ...props }: any) {
-    return (
-        <RawSingleValue {...props}>
-            <div
-                css={[
-                    tw`
-                        text-[14px]
-                        p-0
-                        flex
-                        items-center
-                    `,
-                ]}
-            >
-                <div
-                    css={[
-                        tw`
-                            text-[#59799C]
-                            flex
-                            justify-center
-                            w-10
-                        `,
-                    ]}
-                >
-                    <Icon css={tw`block`} />
-                </div>
-                <div>
-                    <Text>{children}</Text>
-                </div>
-            </div>
-        </RawSingleValue>
-    )
-}
-
-export function Option({ data: { label, icon: Icon, desc }, ...props }: any) {
-    return (
-        <RawOption {...props}>
-            <div
-                css={[
-                    tw`
-                        flex
-                        items-center
-                    `,
-                ]}
-            >
-                <div
-                    css={[
-                        tw`
-                            bg-[#F1F4F7]
-                            rounded-full
-                            w-8
-                            h-8
-                            flex
-                            justify-center
-                            items-center
-                            mr-3
-                        `,
-                    ]}
-                >
-                    <Icon
-                        css={[
-                            tw`
-                                block
-                            `,
-                        ]}
-                    />
-                </div>
-                <div>
-                    <div
-                        css={[
-                            tw`
-                                text-[#36404E]
-                                text-[14px]
-                                font-medium
-                            `,
-                        ]}
-                    >
-                        <Text>{label}</Text>
-                    </div>
-                    <Hint
-                        css={[
-                            tw`
-                                text-[0.75rem]
-                                mt-0
-                            `,
-                        ]}
-                    >
-                        <Text>{desc}</Text>
-                    </Hint>
-                </div>
-            </div>
-        </RawOption>
     )
 }
