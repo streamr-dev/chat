@@ -1,12 +1,9 @@
 import { MemberAction } from '$/features/member'
 import handleError from '$/utils/handleError'
 import { error, success } from '$/utils/toaster'
-import { call, put } from 'redux-saga/effects'
-import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import getDisplayUsername from '$/utils/getDisplayUsername'
-import { Flag } from '$/features/flag/types'
-import { MembersAction } from '$/features/members'
+import setMultiplePermissions from '$/utils/setMultiplePermissions'
 
 function* onRemoveAction({
     payload: { roomId, member, provider, requester, streamrClient },
@@ -14,8 +11,7 @@ function* onRemoveAction({
     const displayName: string = yield getDisplayUsername(member)
 
     try {
-        yield call(
-            setMultiplePermissions,
+        yield setMultiplePermissions(
             roomId,
             [
                 {
@@ -28,14 +24,6 @@ function* onRemoveAction({
                 requester,
                 streamrClient,
             }
-        )
-
-        yield put(
-            MembersAction.detect({
-                roomId,
-                streamrClient,
-                fingerprint: Flag.isDetectingMembers(roomId),
-            })
         )
 
         success(

@@ -1,8 +1,7 @@
 import { MemberAction } from '$/features/member'
 import handleError from '$/utils/handleError'
 import { error, success } from '$/utils/toaster'
-import { call, put } from 'redux-saga/effects'
-import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
+import { put } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import { toast } from 'react-toastify'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -10,7 +9,7 @@ import axios from 'axios'
 import { Address } from '$/types'
 import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
-import { MembersAction } from '$/features/members'
+import setMultiplePermissions from '$/utils/setMultiplePermissions'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -75,8 +74,7 @@ function* onAddAction({
             throw new Error('Address could not be resolved')
         }
 
-        yield call(
-            setMultiplePermissions,
+        yield setMultiplePermissions(
             roomId,
             [
                 {
@@ -89,14 +87,6 @@ function* onAddAction({
                 requester,
                 streamrClient,
             }
-        )
-
-        yield put(
-            MembersAction.detect({
-                roomId,
-                streamrClient,
-                fingerprint: Flag.isDetectingMembers(roomId),
-            })
         )
 
         success(`"${member}" has gotten added.`)

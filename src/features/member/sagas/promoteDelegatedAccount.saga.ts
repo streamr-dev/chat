@@ -1,19 +1,15 @@
-import { Flag } from '$/features/flag/types'
 import { MemberAction } from '$/features/member'
-import { MembersAction } from '$/features/members'
-import setMultiplePermissions from '$/sagas/setMultiplePermissions.saga'
 import handleError from '$/utils/handleError'
+import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error, success } from '$/utils/toaster'
-import { call, put } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 function* onPromoteDelegatedAccountAction({
     payload: { roomId, delegatedAddress, provider, requester, streamrClient },
 }: ReturnType<typeof MemberAction.promoteDelegatedAccount>) {
     try {
-        yield call(
-            setMultiplePermissions,
+        yield setMultiplePermissions(
             roomId,
             [
                 {
@@ -26,14 +22,6 @@ function* onPromoteDelegatedAccountAction({
                 requester,
                 streamrClient,
             }
-        )
-
-        yield put(
-            MembersAction.detect({
-                roomId,
-                streamrClient,
-                fingerprint: Flag.isDetectingMembers(roomId),
-            })
         )
 
         success('Delegated account has been promoted.')

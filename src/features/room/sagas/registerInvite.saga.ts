@@ -1,12 +1,11 @@
-import { put, retry } from 'redux-saga/effects'
-import { Stream, StreamPermission } from 'streamr-client'
+import { put } from 'redux-saga/effects'
+import { StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
-import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { info } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import getUserPermissions from '$/utils/getUserPermissions'
+import waitForPermissions from '$/utils/waitForPermissions'
+import isSameAddress from '$/utils/isSameAddress'
 
 function* onRegisterInviteAction({
     payload: { roomId, invitee, streamrClient },
@@ -14,19 +13,17 @@ function* onRegisterInviteAction({
     try {
         // Invite detector tends to trigger the invitation event prematurely. In other
         // words, at times we've gotta wait a couple of seconds for `GRANT` permission
-        // to be fully established and propagated. 30s+ usually does it.
-        yield retry(10, 3000, function* () {
-            const stream: undefined | Stream = yield getStream(streamrClient, roomId)
+        // to be fully established and propagated.
+        yield waitForPermissions(streamrClient, roomId, (assignments) => {
+            for (let i = 0; i < assignments.length; i++) {
+                const a = assignments[i]
 
-            if (!stream) {
-                throw new RoomNotFoundError(roomId)
+                if ('user' in a && isSameAddress(a.user, invitee)) {
+                    return a.permissions.length === 1 && a.permissions[0] === StreamPermission.GRANT
+                }
             }
 
-            const [permissions] = yield getUserPermissions(invitee, stream)
-
-            if (permissions.length !== 1 || permissions[0] !== StreamPermission.GRANT) {
-                throw new Error('`GRANT` permission could not be found')
-            }
+            return false
         })
 
         info("You've got an invite. Room list will reflect it shortly.")
