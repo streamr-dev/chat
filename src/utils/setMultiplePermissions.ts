@@ -74,7 +74,7 @@ export default function setMultiplePermissions(
 
                     const user = a.user.toLowerCase()
 
-                    if ('user' in a && copy[user]) {
+                    if (copy[user]) {
                         const left = JSON.stringify([...a.permissions].sort())
 
                         const right = JSON.stringify(copy[user])
