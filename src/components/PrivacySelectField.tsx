@@ -7,6 +7,7 @@ import { Props as SelectProps } from 'react-select'
 import tw, { css } from 'twin.macro'
 import Hint from './Hint'
 import Text from './Text'
+import Hodl from '$/components/Hodl'
 
 export const PrivateRoomOption: PrivacyOption = {
     value: PrivacySetting.Private,
@@ -25,7 +26,11 @@ export const PublicRoomOption: PrivacyOption = {
 export const TokenGatedRoom: PrivacyOption = {
     value: PrivacySetting.TokenGated,
     label: 'Coming soon: Token gated',
-    desc: <>Access granted only if you hodl a particular NFT or&nbsp;ERC&#8209;20 token</>,
+    desc: (
+        <>
+            Access granted only if you <Hodl /> a particular NFT or&nbsp;ERC&#8209;20 token
+        </>
+    ),
     icon: GatedIcon,
     disabled: true,
 }
