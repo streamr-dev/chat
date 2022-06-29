@@ -43,9 +43,15 @@ export default function setMultiplePermissions(
         if (validate === true) {
             const assignmentsMap: AssignmentsMap = {}
 
-            assignments.forEach(({ user, permissions }) => {
+            const emptyAssignments: UserPermissionAssignment[] = []
+
+            assignments.forEach((a) => {
                 // Array#sort() mutates the array thus we use a copy.
-                assignmentsMap[user.toLowerCase()] = [...permissions].sort()
+                assignmentsMap[a.user.toLowerCase()] = [...a.permissions].sort()
+
+                if (!a.permissions.length) {
+                    emptyAssignments.push(a)
+                }
             })
 
             // Default validator checks if new assignments match the remote ones.
@@ -55,8 +61,12 @@ export default function setMultiplePermissions(
                     ...assignmentsMap,
                 }
 
-                for (let i = 0; i < currentAssignments.length; i++) {
-                    const a = currentAssignments[i]
+                // Removed users are not gonna appear in `currentAssignments`. To simplicity's sake
+                // we append all "remove" assignments so that the algorithm stands.
+                const current = [...currentAssignments, ...emptyAssignments]
+
+                for (let i = 0; i < current.length; i++) {
+                    const a = current[i]
 
                     if (!('user' in a)) {
                         continue
