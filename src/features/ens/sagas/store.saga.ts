@@ -5,10 +5,15 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 
 async function onStoreAction({ payload: { record } }: ReturnType<typeof EnsAction.store>) {
     try {
-        const numUpdated = await db.ensNames.where({ content: record.content }).modify(record)
+        const entry = {
+            ...record,
+            content: record.content.toLowerCase(),
+        }
+
+        const numUpdated = await db.ensNames.where({ content: entry.content }).modify(entry)
 
         if (numUpdated === 0) {
-            await db.ensNames.add(record)
+            await db.ensNames.add(entry)
         }
     } catch (e) {
         handleError(e)

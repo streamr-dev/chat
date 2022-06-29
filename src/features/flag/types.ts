@@ -111,6 +111,6 @@ export const Flag = {
     },
 
     isENSNameBeingStored(name: string): string {
-        return JSON.stringify(['isENSNameBeingStored', name])
+        return JSON.stringify(['isENSNameBeingStored', name.toLowerCase()])
     },
 }
