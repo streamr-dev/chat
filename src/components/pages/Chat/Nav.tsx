@@ -2,10 +2,11 @@ import tw, { css } from 'twin.macro'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useSeenAgo from '$/hooks/useSeenAgo'
 import useIsOnline from '$/hooks/useIsOnline'
-import trunc from '$/utils/trunc'
 import { AvatarStatus } from '../../Avatar'
 import Navbar, { NavButton } from '../../Navbar'
 import Text from '../../Text'
+import { useAlias } from '$/features/alias/hooks'
+import useDisplayName from '$/hooks/useDisplayName'
 
 type Props = {
     onAccountClick?: () => void
@@ -17,6 +18,12 @@ export default function Nav({ onAccountClick }: Props) {
     const status = useIsOnline(account) ? AvatarStatus.Online : AvatarStatus.Offline
 
     const seenAgo = useSeenAgo(account)
+
+    const alias = useAlias(account)
+
+    const displayName = useDisplayName(account || '')
+
+    const name = alias || displayName
 
     return (
         <Navbar>
@@ -74,8 +81,15 @@ export default function Nav({ onAccountClick }: Props) {
                         />
                     </svg>
                 </div>
-                <div>
-                    <Text>{trunc(account as string)}</Text>
+                <div
+                    css={[
+                        tw`
+                            max-w-sm
+                            min-w-0
+                        `,
+                    ]}
+                >
+                    <Text truncate>{name}</Text>
                 </div>
             </NavButton>
         </Navbar>

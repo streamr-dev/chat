@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Address } from '$/types'
 import { MemberAction } from '$/features/member'
-import { MembersAction } from '$/features/members'
 import { useMembers, useMembersFetching } from '$/features/members/hooks'
 import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
@@ -14,7 +13,6 @@ import ExternalLinkIcon from '$/icons/ExternalLinkIcon'
 import RemoveUserIcon from '$/icons/RemoveUserIcon'
 import getExplorerURL from '$/utils/getExplorerURL'
 import isSameAddress from '$/utils/isSameAddress'
-import trunc from '$/utils/trunc'
 import Avatar, { AvatarStatus } from '../Avatar'
 import Menu, { MenuButtonItem, MenuLinkItem, MenuSeparatorItem } from '../Menu'
 import Modal, { ModalProps } from './Modal'
@@ -34,6 +32,7 @@ import focus from '$/utils/focus'
 import Form from '$/components/Form'
 import { Flag } from '$/features/flag/types'
 import EditIcon from '$/icons/EditIcon'
+import useDisplayName from '$/hooks/useDisplayName'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -86,20 +85,6 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
     const members = useMembers(selectedRoomId)
 
     const isFetchingMembers = useMembersFetching(selectedRoomId)
-
-    useEffect(() => {
-        if (!open || !selectedRoomId || !streamrClient) {
-            return
-        }
-
-        dispatch(
-            MembersAction.detect({
-                roomId: selectedRoomId,
-                streamrClient,
-                fingerprint: Flag.isDetectingMembers(selectedRoomId),
-            })
-        )
-    }, [dispatch, selectedRoomId, open, streamrClient])
 
     const account = useWalletAccount()
 
@@ -287,6 +272,8 @@ function Item({
 
     const owner = useWalletAccount()
 
+    const displayName = useDisplayName(address)
+
     const alias = useAlias(address)
 
     const [isAddingNickname, setIsAddingNickname] = useState<boolean>(false)
@@ -373,6 +360,7 @@ function Item({
                     css={[
                         tw`
                             flex-grow
+                            min-w-0
                         `,
                     ]}
                 >
@@ -391,7 +379,7 @@ function Item({
                                 ref={(el) => void setInput(el)}
                                 type="text"
                                 value={nickname}
-                                placeholder={trunc(address)}
+                                placeholder={displayName}
                                 onChange={(e) => void setNickname(e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Escape') {
@@ -420,10 +408,11 @@ function Item({
                                     tw`
                                         text-[1.125rem]
                                         font-medium
+                                        truncate
                                     `,
                                 ]}
                             >
-                                {alias ? alias : trunc(address)}
+                                {alias || displayName}
                             </div>
                         )}
                     </div>

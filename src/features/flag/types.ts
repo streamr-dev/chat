@@ -109,4 +109,8 @@ export const Flag = {
     areMembersBeingFetched(roomId: RoomId): string {
         return JSON.stringify(['areMembersBeingFetched', roomId])
     },
+
+    isENSNameBeingStored(name: string): string {
+        return JSON.stringify(['isENSNameBeingStored', name])
+    },
 }

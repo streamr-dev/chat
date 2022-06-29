@@ -5,6 +5,7 @@ import { DelegationAction } from '../../delegation'
 import { RoomAction } from '$/features/room'
 import { IPreference } from '$/features/preferences/types'
 import db from '$/utils/db'
+import { EnsAction } from '$/features/ens'
 
 function* preselectRoom({ payload: account }: ReturnType<typeof WalletAction.setAccount>) {
     try {
@@ -37,7 +38,16 @@ function* resetDelegatedPrivateKey() {
     }
 }
 
+function* fetchEns({ payload: address }: ReturnType<typeof WalletAction.setAccount>) {
+    if (!address) {
+        return
+    }
+
+    yield put(EnsAction.fetchNames([address]))
+}
+
 export default function* setAccount() {
+    yield takeEvery(WalletAction.setAccount, fetchEns)
     yield takeEvery(WalletAction.setAccount, preselectRoom)
     yield takeEvery(WalletAction.setAccount, resetDelegatedPrivateKey)
 }

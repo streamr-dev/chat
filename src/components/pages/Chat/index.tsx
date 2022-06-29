@@ -20,6 +20,7 @@ import { RoomsAction } from '$/features/rooms'
 import useListenForInvitesEffect from '$/hooks/useListenForInvitesEffect'
 import { RoomAction } from '$/features/room'
 import { Flag } from '$/features/flag/types'
+import useDetectMembersEffect from '$/hooks/useDetectMembersEffect'
 
 function UnwrappedChat() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
@@ -75,6 +76,8 @@ function UnwrappedChat() {
             })
         )
     })
+
+    useDetectMembersEffect()
 
     return (
         <>
