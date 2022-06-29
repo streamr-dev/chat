@@ -2,7 +2,7 @@ import { MemberAction } from '$/features/member'
 import handleError from '$/utils/handleError'
 import { error, success } from '$/utils/toaster'
 import { put } from 'redux-saga/effects'
-import { StreamPermission } from 'streamr-client'
+import { Stream, StreamPermission } from 'streamr-client'
 import { toast } from 'react-toastify'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import axios from 'axios'
@@ -10,6 +10,11 @@ import { Address } from '$/types'
 import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
+import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
+import MemberExistsError from '$/errors/MemberExistsError'
+import getStream from '$/utils/getStream'
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import trunc from '$/utils/trunc'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -60,18 +65,35 @@ function* onAddAction({
     let toastId
 
     try {
-        toastId = toast.loading(`Adding "${member}"…`, {
-            position: 'bottom-left',
-            autoClose: false,
-            type: 'info',
-            closeOnClick: false,
-            hideProgressBar: true,
-        })
+        toastId = toast.loading(
+            <>
+                Adding <strong>{trunc(member)}</strong>…
+            </>,
+            {
+                position: 'bottom-left',
+                autoClose: false,
+                type: 'info',
+                closeOnClick: false,
+                hideProgressBar: true,
+            }
+        )
 
         const user: null | string = yield resolveName(member)
 
         if (!user) {
             throw new Error('Address could not be resolved')
+        }
+
+        const stream: null | Stream = yield getStream(streamrClient, roomId)
+
+        if (!stream) {
+            throw new RoomNotFoundError(roomId)
+        }
+
+        const [currentPermissions]: UserPermissions = yield getUserPermissions(user, stream)
+
+        if (currentPermissions.length) {
+            throw new MemberExistsError(member)
         }
 
         yield setMultiplePermissions(
@@ -89,7 +111,11 @@ function* onAddAction({
             }
         )
 
-        success(`"${member}" has gotten added.`)
+        success(
+            <>
+                <strong>{trunc(member)}</strong> has gotten added
+            </>
+        )
 
         if (isENS(member)) {
             yield put(
@@ -103,9 +129,23 @@ function* onAddAction({
             )
         }
     } catch (e) {
+        if (e instanceof MemberExistsError) {
+            error(
+                <>
+                    <strong>{trunc(e.member)}</strong> is already a member
+                </>
+            )
+
+            return
+        }
+
         handleError(e)
 
-        error(`Failed to add "${member}".`)
+        error(
+            <>
+                Failed to add <strong>{trunc(member)}</strong>
+            </>
+        )
     } finally {
         if (toastId) {
             toast.dismiss(toastId)
