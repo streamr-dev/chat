@@ -113,7 +113,7 @@ function* onAddAction({
 
         success(
             <>
-                <strong>{trunc(member)}</strong> has gotten added
+                <strong>{trunc(member)}</strong> has been added
             </>
         )
 

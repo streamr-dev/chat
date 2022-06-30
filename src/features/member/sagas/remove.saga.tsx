@@ -28,7 +28,7 @@ function* onRemoveAction({
 
         success(
             <>
-                <strong>{displayName}</strong> has gotten removed.
+                <strong>{displayName}</strong> has been removed
             </>
         )
     } catch (e) {
@@ -36,7 +36,7 @@ function* onRemoveAction({
 
         error(
             <>
-                Failed to remove <strong>{displayName}</strong>.
+                Failed to remove <strong>{displayName}</strong>
             </>
         )
     }
