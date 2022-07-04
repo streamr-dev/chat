@@ -7,7 +7,6 @@ import { useMembers, useMembersFetching } from '$/features/members/hooks'
 import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
-import useIsOnline from '$/hooks/useIsOnline'
 import CopyIcon from '$/icons/CopyIcon'
 import ExternalLinkIcon from '$/icons/ExternalLinkIcon'
 import RemoveUserIcon from '$/icons/RemoveUserIcon'
@@ -263,8 +262,6 @@ function Item({
 
     const { copy } = useCopy()
 
-    const status = useIsOnline(address) ? AvatarStatus.Online : AvatarStatus.Offline
-
     const justInvited = permissions.length === 1 && permissions[0] === StreamPermission.GRANT
 
     const selectedRoomId = useSelectedRoomId()
@@ -355,7 +352,11 @@ function Item({
                         `,
                     ]}
                 >
-                    <Avatar seed={address.toLowerCase()} backgroundColor="white" status={status} />
+                    <Avatar
+                        seed={address.toLowerCase()}
+                        backgroundColor="white"
+                        status={AvatarStatus.Offline}
+                    />
                 </div>
                 <div
                     css={[

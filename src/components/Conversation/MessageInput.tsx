@@ -8,7 +8,6 @@ import Form from '../Form'
 import db from '$/utils/db'
 import { DraftAction } from '$/features/drafts'
 import { MessageAction } from '$/features/message'
-import { MessageType } from '$/features/message/types'
 import { useDelegatedClient } from '$/features/delegation/hooks'
 
 type Props = {
@@ -57,7 +56,6 @@ export default function MessageInput({ disabled = false }: Props) {
             MessageAction.publish({
                 roomId: selectedRoomId,
                 content,
-                type: MessageType.Text,
                 requester: account,
                 streamrClient: delegatedClient,
             })

@@ -1,7 +1,5 @@
 import tw, { css } from 'twin.macro'
 import { useWalletAccount } from '$/features/wallet/hooks'
-import useSeenAgo from '$/hooks/useSeenAgo'
-import useIsOnline from '$/hooks/useIsOnline'
 import { AvatarStatus } from '../../Avatar'
 import Navbar, { NavButton } from '../../Navbar'
 import Text from '../../Text'
@@ -14,9 +12,9 @@ type Props = {
 export default function Nav({ onAccountClick }: Props) {
     const account = useWalletAccount()
 
-    const status = useIsOnline(account) ? AvatarStatus.Online : AvatarStatus.Offline
+    const status = AvatarStatus.Offline
 
-    const seenAgo = useSeenAgo(account)
+    const seenAgo = 'never'
 
     const name = useDisplayUsername(account)
 

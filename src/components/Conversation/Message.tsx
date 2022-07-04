@@ -1,7 +1,6 @@
 import { HTMLAttributes } from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '$/features/message/types'
-import useIsOnline from '$/hooks/useIsOnline'
 import Avatar, { AvatarStatus, Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
@@ -20,9 +19,11 @@ export default function Message({
 }: Props) {
     const { createdBy, createdAt, content } = payload
 
-    const status = useIsOnline(createdBy) ? AvatarStatus.Online : AvatarStatus.Offline
-
-    const avatar = hideAvatar ? <Wrap /> : <Avatar status={status} seed={createdBy.toLowerCase()} />
+    const avatar = hideAvatar ? (
+        <Wrap />
+    ) : (
+        <Avatar status={AvatarStatus.Offline} seed={createdBy.toLowerCase()} />
+    )
 
     return (
         <div

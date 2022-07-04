@@ -5,7 +5,6 @@ import { PermissionAction } from '$/features/permission'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
-import useEmitPresenceEffect from '$/hooks/useEmitPresenceEffect'
 import useIntercept from '$/hooks/useIntercept'
 import useJustInvited from '$/hooks/useJustInvited'
 import useRecentMessage from '$/hooks/useRecentMessage'
@@ -51,8 +50,6 @@ export default function RoomButton({ room, active, ...props }: Props) {
     }, [dispatch, id, requester])
 
     useIntercept(id)
-
-    useEmitPresenceEffect(id)
 
     const address = useWalletAccount()
 
