@@ -37,23 +37,27 @@ class StreamrChatDatabase extends Dexie {
     }
 }
 
-async function teardown() {
-    try {
-        await new Dexie('StreamrChatDatabase').delete()
-    } catch (e) {
-        // Noop.
-    }
+const CurrentVersion = 3
 
-    try {
-        await new Dexie('StreamrChatDatabase_v2').delete()
-    } catch (e) {
-        // Noop.
+async function teardown() {
+    for (let i = 0; i < CurrentVersion; i++) {
+        try {
+            let dbName = 'StreamrChatDatabase'
+
+            if (i !== 0) {
+                dbName = `${dbName}_${i}`
+            }
+
+            await new Dexie(dbName).delete()
+        } catch (e) {
+            // Noop.
+        }
     }
 }
 
 teardown()
 
-const db = new StreamrChatDatabase(3)
+const db = new StreamrChatDatabase(CurrentVersion)
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
