@@ -28,16 +28,21 @@ class StreamrChatDatabase extends Dexie {
     constructor() {
         super('StreamrChatDatabase')
 
-        this.version(8).stores({
-            rooms: '++, owner, id, &[owner+id]',
-            messages: '++, owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
-            aliases: '++, owner, address, &[owner+address]',
-            drafts: '++, owner, roomId, &[owner+roomId]',
-            delegations: '++, &owner',
-            identicons: '++, &seed',
-            preferences: '++, &owner',
-            ensNames: '++, &content, address',
-        })
+        this.version(11)
+            .stores({
+                rooms: '++, owner, id, &[owner+id]',
+                messages:
+                    '[createdAt+roomId], owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
+                aliases: '++, owner, address, &[owner+address]',
+                drafts: '++, owner, roomId, &[owner+roomId]',
+                delegations: '++, &owner',
+                identicons: '++, &seed',
+                preferences: '++, &owner',
+                ensNames: '++, &content, address',
+            })
+            .upgrade((tx) => {
+                tx.table('messages').clear()
+            })
     }
 }
 
