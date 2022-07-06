@@ -1,5 +1,4 @@
 import Dexie, { Table } from 'dexie'
-import { IDelegation } from '$/features/delegation/types'
 import { IDraft } from '$/features/drafts/types'
 import { IdenticonSeed, IIdenticon } from '$/features/identicons/types'
 import { IMessage } from '$/features/message/types'
@@ -17,36 +16,44 @@ class StreamrChatDatabase extends Dexie {
 
     drafts!: Table<IDraft, number>
 
-    delegations!: Table<IDelegation, number>
-
     identicons!: Table<IIdenticon, IdenticonSeed>
 
     preferences!: Table<IPreference, number>
 
     ensNames!: Table<IENSName, number>
 
-    constructor() {
-        super('StreamrChatDatabase')
+    constructor(version: number) {
+        super(`StreamrChatDatabase_v${version}`)
 
-        this.version(11)
-            .stores({
-                rooms: '++, owner, id, &[owner+id]',
-                messages:
-                    '[createdAt+roomId], owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
-                aliases: '++, owner, address, &[owner+address]',
-                drafts: '++, owner, roomId, &[owner+roomId]',
-                delegations: '++, &owner',
-                identicons: '++, &seed',
-                preferences: '++, &owner',
-                ensNames: '++, &content, address',
-            })
-            .upgrade((tx) => {
-                tx.table('messages').clear()
-            })
+        this.version(1).stores({
+            rooms: '++, owner, id, &[owner+id]',
+            messages: '[createdAt+roomId+owner], id, &[owner+roomId+id], [owner+roomId]',
+            aliases: '++, owner, address, &[owner+address]',
+            drafts: '++, owner, roomId, &[owner+roomId]',
+            identicons: '++, &seed',
+            preferences: '++, &owner',
+            ensNames: '++, &content, address',
+        })
     }
 }
 
-const db = new StreamrChatDatabase()
+async function teardown() {
+    try {
+        await new Dexie('StreamrChatDatabase').delete()
+    } catch (e) {
+        // Noop.
+    }
+
+    try {
+        await new Dexie('StreamrChatDatabase_v2').delete()
+    } catch (e) {
+        // Noop.
+    }
+}
+
+teardown()
+
+const db = new StreamrChatDatabase(3)
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
