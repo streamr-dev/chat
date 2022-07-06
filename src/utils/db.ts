@@ -39,6 +39,7 @@ class StreamrChatDatabase extends Dexie {
 
 const CurrentVersion = 3
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function teardown() {
     for (let i = 0; i < CurrentVersion; i++) {
         try {
@@ -55,12 +56,14 @@ async function teardown() {
     }
 }
 
-teardown()
+// If you want people to lose their local histories in previous versions uncomment
+// the following line:
+// teardown()
 
 const db = new StreamrChatDatabase(CurrentVersion)
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-window.db = db
+// window.db = db
 
 export default db
