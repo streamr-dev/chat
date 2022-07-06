@@ -78,7 +78,6 @@ export default function useIntercept(roomId: RoomId) {
                 sub = await client.subscribe(
                     {
                         streamId: roomId,
-                        resend: { last: 50 },
                     },
                     onData
                 )
