@@ -1,13 +1,10 @@
-import { HTMLAttributes, useEffect, useState } from 'react'
+import { HTMLAttributes, useState } from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '$/features/message/types'
 import Avatar, { AvatarStatus, Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
-import { useDispatch } from 'react-redux'
-import { MessageAction } from '$/features/message'
 import { useWalletAccount } from '$/features/wallet/hooks'
-import { Flag } from '$/features/flag/types'
 import useSeenMessageEffect from '$/hooks/useSeenMessageEffect'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
