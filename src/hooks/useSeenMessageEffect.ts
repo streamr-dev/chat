@@ -3,7 +3,7 @@ import { MessageAction } from '$/features/message'
 import { IMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import { OptionalAddress } from '$/types'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 const Delay = 2000
@@ -17,10 +17,30 @@ export default function useSeenMessageEffect(
 ) {
     const dispatch = useDispatch()
 
+    const [isWindowFocused, setIsWindowFocused] = useState<boolean>(!document.hidden)
+
     useEffect(() => {
         let mounted = true
 
-        if (!element || !requester || skip) {
+        function onVisibilityChange() {
+            if (mounted) {
+                setIsWindowFocused(!document.hidden)
+            }
+        }
+
+        document.addEventListener('visibilitychange', onVisibilityChange)
+
+        return () => {
+            mounted = false
+
+            document.removeEventListener('visibilitychange', onVisibilityChange)
+        }
+    }, [])
+
+    useEffect(() => {
+        let mounted = true
+
+        if (!element || !requester || skip || !isWindowFocused) {
             return
         }
 
@@ -67,5 +87,5 @@ export default function useSeenMessageEffect(
 
             observer.disconnect()
         }
-    }, [element, messageId, roomId, requester, skip])
+    }, [element, messageId, roomId, requester, skip, isWindowFocused])
 }
