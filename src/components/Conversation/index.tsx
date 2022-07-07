@@ -2,6 +2,7 @@ import { ButtonHTMLAttributes, useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
 import {
+    useDelegatedAccount,
     useDelegatedClient,
     useIsDelegatingAccess,
     useRequestPrivateKey,
@@ -24,7 +25,7 @@ import { useSelectedRoomId } from '$/features/room/hooks'
 import RoomPropertiesModal from '../modals/RoomPropertiesModal'
 import useCanGrant from '$/hooks/useCanGrant'
 import useJustInvited from '$/hooks/useJustInvited'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { isDelegatedAccount, useWalletAccount } from '$/features/wallet/hooks'
 import Spinner from '$/components/Spinner'
 import {
     useAcceptInvite,
@@ -32,6 +33,7 @@ import {
     useIsInviteBeingAccepted,
     usePromoteDelegatedAccount,
 } from '$/features/member/hooks'
+import getDefaultWeb3Account from '$/utils/getDefaultWeb3Account'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -122,7 +124,16 @@ interface MessageBoxProps {
 
 function MessageBox({ canGrant = false }: MessageBoxProps) {
     const delegatedClient = useDelegatedClient()
+    /////
 
+    const checkIsDelegatedAccount = isDelegatedAccount()
+
+    const delegatedAddress = useDelegatedAccount()
+    const metamaskWallet: Wallet = getDefaultWeb3Account(provider)
+
+    checkIsDelegatedAccount(metamaskWallet.address, delegatedAddress)
+
+    /////
     const canDelegatedPublish = useCurrentDelegationAbility(StreamPermission.PUBLISH)
 
     useLoadCurrentDelegationAbilityEffect(StreamPermission.PUBLISH)
@@ -150,6 +161,8 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
         return <MessageInput />
     }
 
+
+
     if (!delegatedClient) {
         return (
             <MessageInputPlaceholder
@@ -164,6 +177,24 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
                 }
             >
                 Publishing messages requires room access delegation.
+            </MessageInputPlaceholder>
+        )
+    }
+
+    if (!isValidDelegated) {
+        return (
+            <MessageInputPlaceholder
+                cta={
+                    <Cta
+                        busy={isDelegatingAccess}
+                        disabled={isDelegatingAccess}
+                        onClick={requestPrivateKey}
+                    >
+                        {isDelegatingAccess ? <>Delegating…</> : <>Delegate now</>}
+                    </Cta>
+                }
+            >
+                Your metamask and delegate accounts are not assigned as a pair.
             </MessageInputPlaceholder>
         )
     }

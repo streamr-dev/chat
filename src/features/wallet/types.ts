@@ -17,6 +17,7 @@ export type WalletState = {
     integrationId: WalletIntegrationId | undefined
     provider: Provider | undefined
     client: undefined | StreamrClient
+    delegatedAccounts: { [metamaskAccount: string]: string }
 }
 
 export type ConnectorMap = {
