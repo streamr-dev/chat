@@ -1,4 +1,5 @@
 import { IdenticonSeed } from '$/features/identicons/types'
+import { IMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
 import { StreamPermission } from 'streamr-client'
@@ -112,5 +113,9 @@ export const Flag = {
 
     isENSNameBeingStored(name: string): string {
         return JSON.stringify(['isENSNameBeingStored', name.toLowerCase()])
+    },
+
+    isSeenAtBeingUpdated(roomId: string, owner: Address, messageId: IMessage['id']): string {
+        return JSON.stringify(['isSeenAtBeingUpdated', roomId, owner.toLowerCase(), messageId])
     },
 }

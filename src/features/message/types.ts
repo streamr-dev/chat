@@ -5,6 +5,7 @@ export interface IMessage extends IRecord {
     createdBy: string
     id: string
     roomId: string
+    seenAt?: number
 }
 
 export interface StreamMessage {

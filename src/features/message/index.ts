@@ -6,7 +6,8 @@ import publish from './sagas/publish.saga'
 import register from './sagas/register.saga'
 import { IMessage } from './types'
 import StreamrClient from 'streamr-client'
-import { Address } from '$/types'
+import { Address, IFingerprinted } from '$/types'
+import updateSeenAt from '$/features/message/sagas/updateSeenAt.saga'
 
 export const MessageAction = {
     publish: createAction<{
@@ -20,16 +21,27 @@ export const MessageAction = {
         message: Omit<IMessage, 'owner'>
         owner: Address
     }>('message: register'),
+
+    updateSeenAt: createAction<
+        IFingerprinted & {
+            roomId: RoomId
+            requester: Address
+            id: IMessage['id']
+            seenAt: number
+        }
+    >('message: update seenAt'),
 }
 
 const reducer = createReducer({}, (builder) => {
     builder.addCase(MessageAction.publish, SEE_SAGA)
 
     builder.addCase(MessageAction.register, SEE_SAGA)
+
+    builder.addCase(MessageAction.updateSeenAt, SEE_SAGA)
 })
 
 export function* messageSaga() {
-    yield all([publish(), register()])
+    yield all([publish(), register(), updateSeenAt()])
 }
 
 export default reducer
