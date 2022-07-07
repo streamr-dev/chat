@@ -13,8 +13,9 @@ function* onRequestPrivateKeyAction({
         const privateKey: string = yield requestDelegatedPrivateKey(provider, owner)
 
         yield put(DelegationAction.setPrivateKey(privateKey))
-
-        success('Access delegated successfully.')
+        if (privateKey) {
+            success('Access delegated successfully.')
+        }
     } catch (e) {
         handleError(e)
 
