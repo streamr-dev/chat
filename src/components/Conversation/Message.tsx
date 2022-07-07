@@ -84,24 +84,24 @@ export default function Message({
                     <div
                         css={[
                             tw`
-                            w-1.5
-                            h-1.5
-                            absolute
-                            top-1/2
-                            translate-x-full
-                            -translate-y-1/2
-                            -right-2
-                        `,
+                                w-1.5
+                                h-1.5
+                                absolute
+                                top-1/2
+                                translate-x-full
+                                -translate-y-1/2
+                                -right-2
+                            `,
                         ]}
                     >
                         <div
                             css={[
                                 tw`
-                                w-full
-                                h-full
-                                rounded-full
-                                bg-[#59799C]
-                            `,
+                                    w-full
+                                    h-full
+                                    rounded-full
+                                    bg-[#59799C]
+                                `,
                                 Boolean(isSeen) &&
                                     css`
                                         opacity: 0;
