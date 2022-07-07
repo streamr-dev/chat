@@ -12,10 +12,12 @@ export default function useRooms() {
     return useLiveQuery(async () => {
         if (owner) {
             try {
-                return await db.rooms
+                const rooms = await db.rooms
                     .where({ owner })
                     .and((room) => showHiddenRooms || room.hidden !== true)
                     .toArray()
+
+                return rooms.sort(({ recentMessageAt: a = 0 }, { recentMessageAt: b = 0 }) => b - a)
             } catch (e) {
                 handleError(e)
             }
