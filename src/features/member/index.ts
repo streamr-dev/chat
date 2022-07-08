@@ -3,20 +3,13 @@ import { all } from 'redux-saga/effects'
 import { Address, IFingerprinted, PreflightParams } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
 import { RoomId } from '../room/types'
-import { MemberState } from './types'
 import add from '$/features/member/sagas/add.saga'
 import remove from '$/features/member/sagas/remove.saga'
 import acceptInvite from '$/features/member/sagas/acceptInvite.saga'
 import promoteDelegatedAccount from '$/features/member/sagas/promoteDelegatedAccount.saga'
 import StreamrClient from 'streamr-client'
 
-const initialState: MemberState = {
-    notices: {},
-}
-
 export const MemberAction = {
-    notice: createAction<{ address: Address; timestamp: number }>('member: notice'),
-
     remove: createAction<
         IFingerprinted &
             PreflightParams & {
@@ -51,11 +44,7 @@ export const MemberAction = {
     >('member: promote delegated account'),
 }
 
-const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(MemberAction.notice, (state, { payload: { address, timestamp } }) => {
-        state.notices[address.toLowerCase()] = timestamp
-    })
-
+const reducer = createReducer({}, (builder) => {
     builder.addCase(MemberAction.remove, SEE_SAGA)
 
     builder.addCase(MemberAction.add, SEE_SAGA)

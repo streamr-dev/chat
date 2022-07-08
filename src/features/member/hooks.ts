@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { OptionalAddress } from '$/types'
-import { selectNoticedAt } from './selectors'
 import { RoomId } from '$/features/room/types'
 import { selectFlag } from '$/features/flag/selectors'
 import { MemberAction } from '$/features/member'
@@ -9,10 +8,6 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
-
-export function useNoticedAt(address: OptionalAddress): number {
-    return useSelector(selectNoticedAt(address)) || Number.NEGATIVE_INFINITY
-}
 
 export function useIsMemberBeingRemoved(roomId: undefined | RoomId, address: OptionalAddress) {
     return useSelector(

@@ -5,7 +5,6 @@ import { PermissionAction } from '$/features/permission'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
-import useEmitPresenceEffect from '$/hooks/useEmitPresenceEffect'
 import useIntercept from '$/hooks/useIntercept'
 import useJustInvited from '$/hooks/useJustInvited'
 import useRecentMessage from '$/hooks/useRecentMessage'
@@ -18,6 +17,7 @@ import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import { Flag } from '$/features/flag/types'
 import PinIcon from '$/icons/PinIcon'
 import useAgo from '$/hooks/useAgo'
+import isSameAddress from '$/utils/isSameAddress'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -52,8 +52,6 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     useIntercept(id)
 
-    useEmitPresenceEffect(id)
-
     const address = useWalletAccount()
 
     useEffect(() => {
@@ -79,6 +77,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const ago = useAgo(recentMessage?.createdAt)
 
+    const seen = isSameAddress(recentMessage?.createdBy, address) || Boolean(recentMessage?.seenAt)
+
     return (
         <SidebarButton
             {...props}
@@ -101,13 +101,13 @@ export default function RoomButton({ room, active, ...props }: Props) {
                     <div
                         css={[
                             tw`
-                            text-[#59799C]
-                            flex
-                            items-center
-                            ml-2
+                                text-[#59799C]
+                                flex
+                                items-center
+                                ml-2
 
-                            empty:hidden
-                            [* + *]:ml-3
+                                empty:hidden
+                                [* + *]:ml-3
                         `,
                         ]}
                     >
@@ -179,7 +179,17 @@ export default function RoomButton({ room, active, ...props }: Props) {
                                 `,
                             ]}
                         >
-                            <Text tw="truncate">{recentMessage.content}</Text>
+                            <Text
+                                truncate
+                                css={[
+                                    !seen &&
+                                        tw`
+                                            font-bold
+                                        `,
+                                ]}
+                            >
+                                {recentMessage.content}
+                            </Text>
                         </div>
                         {typeof ago !== 'undefined' && (
                             <>

@@ -5,20 +5,11 @@ export interface IMessage extends IRecord {
     createdBy: string
     id: string
     roomId: string
-}
-
-export enum MessageType {
-    Text = 'text',
-    Instruction = 'instruction',
+    seenAt?: number
 }
 
 export interface StreamMessage {
     content: string
     createdBy: string
     id: string
-    type: MessageType
-}
-
-export enum Instruction {
-    UpdateSeenAt = 'UPDATE_SEEN_AT',
 }

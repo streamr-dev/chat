@@ -4,14 +4,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { MessageAction } from '..'
 
 function* onPublishAction({
-    payload: { roomId, content, type, requester: createdBy, streamrClient },
+    payload: { roomId, content, requester: createdBy, streamrClient },
 }: ReturnType<typeof MessageAction.publish>) {
     try {
         yield streamrClient.publish(roomId, {
             id: uuidv4(),
             content,
             createdBy,
-            type,
         })
     } catch (e) {
         handleError(e)

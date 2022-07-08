@@ -19,6 +19,7 @@ export interface IRoom extends IRecord {
     name: string
     hidden?: boolean
     pinned?: boolean
+    recentMessageAt?: number
 }
 
 export type RoomId = IRoom['id']

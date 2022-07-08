@@ -1,12 +1,13 @@
 import { useCallback, useEffect } from 'react'
 import { RoomId } from '$/features/room/types'
-import { MessageStreamOnMessage } from 'streamr-client'
+import { MessageStreamOnMessage, StreamPermission } from 'streamr-client'
 import handleError from '$/utils/handleError'
 import { useDispatch } from 'react-redux'
-import { useDelegatedClient } from '$/features/delegation/hooks'
-import { IMessage, MessageType, StreamMessage } from '$/features/message/types'
+import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import { IMessage, StreamMessage } from '$/features/message/types'
 import { MessageAction } from '$/features/message'
 import { useWalletAccount } from '$/features/wallet/hooks'
+import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
 
 export default function useIntercept(roomId: RoomId) {
     const client = useDelegatedClient()
@@ -16,14 +17,13 @@ export default function useIntercept(roomId: RoomId) {
     const owner = useWalletAccount()
 
     const onMessage = useCallback(
-        (type: MessageType, message: Omit<IMessage, 'owner'>) => {
+        (message: Omit<IMessage, 'owner'>) => {
             if (!owner) {
                 return
             }
 
             dispatch(
                 MessageAction.register({
-                    type,
                     message,
                     owner,
                 })
@@ -31,6 +31,12 @@ export default function useIntercept(roomId: RoomId) {
         },
         [owner]
     )
+
+    const delegatedAddress = useDelegatedAccount()
+
+    const canDelegatedSubscribe = useAbility(roomId, delegatedAddress, StreamPermission.SUBSCRIBE)
+
+    useLoadAbilityEffect(roomId, delegatedAddress, StreamPermission.SUBSCRIBE)
 
     useEffect(() => {
         let mounted = true
@@ -46,14 +52,14 @@ export default function useIntercept(roomId: RoomId) {
         }
 
         const onData: MessageStreamOnMessage<StreamMessage, void> = (
-            { id, createdBy, content, type },
+            { id, createdBy, content },
             { messageId: { timestamp: createdAt } }
         ) => {
             if (!mounted) {
                 return
             }
 
-            onMessage(type, {
+            onMessage({
                 createdAt,
                 createdBy,
                 content,
@@ -64,7 +70,7 @@ export default function useIntercept(roomId: RoomId) {
         }
 
         async function fn() {
-            if (!client || !mounted) {
+            if (!client || !mounted || !canDelegatedSubscribe) {
                 return
             }
 
@@ -72,7 +78,6 @@ export default function useIntercept(roomId: RoomId) {
                 sub = await client.subscribe(
                     {
                         streamId: roomId,
-                        resend: { last: 50 },
                     },
                     onData
                 )
@@ -93,5 +98,5 @@ export default function useIntercept(roomId: RoomId) {
             mounted = false
             unsub()
         }
-    }, [client, roomId, onMessage])
+    }, [client, roomId, onMessage, canDelegatedSubscribe])
 }

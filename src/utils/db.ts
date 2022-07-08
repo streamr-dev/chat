@@ -1,5 +1,4 @@
 import Dexie, { Table } from 'dexie'
-import { IDelegation } from '$/features/delegation/types'
 import { IDraft } from '$/features/drafts/types'
 import { IdenticonSeed, IIdenticon } from '$/features/identicons/types'
 import { IMessage } from '$/features/message/types'
@@ -17,23 +16,20 @@ class StreamrChatDatabase extends Dexie {
 
     drafts!: Table<IDraft, number>
 
-    delegations!: Table<IDelegation, number>
-
     identicons!: Table<IIdenticon, IdenticonSeed>
 
     preferences!: Table<IPreference, number>
 
     ensNames!: Table<IENSName, number>
 
-    constructor() {
-        super('StreamrChatDatabase')
+    constructor(version: number) {
+        super(`StreamrChatDatabase_v${version}`)
 
-        this.version(8).stores({
+        this.version(1).stores({
             rooms: '++, owner, id, &[owner+id]',
-            messages: '++, owner, id, roomId, &[owner+roomId+id], [owner+roomId]',
+            messages: '[createdAt+roomId+owner], id, &[owner+roomId+id], [owner+roomId]',
             aliases: '++, owner, address, &[owner+address]',
             drafts: '++, owner, roomId, &[owner+roomId]',
-            delegations: '++, &owner',
             identicons: '++, &seed',
             preferences: '++, &owner',
             ensNames: '++, &content, address',
@@ -41,10 +37,33 @@ class StreamrChatDatabase extends Dexie {
     }
 }
 
-const db = new StreamrChatDatabase()
+const CurrentVersion = 3
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function teardown() {
+    for (let i = 0; i < CurrentVersion; i++) {
+        try {
+            let dbName = 'StreamrChatDatabase'
+
+            if (i !== 0) {
+                dbName = `${dbName}_${i}`
+            }
+
+            await new Dexie(dbName).delete()
+        } catch (e) {
+            // Noop.
+        }
+    }
+}
+
+// If you want people to lose their local histories in previous versions uncomment
+// the following line:
+// teardown()
+
+const db = new StreamrChatDatabase(CurrentVersion)
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-window.db = db
+// window.db = db
 
 export default db

@@ -1,62 +1,34 @@
-import { put, select, takeEvery } from 'redux-saga/effects'
+import { takeEvery } from 'redux-saga/effects'
 import { MessageAction } from '..'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
-import { selectStartedAt } from '../../clock/selectors'
-import { MemberAction } from '../../member'
-import { Instruction, MessageType } from '../types'
 
 function* onRegisterAction({
-    payload: { type, message, owner },
+    payload: { message, owner: acc },
 }: ReturnType<typeof MessageAction.register>) {
+    const owner = acc.toLowerCase()
+
     try {
-        if (type === MessageType.Text) {
-            yield db.messages.add({
-                ...message,
-                owner: owner.toLowerCase(),
-            })
-            return
-        }
+        yield db.messages.add({
+            ...message,
+            owner,
+        })
 
-        if (type !== MessageType.Instruction) {
-            return
-        }
+        const { createdAt: recentMessageAt } = message
 
-        const startedAt: undefined | number = yield select(selectStartedAt)
-
-        if (typeof startedAt === 'undefined') {
-            // Skip instructions before the clock started ticking.
-            return
-        }
-
-        if (typeof message.createdAt !== 'number') {
-            // Skip instructions w/o a timestamp.
-            return
-        }
-
-        if (message.createdAt < startedAt) {
-            // Skip instructions that took place before we started ticking. Do not dwell
-            // on past events. ;)
-            return
-        }
-
-        switch (message.content) {
-            case Instruction.UpdateSeenAt:
-                if (!message.createdBy) {
-                    break
-                }
-
-                yield put(
-                    MemberAction.notice({
-                        address: message.createdBy,
-                        timestamp: message.createdAt,
-                    })
-                )
-
-                break
-            default:
-                // Unknown instruction.
-                break
+        if (typeof recentMessageAt === 'number') {
+            try {
+                yield db.rooms
+                    .where({ owner, id: message.roomId })
+                    .and(
+                        (r) =>
+                            typeof r.recentMessageAt !== 'number' ||
+                            r.recentMessageAt < recentMessageAt
+                    )
+                    .modify({ recentMessageAt })
+            } catch (e) {
+                handleError(e)
+            }
         }
     } catch (e) {
         handleError(e)
