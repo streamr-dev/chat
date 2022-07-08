@@ -6,7 +6,6 @@ import { all } from 'redux-saga/effects'
 import setAccount from './sagas/setAccount.saga'
 import setIntegrationId from './sagas/setIntegrationId.saga'
 import setProvider from './sagas/setProvider.saga'
-import authorizeDelegatedAccount from './sagas/authorizeDelegatedAccount.saga'
 
 const initialState: WalletState = {
     account: undefined,
@@ -23,12 +22,6 @@ export const WalletAction = {
     setAccount: createAction<WalletState['account']>('wallet: set account'),
 
     setProvider: createAction<WalletState['provider']>('wallet: set provider'),
-
-    authorizeDelegatedAccount: createAction<WalletState['provider']>('wallet: authorize delegated account'),
-
-    isDelegatedAccount: createAction<{ metamaskAccount: string, delegatedAccount: string }>('wallet: is delegated account'),
-
-    setDelegatedPair: createAction<{ metamaskAccount: string, delegatedAccount: string }>('wallet: set delegated pair'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -45,31 +38,20 @@ const reducer = createReducer(initialState, (builder) => {
 
         state.client = provider
             ? new StreamrClient({
-                auth: {
-                    ethereum: provider,
-                },
-                gapFill: false,
-            })
+                  auth: {
+                      ethereum: provider,
+                  },
+                  gapFill: false,
+              })
             : undefined
 
         // Changing the provider makes the old account obsolete.
         state.account = null
     })
-
-    builder.addCase(WalletAction.isDelegatedAccount, (state, { payload: { metamaskAccount, delegatedAccount } }) => {
-
-
-        // ???
-    })
-
-    builder.addCase(WalletAction.setDelegatedPair, (state, { payload: { metamaskAccount, delegatedAccount } }) => {
-        state.delegatedAccounts[metamaskAccount] = delegatedAccount
-        console.warn('state updated on setDelegatedPair', state)
-    })
 })
 
 export function* walletSaga() {
-    yield all([setAccount(), setIntegrationId(), setProvider(), authorizeDelegatedAccount()])
+    yield all([setAccount(), setIntegrationId(), setProvider()])
 }
 
 export default reducer

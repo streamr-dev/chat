@@ -13,7 +13,6 @@ import * as DelegatedAccessRegistry from '../../contracts/DelegatedAccessRegistr
 
 const DelegatedAccessRegistryAddress = '0xf5803cdA6352c515Ee11256EAA547BE8422cC4EE'
 
-
 export function useWalletIntegrationId() {
     return useSelector(selectWalletIntegrationId)
 }
@@ -28,9 +27,4 @@ export function useWalletProvider() {
 
 export function useWalletClient() {
     return useSelector(selectWalletClient)
-}
-
-export function isDelegatedAccount(
-) {
-    return useSelector(selectIsDelegatedAccount)
 }

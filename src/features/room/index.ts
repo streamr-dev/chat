@@ -156,7 +156,6 @@ export const RoomAction = {
     setPinning: createAction<{ owner: Address; roomId: RoomId; state: boolean }>(
         'room: set pinning'
     ),
-
 }
 
 const reducer = createReducer(initialState, (builder) => {

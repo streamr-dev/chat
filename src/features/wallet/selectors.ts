@@ -22,9 +22,3 @@ export const selectWalletProvider = createSelector(
 )
 
 export const selectWalletClient = createSelector(selectSelf, ({ client }) => client)
-
-
-export const selectIsDelegatedAccount = createSelector(
-    selectSelf,
-    ({})
-)
