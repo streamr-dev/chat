@@ -39,4 +39,9 @@ export default defineConfig({
             plugins: [rollupNodePolyFill()],
         },
     },
+    esbuild: {
+        define: {
+            this: 'window',
+        },
+    },
 })
