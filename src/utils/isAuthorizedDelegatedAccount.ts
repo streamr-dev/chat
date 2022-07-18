@@ -8,22 +8,18 @@ export default async function isAuthorizedDelegatedAccount(
     metamaskAccount: Address,
     delegatedAccount: Address,
     rawProvider: any
-) {
-    try {
-        const provider = await new providers.Web3Provider(rawProvider)
-        const contract = new Contract(
-            DelegatedAccessRegistryAddress,
-            DelegatedAccessRegistry.abi,
-            provider
-        )
+): Promise<boolean> {
+    const provider = new providers.Web3Provider(rawProvider)
+    const contract = new Contract(
+        DelegatedAccessRegistryAddress,
+        DelegatedAccessRegistry.abi,
+        provider
+    )
 
-        const [isAuthorized]: boolean[] = await contract.functions.isUserAuthorized(
-            metamaskAccount,
-            delegatedAccount
-        )
+    const [isAuthorized]: boolean[] = await contract.functions.isUserAuthorized(
+        metamaskAccount,
+        delegatedAccount
+    )
 
-        return isAuthorized
-    } catch (e) {
-        handleError(e)
-    }
+    return isAuthorized
 }

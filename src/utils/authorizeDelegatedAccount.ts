@@ -1,31 +1,30 @@
 import { Contract, Wallet, providers } from 'ethers'
 import * as DelegatedAccessRegistry from '../contracts/DelegatedAccessRegistry.sol/DelegatedAccessRegistry.json'
 
-import EthCrypto from 'eth-crypto'
+import { sign, hash } from 'eth-crypto'
 import handleError from '$/utils/handleError'
 import { Address } from '$/types'
 
 const DelegatedAccessRegistryAddress = '0xf5803cdA6352c515Ee11256EAA547BE8422cC4EE'
 
-export const signDelegatedChallenge = async (
+enum ChallengeType {
+    Authorize = 0,
+    Revoke = 1,
+}
+
+const signDelegatedChallenge = async (
     metamaskAddress: string,
     delegatedPrivateKey: string,
-    challengeType: 0 | 1 // 0 = authorize | 1 = revoke
+    challengeType: ChallengeType
 ) => {
-    const delegated = new Wallet(delegatedPrivateKey)
-
-    const message = EthCrypto.hash.keccak256([
+    const message = hash.keccak256([
         { type: 'uint256', value: challengeType.toString() },
         { type: 'address', value: metamaskAddress },
     ])
 
-    const signature = EthCrypto.sign(delegated.privateKey, message)
+    const signature = sign(delegatedPrivateKey, message)
 
-    return {
-        delegated,
-        message,
-        signature,
-    }
+    return signature
 }
 
 export default async function authorizeDelegatedAccount(
@@ -34,7 +33,7 @@ export default async function authorizeDelegatedAccount(
     rawProvider: any
 ) {
     try {
-        const { signature } = await signDelegatedChallenge(metamaskAccount, delegatedPrivateKey, 0)
+        const signature = await signDelegatedChallenge(metamaskAccount, delegatedPrivateKey, 0)
 
         const delegatedAddress = new Wallet(delegatedPrivateKey).address
 

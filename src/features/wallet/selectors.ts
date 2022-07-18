@@ -1,8 +1,6 @@
-import { selectFlag } from '$/features/flag/selectors'
 import { Flag } from '$/features/flag/types'
 import { State } from '$/types'
 import { createSelector } from '@reduxjs/toolkit'
-import { useSelector } from 'react-redux'
 import { WalletState } from './types'
 
 function selectSelf(state: State): WalletState {

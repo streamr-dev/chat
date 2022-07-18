@@ -2,7 +2,6 @@ import { ButtonHTMLAttributes, useState } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
 import {
-    useDelegatedAccount,
     useDelegatedClient,
     useIsDelegatingAccess,
     useRequestPrivateKey,

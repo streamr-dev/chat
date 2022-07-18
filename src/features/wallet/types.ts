@@ -1,3 +1,4 @@
+import { Address } from '$/types'
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet'
 import { initializeConnector } from '@web3-react/core'
 import { MetaMask } from '@web3-react/metamask'
@@ -17,7 +18,7 @@ export type WalletState = {
     integrationId: WalletIntegrationId | undefined
     provider: Provider | undefined
     client: undefined | StreamrClient
-    delegatedAccounts: { [metamaskAccount: string]: string }
+    delegatedAccounts: { [metamaskAccount: Address]: Address }
 }
 
 export type ConnectorMap = {
