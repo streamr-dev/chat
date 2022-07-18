@@ -1,10 +1,13 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { WalletAction } from '$/features/wallet'
-import { useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
+import isSameAddress from '$/utils/isSameAddress'
 
 export default function useProviderChangeEffect() {
     const provider = useWalletProvider()
+
+    const account = useWalletAccount()?.toLowerCase()
 
     const dispatch = useDispatch()
 
@@ -16,7 +19,9 @@ export default function useProviderChangeEffect() {
         }
 
         function onAccountsChange(accounts: string[]) {
-            dispatch(WalletAction.setAccount(accounts[0]))
+            if (!isSameAddress(account, accounts[0])) {
+                dispatch(WalletAction.setAccount(accounts[0]))
+            }
         }
 
         provider.addListener('accountsChanged', onAccountsChange)
@@ -24,5 +29,5 @@ export default function useProviderChangeEffect() {
         return () => {
             provider.removeListener('accountsChanged', onAccountsChange)
         }
-    }, [provider])
+    }, [provider, account])
 }

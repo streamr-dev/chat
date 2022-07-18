@@ -13,6 +13,7 @@ function* onRequestPrivateKeyAction({
         const privateKey: string = yield requestDelegatedPrivateKey(provider, owner)
 
         yield put(DelegationAction.setPrivateKey(privateKey))
+
         if (privateKey) {
             success('Access delegated successfully.')
         }
