@@ -8,6 +8,7 @@ import { WalletAction } from '$/features/wallet'
 import isAuthorizedDelegatedAccount from '$/utils/isAuthorizedDelegatedAccount'
 import { Wallet } from 'ethers'
 import authorizeDelegatedAccount from '$/utils/authorizeDelegatedAccount'
+import { toast } from 'react-toastify'
 
 function* onRequestPrivateKeyAction({
     payload: { owner, provider },
@@ -22,8 +23,24 @@ function* onRequestPrivateKeyAction({
         )
 
         if (!isDelegationAuthorized) {
-            info('Authorizing your delegated wallet')
-            yield authorizeDelegatedAccount(owner, privateKey, provider)
+            let toastId
+
+            try {
+                toastId = toast.loading('Authorizing your delegated wallet...', {
+                    position: 'bottom-left',
+                    autoClose: false,
+                    type: 'info',
+                    closeOnClick: false,
+                    hideProgressBar: true,
+                })
+                yield authorizeDelegatedAccount(owner, privateKey, provider)
+            } catch (e) {
+                handleError(e)
+            } finally {
+                if (toastId) {
+                    toast.dismiss(toastId)
+                }
+            }
         }
 
         yield put(DelegationAction.setPrivateKey(privateKey))

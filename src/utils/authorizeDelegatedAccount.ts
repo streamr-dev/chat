@@ -22,9 +22,7 @@ const signDelegatedChallenge = async (
         { type: 'address', value: metamaskAddress },
     ])
 
-    const signature = sign(delegatedPrivateKey, message)
-
-    return signature
+    return sign(delegatedPrivateKey, message)
 }
 
 export default async function authorizeDelegatedAccount(
