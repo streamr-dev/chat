@@ -12,7 +12,7 @@ enum ChallengeType {
     Revoke = 1,
 }
 
-const signDelegatedChallenge = async (
+const signDelegatedChallenge = (
     metamaskAddress: string,
     delegatedPrivateKey: string,
     challengeType: ChallengeType
@@ -31,7 +31,11 @@ export default async function authorizeDelegatedAccount(
     rawProvider: any
 ) {
     try {
-        const signature = await signDelegatedChallenge(metamaskAccount, delegatedPrivateKey, 0)
+        const signature = signDelegatedChallenge(
+            metamaskAccount,
+            delegatedPrivateKey,
+            ChallengeType.Authorize
+        )
 
         const delegatedAddress = new Wallet(delegatedPrivateKey).address
 

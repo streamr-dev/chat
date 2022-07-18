@@ -1,4 +1,3 @@
-import { Flag } from '$/features/flag/types'
 import { State } from '$/types'
 import { createSelector } from '@reduxjs/toolkit'
 import { WalletState } from './types'
