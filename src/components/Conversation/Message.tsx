@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState } from 'react'
+import { AnchorHTMLAttributes, Fragment, HTMLAttributes, ReactNode, useState } from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '$/features/message/types'
 import Avatar, { AvatarStatus, Wrap } from '../Avatar'
@@ -11,6 +11,23 @@ type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
     incoming?: boolean
     hideAvatar?: boolean
+}
+
+function formatMessage(message: string): ReactNode {
+    const chunks = message.split(' ')
+
+    return (
+        <>
+            {chunks.map((chunk, i) => {
+                return (
+                    <Fragment key={i}>
+                        {/^https?:\/\/\S+$/.test(chunk) ? <Link href={chunk}>{chunk}</Link> : chunk}
+                        {i !== chunks.length - 1 && ' '}
+                    </Fragment>
+                )
+            })}
+        </>
+    )
 }
 
 export default function Message({
@@ -116,9 +133,24 @@ export default function Message({
                     </div>
                 )}
                 <DateTooltip timestamp={createdAt} />
-                <Text>{content}</Text>
+                <Text>{formatMessage(content)}</Text>
             </div>
             {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
         </div>
+    )
+}
+
+function Link(props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'rel'>) {
+    return (
+        <a
+            {...props}
+            target="_blank"
+            rel="noreferrer noopener"
+            css={[
+                tw`
+                    underline
+                `,
+            ]}
+        />
     )
 }
