@@ -17,16 +17,34 @@ export default function useSeenMessageEffect(
 ) {
     const dispatch = useDispatch()
 
-    const [isWindowFocused, setIsWindowFocused] = useState<boolean>(!document.hidden)
+    const [isWindowVisible, setIsWindowVisible] = useState<boolean>(!document.hidden)
+
+    const [isWindowFocused, setIsWindowFocused] = useState<boolean>(document.hasFocus())
 
     useEffect(() => {
         let mounted = true
 
         function onVisibilityChange() {
             if (mounted) {
-                setIsWindowFocused(!document.hidden)
+                setIsWindowVisible(!document.hidden)
             }
         }
+
+        function onFocus() {
+            if (mounted) {
+                setIsWindowFocused(true)
+            }
+        }
+
+        function onBlur() {
+            if (mounted) {
+                setIsWindowFocused(false)
+            }
+        }
+
+        window.addEventListener('focus', onFocus)
+
+        window.addEventListener('blur', onBlur)
 
         document.addEventListener('visibilitychange', onVisibilityChange)
 
@@ -34,13 +52,17 @@ export default function useSeenMessageEffect(
             mounted = false
 
             document.removeEventListener('visibilitychange', onVisibilityChange)
+
+            window.removeEventListener('blur', onBlur)
+
+            window.removeEventListener('focus', onFocus)
         }
     }, [])
 
     useEffect(() => {
         let mounted = true
 
-        if (!element || !requester || skip || !isWindowFocused) {
+        if (!element || !requester || skip || !isWindowFocused || !isWindowVisible) {
             return
         }
 
@@ -87,5 +109,5 @@ export default function useSeenMessageEffect(
 
             observer.disconnect()
         }
-    }, [element, messageId, roomId, requester, skip, isWindowFocused])
+    }, [element, messageId, roomId, requester, skip, isWindowFocused, isWindowVisible])
 }
