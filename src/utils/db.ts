@@ -64,6 +64,6 @@ const db = new StreamrChatDatabase(CurrentVersion)
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-// window.db = db
+window.db = db
 
 export default db

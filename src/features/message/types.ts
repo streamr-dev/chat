@@ -1,3 +1,4 @@
+import { RoomId } from '$/features/room/types'
 import { IRecord } from '$/types'
 
 export interface IMessage extends IRecord {

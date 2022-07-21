@@ -30,6 +30,12 @@ export const MessageAction = {
             seenAt: number
         }
     >('message: update seenAt'),
+
+    resend: createAction<{
+        roomId: RoomId
+        requester: Address
+        streamrClient: StreamrClient
+    }>('message: resend'),
 }
 
 const reducer = createReducer({}, (builder) => {
@@ -38,6 +44,8 @@ const reducer = createReducer({}, (builder) => {
     builder.addCase(MessageAction.register, SEE_SAGA)
 
     builder.addCase(MessageAction.updateSeenAt, SEE_SAGA)
+
+    builder.addCase(MessageAction.resend, SEE_SAGA)
 })
 
 export function* messageSaga() {
