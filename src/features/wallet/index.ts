@@ -11,6 +11,7 @@ const initialState: WalletState = {
     account: undefined,
     provider: undefined,
     client: undefined,
+    delegatedAccounts: {},
     integrationId:
         (localStorage.getItem(StorageKey.WalletIntegrationId) as WalletIntegrationId) || undefined,
 }
