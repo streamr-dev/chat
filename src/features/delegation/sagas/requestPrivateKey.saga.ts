@@ -13,7 +13,17 @@ import { toast } from 'react-toastify'
 function* onRequestPrivateKeyAction({
     payload: { owner, provider },
 }: ReturnType<typeof DelegationAction.requestPrivateKey>) {
+    let toastId
+
     try {
+        toastId = toast.loading('Authorizing your delegated wallet...', {
+            position: 'bottom-left',
+            autoClose: false,
+            type: 'info',
+            closeOnClick: false,
+            hideProgressBar: true,
+        })
+
         const privateKey: string = yield requestDelegatedPrivateKey(provider, owner)
 
         const isDelegationAuthorized: boolean = yield isAuthorizedDelegatedAccount(
@@ -23,34 +33,21 @@ function* onRequestPrivateKeyAction({
         )
 
         if (!isDelegationAuthorized) {
-            let toastId
-
-            try {
-                toastId = toast.loading('Authorizing your delegated wallet...', {
-                    position: 'bottom-left',
-                    autoClose: false,
-                    type: 'info',
-                    closeOnClick: false,
-                    hideProgressBar: true,
-                })
-                yield authorizeDelegatedAccount(owner, privateKey, provider)
-            } catch (e) {
-                handleError(e)
-            } finally {
-                if (toastId) {
-                    toast.dismiss(toastId)
-                }
-            }
+            yield authorizeDelegatedAccount(owner, privateKey, provider)
         }
 
         yield put(DelegationAction.setPrivateKey(privateKey))
+
         if (privateKey) {
             success('Access delegated successfully.')
         }
     } catch (e) {
         handleError(e)
-
         error('Failed to delegate access.')
+    } finally {
+        if (toastId) {
+            toast.dismiss(toastId)
+        }
     }
 }
 
