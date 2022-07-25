@@ -16,14 +16,6 @@ function* onRequestPrivateKeyAction({
     let toastId
 
     try {
-        toastId = toast.loading('Authorizing your delegated wallet...', {
-            position: 'bottom-left',
-            autoClose: false,
-            type: 'info',
-            closeOnClick: false,
-            hideProgressBar: true,
-        })
-
         const privateKey: string = yield requestDelegatedPrivateKey(provider, owner)
 
         const isDelegationAuthorized: boolean = yield isAuthorizedDelegatedAccount(
@@ -33,6 +25,13 @@ function* onRequestPrivateKeyAction({
         )
 
         if (!isDelegationAuthorized) {
+            toastId = toast.loading('Authorizing your delegated wallet...', {
+                position: 'bottom-left',
+                autoClose: false,
+                type: 'info',
+                closeOnClick: false,
+                hideProgressBar: true,
+            })
             yield authorizeDelegatedAccount(owner, privateKey, provider)
         }
 
