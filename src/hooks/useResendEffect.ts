@@ -1,4 +1,5 @@
 import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
 import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
 import { RoomId } from '$/features/room/types'
@@ -30,6 +31,7 @@ export default function useResendEffect(roomId: undefined | RoomId) {
                 roomId,
                 requester: account,
                 streamrClient,
+                fingerprint: Flag.isResendingMessage(roomId, account),
             })
         )
     }, [roomId, streamrClient, canDelegatedSubscribe, account])

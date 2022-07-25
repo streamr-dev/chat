@@ -1,11 +1,12 @@
+import TimeoutError from '$/errors/TimeoutError'
 import { MessageAction } from '$/features/message'
 import { StreamMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import handleError from '$/utils/handleError'
-import { put, race, takeEvery } from 'redux-saga/effects'
+import takeEveryUnique from '$/utils/takeEveryUnique'
+import { put, race } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 import { MessageStream } from 'streamr-client/types/src/subscribe/MessageStream'
-import { TimeoutError } from 'streamr-client/types/src/utils'
 
 async function timeout(after = 5000) {
     return new Promise((_, reject) => {
@@ -17,7 +18,7 @@ async function timeout(after = 5000) {
 
 async function fetch(roomId: RoomId, streamrClient: StreamrClient) {
     const queue: MessageStream<StreamMessage> /* lol */ = await streamrClient.resend(roomId, {
-        last: 20,
+        last: 100,
     })
 
     const messages = []
@@ -36,7 +37,7 @@ function* onResendAction({
         const owner = requester.toLowerCase()
 
         const { messages } = yield race({
-            timeout: timeout(),
+            timeout: timeout(10000),
             messages: fetch(roomId, streamrClient),
         })
 
@@ -69,5 +70,5 @@ function* onResendAction({
 }
 
 export default function* resend() {
-    yield takeEvery(MessageAction.resend, onResendAction)
+    yield takeEveryUnique(MessageAction.resend, onResendAction)
 }

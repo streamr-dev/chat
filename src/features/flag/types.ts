@@ -115,7 +115,11 @@ export const Flag = {
         return JSON.stringify(['isENSNameBeingStored', name.toLowerCase()])
     },
 
-    isSeenAtBeingUpdated(roomId: string, owner: Address, messageId: IMessage['id']): string {
+    isSeenAtBeingUpdated(roomId: RoomId, owner: Address, messageId: IMessage['id']): string {
         return JSON.stringify(['isSeenAtBeingUpdated', roomId, owner.toLowerCase(), messageId])
+    },
+
+    isResendingMessage(roomId: RoomId, requester: Address): string {
+        return JSON.stringify(['isResendingMessage', roomId, requester.toLowerCase()])
     },
 }
