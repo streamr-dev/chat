@@ -2,6 +2,7 @@ import { IdenticonSeed } from '$/features/identicons/types'
 import { IMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
+import getBeginningOfDay, { TimezoneOffset } from '$/utils/getBeginningOfDay'
 import { StreamPermission } from 'streamr-client'
 
 export interface FlagState {
@@ -121,5 +122,18 @@ export const Flag = {
 
     isResendingMessage(roomId: RoomId, requester: Address): string {
         return JSON.stringify(['isResendingMessage', roomId, requester.toLowerCase()])
+    },
+
+    isResendingMessagesForSpecificDay(
+        roomId: RoomId,
+        requester: Address,
+        timestamp: number
+    ): string {
+        return JSON.stringify([
+            'isResendingMessagesForSpecificDay',
+            roomId,
+            requester.toLowerCase(),
+            getBeginningOfDay(timestamp - TimezoneOffset),
+        ])
     },
 }

@@ -9,6 +9,7 @@ import StreamrClient from 'streamr-client'
 import { Address, IFingerprinted } from '$/types'
 import updateSeenAt from '$/features/message/sagas/updateSeenAt.saga'
 import resend from '$/features/message/sagas/resend.saga'
+import resendDay from '$/features/message/sagas/resendDay.saga'
 
 export const MessageAction = {
     publish: createAction<{
@@ -39,6 +40,15 @@ export const MessageAction = {
             streamrClient: StreamrClient
         }
     >('message: resend'),
+
+    resendDay: createAction<
+        IFingerprinted & {
+            roomId: RoomId
+            requester: Address
+            streamrClient: StreamrClient
+            timestamp: number
+        }
+    >('message: resend day'),
 }
 
 const reducer = createReducer({}, (builder) => {
@@ -52,7 +62,7 @@ const reducer = createReducer({}, (builder) => {
 })
 
 export function* messageSaga() {
-    yield all([publish(), register(), updateSeenAt(), resend()])
+    yield all([publish(), register(), updateSeenAt(), resend(), resendDay()])
 }
 
 export default reducer
