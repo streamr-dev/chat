@@ -1,11 +1,13 @@
 import Dexie, { Table } from 'dexie'
 import { IDraft } from '$/features/drafts/types'
 import { IdenticonSeed, IIdenticon } from '$/features/identicons/types'
-import { IMessage } from '$/features/message/types'
+import { IMessage, IResend } from '$/features/message/types'
 import { IRoom } from '$/features/room/types'
 import { IAlias } from '$/features/alias/types'
 import { IPreference } from '$/features/preferences/types'
 import { IENSName } from '$/features/ens/types'
+
+const [DbVersion, IdxVersion] = [3, 2]
 
 class StreamrChatDatabase extends Dexie {
     messages!: Table<IMessage, number>
@@ -22,10 +24,12 @@ class StreamrChatDatabase extends Dexie {
 
     ensNames!: Table<IENSName, number>
 
+    resends!: Table<IResend, number>
+
     constructor(version: number) {
         super(`StreamrChatDatabase_v${version}`)
 
-        this.version(1).stores({
+        this.version(IdxVersion).stores({
             rooms: '++, owner, id, &[owner+id]',
             messages: '[createdAt+roomId+owner], id, &[owner+roomId+id], [owner+roomId]',
             aliases: '++, owner, address, &[owner+address]',
@@ -33,15 +37,14 @@ class StreamrChatDatabase extends Dexie {
             identicons: '++, &seed',
             preferences: '++, &owner',
             ensNames: '++, &content, address',
+            resends: '++, &[owner+roomId+beginningOfDay]',
         })
     }
 }
 
-const CurrentVersion = 3
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function teardown() {
-    for (let i = 0; i < CurrentVersion; i++) {
+    for (let i = 0; i < DbVersion; i++) {
         try {
             let dbName = 'StreamrChatDatabase'
 
@@ -60,7 +63,7 @@ async function teardown() {
 // the following line:
 // teardown()
 
-const db = new StreamrChatDatabase(CurrentVersion)
+const db = new StreamrChatDatabase(DbVersion)
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
