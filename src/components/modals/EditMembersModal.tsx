@@ -201,7 +201,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                         </div>
                     ) : (
                         <>
-                            {members.map(({ address, permissions }) => (
+                            {members.map(({ address, permissions, isMainAccount }) => (
                                 <Item
                                     key={address}
                                     onMenuToggle={onMenuToggle}
@@ -214,6 +214,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                                         delegatedAccount
                                     )}
                                     permissions={permissions}
+                                    isMainAccount={isMainAccount}
                                 />
                             ))}
                         </>
@@ -232,6 +233,7 @@ type ItemProps = HTMLAttributes<HTMLDivElement> & {
     isCurrentAccount?: boolean
     isCurrentDelegatedAccount?: boolean
     permissions: StreamPermission[]
+    isMainAccount: boolean
 }
 
 function Item({
@@ -241,6 +243,7 @@ function Item({
     onDeleteClick,
     isCurrentAccount = false,
     isCurrentDelegatedAccount = false,
+    isMainAccount = false,
     permissions,
     ...props
 }: ItemProps) {
@@ -440,7 +443,10 @@ function Item({
                                             {isCurrentDelegatedAccount ? (
                                                 <>Your delegated account</>
                                             ) : (
-                                                <>Room member</>
+                                                <>
+                                                    {isMainAccount ? '[Main Account] ' : null}
+                                                    Room member
+                                                </>
                                             )}
                                         </>
                                     )}

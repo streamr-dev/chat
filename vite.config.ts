@@ -29,6 +29,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
+            stream: 'rollup-plugin-node-polyfills/polyfills/stream',
             web3: `${__dirname}/node_modules/web3/dist/web3.min.js`,
             util: 'rollup-plugin-node-polyfills/polyfills/util',
             process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
