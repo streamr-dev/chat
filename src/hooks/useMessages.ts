@@ -19,7 +19,7 @@ export default function useMessages() {
                     })
                     .toArray()
             } catch (e) {
-                handleError
+                handleError(e)
             }
         }
 
