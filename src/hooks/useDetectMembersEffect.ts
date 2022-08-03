@@ -1,7 +1,7 @@
 import { Flag } from '$/features/flag/types'
 import { MembersAction } from '$/features/members'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { useWalletClient } from '$/features/wallet/hooks'
+import { useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -10,10 +10,12 @@ export default function useDetectMembersEffect() {
 
     const streamrClient = useWalletClient()
 
+    const provider = useWalletProvider()
+
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!selectedRoomId || !streamrClient) {
+        if (!selectedRoomId || !streamrClient || !provider) {
             return
         }
 
@@ -22,6 +24,7 @@ export default function useDetectMembersEffect() {
                 roomId: selectedRoomId,
                 streamrClient,
                 fingerprint: Flag.isDetectingMembers(selectedRoomId),
+                provider,
             })
         )
     }, [dispatch, selectedRoomId, streamrClient])

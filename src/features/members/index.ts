@@ -6,15 +6,16 @@ import detect from './sagas/detect.saga'
 import { IMember, MembersState } from './types'
 import StreamrClient from 'streamr-client'
 import { IFingerprinted } from '$/types'
+import { Provider } from '@web3-react/types'
 
 const initialState: MembersState = {}
 
 export const MembersAction = {
     set: createAction<{ roomId: RoomId; members: IMember[] }>('members: set'),
 
-    detect: createAction<IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }>(
-        'members: detect'
-    ),
+    detect: createAction<
+        IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient; provider: Provider }
+    >('members: detect'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
