@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
@@ -12,11 +12,12 @@ import Text from '../Text'
 import TextField from '../TextField'
 import Toggle from '../Toggle'
 import { v4 as uuidv4 } from 'uuid'
-import { Prefix, PrivacyOption } from '$/types'
+import { Address, Prefix, PrivacyOption, PrivacySetting } from '$/types'
 import { RoomAction } from '$/features/room'
 import ButtonGroup, { GroupedButton } from '$/components/ButtonGroup'
 import { Flag } from '$/features/flag/types'
 import PrivacySelectField, { PrivateRoomOption } from '$/components/PrivacySelectField'
+import { getTokenType, TokenType, TokenTypes } from '$/utils/JoinPolicyRegistry'
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
@@ -41,40 +42,74 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     const canPin = !isBlank(roomId)
 
+    const [createSubmitLabel, setCreateSubmitLabel] = useState<string>('Create')
+    const [isTokenGatedRoom, setIsTokenGatedRoom] = useState<boolean>(false)
+    const [tokenAddress, setTokenAddress] = useState<Address>('')
+    const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
+    const [tokenId, setTokenId] = useState<string>('')
+    const [minTokenAmount, setMinTokenAmount] = useState<number>(0)
+
+    useEffect(() => {
+        if (privacySetting.value === PrivacySetting.TokenGated) {
+            setCreateSubmitLabel('Next')
+        } else {
+            setCreateSubmitLabel('Create')
+        }
+    }, [privacySetting])
+
     function onClose() {
         setRoomName('')
         setPrivacySetting(PrivateRoomOption)
         setRoomId('')
+        setIsTokenGatedRoom(false)
+        setCreateSubmitLabel('Create')
+        setTokenAddress('')
+        setTokenType(TokenTypes.unknown)
+        setTokenId('')
+        setMinTokenAmount(0)
     }
 
     const provider = useWalletProvider()
 
     const streamrClient = useWalletClient()
 
-    function onSubmitCreate() {
+    async function onSubmitCreate() {
         if (!canCreate || !provider || !streamrClient || !account) {
             return
         }
 
         const now = Date.now()
 
-        dispatch(
-            RoomAction.create({
-                params: {
-                    createdAt: now,
-                    createdBy: account!,
-                    id: `/${Prefix.Room}/${uuidv4()}`,
-                    name: roomName,
-                    owner: account!,
-                    updatedAt: now,
-                },
-                privacy: privacySetting.value,
-                storage,
-                provider,
-                requester: account,
-                streamrClient,
-            })
-        )
+        if (!isTokenGatedRoom && privacySetting.value === PrivacySetting.TokenGated) {
+            // display the next window for the token-gated creation
+            const tokenType = await getTokenType(tokenAddress, provider)
+            setTokenType(tokenType)
+            setCreateNew(false)
+            setIsTokenGatedRoom(true)
+            return
+        } else {
+            dispatch(
+                RoomAction.create({
+                    params: {
+                        createdAt: now,
+                        createdBy: account!,
+                        id: `/${Prefix.Room}/${uuidv4()}`,
+                        name: roomName,
+                        owner: account!,
+                        updatedAt: now,
+                        tokenAddress,
+                        tokenId,
+                        minTokenAmount,
+                        tokenType,
+                    },
+                    privacy: privacySetting.value,
+                    storage,
+                    provider,
+                    requester: account,
+                    streamrClient,
+                })
+            )
+        }
 
         if (typeof setOpen === 'function') {
             setOpen(false)
@@ -104,14 +139,16 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     return (
         <Modal {...props} title="Add new room" setOpen={setOpen} onClose={onClose}>
-            <ButtonGroup>
-                <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>
-                    Add a room
-                </GroupedButton>
-                <GroupedButton active={!createNew} onClick={() => void setCreateNew(false)}>
-                    Pin existing room
-                </GroupedButton>
-            </ButtonGroup>
+            {!isTokenGatedRoom ? (
+                <ButtonGroup>
+                    <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>
+                        Add a room
+                    </GroupedButton>
+                    <GroupedButton active={!createNew} onClick={() => void setCreateNew(false)}>
+                        Pin existing room
+                    </GroupedButton>
+                </ButtonGroup>
+            ) : null}
             {createNew ? (
                 <Form onSubmit={onSubmitCreate}>
                     <>
@@ -132,6 +169,18 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                             onChange={(option) => void setPrivacySetting(option as PrivacyOption)}
                         />
                     </>
+                    {privacySetting.value === PrivacySetting.TokenGated && (
+                        <>
+                            <Label htmlFor="tokenAddress">Token Address</Label>
+                            <TextField
+                                id="tokenAddress"
+                                value={tokenAddress!}
+                                onChange={(e) => void setTokenAddress(e.target.value)}
+                                autoFocus
+                                autoComplete="off"
+                            />
+                        </>
+                    )}
                     <>
                         <Label>Message storage</Label>
                         <div
@@ -173,7 +222,48 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         </div>
                     </>
                     <>
-                        <Submit label="Create" disabled={!canCreate} />
+                        <Submit label={createSubmitLabel} disabled={!canCreate} />
+                    </>
+                </Form>
+            ) : isTokenGatedRoom ? (
+                <Form onSubmit={onSubmitCreate}>
+                    <>
+                        <Label htmlFor="roomName">Room Name</Label>
+
+                        <TextField id="roomName" value={roomName} disabled={true} />
+                        <Label htmlFor="tokenAddress">Token Address</Label>
+
+                        <TextField id="tokenAddress" value={tokenAddress} disabled={true} />
+
+                        <Label htmlFor="tokenStandard">Token Standard</Label>
+
+                        <TextField id="tokenStandard" value={tokenType.standard} disabled={true} />
+
+                        {tokenType.hasIds && (
+                            <>
+                                <Label htmlFor="tokenId">Token ID</Label>
+                                <TextField
+                                    id="tokenId"
+                                    value={tokenId}
+                                    onChange={(e) => void setTokenId(e.target.value)}
+                                />
+                            </>
+                        )}
+
+                        {tokenType.isCountable && (
+                            <>
+                                <Label htmlFor="minTokenAmount">Minimum Token Amount</Label>
+                                <TextField
+                                    id="minTokenAmount"
+                                    value={minTokenAmount}
+                                    onChange={(e) =>
+                                        void setMinTokenAmount(parseFloat(e.target.value))
+                                    }
+                                />
+                            </>
+                        )}
+
+                        <Submit label="Create" disabled={false /*!canCreateTokenGatedRoom*/} />
                     </>
                 </Form>
             ) : (

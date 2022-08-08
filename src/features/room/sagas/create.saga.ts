@@ -15,12 +15,13 @@ import { RoomAction } from '..'
 import { toast } from 'react-toastify'
 import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
+import { registerERC20Policy } from '$/utils/JoinPolicyRegistry'
 
 function* onCreateAction({
     payload: {
         privacy,
         storage,
-        params: { owner, ...params },
+        params: { owner, tokenType, tokenAddress, minTokenAmount, ...params },
         provider,
         requester,
         streamrClient,
@@ -54,6 +55,10 @@ function* onCreateAction({
                 'thechat.eth': metadata,
             },
         } as StreamProperties)
+
+        if (privacy === PrivacySetting.TokenGated && tokenType!.standard === 'ERC20') {
+            yield registerERC20Policy(tokenAddress!, stream.id, minTokenAmount!, provider)
+        }
 
         if (privacy === PrivacySetting.Public) {
             try {
