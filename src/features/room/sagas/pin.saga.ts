@@ -7,8 +7,10 @@ import db from '$/utils/db'
 import getStream from '$/utils/getStream'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
+import { joinTokenGatedRoom } from '$/utils/JoinPolicyRegistry'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error } from '$/utils/toaster'
+import { Provider } from '@web3-react/types'
 import { toast } from 'react-toastify'
 import { call, put } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
@@ -17,7 +19,13 @@ interface PinRemoteOptions {
     streamrClient: StreamrClient
 }
 
-function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemoteOptions) {
+function* pinRemote(
+    owner: Address,
+    roomId: RoomId,
+    delegatedAccount: Address,
+    provider: Provider,
+    { streamrClient }: PinRemoteOptions
+) {
     const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
 
     if (!stream) {
@@ -26,6 +34,11 @@ function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemote
 
     const metadata = stream.extensions['thechat.eth']
 
+    const isTokenGated: boolean = metadata.tokenType && metadata.tokenAddress ? true : false
+
+    if (isTokenGated) {
+        yield joinTokenGatedRoom(owner, metadata.tokenAddress!, provider, delegatedAccount)
+    }
     const room: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()
 
     const [permissions, isPublic]: UserPermissions = yield getUserPermissions(owner, stream)
@@ -35,7 +48,7 @@ function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemote
         return
     }
 
-    if (!isPublic) {
+    if (!isPublic && !isTokenGated) {
         error("You can't pin private rooms.")
         return
     }
@@ -62,7 +75,7 @@ function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemote
 }
 
 function* onPinAction({
-    payload: { roomId, requester, streamrClient },
+    payload: { roomId, requester, streamrClient, delegatedAccount, provider },
 }: ReturnType<typeof RoomAction.pin>) {
     let toastId
 
@@ -75,7 +88,9 @@ function* onPinAction({
             hideProgressBar: true,
         })
 
-        yield call(pinRemote, requester.toLowerCase(), roomId, { streamrClient })
+        yield call(pinRemote, requester.toLowerCase(), roomId, delegatedAccount, provider, {
+            streamrClient,
+        })
     } catch (e) {
         handleError(e)
 

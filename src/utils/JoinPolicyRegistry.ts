@@ -1,5 +1,6 @@
 import { BigNumber, Contract, providers } from 'ethers'
 import * as JoinPolicyRegistry from '../contracts/JoinPolicyRegistry.sol/JoinPolicyRegistry.json'
+import * as ERC20JoinPolicy from '../contracts/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import * as ERC20 from '../contracts/ERC20JoinPolicy.sol/TestERC20.json'
 import * as ERC165 from '../contracts/ERC165.json' // supportsInterface
 
@@ -107,12 +108,39 @@ export const getTokenType = async (address: Address, rawProvider: Provider): Pro
     return detectedTokenType
 }
 
-export const getJoinPolicyRegistryAt = (rawProvider: Provider): Contract => {
+export const getJoinPolicyRegistry = (rawProvider: Provider): Contract => {
     return new Contract(
         JoinPolicyRegistryAddress,
         JoinPolicyRegistryAbi,
         new providers.Web3Provider(rawProvider).getSigner()
     )
+}
+
+export const getERC20JoinPolicy = (address: Address, rawProvider: Provider): Contract => {
+    return new Contract(
+        address,
+        ERC20JoinPolicy.abi,
+        new providers.Web3Provider(rawProvider).getSigner()
+    )
+}
+
+export const joinTokenGatedRoom = async (
+    mainAccount: Address,
+    tokenAddress: Address,
+    rawProvider: Provider,
+    delegatedAddress: Address
+) => {
+    try {
+        const registry = getJoinPolicyRegistry(rawProvider)
+        const policyAddress = await registry.erc20TokensToJoinPolicies(tokenAddress)
+        const policy = getERC20JoinPolicy(policyAddress, rawProvider)
+        const canJoin = await policy.canJoin(mainAccount)
+        console.log('canJoin', canJoin)
+        const res = await policy.requestDelegatedJoin(delegatedAddress)
+        console.log('requestDelegatedJoin res', res)
+    } catch (e) {
+        console.error(e)
+    }
 }
 
 export const registerERC20Policy = async (
@@ -121,7 +149,7 @@ export const registerERC20Policy = async (
     minTokenAmount: number,
     rawProvider: Provider
 ): Promise<void> => {
-    const contract = getJoinPolicyRegistryAt(rawProvider)
+    const contract = getJoinPolicyRegistry(rawProvider)
     const res = await contract.registerERC20Policy(
         tokenAddress,
         streamId,

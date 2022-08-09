@@ -18,6 +18,7 @@ import ButtonGroup, { GroupedButton } from '$/components/ButtonGroup'
 import { Flag } from '$/features/flag/types'
 import PrivacySelectField, { PrivateRoomOption } from '$/components/PrivacySelectField'
 import { getTokenType, TokenType, TokenTypes } from '$/utils/JoinPolicyRegistry'
+import { useDelegatedAccount } from '$/features/delegation/hooks'
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
@@ -117,8 +118,10 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         }
     }
 
+    const delegatedAccount = useDelegatedAccount()
+
     function onSubmitPin() {
-        if (!canPin || !account || !streamrClient) {
+        if (!canPin || !account || !streamrClient || !provider || !delegatedAccount) {
             return
         }
 
@@ -128,6 +131,8 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                 requester: account,
                 streamrClient,
                 fingerprint: Flag.isRoomBeingPinned(roomId, account),
+                provider,
+                delegatedAccount,
             })
         )
 

@@ -21,7 +21,7 @@ function* onCreateAction({
     payload: {
         privacy,
         storage,
-        params: { owner, tokenType, tokenAddress, minTokenAmount, ...params },
+        params: { owner, ...params },
         provider,
         requester,
         streamrClient,
@@ -48,6 +48,7 @@ function* onCreateAction({
 
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
+        console.log('metadata', metadata, params)
         const stream: Stream = yield streamrClient.createStream({
             id,
             description,
@@ -56,8 +57,20 @@ function* onCreateAction({
             },
         } as StreamProperties)
 
-        if (privacy === PrivacySetting.TokenGated && tokenType!.standard === 'ERC20') {
-            yield registerERC20Policy(tokenAddress!, stream.id, minTokenAmount!, provider)
+        console.log('stream created', stream)
+
+        if (
+            privacy === PrivacySetting.TokenGated &&
+            metadata.tokenType!.standard === 'ERC20' &&
+            metadata.tokenAddress &&
+            metadata.minTokenAmount
+        ) {
+            yield registerERC20Policy(
+                metadata.tokenAddress,
+                stream.id,
+                metadata.minTokenAmount,
+                provider
+            )
         }
 
         if (privacy === PrivacySetting.Public) {
