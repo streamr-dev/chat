@@ -1,7 +1,7 @@
 import { Wallet } from 'ethers'
 import { sign, hash } from 'eth-crypto'
 import { Address } from '$/types'
-import { getDelegatedAccessRegistryAt } from '$/utils/DelegatedAccessRegistry'
+import { getDelegatedAccessRegistry } from '$/utils/DelegatedAccessRegistry'
 
 enum ChallengeType {
     Authorize = 0,
@@ -34,7 +34,7 @@ export default async function authorizeDelegatedAccount(
 
     const delegatedAddress = new Wallet(delegatedPrivateKey).address
 
-    const contract = getDelegatedAccessRegistryAt(rawProvider)
+    const contract = getDelegatedAccessRegistry(rawProvider)
 
     const tx = await contract.functions.authorize(delegatedAddress, signature)
 

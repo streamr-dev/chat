@@ -1,17 +1,29 @@
 import { Address } from '$/types'
-import { getDelegatedAccessRegistryAt } from '$/utils/DelegatedAccessRegistry'
+import { getDelegatedAccessRegistry } from '$/utils/DelegatedAccessRegistry'
+import { Provider } from '@web3-react/types'
+
+export enum AccountType {
+    Main = 'main',
+    Delegated = 'delegated',
+    Unset = 'unset',
+}
 
 export default async function getAccountType(
-    accounts: Address,
-    rawProvider: any
-): Promise<{ isMainAccount: boolean; isDelegatedAccount: boolean }> {
-    const contract = getDelegatedAccessRegistryAt(rawProvider)
+    account: Address,
+    rawProvider: Provider
+): Promise<AccountType> {
+    const contract = getDelegatedAccessRegistry(rawProvider)
 
-    const [metamaskAccounts]: boolean[] = await contract.functions.isMainWallet(accounts)
-    const [delegatedAccounts]: boolean[] = await contract.functions.isDelegatedWallet(accounts)
+    const [metamaskAccount]: boolean[] = await contract.functions.isMainWallet(account)
 
-    return {
-        isMainAccount: metamaskAccounts,
-        isDelegatedAccount: delegatedAccounts,
+    if (metamaskAccount) {
+        return AccountType.Main
     }
+    const [delegatedAccount]: boolean[] = await contract.functions.isDelegatedWallet(account)
+
+    if (delegatedAccount) {
+        return AccountType.Delegated
+    }
+
+    return AccountType.Unset
 }
