@@ -8,9 +8,10 @@ import { MembersAction } from '..'
 import { IMember } from '$/features/members/types'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { EnsAction } from '$/features/ens'
+import getAccountType, { AccountType } from '$/utils/getAccountType'
 
 function* onDetectAction({
-    payload: { roomId, streamrClient },
+    payload: { roomId, streamrClient, provider },
 }: ReturnType<typeof MembersAction.detect>) {
     try {
         const members: IMember[] = []
@@ -33,9 +34,12 @@ function* onDetectAction({
                 continue
             }
 
+            const accountType: AccountType = yield getAccountType(assignment.user, provider)
+
             members.push({
                 address: assignment.user,
                 permissions: assignment.permissions,
+                accountType,
             })
         }
 

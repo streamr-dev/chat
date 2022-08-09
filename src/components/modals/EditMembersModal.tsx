@@ -33,6 +33,7 @@ import { Flag } from '$/features/flag/types'
 import EditIcon from '$/icons/EditIcon'
 import useENSName from '$/hooks/useENSName'
 import trunc from '$/utils/trunc'
+import { AccountType } from '$/utils/getAccountType'
 
 type MenuOpens = {
     [index: string]: boolean
@@ -201,7 +202,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                         </div>
                     ) : (
                         <>
-                            {members.map(({ address, permissions }) => (
+                            {members.map(({ address, permissions, accountType }) => (
                                 <Item
                                     key={address}
                                     onMenuToggle={onMenuToggle}
@@ -214,6 +215,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                                         delegatedAccount
                                     )}
                                     permissions={permissions}
+                                    accountType={accountType}
                                 />
                             ))}
                         </>
@@ -232,6 +234,7 @@ type ItemProps = HTMLAttributes<HTMLDivElement> & {
     isCurrentAccount?: boolean
     isCurrentDelegatedAccount?: boolean
     permissions: StreamPermission[]
+    accountType: AccountType
 }
 
 function Item({
@@ -241,6 +244,7 @@ function Item({
     onDeleteClick,
     isCurrentAccount = false,
     isCurrentDelegatedAccount = false,
+    accountType = AccountType.Unset,
     permissions,
     ...props
 }: ItemProps) {
@@ -440,7 +444,16 @@ function Item({
                                             {isCurrentDelegatedAccount ? (
                                                 <>Your delegated account</>
                                             ) : (
-                                                <>Room member</>
+                                                <>
+                                                    {accountType === AccountType.Main
+                                                        ? '[Main Account] '
+                                                        : accountType === AccountType.Delegated
+                                                        ? '[Delegated Account] '
+                                                        : accountType === AccountType.Unset
+                                                        ? '[Unset Account] '
+                                                        : null}
+                                                    Room member
+                                                </>
                                             )}
                                         </>
                                     )}
