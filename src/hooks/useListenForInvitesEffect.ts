@@ -66,10 +66,10 @@ export default function useListenForInvitesEffect(
 
             const canPub = publishExpirationTimestampSeconds.gt(now)
 
-            if (canEdit || canDelete || canPub || canSub) {
-                // It's not an invite. Invite means grant-only.
+            if (!(canPub && canSub && canGrant)) {
                 return
             }
+            // It's an invite.
 
             if (!isSameAddress(userAddress, address) || !streamId.includes(Prefix.Room)) {
                 // Irrelevant. Skipping.
