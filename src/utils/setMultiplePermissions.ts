@@ -104,6 +104,7 @@ export default function setMultiplePermissions(
             MembersAction.detect({
                 roomId,
                 streamrClient,
+                provider,
                 fingerprint: Flag.isDetectingMembers(roomId),
             })
         )
