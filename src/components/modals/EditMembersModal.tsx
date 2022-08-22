@@ -248,6 +248,9 @@ function Item({
     permissions,
     ...props
 }: ItemProps) {
+    if (accountType === AccountType.Delegated) {
+        return null
+    }
     const [memberMenuOpen, setMemberMenuOpen] = useState<boolean>(false)
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -447,8 +450,6 @@ function Item({
                                                 <>
                                                     {accountType === AccountType.Main
                                                         ? '[Main Account] '
-                                                        : accountType === AccountType.Delegated
-                                                        ? '[Delegated Account] '
                                                         : accountType === AccountType.Unset
                                                         ? '[Unset Account] '
                                                         : null}
