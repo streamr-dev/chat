@@ -3,7 +3,7 @@ import * as DelegatedAccessRegistry from '../contracts/DelegatedAccessRegistry.s
 import { Provider } from '@web3-react/types'
 
 const DelegatedAccessRegistryAbi = DelegatedAccessRegistry.abi
-const DelegatedAccessRegistryAddress = '0xB3042ecFC4Ba4ef213A38B1C2541E9234a6189cc'
+const DelegatedAccessRegistryAddress = '0x1CF4ee3a493f9B07AE9394F78E1407c2682B0e8C'
 
 const getDelegatedAccessRegistry = (rawProvider: Provider): Contract => {
     return new Contract(
