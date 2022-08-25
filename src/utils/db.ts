@@ -7,7 +7,7 @@ import { IAlias } from '$/features/alias/types'
 import { IPreference } from '$/features/preferences/types'
 import { IENSName } from '$/features/ens/types'
 
-const [DbVersion, IdxVersion] = [3, 2]
+const [DbVersion, IdxVersion] = [4, 1]
 
 class StreamrChatDatabase extends Dexie {
     messages!: Table<IMessage, number>
@@ -37,7 +37,7 @@ class StreamrChatDatabase extends Dexie {
             identicons: '++, &seed',
             preferences: '++, &owner',
             ensNames: '++, &content, address',
-            resends: '++, &[owner+roomId+beginningOfDay]',
+            resends: '[beginningOfDay+timezoneOffset+roomId+owner], owner, roomId',
         })
     }
 }

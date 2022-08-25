@@ -1,23 +1,103 @@
-import { Fragment, useEffect, useLayoutEffect, useRef } from 'react'
+import { Fragment, HTMLAttributes, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import tw from 'twin.macro'
-import { IMessage } from '$/features/message/types'
+import { IMessage, IResend } from '$/features/message/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import isSameAddress from '$/utils/isSameAddress'
 import Message from './Message'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import getBeginningOfDay, { TimezoneOffset } from '$/utils/getBeginningOfDay'
 import DateSeparator from '$/components/Conversation/DateSeparator'
+import getBeginningOfDay from '$/utils/getBeginningOfDay'
+import Text from '$/components/Text'
 
 type Props = {
     messages?: IMessage[]
+    resends?: IResend[]
 }
 
 const AutoScrollTolerance = 5
 
-export default function MessageFeed({ messages = [] }: Props) {
+interface Manifest {
+    messages: IMessage[]
+    newDay: boolean
+}
+
+interface Manifests {
+    [timestamp: string]: Manifest
+}
+
+interface Group extends Manifest {
+    timestamp: number
+}
+
+function useMessageGroups(messages: IMessage[], resends: IResend[]): Group[] {
+    return useMemo(() => {
+        const manifests: Manifests = {}
+
+        resends.forEach((r) => {
+            manifests[r.beginningOfDay] = {
+                messages: [],
+                newDay: true,
+            }
+        })
+
+        let previousCreatedAt: undefined | number = undefined
+
+        let rangeTimestamp: undefined | number = undefined
+
+        messages.forEach((m) => {
+            if (typeof m.createdAt !== 'number') {
+                return []
+            }
+
+            let startsDay = true
+
+            let startsRange = true
+
+            const bod = getBeginningOfDay(m.createdAt)
+
+            if (typeof previousCreatedAt === 'number') {
+                startsDay = bod !== getBeginningOfDay(previousCreatedAt)
+
+                // Group messages that happen within 15 minutes from each other.
+                startsRange = !startsDay && previousCreatedAt + 900000 <= m.createdAt
+            }
+
+            previousCreatedAt = m.createdAt
+
+            if (manifests[bod]?.messages?.length === 0) {
+                delete manifests[bod]
+            }
+
+            if (startsRange || startsDay) {
+                rangeTimestamp = m.createdAt
+            }
+
+            if (typeof rangeTimestamp !== 'number') {
+                throw new Error('This should not happen. Please report if it did.')
+            }
+
+            if (!manifests[rangeTimestamp]) {
+                manifests[rangeTimestamp] = {
+                    messages: [],
+                    newDay: startsDay,
+                }
+            }
+
+            manifests[rangeTimestamp].messages.push(m)
+        })
+
+        return Object.keys(manifests)
+            .sort()
+            .map((ts) => ({ timestamp: Number(ts), ...manifests[ts] }))
+    }, [messages, resends])
+}
+
+export default function MessageFeed({ messages = [], resends = [] }: Props) {
     const rootRef = useRef<HTMLDivElement>(null)
 
     const stickyRef = useRef<boolean>(true)
+
+    const groups = useMessageGroups(messages, resends)
 
     useEffect(() => {
         stickyRef.current = true
@@ -53,13 +133,9 @@ export default function MessageFeed({ messages = [] }: Props) {
             // Auto-scroll to the most recent message.
             root.scrollTop = root.scrollHeight
         }
-    }, [messages])
+    }, [groups])
 
     const account = useWalletAccount()
-
-    let previousCreatedBy: IMessage['createdBy']
-
-    let previousCreatedAt: undefined | number = undefined
 
     return (
         <div
@@ -74,40 +150,55 @@ export default function MessageFeed({ messages = [] }: Props) {
                 `,
             ]}
         >
-            {messages.map((message) => {
-                let sameDay = false
-
-                let withinRange = false
-
-                if (typeof message.createdAt === 'number') {
-                    if (typeof previousCreatedAt === 'number') {
-                        sameDay =
-                            getBeginningOfDay(message.createdAt - TimezoneOffset) ===
-                            getBeginningOfDay(previousCreatedAt - TimezoneOffset)
-
-                        withinRange = sameDay && previousCreatedAt + 900000 > message.createdAt
-                    }
-
-                    previousCreatedAt = message.createdAt
-                }
-
-                previousCreatedBy = message.createdBy
-
-                const hideAvatar = previousCreatedBy === message.createdBy && withinRange
+            {groups.map(({ timestamp, newDay, messages }, index) => {
+                let previousCreatedBy: IMessage['createdBy']
 
                 return (
-                    <Fragment key={message.id}>
-                        {!withinRange && typeof message.createdAt === 'number' && (
-                            <DateSeparator includeDate={!sameDay} timestamp={message.createdAt} />
-                        )}
-                        <Message
-                            payload={message}
-                            incoming={!isSameAddress(account, message.createdBy)}
-                            hideAvatar={hideAvatar}
+                    <Fragment key={timestamp}>
+                        <DateSeparator
+                            includeDate={newDay}
+                            timestamp={timestamp}
+                            showLoadPreviousDay={index === 0}
+                            empty={messages.length === 0}
                         />
+                        {messages.length === 0 && (
+                            <NoMessages>
+                                <Text>&middot;</Text>
+                            </NoMessages>
+                        )}
+                        {messages.map((message) => {
+                            const hideAvatar = previousCreatedBy === message.createdBy
+
+                            previousCreatedBy = message.createdBy
+
+                            return (
+                                <Message
+                                    key={message.id}
+                                    payload={message}
+                                    incoming={!isSameAddress(account, message.createdBy)}
+                                    hideAvatar={hideAvatar}
+                                />
+                            )
+                        })}
                     </Fragment>
                 )
             })}
         </div>
+    )
+}
+
+function NoMessages(props: HTMLAttributes<HTMLParagraphElement>) {
+    return (
+        <p
+            {...props}
+            css={[
+                tw`
+                    text-[#59799C]
+                    text-[12px]
+                    m-0
+                    text-center
+        `,
+            ]}
+        />
     )
 }

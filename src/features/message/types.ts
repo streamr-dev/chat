@@ -18,5 +18,14 @@ export interface StreamMessage {
 export interface IResend {
     roomId: RoomId
     owner: Address
-    beginningOfDay: number // utc + timezone offset
+    beginningOfDay: number
+    timezoneOffset: number
+}
+
+export interface MessageState {
+    [owner: Address]: {
+        [roomId: RoomId]: {
+            from: undefined | number
+        }
+    }
 }

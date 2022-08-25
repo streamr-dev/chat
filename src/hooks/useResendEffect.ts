@@ -4,6 +4,7 @@ import { MessageAction } from '$/features/message'
 import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
+import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
@@ -32,6 +33,14 @@ export default function useResendEffect(roomId: undefined | RoomId) {
                 requester: account,
                 streamrClient,
                 fingerprint: Flag.isResendingMessage(roomId, account),
+            })
+        )
+
+        dispatch(
+            MessageAction.setFromTimestamp({
+                roomId,
+                requester: account,
+                timestamp: getBeginningOfDay(Date.now()),
             })
         )
     }, [roomId, streamrClient, canDelegatedSubscribe, account])

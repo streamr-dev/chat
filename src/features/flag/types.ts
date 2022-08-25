@@ -2,7 +2,7 @@ import { IdenticonSeed } from '$/features/identicons/types'
 import { IMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
-import getBeginningOfDay, { TimezoneOffset } from '$/utils/getBeginningOfDay'
+import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { StreamPermission } from 'streamr-client'
 
 export interface FlagState {
@@ -133,7 +133,7 @@ export const Flag = {
             'isResendingMessagesForSpecificDay',
             roomId,
             requester.toLowerCase(),
-            getBeginningOfDay(timestamp - TimezoneOffset),
+            getBeginningOfDay(timestamp),
         ])
     },
 }

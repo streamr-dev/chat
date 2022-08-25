@@ -1,7 +1,7 @@
 import TimeoutError from '$/errors/TimeoutError'
 import { StreamMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
-import getBeginningOfDay, { DayInMillis, TimezoneOffset } from '$/utils/getBeginningOfDay'
+import getBeginningOfDay, { DayInMillis } from '$/utils/getBeginningOfDay'
 import StreamrClient from 'streamr-client'
 import { MessageStream } from 'streamr-client/types/src/subscribe/MessageStream'
 
@@ -18,10 +18,10 @@ async function fetch(
         typeof timestamp === 'number'
             ? {
                   from: {
-                      timestamp: getBeginningOfDay(timestamp - TimezoneOffset),
+                      timestamp: getBeginningOfDay(timestamp),
                   },
                   to: {
-                      timestamp: getBeginningOfDay(timestamp - TimezoneOffset) + DayInMillis - 1,
+                      timestamp: getBeginningOfDay(timestamp) + DayInMillis - 1,
                   },
               }
             : { last: 20 }

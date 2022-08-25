@@ -1,6 +1,8 @@
 import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
-import { StreamMessage } from '$/features/message/types'
+import { IResend, StreamMessage } from '$/features/message/types'
+import db from '$/utils/db'
+import getBeginningOfDay, { DayInMillis, TimezoneOffset } from '$/utils/getBeginningOfDay'
 import handleError from '$/utils/handleError'
 import resendUtil from '$/utils/resend'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -8,12 +10,41 @@ import { put } from 'redux-saga/effects'
 import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 
 function* onResendAction({
-    payload: { roomId, requester, streamrClient },
+    payload: { roomId, requester, streamrClient, timestamp },
 }: ReturnType<typeof MessageAction.resend>) {
     try {
         const owner = requester.toLowerCase()
 
-        const messages: StreamrMessage<StreamMessage>[] = yield resendUtil(roomId, streamrClient)
+        if (typeof timestamp !== 'undefined') {
+            const bod = getBeginningOfDay(timestamp)
+
+            yield put(MessageAction.setFromTimestamp({ roomId, requester, timestamp: bod }))
+
+            let dayAlreadyResent = false
+
+            try {
+                const resend: null | IResend = yield db.resends
+                    .where({
+                        owner,
+                        roomId,
+                        timezoneOffset: TimezoneOffset,
+                        beginningOfDay: bod,
+                    })
+                    .first()
+
+                dayAlreadyResent = !!resend
+            } catch (e) {
+                // Ignore.
+            }
+
+            if (dayAlreadyResent) {
+                return
+            }
+        }
+
+        const messages: StreamrMessage<StreamMessage>[] = yield resendUtil(roomId, streamrClient, {
+            timestamp,
+        })
 
         let minCreatedAt: undefined | number = undefined
 
@@ -47,9 +78,31 @@ function* onResendAction({
             )
         }
 
+        if (typeof timestamp !== 'undefined') {
+            const eod = getBeginningOfDay(timestamp) + DayInMillis - 1
+
+            const currentBod = getBeginningOfDay(Date.now())
+
+            if (eod < currentBod) {
+                try {
+                    yield db.resends.add({
+                        owner: requester.toLowerCase(),
+                        roomId,
+                        beginningOfDay: getBeginningOfDay(timestamp),
+                        timezoneOffset: TimezoneOffset,
+                    })
+                } catch (e) {
+                    handleError(e)
+                }
+            }
+
+            return
+        }
+
+        // This happens only to `resend` calls without timestamp (the initial one).
         if (typeof minCreatedAt !== 'undefined') {
             yield put(
-                MessageAction.resendDay({
+                MessageAction.resend({
                     roomId,
                     requester,
                     streamrClient,
