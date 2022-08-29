@@ -1,8 +1,8 @@
 import tw, { css } from 'twin.macro'
 import { useWalletAccount } from '$/features/wallet/hooks'
-import { AvatarStatus } from '../../Avatar'
-import Navbar, { NavButton } from '../../Navbar'
-import Text from '../../Text'
+import { AvatarStatus } from './Avatar'
+import Navbar, { NavButton } from './Navbar'
+import Text from './Text'
 import useDisplayUsername from '$/hooks/useDisplayUsername'
 
 type Props = {

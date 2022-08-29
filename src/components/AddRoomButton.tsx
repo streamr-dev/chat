@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes } from 'react'
 import tw from 'twin.macro'
-import SidebarButton from '../../SidebarButton'
-import Text from '../../Text'
+import SidebarButton from './SidebarButton'
+import Text from './Text'
 
 export default function AddRoomButton(
     props: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'>

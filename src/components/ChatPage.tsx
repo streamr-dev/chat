@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
-import Page from '../../Page'
-import WalletModal from '../../modals/WalletModal'
-import AccountModal from '../../modals/AccountModal'
-import AddRoomButton from './AddRoomButton'
-import AddRoomModal from '../../modals/AddRoomModal'
-import Conversation from '../../Conversation'
-import Nav from './Nav'
-import RoomButton from './RoomButton'
+import Page from '$/components/Page'
+import WalletModal from '$/components/modals/WalletModal'
+import AccountModal from '$/components/modals/AccountModal'
+import AddRoomButton from '$/components/AddRoomButton'
+import AddRoomModal from '$/components/modals/AddRoomModal'
+import Conversation from '$/components/Conversation'
+import Nav from '$/components/Nav'
+import RoomButton from '$/components/RoomButton'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
-import UtilityButton from '../../UtilityButton'
-import Text from '../../Text'
+import UtilityButton from '$/components/UtilityButton'
+import Text from '$/components/Text'
 import useRooms from '$/hooks/useRooms'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import { useDispatch } from 'react-redux'
@@ -22,7 +21,7 @@ import { RoomAction } from '$/features/room'
 import { Flag } from '$/features/flag/types'
 import useDetectMembersEffect from '$/hooks/useDetectMembersEffect'
 
-function UnwrappedChat() {
+export default function ChatPage() {
     const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
 
     const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
@@ -170,24 +169,4 @@ function UnwrappedChat() {
             <AddRoomModal open={roomModalOpen} setOpen={setRoomModalOpen} />
         </>
     )
-}
-
-export default function Chat() {
-    const account = useWalletAccount()
-
-    const navigate = useNavigate()
-
-    useEffect(() => {
-        if (account === null) {
-            navigate('/')
-        }
-    }, [navigate, account])
-
-    // No account? Render nothing and wait. The above `useEffect` will
-    // take us places.
-    if (!account) {
-        return null
-    }
-
-    return <UnwrappedChat />
 }
