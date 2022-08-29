@@ -29,13 +29,7 @@ export default function WalletModal(props: ModalProps) {
     async function connect(integrationId: WalletIntegrationId) {
         setNextIntegrationId(integrationId)
 
-        const [connector] = getConnector(integrationId)
-
-        try {
-            await connector.activate()
-        } catch (e) {
-            console.warn(`Failed to activate using "${nextIntegrationId}"`, e)
-        }
+        dispatch(WalletAction.connect(integrationId))
     }
 
     return (

@@ -6,6 +6,7 @@ import { all } from 'redux-saga/effects'
 import setAccount from './sagas/setAccount.saga'
 import setIntegrationId from './sagas/setIntegrationId.saga'
 import setProvider from './sagas/setProvider.saga'
+import connect from '$/features/wallet/sagas/connect.saga'
 
 const initialState: WalletState = {
     account: undefined,
@@ -21,6 +22,8 @@ export const WalletAction = {
     setAccount: createAction<WalletState['account']>('wallet: set account'),
 
     setProvider: createAction<WalletState['provider']>('wallet: set provider'),
+
+    connect: createAction<WalletIntegrationId>('wallet: connect'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -50,7 +53,7 @@ const reducer = createReducer(initialState, (builder) => {
 })
 
 export function* walletSaga() {
-    yield all([setAccount(), setIntegrationId(), setProvider()])
+    yield all([setAccount(), setIntegrationId(), setProvider(), connect()])
 }
 
 export default reducer
