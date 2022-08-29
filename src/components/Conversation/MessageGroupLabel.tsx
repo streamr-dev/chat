@@ -18,7 +18,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
     empty?: boolean
 }
 
-export default function DateSeparator({
+export default function MessageGroupLabel({
     timestamp,
     includeDate,
     showLoadPreviousDay = false,

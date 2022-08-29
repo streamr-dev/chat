@@ -5,7 +5,7 @@ import { useWalletAccount } from '$/features/wallet/hooks'
 import isSameAddress from '$/utils/isSameAddress'
 import Message from './Message'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import DateSeparator from '$/components/Conversation/DateSeparator'
+import MessageGroupLabel from '$/components/Conversation/MessageGroupLabel'
 import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import Text from '$/components/Text'
 
@@ -155,7 +155,7 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
 
                 return (
                     <Fragment key={timestamp}>
-                        <DateSeparator
+                        <MessageGroupLabel
                             includeDate={newDay}
                             timestamp={timestamp}
                             showLoadPreviousDay={index === 0}
@@ -197,7 +197,7 @@ function NoMessages(props: HTMLAttributes<HTMLParagraphElement>) {
                     text-[12px]
                     m-0
                     text-center
-        `,
+                `,
             ]}
         />
     )
