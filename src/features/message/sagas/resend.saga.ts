@@ -18,6 +18,7 @@ function* onResendAction({
         if (typeof timestamp !== 'undefined') {
             const bod = getBeginningOfDay(timestamp)
 
+            // Mark timestamp's beginning of day as the moment from which we display messages.
             yield put(MessageAction.setFromTimestamp({ roomId, requester, timestamp: bod }))
 
             let dayAlreadyResent = false
@@ -38,6 +39,9 @@ function* onResendAction({
             }
 
             if (dayAlreadyResent) {
+                // If a resend for a particular beginning of day exists (w/ proper timezone offset)
+                // we skip the actual fetching. We can assume the messages were stored locally along
+                // with the resend record. See below for details on the logic.
                 return
             }
         }
@@ -83,6 +87,7 @@ function* onResendAction({
 
             const currentBod = getBeginningOfDay(Date.now())
 
+            // We only record a `resend` when its day is over. We always resend "today".
             if (eod < currentBod) {
                 try {
                     yield db.resends.add({
