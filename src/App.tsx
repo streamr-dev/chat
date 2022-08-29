@@ -1,13 +1,12 @@
 import tw, { styled, GlobalStyles } from 'twin.macro'
 import { css, Global } from '@emotion/react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
-import Home from '$/components/pages/Home'
-import Chat from '$/components/pages/Chat'
 import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from '$/store'
 import WalletIntegrationObserver from '$/components/WalletIntegrationObserver'
 import Clock from '$/components/Clock'
+import IndexPage from '$/components/IndexPage'
 
 const ToastContainer = styled(PrestyledToastContainer)`
     width: auto;
@@ -65,8 +64,7 @@ export default function App() {
                 <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>
                     <Routes>
-                        <Route element={<Home />} path="/" />
-                        <Route element={<Chat />} path="/chat" />
+                        <Route element={<IndexPage />} path="/*" />
                     </Routes>
                 </HashRouter>
             </div>
