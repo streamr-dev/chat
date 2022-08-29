@@ -2,6 +2,7 @@ import { IdenticonSeed } from '$/features/identicons/types'
 import { IMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
+import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { StreamPermission } from 'streamr-client'
 
 export interface FlagState {
@@ -115,7 +116,24 @@ export const Flag = {
         return JSON.stringify(['isENSNameBeingStored', name.toLowerCase()])
     },
 
-    isSeenAtBeingUpdated(roomId: string, owner: Address, messageId: IMessage['id']): string {
+    isSeenAtBeingUpdated(roomId: RoomId, owner: Address, messageId: IMessage['id']): string {
         return JSON.stringify(['isSeenAtBeingUpdated', roomId, owner.toLowerCase(), messageId])
+    },
+
+    isResendingMessage(roomId: RoomId, requester: Address): string {
+        return JSON.stringify(['isResendingMessage', roomId, requester.toLowerCase()])
+    },
+
+    isResendingMessagesForSpecificDay(
+        roomId: RoomId,
+        requester: Address,
+        timestamp: number
+    ): string {
+        return JSON.stringify([
+            'isResendingMessagesForSpecificDay',
+            roomId,
+            requester.toLowerCase(),
+            getBeginningOfDay(timestamp),
+        ])
     },
 }

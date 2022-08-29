@@ -32,6 +32,8 @@ import {
     useIsInviteBeingAccepted,
     usePromoteDelegatedAccount,
 } from '$/features/member/hooks'
+import useResendEffect from '$/hooks/useResendEffect'
+import useResends from '$/hooks/useResends'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -43,6 +45,12 @@ export default function Conversation() {
     const [editMembersModalOpen, setEditMembersModalOpen] = useState<boolean>(false)
 
     const canGrant = useCanGrant()
+
+    const selectedRoomId = useSelectedRoomId()
+
+    const resends = useResends(selectedRoomId)
+
+    useResendEffect(selectedRoomId)
 
     return (
         <>
@@ -73,7 +81,7 @@ export default function Conversation() {
                             ]}
                         >
                             <div tw="flex-grow" />
-                            <MessageFeed messages={messages} />
+                            <MessageFeed messages={messages} resends={resends} />
                         </div>
                     ) : (
                         <EmptyMessageFeed
