@@ -66,10 +66,14 @@ export default function useListenForInvitesEffect(
 
             const canPub = publishExpirationTimestampSeconds.gt(now)
 
-            if (!(canPub && canSub && canGrant)) {
+            if (
+                canPub ||
+                canEdit ||
+                canDelete || // irrelevant to invites
+                !(canSub && canGrant) // both required for a potential invite
+            ) {
                 return
             }
-            // It's an invite.
 
             if (!isSameAddress(userAddress, address) || !streamId.includes(Prefix.Room)) {
                 // Irrelevant. Skipping.
