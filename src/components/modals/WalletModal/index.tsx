@@ -1,36 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { WalletAction } from '$/features/wallet'
-import { useWalletIntegrationId } from '$/features/wallet/hooks'
 import { WalletIntegrationId } from '$/features/wallet/types'
-import getConnector from '$/utils/getConnector'
 import integrations from '$/utils/integrations'
 import Modal, { ModalProps } from '../Modal'
 import WalletOption from './WalletOption'
+import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
+import { useDelegatedAccount } from '$/features/delegation/hooks'
 
 export default function WalletModal(props: ModalProps) {
     const dispatch = useDispatch()
 
-    const [nextIntegrationId, setNextIntegrationId] = useState<WalletIntegrationId | undefined>(
-        useWalletIntegrationId()
+    const iid = useWalletIntegrationId()
+
+    const account = useWalletAccount()
+
+    const delegatedAccount = useDelegatedAccount()
+
+    const connect = useCallback(
+        (integrationId: WalletIntegrationId) => {
+            if (iid === integrationId && account && delegatedAccount) {
+                return
+            }
+
+            dispatch(WalletAction.connect({ integrationId, eager: false }))
+        },
+        [iid, delegatedAccount, account]
     )
-
-    const [, nextHooks] = getConnector(nextIntegrationId)
-
-    const isActive = nextHooks.useIsActive()
-
-    useEffect(() => {
-        if (isActive) {
-            dispatch(WalletAction.setIntegrationId(nextIntegrationId))
-        }
-    }, [nextIntegrationId, isActive])
-
-    async function connect(integrationId: WalletIntegrationId) {
-        setNextIntegrationId(integrationId)
-
-        dispatch(WalletAction.connect(integrationId))
-    }
 
     return (
         <Modal {...props} title="Select a wallet">

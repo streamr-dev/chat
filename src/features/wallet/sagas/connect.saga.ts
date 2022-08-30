@@ -1,17 +1,37 @@
+import { DelegationAction } from '$/features/delegation'
+import { Flag } from '$/features/flag/types'
 import { WalletAction } from '$/features/wallet'
-import getConnector from '$/utils/getConnector'
+import connectWallet from '$/utils/connectWallet'
 import handleError from '$/utils/handleError'
-import { takeLeading } from 'redux-saga/effects'
+import { put, takeLeading } from 'redux-saga/effects'
 
-function* onConnectAction({ payload: integrationId }: ReturnType<typeof WalletAction.connect>) {
+function* onConnectAction({
+    payload: { integrationId, eager },
+}: ReturnType<typeof WalletAction.connect>) {
     try {
-        const [connector] = getConnector(integrationId)
+        const connection: Awaited<ReturnType<typeof connectWallet>> = yield connectWallet(
+            integrationId,
+            eager
+        )
 
-        try {
-            yield connector.activate()
-        } catch (e) {
-            console.warn(`Failed to activate using "${integrationId}"`, e)
+        if (!connection) {
+            yield put(WalletAction.setAccount({ account: null }))
+            return
         }
+
+        const { provider, account } = connection
+
+        yield put(WalletAction.setAccount({ account, provider }))
+
+        yield put(WalletAction.setIntegrationId(integrationId))
+
+        yield put(
+            DelegationAction.requestPrivateKey({
+                owner: account,
+                provider,
+                fingerprint: Flag.isAccessBeingDelegated(account),
+            })
+        )
     } catch (e) {
         handleError(e)
     }

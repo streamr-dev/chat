@@ -1,12 +1,12 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { StorageKey } from '$/types'
+import { OptionalAddress, StorageKey } from '$/types'
 import { WalletIntegrationId, WalletState } from './types'
 import StreamrClient from 'streamr-client'
 import { all } from 'redux-saga/effects'
 import setAccount from './sagas/setAccount.saga'
 import setIntegrationId from './sagas/setIntegrationId.saga'
-import setProvider from './sagas/setProvider.saga'
 import connect from '$/features/wallet/sagas/connect.saga'
+import { Provider } from '@web3-react/types'
 
 const initialState: WalletState = {
     account: undefined,
@@ -19,11 +19,13 @@ const initialState: WalletState = {
 export const WalletAction = {
     setIntegrationId: createAction<WalletState['integrationId']>('wallet: set integration id'),
 
-    setAccount: createAction<WalletState['account']>('wallet: set account'),
+    setAccount: createAction<{ account: OptionalAddress; provider?: undefined | Provider }>(
+        'wallet: set account'
+    ),
 
-    setProvider: createAction<WalletState['provider']>('wallet: set provider'),
-
-    connect: createAction<WalletIntegrationId>('wallet: connect'),
+    connect: createAction<{ integrationId: WalletIntegrationId; eager: boolean }>(
+        'wallet: connect'
+    ),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -31,11 +33,9 @@ const reducer = createReducer(initialState, (builder) => {
         state.integrationId = integrationId
     })
 
-    builder.addCase(WalletAction.setAccount, (state, { payload: account }) => {
+    builder.addCase(WalletAction.setAccount, (state, { payload: { account, provider } }) => {
         state.account = account
-    })
 
-    builder.addCase(WalletAction.setProvider, (state, { payload: provider }) => {
         state.provider = provider
 
         state.client = provider
@@ -46,14 +46,11 @@ const reducer = createReducer(initialState, (builder) => {
                   gapFill: false,
               })
             : undefined
-
-        // Changing the provider makes the old account obsolete.
-        state.account = null
     })
 })
 
 export function* walletSaga() {
-    yield all([setAccount(), setIntegrationId(), setProvider(), connect()])
+    yield all([setAccount(), setIntegrationId(), connect()])
 }
 
 export default reducer
