@@ -202,22 +202,24 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                         </div>
                     ) : (
                         <>
-                            {members.map(({ address, permissions, accountType }) => (
-                                <Item
-                                    key={address}
-                                    onMenuToggle={onMenuToggle}
-                                    address={address}
-                                    canBeDeleted={canModifyMembers}
-                                    onDeleteClick={onDeleteClick}
-                                    isCurrentAccount={isSameAddress(address, account)}
-                                    isCurrentDelegatedAccount={isSameAddress(
-                                        address,
-                                        delegatedAccount
-                                    )}
-                                    permissions={permissions}
-                                    accountType={accountType}
-                                />
-                            ))}
+                            {members.map(({ address, permissions, accountType }) => {
+                                return accountType !== AccountType.Delegated ? (
+                                    <Item
+                                        key={address}
+                                        onMenuToggle={onMenuToggle}
+                                        address={address}
+                                        canBeDeleted={canModifyMembers}
+                                        onDeleteClick={onDeleteClick}
+                                        isCurrentAccount={isSameAddress(address, account)}
+                                        isCurrentDelegatedAccount={isSameAddress(
+                                            address,
+                                            delegatedAccount
+                                        )}
+                                        permissions={permissions}
+                                        accountType={accountType}
+                                    />
+                                ) : null
+                            })}
                         </>
                     )}
                 </div>
@@ -248,9 +250,6 @@ function Item({
     permissions,
     ...props
 }: ItemProps) {
-    if (accountType === AccountType.Delegated) {
-        return null
-    }
     const [memberMenuOpen, setMemberMenuOpen] = useState<boolean>(false)
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
