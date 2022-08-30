@@ -29,7 +29,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     const account = useWalletAccount()
 
-    const [storage, setStorage] = useState<boolean>(false)
+    const [storage, setStorage] = useState<boolean>(true)
 
     function onStorageToggleClick() {
         setStorage((current) => !current)
