@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux'
 import { WalletAction } from '$/features/wallet'
 import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
 import isSameAddress from '$/utils/isSameAddress'
+import { DelegationAction } from '$/features/delegation'
+import { Flag } from '$/features/flag/types'
 
 export default function useProviderChangeEffect() {
     const provider = useWalletProvider()
@@ -19,9 +21,26 @@ export default function useProviderChangeEffect() {
         }
 
         function onAccountsChange(accounts: string[]) {
-            if (!isSameAddress(account, accounts[0])) {
-                dispatch(WalletAction.setAccount(accounts[0]))
+            const acc = accounts[0]
+
+            if (!provider || !acc) {
+                dispatch(WalletAction.setAccount({ account: null }))
+                return
             }
+
+            if (isSameAddress(account, acc)) {
+                return
+            }
+
+            dispatch(WalletAction.setAccount({ account: acc, provider }))
+
+            dispatch(
+                DelegationAction.requestPrivateKey({
+                    owner: acc,
+                    provider,
+                    fingerprint: Flag.isAccessBeingDelegated(acc),
+                })
+            )
         }
 
         provider.addListener('accountsChanged', onAccountsChange)

@@ -41,7 +41,7 @@ const store = configureStore({
             ...getDefaultMiddleware({
                 serializableCheck: {
                     ignoredActionPaths: ['payload.provider', 'payload.streamrClient'],
-                    ignoredActions: [WalletAction.setProvider.toString()],
+                    ignoredActions: [],
                     ignoredPaths: ['wallet.provider', 'wallet.client', 'delegation.client'],
                 },
             }),
