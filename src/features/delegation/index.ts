@@ -29,6 +29,7 @@ const reducer = createReducer(initialState, (builder) => {
                   auth: {
                       privateKey,
                   },
+                  gapFill: false,
               })
             : undefined
     })

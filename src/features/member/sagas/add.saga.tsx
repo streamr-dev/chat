@@ -101,7 +101,7 @@ function* onAddAction({
             [
                 {
                     user,
-                    permissions: [StreamPermission.GRANT],
+                    permissions: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
                 },
             ],
             {

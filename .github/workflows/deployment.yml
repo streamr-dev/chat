@@ -3,6 +3,8 @@ on:
     push:
         branches:
             - main
+env:
+    NODE_OPTIONS: --max-old-space-size=4096
 jobs:
     publish:
         runs-on: ubuntu-latest

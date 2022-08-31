@@ -1,21 +1,27 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { Fragment, HTMLAttributes, useEffect, useLayoutEffect, useRef } from 'react'
 import tw from 'twin.macro'
-import { IMessage } from '$/features/message/types'
+import { IMessage, IResend } from '$/features/message/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import isSameAddress from '$/utils/isSameAddress'
 import Message from './Message'
 import { useSelectedRoomId } from '$/features/room/hooks'
+import MessageGroupLabel from '$/components/Conversation/MessageGroupLabel'
+import Text from '$/components/Text'
+import useMessageGroups from '$/hooks/useMessageGroups'
 
 type Props = {
     messages?: IMessage[]
+    resends?: IResend[]
 }
 
 const AutoScrollTolerance = 5
 
-export default function MessageFeed({ messages = [] }: Props) {
+export default function MessageFeed({ messages = [], resends = [] }: Props) {
     const rootRef = useRef<HTMLDivElement>(null)
 
     const stickyRef = useRef<boolean>(true)
+
+    const groups = useMessageGroups(messages, resends)
 
     useEffect(() => {
         stickyRef.current = true
@@ -51,11 +57,9 @@ export default function MessageFeed({ messages = [] }: Props) {
             // Auto-scroll to the most recent message.
             root.scrollTop = root.scrollHeight
         }
-    }, [messages])
+    }, [groups])
 
     const account = useWalletAccount()
-
-    let previousCreatedBy: IMessage['createdBy']
 
     return (
         <div
@@ -70,20 +74,55 @@ export default function MessageFeed({ messages = [] }: Props) {
                 `,
             ]}
         >
-            {messages.map((message) => {
-                const hideAvatar = previousCreatedBy === message.createdBy
-
-                previousCreatedBy = message.createdBy
+            {groups.map(({ timestamp, newDay, messages }, index) => {
+                let previousCreatedBy: IMessage['createdBy']
 
                 return (
-                    <Message
-                        key={message.id}
-                        payload={message}
-                        incoming={!isSameAddress(account, message.createdBy)}
-                        hideAvatar={hideAvatar}
-                    />
+                    <Fragment key={timestamp}>
+                        <MessageGroupLabel
+                            includeDate={newDay}
+                            timestamp={timestamp}
+                            showLoadPreviousDay={index === 0}
+                            empty={messages.length === 0}
+                        />
+                        {messages.length === 0 && (
+                            <NoMessages>
+                                <Text>&middot;</Text>
+                            </NoMessages>
+                        )}
+                        {messages.map((message) => {
+                            const hideAvatar = previousCreatedBy === message.createdBy
+
+                            previousCreatedBy = message.createdBy
+
+                            return (
+                                <Message
+                                    key={message.id}
+                                    payload={message}
+                                    incoming={!isSameAddress(account, message.createdBy)}
+                                    hideAvatar={hideAvatar}
+                                />
+                            )
+                        })}
+                    </Fragment>
                 )
             })}
         </div>
+    )
+}
+
+function NoMessages(props: HTMLAttributes<HTMLParagraphElement>) {
+    return (
+        <p
+            {...props}
+            css={[
+                tw`
+                    text-[#59799C]
+                    text-[12px]
+                    m-0
+                    text-center
+                `,
+            ]}
+        />
     )
 }

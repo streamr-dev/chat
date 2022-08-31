@@ -66,8 +66,12 @@ export default function useListenForInvitesEffect(
 
             const canPub = publishExpirationTimestampSeconds.gt(now)
 
-            if (canEdit || canDelete || canPub || canSub) {
-                // It's not an invite. Invite means grant-only.
+            if (
+                canPub ||
+                canEdit ||
+                canDelete || // irrelevant to invites
+                !(canSub && canGrant) // both required for a potential invite
+            ) {
                 return
             }
 

@@ -18,7 +18,12 @@ function* onAcceptInviteAction({
                 },
                 {
                     user: member,
-                    permissions: [StreamPermission.GRANT, StreamPermission.EDIT],
+                    permissions: [
+                        StreamPermission.GRANT,
+                        StreamPermission.EDIT,
+                        StreamPermission.PUBLISH,
+                        StreamPermission.SUBSCRIBE,
+                    ],
                 },
             ],
             {

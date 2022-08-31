@@ -1,12 +1,12 @@
 import { Address } from '$/types'
-import { getDelegatedAccessRegistryAt } from '$/utils/DelegatedAccessRegistry'
+import { getDelegatedAccessRegistry } from '$/utils/DelegatedAccessRegistry'
 
 export default async function isAuthorizedDelegatedAccount(
     metamaskAccount: Address,
     delegatedAccount: Address,
     rawProvider: any
 ): Promise<boolean> {
-    const contract = getDelegatedAccessRegistryAt(rawProvider)
+    const contract = getDelegatedAccessRegistry(rawProvider)
 
     const [isAuthorized]: boolean[] = await contract.functions.isUserAuthorized(
         metamaskAccount,
