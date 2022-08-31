@@ -158,3 +158,15 @@ export const registerERC20Policy = async (
 
     console.log('registerErc20Policy', res)
 }
+
+export const registerERC721Policy = async (
+    tokenAddress: Address,
+    streamId: string,
+    tokenId: number,
+    rawProvider: Provider
+): Promise<void> => {
+    const contract = getJoinPolicyRegistry(rawProvider)
+    const res = await contract.registerERC721Policy(tokenAddress, streamId, BigNumber.from(tokenId))
+
+    console.log('registerErc721Policy', res)
+}

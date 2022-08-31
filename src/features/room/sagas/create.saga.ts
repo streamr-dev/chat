@@ -15,7 +15,7 @@ import { RoomAction } from '..'
 import { toast } from 'react-toastify'
 import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
-import { registerERC20Policy } from '$/utils/JoinPolicyRegistry'
+import { registerERC20Policy, registerERC721Policy, TokenTypes } from '$/utils/JoinPolicyRegistry'
 
 function* onCreateAction({
     payload: {
@@ -57,11 +57,9 @@ function* onCreateAction({
             },
         } as StreamProperties)
 
-        console.log('stream created', stream)
-
         if (
             privacy === PrivacySetting.TokenGated &&
-            metadata.tokenType!.standard === 'ERC20' &&
+            metadata.tokenType!.standard === TokenTypes.ERC20.standard &&
             metadata.tokenAddress &&
             metadata.minTokenAmount
         ) {
@@ -71,6 +69,15 @@ function* onCreateAction({
                 metadata.minTokenAmount,
                 provider
             )
+        }
+
+        if (
+            privacy === PrivacySetting.TokenGated &&
+            metadata.tokenType!.standard === TokenTypes.ERC721.standard &&
+            metadata.tokenAddress &&
+            metadata.tokenId
+        ) {
+            yield registerERC721Policy(metadata.tokenAddress, stream.id, metadata.tokenId, provider)
         }
 
         if (privacy === PrivacySetting.Public) {

@@ -23,7 +23,7 @@ export interface IRoom extends IRecord {
     recentMessageAt?: number
     // for token-gated rooms
     tokenAddress?: Address
-    tokenId?: string
+    tokenId?: number
     minTokenAmount?: number
     tokenType?: TokenType
 }
