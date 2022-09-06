@@ -130,7 +130,6 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         if (!canPin || !account || !streamrClient || !provider || !delegatedAccount) {
             return
         }
-
         dispatch(
             RoomAction.pin({
                 roomId,

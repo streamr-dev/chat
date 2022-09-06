@@ -5,11 +5,11 @@ import { getERC20JoinPolicy } from '$/features/tokenGatedRooms/utils/getERC20Joi
 import { takeEvery } from 'redux-saga/effects'
 
 function* onJoinERC20({
-    payload: { owner, tokenAddress, provider, delegatedAccount },
+    payload: { roomId, owner, tokenAddress, provider, delegatedAccount },
 }: ReturnType<typeof TokenGatedRoomAction.joinERC20>) {
     try {
         const factory = getJoinPolicyFactory(provider)
-        const policyAddress: Address = yield factory.erc20TokensToJoinPolicies(tokenAddress)
+        const policyAddress: Address = yield factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
         const policy = getERC20JoinPolicy(policyAddress, provider)
         const canJoin: boolean = yield policy.canJoin(owner)
         if (!canJoin) {

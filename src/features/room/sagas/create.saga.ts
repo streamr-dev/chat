@@ -1,5 +1,5 @@
 import db from '$/utils/db'
-import { call, put, takeEvery } from 'redux-saga/effects'
+import { put, takeEvery } from 'redux-saga/effects'
 import {
     Stream,
     StreamPermission,
@@ -8,7 +8,7 @@ import {
 } from 'streamr-client'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
-import { Address, PrivacySetting } from '$/types'
+import { PrivacySetting } from '$/types'
 import { error, success } from '$/utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
@@ -16,7 +16,6 @@ import { toast } from 'react-toastify'
 import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
-import registerERC20Policy from '$/features/tokenGatedRooms/sagas/registerERC20Policy.saga'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 
 function* onCreateAction({
@@ -50,8 +49,6 @@ function* onCreateAction({
 
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
-        console.log('metadata', metadata, params)
-
         const stream: Stream = yield streamrClient.createStream({
             id,
             description,
@@ -70,9 +67,10 @@ function* onCreateAction({
                 TokenGatedRoomAction.registerERC20Policy({
                     owner,
                     tokenAddress: metadata.tokenAddress,
-                    stream,
+                    roomId: stream.id,
                     minTokenAmount: metadata.minTokenAmount,
                     provider,
+                    streamrClient,
                 })
             )
         }

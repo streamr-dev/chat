@@ -1,9 +1,11 @@
 import { MemberAction } from '$/features/member'
-import { EnhancedStream, PrivacySetting } from '$/types'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { Address, EnhancedStream, PrivacySetting } from '$/types'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error, success } from '$/utils/toaster'
+import { put } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 function* onPromoteDelegatedAccountAction({
@@ -13,9 +15,25 @@ function* onPromoteDelegatedAccountAction({
         // split for token-gated rooms
         if (privacy === PrivacySetting.TokenGated) {
             console.log('promoting token gated room')
-            const metadata: EnhancedStream = yield streamrClient.getStream(roomId)
+            const stream: EnhancedStream = yield streamrClient.getStream(roomId)
+            const metadata = stream.extensions['thechat.eth']
+
+            if (!metadata.tokenAddress) {
+                throw new Error('No token address found')
+            }
             console.log({ metadata })
-            //const policyInfo =
+
+            const owner: Address = yield streamrClient.getAddress()
+
+            yield put(
+                TokenGatedRoomAction.joinERC20({
+                    roomId,
+                    owner,
+                    tokenAddress: metadata.tokenAddress,
+                    provider,
+                    delegatedAccount: delegatedAddress,
+                })
+            )
             return
         }
 

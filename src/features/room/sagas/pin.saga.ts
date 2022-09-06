@@ -37,11 +37,12 @@ function* pinRemote(
 
     const isTokenGated: boolean = yield isTokenGatedRoom(roomId, streamrClient)
 
-    if (isTokenGated) {
+    if (isTokenGated && metadata.tokenAddress) {
         yield put(
             TokenGatedRoomAction.joinERC20({
+                roomId,
                 owner,
-                tokenAddress: metadata.tokenAddress!,
+                tokenAddress: metadata.tokenAddress,
                 provider,
                 delegatedAccount,
             })

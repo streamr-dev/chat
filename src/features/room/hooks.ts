@@ -19,8 +19,6 @@ import {
     PublicRoomOption,
     TokenGatedRoomOption,
 } from '$/components/PrivacySelectField'
-import { useCallback } from 'react'
-import useSelectedRoom from '$/hooks/useSelectedRoom'
 
 export function useSelectedRoomId() {
     return useSelector(selectSelectedRoomId)

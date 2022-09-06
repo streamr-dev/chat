@@ -4,7 +4,7 @@ import * as JoinPolicyFactory from '../../../contracts/JoinPolicyFactory.sol/Joi
 import { Provider } from '@web3-react/types'
 
 const JoinPolicyFactoryAbi = JoinPolicyFactory.abi
-const JoinPolicyFactoryAddress = '0xC03Ca7261a96C75c86359B00eea31aDdF65cA954' // deployed 25/08/2022
+const JoinPolicyFactoryAddress = '0xAADDB7C44242aC60c7A73e13A3988957FCDfF34B' // deployed 06/09/2022
 
 export const getJoinPolicyFactory = (rawProvider: Provider): Contract => {
     return new Contract(

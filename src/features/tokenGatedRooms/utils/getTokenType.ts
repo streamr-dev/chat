@@ -1,5 +1,4 @@
 import { BigNumber, Contract, providers } from 'ethers'
-import * as JoinPolicyFactory from '../../../contracts/JoinPolicyFactory.sol/JoinPolicyFactory.json'
 
 import * as ERC20 from '../../../contracts/ERC20JoinPolicy.sol/TestERC20.json'
 

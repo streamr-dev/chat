@@ -1,5 +1,5 @@
 import { put } from 'redux-saga/effects'
-import { Stream, StreamPermission } from 'streamr-client'
+import { StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
 import { EnhancedStream, PrivacySetting } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
@@ -18,7 +18,6 @@ function* onGetPrivacyAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const { tokenAddress } = stream.extensions['thechat.eth']
         const isTokenGated: boolean = yield isTokenGatedRoom(roomId, streamrClient)
 
         const canEveryoneSee: boolean = yield stream.hasPermission({

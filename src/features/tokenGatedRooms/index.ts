@@ -4,10 +4,11 @@ import { SEE_SAGA } from '$/utils/consts'
 import { Provider } from '@web3-react/types'
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { BigNumber, Stream } from 'streamr-client'
+import StreamrClient, { BigNumber } from 'streamr-client'
 import registerERC20Policy from '$/features/tokenGatedRooms/sagas/registerERC20Policy.saga'
 import joinERC20 from '$/features/tokenGatedRooms/sagas/joinERC20.saga'
 import getTokenMetadata from '$/features/tokenGatedRooms/sagas/getTokenMetadata.saga'
+import { RoomId } from '$/features/room/types'
 
 const initialState: TokenGatedRoomState = {
     selectedRoomId: undefined,
@@ -20,13 +21,16 @@ const initialState: TokenGatedRoomState = {
 
 export const TokenGatedRoomAction = {
     registerERC20Policy: createAction<{
+        owner: Address
         tokenAddress: string
-        stream: Stream
+        roomId: RoomId
         minTokenAmount: number
         provider: Provider
+        streamrClient: StreamrClient
     }>('tokenGatedRooms: registerERC20Policy'),
 
     joinERC20: createAction<{
+        roomId: RoomId
         owner: Address
         tokenAddress: Address
         provider: Provider

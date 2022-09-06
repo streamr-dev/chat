@@ -8,7 +8,6 @@ import {
     useChangingPrivacy,
     useGettingPrivacy,
     useGettingStorageNodes,
-    usePrivacy,
     usePrivacyOption,
     useSelectedRoomId,
     useStorageNodeState,
@@ -24,23 +23,14 @@ import Toggle from '../Toggle'
 import Modal, { ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
-import PrivacySelectField, {
-    PrivateRoomOption,
-    PublicRoomOption,
-} from '$/components/PrivacySelectField'
+import PrivacySelectField from '$/components/PrivacySelectField'
 import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 
 export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
-    const {
-        name: roomName = '',
-        tokenAddress,
-        tokenId,
-        minTokenAmount,
-        tokenType,
-    } = useSelectedRoom() || {}
+    const { name: roomName = '', tokenAddress, minTokenAmount, tokenType } = useSelectedRoom() || {}
 
     const isStorageEnabled = useStorageNodeState(selectedRoomId, STREAMR_STORAGE_NODE_GERMANY)
 
