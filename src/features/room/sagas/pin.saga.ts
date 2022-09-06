@@ -2,12 +2,13 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PreferencesAction } from '$/features/preferences'
 import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
 import { Address, EnhancedStream } from '$/types'
 import db from '$/utils/db'
 import getStream from '$/utils/getStream'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
-import { joinTokenGatedRoom } from '$/utils/JoinPolicyRegistry'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error } from '$/utils/toaster'
 import { Provider } from '@web3-react/types'
@@ -34,10 +35,17 @@ function* pinRemote(
 
     const metadata = stream.extensions['thechat.eth']
 
-    const isTokenGated: boolean = metadata.tokenType && metadata.tokenAddress ? true : false
+    const isTokenGated: boolean = yield isTokenGatedRoom(roomId, streamrClient)
 
     if (isTokenGated) {
-        yield joinTokenGatedRoom(owner, metadata.tokenAddress!, provider, delegatedAccount)
+        yield put(
+            TokenGatedRoomAction.joinERC20({
+                owner,
+                tokenAddress: metadata.tokenAddress!,
+                provider,
+                delegatedAccount,
+            })
+        )
     }
     const room: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()
 

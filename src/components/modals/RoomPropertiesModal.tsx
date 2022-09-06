@@ -9,6 +9,7 @@ import {
     useGettingPrivacy,
     useGettingStorageNodes,
     usePrivacy,
+    usePrivacyOption,
     useSelectedRoomId,
     useStorageNodeState,
     useStorageNodeToggling,
@@ -27,11 +28,19 @@ import PrivacySelectField, {
     PrivateRoomOption,
     PublicRoomOption,
 } from '$/components/PrivacySelectField'
+import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 
 export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
-    const { name: roomName = '' } = useSelectedRoom() || {}
+    const {
+        name: roomName = '',
+        tokenAddress,
+        tokenId,
+        minTokenAmount,
+        tokenType,
+    } = useSelectedRoom() || {}
 
     const isStorageEnabled = useStorageNodeState(selectedRoomId, STREAMR_STORAGE_NODE_GERMANY)
 
@@ -95,8 +104,40 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
         )
     }, [open, selectedRoomId])
 
-    const privacyOption =
-        usePrivacy(selectedRoomId) === PrivacySetting.Public ? PublicRoomOption : PrivateRoomOption
+    const privacyOption = usePrivacyOption(selectedRoomId)
+
+    useEffect(() => {
+        if (!tokenAddress || !tokenType || !provider) {
+            return
+        }
+        console.log({
+            tokenAddress,
+            tokenType,
+            provider,
+        })
+
+        dispatch(
+            TokenGatedRoomAction.getTokenMetadata({
+                tokenAddress,
+                tokenType,
+                provider,
+            })
+        )
+    }, [tokenAddress, tokenType, provider])
+
+    const tokenMetadata = useGetERC20Metadata()
+
+    /*const getTokenMetadata = useGetTokenMetadata(tokenAddress!, tokenType!)
+
+    useEffect(() => {
+        if (!tokenAddress || !tokenType) {
+            return
+        }
+
+        const metadata = getTokenMetadata()
+        console.log({ metadata })
+        console.log({ tokenAddress, tokenId, minTokenAmount, tokenType })
+    }, [tokenAddress, tokenId, minTokenAmount, tokenType])*/
 
     const isChangingPrivacy = useChangingPrivacy(selectedRoomId)
 
@@ -118,14 +159,46 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
             title="Room properties"
             subtitle={roomName || 'Unnamed room'}
         >
+            {tokenMetadata && minTokenAmount ? (
+                <>
+                    <Label>
+                        <b>Token Name:</b>
+                        {tokenMetadata.name}
+                    </Label>
+                    <Label>
+                        <b>Symbol:</b>
+                        {tokenMetadata.symbol}
+                    </Label>
+                    <Label>
+                        <b>Decimals:</b>
+                        {tokenMetadata.decimals.toString()}
+                    </Label>
+                    <Label>
+                        <b>Address:</b>
+                        {tokenAddress}
+                    </Label>
+                    <Label>
+                        <b>Minimum Required Balance:</b>
+                        {minTokenAmount / 10 ** Number(tokenMetadata.decimals)}
+                    </Label>
+                </>
+            ) : null}
             <Form onSubmit={onSubmit}>
                 <>
                     <Label>Privacy</Label>
                     <PrivacySelectField
-                        isDisabled={isPrivacyBusy}
+                        isDisabled={
+                            isPrivacyBusy || privacyOption.value === PrivacySetting.TokenGated
+                        }
                         value={privacyOption}
                         onChange={(option: any) => {
-                            if (!selectedRoomId || !provider || !requester || !streamrClient) {
+                            if (
+                                !selectedRoomId ||
+                                !provider ||
+                                !requester ||
+                                !streamrClient ||
+                                option.value === PrivacySetting.TokenGated
+                            ) {
                                 return
                             }
 

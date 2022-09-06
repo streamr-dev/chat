@@ -17,8 +17,10 @@ import { RoomAction } from '$/features/room'
 import ButtonGroup, { GroupedButton } from '$/components/ButtonGroup'
 import { Flag } from '$/features/flag/types'
 import PrivacySelectField, { PrivateRoomOption } from '$/components/PrivacySelectField'
-import { getTokenType, TokenType, TokenTypes } from '$/utils/JoinPolicyRegistry'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
+import { error } from '$/utils/toaster'
+import { TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
+import { getTokenType } from '$/features/tokenGatedRooms/utils/getTokenType'
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
@@ -47,7 +49,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [isTokenGatedRoom, setIsTokenGatedRoom] = useState<boolean>(false)
     const [tokenAddress, setTokenAddress] = useState<Address>('')
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
-    const [tokenId, setTokenId] = useState<string>('')
+    const [tokenId, setTokenId] = useState<number>(0)
     const [minTokenAmount, setMinTokenAmount] = useState<number>(0)
 
     useEffect(() => {
@@ -66,7 +68,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         setCreateSubmitLabel('Create')
         setTokenAddress('')
         setTokenType(TokenTypes.unknown)
-        setTokenId('')
+        setTokenId(0)
         setMinTokenAmount(0)
     }
 
@@ -84,9 +86,13 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         if (!isTokenGatedRoom && privacySetting.value === PrivacySetting.TokenGated) {
             // display the next window for the token-gated creation
             const tokenType = await getTokenType(tokenAddress, provider)
-            setTokenType(tokenType)
-            setCreateNew(false)
-            setIsTokenGatedRoom(true)
+            if (tokenType.standard === TokenTypes.ERC20.standard) {
+                setTokenType(tokenType)
+                setCreateNew(false)
+                setIsTokenGatedRoom(true)
+            } else {
+                error(`Token type ${tokenType.standard} not implemented`)
+            }
             return
         } else {
             dispatch(
@@ -250,7 +256,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 <TextField
                                     id="tokenId"
                                     value={tokenId}
-                                    onChange={(e) => void setTokenId(e.target.value)}
+                                    onChange={(e) => void setTokenId(parseInt(e.target.value))}
                                 />
                             </>
                         )}

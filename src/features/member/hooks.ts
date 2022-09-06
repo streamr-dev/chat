@@ -5,7 +5,7 @@ import { selectFlag } from '$/features/flag/selectors'
 import { MemberAction } from '$/features/member'
 import { useCallback } from 'react'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
-import { useSelectedRoomId } from '$/features/room/hooks'
+import { usePrivacy, useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 
@@ -92,8 +92,10 @@ export function usePromoteDelegatedAccount() {
 
     const streamrClient = useWalletClient()
 
+    const privacy = usePrivacy(roomId)
+
     return useCallback(() => {
-        if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient) {
+        if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient || !privacy) {
             return
         }
 
@@ -105,6 +107,7 @@ export function usePromoteDelegatedAccount() {
                 requester,
                 streamrClient,
                 fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
+                privacy,
             })
         )
     }, [roomId, delegatedAddress, provider, requester, streamrClient])

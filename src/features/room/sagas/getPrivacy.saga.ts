@@ -1,31 +1,41 @@
 import { put } from 'redux-saga/effects'
 import { Stream, StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
-import { PrivacySetting } from '$/types'
+import { EnhancedStream, PrivacySetting } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
 
 function* onGetPrivacyAction({
     payload: { roomId, streamrClient },
 }: ReturnType<typeof RoomAction.getPrivacy>) {
     try {
-        const stream: undefined | Stream = yield getStream(streamrClient, roomId)
+        const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)
         }
+
+        const { tokenAddress } = stream.extensions['thechat.eth']
+        const isTokenGated: boolean = yield isTokenGatedRoom(roomId, streamrClient)
 
         const canEveryoneSee: boolean = yield stream.hasPermission({
             public: true,
             permission: StreamPermission.SUBSCRIBE,
         })
 
+        const privacy = isTokenGated
+            ? PrivacySetting.TokenGated
+            : canEveryoneSee
+            ? PrivacySetting.Public
+            : PrivacySetting.Private
+
         yield put(
             RoomAction.setLocalPrivacy({
                 roomId,
-                privacy: canEveryoneSee ? PrivacySetting.Public : PrivacySetting.Private,
+                privacy,
             })
         )
     } catch (e) {

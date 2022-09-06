@@ -24,7 +24,7 @@ export const PublicRoomOption: PrivacyOption = {
     icon: PublicIcon,
 }
 
-export const TokenGatedRoom: PrivacyOption = {
+export const TokenGatedRoomOption: PrivacyOption = {
     value: PrivacySetting.TokenGated,
     label: Config.disableTokenGatedRoomCreation ? 'Coming soon: Token gated' : 'Token Gated',
     desc: (
@@ -36,7 +36,11 @@ export const TokenGatedRoom: PrivacyOption = {
     disabled: Config.disableTokenGatedRoomCreation,
 }
 
-export const privacyOptions: PrivacyOption[] = [PrivateRoomOption, PublicRoomOption, TokenGatedRoom]
+export const privacyOptions: PrivacyOption[] = [
+    PrivateRoomOption,
+    PublicRoomOption,
+    TokenGatedRoomOption,
+]
 
 function isPrivacyOption(option: unknown): option is PrivacyOption {
     return !!option && typeof option === 'object'
