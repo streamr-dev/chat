@@ -39,7 +39,6 @@ const reducer = createReducer(initialState, (builder) => {
     })
 
     builder.addCase(MembersAction.setDelegation, (state, { payload: { main, delegated } }) => {
-        console.log(`Delegation: ${delegated} -> ${main}`)
         state.delegations[delegated] = main
     })
 
