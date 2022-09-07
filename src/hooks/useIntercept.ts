@@ -8,6 +8,7 @@ import { IMessage, StreamMessage } from '$/features/message/types'
 import { MessageAction } from '$/features/message'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
+import toLocalMessage from '$/utils/toLocalMessage'
 
 export default function useIntercept(roomId: RoomId) {
     const client = useDelegatedClient()
@@ -51,33 +52,12 @@ export default function useIntercept(roomId: RoomId) {
             sub = undefined
         }
 
-        const onData: MessageStreamOnMessage<StreamMessage, void> = (parsed, raw) => {
+        const onData: MessageStreamOnMessage<StreamMessage, void> = (_, raw) => {
             if (!mounted) {
                 return
             }
 
-            const { content } = parsed
-
-            const {
-                messageId: {
-                    msgChainId,
-                    publisherId: createdBy,
-                    sequenceNumber,
-                    streamPartition,
-                    timestamp: createdAt,
-                },
-            } = raw
-
-            const id = `${streamPartition}/${sequenceNumber}/${msgChainId}`
-
-            onMessage({
-                createdAt,
-                createdBy,
-                content,
-                updatedAt: createdAt,
-                id,
-                roomId,
-            })
+            onMessage(toLocalMessage(raw))
         }
 
         async function fn() {

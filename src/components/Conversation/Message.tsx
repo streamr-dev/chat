@@ -1,16 +1,29 @@
-import { AnchorHTMLAttributes, Fragment, HTMLAttributes, ReactNode, useState } from 'react'
+import {
+    AnchorHTMLAttributes,
+    Fragment,
+    HTMLAttributes,
+    ReactNode,
+    useEffect,
+    useState,
+} from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '$/features/message/types'
 import Avatar, { AvatarStatus, Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
 import useSeenMessageEffect from '$/hooks/useSeenMessageEffect'
+import useMainAccount from '$/hooks/useMainAccount'
+import isSameAddress from '$/utils/isSameAddress'
+import { OptionalAddress } from '$/types'
+import { useDispatch } from 'react-redux'
+import { MembersAction } from '$/features/members'
+import { Flag } from '$/features/flag/types'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
     incoming?: boolean
-    hideAvatar?: boolean
+    previousCreatedBy?: OptionalAddress
 }
 
 function formatMessage(message: string): ReactNode {
@@ -30,12 +43,7 @@ function formatMessage(message: string): ReactNode {
     )
 }
 
-export default function Message({
-    payload,
-    incoming = false,
-    hideAvatar = false,
-    ...props
-}: Props) {
+export default function Message({ payload, incoming = false, previousCreatedBy, ...props }: Props) {
     const { createdBy, createdAt, content, seenAt, roomId, id } = payload
 
     const isSeen = Boolean(seenAt)
@@ -44,13 +52,36 @@ export default function Message({
 
     const [element, setElement] = useState<null | HTMLDivElement>(null)
 
+    const sender = useMainAccount(createdBy)
+
+    const previouSender = useMainAccount(previousCreatedBy)
+
     useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen })
 
-    const avatar = hideAvatar ? (
-        <Wrap />
-    ) : (
-        <Avatar status={AvatarStatus.Offline} seed={createdBy.toLowerCase()} />
-    )
+    const provider = useWalletProvider()
+
+    const avatar =
+        previousCreatedBy && isSameAddress(sender, previouSender) ? (
+            <Wrap />
+        ) : (
+            <Avatar status={AvatarStatus.Offline} seed={sender?.toLowerCase()} />
+        )
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (sender || !provider) {
+            return
+        }
+
+        dispatch(
+            MembersAction.lookupDelegation({
+                delegated: createdBy,
+                provider,
+                fingerprint: Flag.isLookingUpDelegation(createdBy),
+            })
+        )
+    }, [sender, provider, createdBy, dispatch])
 
     return (
         <div
