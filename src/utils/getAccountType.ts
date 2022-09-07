@@ -1,5 +1,5 @@
 import { Address } from '$/types'
-import { getDelegatedAccessRegistry } from '$/utils/DelegatedAccessRegistry'
+import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import { Provider } from '@web3-react/types'
 
 export enum AccountType {

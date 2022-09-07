@@ -1,5 +1,5 @@
 import { Address } from '$/types'
-import { getDelegatedAccessRegistry } from '$/utils/DelegatedAccessRegistry'
+import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 
 export default async function isAuthorizedDelegatedAccount(
     metamaskAccount: Address,

@@ -1,7 +1,7 @@
 import { Wallet } from 'ethers'
 import { sign, hash } from 'eth-crypto'
 import { Address } from '$/types'
-import { getDelegatedAccessRegistry } from '$/utils/DelegatedAccessRegistry'
+import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 
 enum ChallengeType {
     Authorize = 0,
