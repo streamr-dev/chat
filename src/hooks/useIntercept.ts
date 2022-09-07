@@ -51,13 +51,24 @@ export default function useIntercept(roomId: RoomId) {
             sub = undefined
         }
 
-        const onData: MessageStreamOnMessage<StreamMessage, void> = (
-            { id, createdBy, content },
-            { messageId: { timestamp: createdAt } }
-        ) => {
+        const onData: MessageStreamOnMessage<StreamMessage, void> = (parsed, raw) => {
             if (!mounted) {
                 return
             }
+
+            const { content } = parsed
+
+            const {
+                messageId: {
+                    msgChainId,
+                    publisherId: createdBy,
+                    sequenceNumber,
+                    streamPartition,
+                    timestamp: createdAt,
+                },
+            } = raw
+
+            const id = `${streamPartition}/${sequenceNumber}/${msgChainId}`
 
             onMessage({
                 createdAt,

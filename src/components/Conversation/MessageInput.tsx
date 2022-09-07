@@ -56,7 +56,6 @@ export default function MessageInput({ disabled = false }: Props) {
             MessageAction.publish({
                 roomId: selectedRoomId,
                 content,
-                requester: account,
                 streamrClient: delegatedClient,
             })
         )
