@@ -36,6 +36,11 @@ function* onDetectAction({
 
             const accountType: AccountType = yield getAccountType(assignment.user, provider)
 
+            if (accountType === AccountType.Delegated) {
+                // Exclude delegated account from the members list.
+                return
+            }
+
             members.push({
                 address: assignment.user,
                 permissions: assignment.permissions,
