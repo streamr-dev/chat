@@ -8,7 +8,9 @@ import StreamrClient from 'streamr-client'
 import { IFingerprinted } from '$/types'
 import { Provider } from '@web3-react/types'
 
-const initialState: MembersState = {}
+const initialState: MembersState = {
+    members: {},
+}
 
 export const MembersAction = {
     set: createAction<{ roomId: RoomId; members: IMember[] }>('members: set'),
@@ -22,7 +24,7 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(MembersAction.detect, SEE_SAGA)
 
     builder.addCase(MembersAction.set, (state, { payload: { roomId, members } }) => {
-        state[roomId] = members
+        state.members[roomId] = members
     })
 })
 

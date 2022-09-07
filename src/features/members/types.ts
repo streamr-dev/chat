@@ -10,5 +10,7 @@ export interface IMember {
 }
 
 export interface MembersState {
-    [index: RoomId]: IMember[]
+    members: {
+        [index: RoomId]: IMember[]
+    }
 }
