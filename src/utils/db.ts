@@ -7,7 +7,7 @@ import { IAlias } from '$/features/alias/types'
 import { IPreference } from '$/features/preferences/types'
 import { IENSName } from '$/features/ens/types'
 
-const [DbVersion, IdxVersion] = [4, 2]
+const [DbVersion, IdxVersion] = [5, 2]
 
 class StreamrChatDatabase extends Dexie {
     messages!: Table<IMessage, number>
@@ -62,7 +62,7 @@ async function teardown() {
 
 // If you want people to lose their local histories in previous versions uncomment
 // the following line:
-// teardown()
+teardown()
 
 const db = new StreamrChatDatabase(DbVersion)
 
