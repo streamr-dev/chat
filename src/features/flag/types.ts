@@ -136,4 +136,8 @@ export const Flag = {
             getBeginningOfDay(timestamp),
         ])
     },
+
+    isLookingUpDelegation(delegatedAddress: Address) {
+        return JSON.stringify(['isLookingUpDelegation', delegatedAddress.toLowerCase()])
+    },
 }

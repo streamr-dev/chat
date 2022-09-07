@@ -13,4 +13,7 @@ export interface MembersState {
     members: {
         [index: RoomId]: IMember[]
     }
+    delegations: {
+        [delegatee: Address]: Address
+    }
 }
