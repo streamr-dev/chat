@@ -46,6 +46,25 @@ async function joinERC721(
     await policy.requestDelegatedJoin(delegatedAccount, tokenId)
 }
 
+async function joinERC1155(
+    factory: Contract,
+    roomId: string,
+    owner: Address,
+    tokenAddress: Address,
+    tokenId: BigNumber,
+    provider: any,
+    delegatedAccount: Address
+) {
+    const policyAddress = await factory.erc1155TokensToJoinPolicies(tokenAddress, tokenId, roomId)
+    const policy = getJoinPolicy(policyAddress, provider, TokenTypes.ERC1155)
+    const canJoin = await policy.canJoin(owner, tokenId)
+
+    if (!canJoin) {
+        throw new Error('Cannot join tokenGated room')
+    }
+    await policy.requestDelegatedJoin(delegatedAccount, tokenId)
+}
+
 export default function joinTokenGatedRoom(
     roomId: RoomId,
     owner: Address,
@@ -65,6 +84,17 @@ export default function joinTokenGatedRoom(
                 break
             case 'ERC721':
                 yield joinERC721(
+                    factory,
+                    roomId,
+                    owner,
+                    tokenAddress,
+                    BigNumber.from(tokenId),
+                    provider,
+                    delegatedAccount
+                )
+                break
+            case 'ERC1155':
+                yield joinERC1155(
                     factory,
                     roomId,
                     owner,

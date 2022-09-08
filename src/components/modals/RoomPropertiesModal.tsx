@@ -24,9 +24,14 @@ import Modal, { ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import PrivacySelectField from '$/components/PrivacySelectField'
-import { useGetERC20Metadata, useGetERC721Metadata } from '$/features/tokenGatedRooms/hooks'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { BigNumber } from 'ethers'
+import { useGetTokenMetadata } from '$/features/tokenGatedRooms/hooks'
+import {
+    TokenERC20Metadata,
+    TokenERC721Metadata,
+    TokenTypes,
+} from '$/features/tokenGatedRooms/types'
 
 export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
@@ -118,8 +123,7 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
         )
     }, [tokenAddress, tokenType, provider])
 
-    const tokenERC20Metadata = useGetERC20Metadata()
-    const tokenERC721Metadata = useGetERC721Metadata()
+    const tokenMetadata = useGetTokenMetadata()
 
     const isChangingPrivacy = useChangingPrivacy(selectedRoomId)
 
@@ -141,19 +145,19 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
             title="Room properties"
             subtitle={roomName || 'Unnamed room'}
         >
-            {tokenERC20Metadata && minTokenAmount ? (
+            {tokenMetadata && tokenType!.standard === TokenTypes.ERC20.standard && minTokenAmount && (
                 <>
                     <Label>
                         <b>Token Name:</b>
-                        {tokenERC20Metadata.name}
+                        {tokenMetadata.name}
                     </Label>
                     <Label>
                         <b>Symbol:</b>
-                        {tokenERC20Metadata.symbol}
+                        {tokenMetadata.symbol}
                     </Label>
                     <Label>
                         <b>Decimals:</b>
-                        {tokenERC20Metadata.decimals.toString()}
+                        {(tokenMetadata as TokenERC20Metadata).decimals.toString()}
                     </Label>
                     <Label>
                         <b>Address:</b>
@@ -161,20 +165,21 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                     </Label>
                     <Label>
                         <b>Minimum Required Balance:</b>
-                        {minTokenAmount / 10 ** Number(tokenERC20Metadata.decimals)}
+                        {minTokenAmount /
+                            10 ** Number((tokenMetadata as TokenERC20Metadata).decimals)}
                     </Label>
                 </>
-            ) : null}
+            )}
 
-            {tokenERC721Metadata ? (
+            {tokenMetadata && tokenType!.standard === TokenTypes.ERC721.standard && tokenId && (
                 <>
                     <Label>
                         <b>Token Name:</b>
-                        {tokenERC721Metadata.name}
+                        {tokenMetadata.name}
                     </Label>
                     <Label>
                         <b>Symbol:</b>
-                        {tokenERC721Metadata.symbol}
+                        {tokenMetadata.symbol}
                     </Label>
                     <Label>
                         <b>Address:</b>
@@ -186,10 +191,42 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                     </Label>
                     <Label>
                         <b>Metadata:</b>
-                        {JSON.stringify(tokenERC721Metadata.fetchedMetadata, null, 2)}
+                        {JSON.stringify(
+                            (tokenMetadata as TokenERC721Metadata).fetchedMetadata,
+                            null,
+                            2
+                        )}
                     </Label>
                 </>
-            ) : null}
+            )}
+
+            {tokenMetadata &&
+                tokenType!.standard === TokenTypes.ERC1155.standard &&
+                tokenId &&
+                minTokenAmount && (
+                    <>
+                        <Label>
+                            <b>Address:</b>
+                            {tokenAddress}
+                        </Label>
+                        <Label>
+                            <b>Token ID:</b>
+                            {tokenId ? BigNumber.from(tokenId).toNumber() : null}
+                        </Label>
+                        <Label>
+                            <b>Minimum Required Balance:</b>
+                            {minTokenAmount}
+                        </Label>
+                        <Label>
+                            <b>Metadata:</b>
+                            {JSON.stringify(
+                                (tokenMetadata as TokenERC721Metadata).fetchedMetadata,
+                                null,
+                                2
+                            )}
+                        </Label>
+                    </>
+                )}
             <Form onSubmit={onSubmit}>
                 <>
                     <Label>Privacy</Label>

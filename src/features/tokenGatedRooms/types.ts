@@ -58,12 +58,19 @@ export type TokenERC721Metadata = TokenMetadata & {
     fetchedMetadata: { [key: string]: string }
 }
 
+export type TokenERC1155Metadata = TokenMetadata & {
+    tokenId: HexSerializedBigNumber
+    name: string
+    symbol: string
+    tokenUri: string
+    fetchedMetadata: { [key: string]: string }
+}
+
 export interface TokenGatedRoomState {
     selectedRoomId?: RoomId
     tokenType: TokenType
     tokenAddress?: Address
     tokenId?: HexSerializedBigNumber
     minTokenAmount?: number
-    erc20Metadata?: TokenERC20Metadata
-    erc721Metadata?: TokenERC721Metadata
+    tokenMetadata?: TokenERC20Metadata | TokenERC721Metadata | TokenERC1155Metadata
 }

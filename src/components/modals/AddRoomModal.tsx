@@ -87,7 +87,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         if (!isTokenGatedRoom && privacySetting.value === PrivacySetting.TokenGated) {
             // display the next window for the token-gated creation
             const tokenType = await getTokenType(tokenAddress, provider)
-            if (tokenType.standard !== TokenTypes.ERC1155.standard) {
+            if (tokenType.standard !== TokenTypes.unknown.standard) {
                 setTokenType(tokenType)
                 setCreateNew(false)
                 setIsTokenGatedRoom(true)

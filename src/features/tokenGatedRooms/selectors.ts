@@ -6,10 +6,6 @@ function selectSelf(state: State): TokenGatedRoomState {
     return state.tokenGatedRooms
 }
 
-export function selectERC20Metadata() {
-    return createSelector(selectSelf, (state) => state.erc20Metadata)
-}
-
-export function selectERC721Metadata() {
-    return createSelector(selectSelf, (state) => state.erc721Metadata)
+export function selectTokenMetadata() {
+    return createSelector(selectSelf, (state) => state.tokenMetadata)
 }

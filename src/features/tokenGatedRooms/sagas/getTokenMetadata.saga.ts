@@ -1,5 +1,3 @@
-import { BigNumber } from 'ethers'
-
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { put, takeEvery } from 'redux-saga/effects'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
@@ -8,6 +6,7 @@ import { Contract, providers } from 'ethers'
 
 import * as ERC20 from '../../../contracts/ERC20JoinPolicy.sol/TestERC20.json'
 import * as ERC721 from '../../../contracts/ERC721JoinPolicy.sol/TestERC721.json'
+import * as ERC1155 from '../../../contracts/ERC1155JoinPolicy.sol/TestERC1155.json'
 
 import { Provider } from '@web3-react/types'
 import { Address } from '$/types'
@@ -18,6 +17,10 @@ export const getERC20 = (address: Address, rawProvider: Provider): Contract => {
 
 export const getERC721 = (address: Address, rawProvider: Provider): Contract => {
     return new Contract(address, ERC721.abi, new providers.Web3Provider(rawProvider).getSigner())
+}
+
+export const getERC1155 = (address: Address, rawProvider: Provider): Contract => {
+    return new Contract(address, ERC1155.abi, new providers.Web3Provider(rawProvider).getSigner())
 }
 
 async function fetchMetadata(tokenUri: string) {
@@ -37,7 +40,7 @@ function* onGetTokenMetadata({
         let instance: Contract
         let name: string
         let symbol: string
-        let decimals: BigNumber
+        let decimals: number
         let tokenUri: string
         let fetchedMetadata: { [key: string]: string }
 
@@ -48,14 +51,6 @@ function* onGetTokenMetadata({
                 symbol = yield instance.symbol()
                 decimals = yield instance.decimals()
 
-                yield put(
-                    TokenGatedRoomAction.setERC20Metadata({
-                        contractAddress: tokenAddress,
-                        name,
-                        symbol,
-                        decimals: decimals.toNumber(),
-                    })
-                )
                 break
             case TokenTypes.ERC721.standard:
                 if (!tokenId) {
@@ -68,21 +63,34 @@ function* onGetTokenMetadata({
                 tokenUri = yield instance.tokenURI(tokenId)
                 fetchedMetadata = yield fetchMetadata(tokenUri)
 
-                yield put(
-                    TokenGatedRoomAction.setERC721Metadata({
-                        contractAddress: tokenAddress,
-                        name,
-                        symbol,
-                        tokenId,
-                        tokenUri,
-                        fetchedMetadata,
-                    })
-                )
+                break
+            case TokenTypes.ERC1155.standard:
+                if (!tokenId) {
+                    throw new Error('tokenId is required for ERC1155')
+                }
+                instance = getERC1155(tokenAddress, provider)
+                // name = yield instance.name()
+                //symbol = yield instance.symbol()
+
+                tokenUri = yield instance.uri(tokenId)
+                fetchedMetadata = yield fetchMetadata(tokenUri)
 
                 break
             default:
                 throw new Error(`Unsupported token type: ${tokenType.standard}`)
         }
+
+        yield put(
+            TokenGatedRoomAction.setTokenMetadata({
+                contractAddress: tokenAddress,
+                name: name!,
+                symbol: symbol!,
+                tokenId: tokenId || '0',
+                tokenUri: tokenUri!,
+                fetchedMetadata: fetchedMetadata!,
+                decimals: decimals!,
+            })
+        )
     } catch (e) {
         console.error(e)
     }

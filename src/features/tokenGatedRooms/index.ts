@@ -1,5 +1,6 @@
 import {
     HexSerializedBigNumber,
+    TokenERC1155Metadata,
     TokenERC20Metadata,
     TokenERC721Metadata,
     TokenGatedRoomState,
@@ -22,7 +23,7 @@ const initialState: TokenGatedRoomState = {
     tokenAddress: undefined,
     tokenId: undefined,
     minTokenAmount: undefined,
-    erc20Metadata: undefined,
+    tokenMetadata: undefined,
 }
 
 export const TokenGatedRoomAction = {
@@ -55,8 +56,9 @@ export const TokenGatedRoomAction = {
         provider: Provider
     }>('tokenGatedRooms: getTokenMetadata'),
 
-    setERC20Metadata: createAction<TokenERC20Metadata>('tokenGatedRooms: setERC20Metadata'),
-    setERC721Metadata: createAction<TokenERC721Metadata>('tokenGatedRooms: setERC721Metadata'),
+    setTokenMetadata: createAction<TokenERC20Metadata | TokenERC721Metadata | TokenERC1155Metadata>(
+        'tokenGatedRooms: setTokenMetadata'
+    ),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -66,12 +68,8 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(TokenGatedRoomAction.getTokenMetadata, SEE_SAGA)
 
-    builder.addCase(TokenGatedRoomAction.setERC20Metadata, (state, action) => {
-        state.erc20Metadata = action.payload
-    })
-
-    builder.addCase(TokenGatedRoomAction.setERC721Metadata, (state, action) => {
-        state.erc721Metadata = action.payload
+    builder.addCase(TokenGatedRoomAction.setTokenMetadata, (state, action) => {
+        state.tokenMetadata = action.payload
     })
 })
 

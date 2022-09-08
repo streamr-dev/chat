@@ -36,6 +36,8 @@ async function waitForPolicyToBeDeployed(
         policyAddress = await factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
     } else if (tokenType.standard === TokenTypes.ERC721.standard) {
         policyAddress = await factory.erc721TokensToJoinPolicies(tokenAddress, tokenId, roomId)
+    } else if (tokenType.standard === TokenTypes.ERC1155.standard) {
+        policyAddress = await factory.erc1155TokensToJoinPolicies(tokenAddress, tokenId, roomId)
     } else {
         throw new Error('Unknown token type')
     }
@@ -63,13 +65,12 @@ function* onRegisterPolicy({
 }: ReturnType<typeof TokenGatedRoomAction.registerPolicy>) {
     let toastId
     try {
-        const tokenStandard = tokenType.standard
         const stream: Stream = yield streamrClient.getStream(roomId)
-        toastId = createInformationalToast('Deploying Token Gate')
+        toastId = createInformationalToast(`Deploying ${tokenType.standard} Token Gate`)
         const factory = getJoinPolicyFactory(provider)
 
         let res: { [key: string]: any }
-        switch (tokenStandard) {
+        switch (tokenType.standard) {
             case TokenTypes.ERC20.standard:
                 res = yield factory.registerERC20Policy(
                     tokenAddress,
@@ -79,6 +80,14 @@ function* onRegisterPolicy({
                 break
             case TokenTypes.ERC721.standard:
                 res = yield factory.registerERC721Policy(tokenAddress, tokenId, roomId)
+                break
+            case TokenTypes.ERC1155.standard:
+                res = yield factory.registerERC1155Policy(
+                    tokenAddress,
+                    tokenId,
+                    roomId,
+                    BigNumber.from(minTokenAmount)
+                )
                 break
             default:
                 throw new Error('Unknown token type')
@@ -95,7 +104,7 @@ function* onRegisterPolicy({
             tokenId
         )
         toastId = createInformationalToast(
-            `Assigning permissions to the Token Gate at ${policyAddress}`,
+            `Assigning permissions to the ${tokenType.standard} Token Gate at ${policyAddress}`,
             toastId
         )
 
