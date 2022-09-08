@@ -20,7 +20,7 @@ import MessageInput from './MessageInput'
 import MessageInputPlaceholder from './MessageInputPlaceholder'
 import Text from '../Text'
 import SecondaryButton from '../SecondaryButton'
-import { useSelectedRoomId } from '$/features/room/hooks'
+import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
 import RoomPropertiesModal from '../modals/RoomPropertiesModal'
 import useCanGrant from '$/hooks/useCanGrant'
 import useJustInvited from '$/hooks/useJustInvited'
@@ -34,6 +34,7 @@ import {
 } from '$/features/member/hooks'
 import useResendEffect from '$/hooks/useResendEffect'
 import useResends from '$/hooks/useResends'
+import { TokenGatedRoomOption } from '$/components/PrivacySelectField'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -129,6 +130,7 @@ interface MessageBoxProps {
 }
 
 function MessageBox({ canGrant = false }: MessageBoxProps) {
+    const roomId = useSelectedRoomId()
     const delegatedClient = useDelegatedClient()
 
     const canDelegatedPublish = useCurrentDelegationAbility(StreamPermission.PUBLISH)
@@ -139,7 +141,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     useLoadCurrentDelegationAbilityEffect(StreamPermission.SUBSCRIBE)
 
-    const justInvited = useJustInvited(useSelectedRoomId(), useWalletAccount())
+    const justInvited = useJustInvited(roomId, useWalletAccount())
 
     const isDelegatingAccess = useIsDelegatingAccess()
 
@@ -152,6 +154,8 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
     const acceptInvite = useAcceptInvite()
 
     const promoteDelegatedAccount = usePromoteDelegatedAccount()
+
+    const privacyOption = usePrivacyOption(roomId)
 
     if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.
@@ -190,7 +194,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
         )
     }
 
-    if (canGrant) {
+    if (canGrant || privacyOption === TokenGatedRoomOption) {
         return (
             <MessageInputPlaceholder
                 cta={

@@ -24,13 +24,20 @@ import Modal, { ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import PrivacySelectField from '$/components/PrivacySelectField'
-import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
+import { useGetERC20Metadata, useGetERC721Metadata } from '$/features/tokenGatedRooms/hooks'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { BigNumber } from 'ethers'
 
 export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
-    const { name: roomName = '', tokenAddress, minTokenAmount, tokenType } = useSelectedRoom() || {}
+    const {
+        name: roomName = '',
+        tokenAddress,
+        minTokenAmount,
+        tokenType,
+        tokenId,
+    } = useSelectedRoom() || {}
 
     const isStorageEnabled = useStorageNodeState(selectedRoomId, STREAMR_STORAGE_NODE_GERMANY)
 
@@ -100,34 +107,19 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
         if (!tokenAddress || !tokenType || !provider) {
             return
         }
-        console.log({
-            tokenAddress,
-            tokenType,
-            provider,
-        })
 
         dispatch(
             TokenGatedRoomAction.getTokenMetadata({
                 tokenAddress,
                 tokenType,
                 provider,
+                tokenId: tokenId ? BigNumber.from(tokenId).toHexString() : undefined,
             })
         )
     }, [tokenAddress, tokenType, provider])
 
-    const tokenMetadata = useGetERC20Metadata()
-
-    /*const getTokenMetadata = useGetTokenMetadata(tokenAddress!, tokenType!)
-
-    useEffect(() => {
-        if (!tokenAddress || !tokenType) {
-            return
-        }
-
-        const metadata = getTokenMetadata()
-        console.log({ metadata })
-        console.log({ tokenAddress, tokenId, minTokenAmount, tokenType })
-    }, [tokenAddress, tokenId, minTokenAmount, tokenType])*/
+    const tokenERC20Metadata = useGetERC20Metadata()
+    const tokenERC721Metadata = useGetERC721Metadata()
 
     const isChangingPrivacy = useChangingPrivacy(selectedRoomId)
 
@@ -149,19 +141,19 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
             title="Room properties"
             subtitle={roomName || 'Unnamed room'}
         >
-            {tokenMetadata && minTokenAmount ? (
+            {tokenERC20Metadata && minTokenAmount ? (
                 <>
                     <Label>
                         <b>Token Name:</b>
-                        {tokenMetadata.name}
+                        {tokenERC20Metadata.name}
                     </Label>
                     <Label>
                         <b>Symbol:</b>
-                        {tokenMetadata.symbol}
+                        {tokenERC20Metadata.symbol}
                     </Label>
                     <Label>
                         <b>Decimals:</b>
-                        {tokenMetadata.decimals.toString()}
+                        {tokenERC20Metadata.decimals.toString()}
                     </Label>
                     <Label>
                         <b>Address:</b>
@@ -169,7 +161,32 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                     </Label>
                     <Label>
                         <b>Minimum Required Balance:</b>
-                        {minTokenAmount / 10 ** Number(tokenMetadata.decimals)}
+                        {minTokenAmount / 10 ** Number(tokenERC20Metadata.decimals)}
+                    </Label>
+                </>
+            ) : null}
+
+            {tokenERC721Metadata ? (
+                <>
+                    <Label>
+                        <b>Token Name:</b>
+                        {tokenERC721Metadata.name}
+                    </Label>
+                    <Label>
+                        <b>Symbol:</b>
+                        {tokenERC721Metadata.symbol}
+                    </Label>
+                    <Label>
+                        <b>Address:</b>
+                        {tokenAddress}
+                    </Label>
+                    <Label>
+                        <b>Token ID:</b>
+                        {tokenId ? BigNumber.from(tokenId).toNumber() : null}
+                    </Label>
+                    <Label>
+                        <b>Metadata:</b>
+                        {JSON.stringify(tokenERC721Metadata.fetchedMetadata, null, 2)}
                     </Label>
                 </>
             ) : null}

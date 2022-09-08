@@ -2,8 +2,8 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PreferencesAction } from '$/features/preferences'
 import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
-import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
+import joinTokenGatedRoom from '$/features/tokenGatedRooms/utils/joinTokenGatedRoom'
 import { Address, EnhancedStream } from '$/types'
 import db from '$/utils/db'
 import getStream from '$/utils/getStream'
@@ -37,15 +37,16 @@ function* pinRemote(
 
     const isTokenGated: boolean = yield isTokenGatedRoom(roomId, streamrClient)
 
-    if (isTokenGated && metadata.tokenAddress) {
-        yield put(
-            TokenGatedRoomAction.joinERC20({
-                roomId,
-                owner,
-                tokenAddress: metadata.tokenAddress,
-                provider,
-                delegatedAccount,
-            })
+    if (isTokenGated && metadata.tokenAddress && metadata.tokenType) {
+        yield joinTokenGatedRoom(
+            roomId,
+            owner,
+            metadata.tokenAddress,
+            provider,
+            delegatedAccount,
+            metadata.tokenType,
+            metadata.tokenId!,
+            streamrClient
         )
     }
     const room: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()

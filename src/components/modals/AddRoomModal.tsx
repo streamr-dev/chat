@@ -21,6 +21,7 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { error } from '$/utils/toaster'
 import { TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { getTokenType } from '$/features/tokenGatedRooms/utils/getTokenType'
+import { BigNumber, BigNumberish } from 'ethers'
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
@@ -49,7 +50,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [isTokenGatedRoom, setIsTokenGatedRoom] = useState<boolean>(false)
     const [tokenAddress, setTokenAddress] = useState<Address>('')
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
-    const [tokenId, setTokenId] = useState<number>(0)
+    const [tokenId, setTokenId] = useState<BigNumberish>(0)
     const [minTokenAmount, setMinTokenAmount] = useState<number>(0)
 
     useEffect(() => {
@@ -86,7 +87,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         if (!isTokenGatedRoom && privacySetting.value === PrivacySetting.TokenGated) {
             // display the next window for the token-gated creation
             const tokenType = await getTokenType(tokenAddress, provider)
-            if (tokenType.standard === TokenTypes.ERC20.standard) {
+            if (tokenType.standard !== TokenTypes.ERC1155.standard) {
                 setTokenType(tokenType)
                 setCreateNew(false)
                 setIsTokenGatedRoom(true)
@@ -105,7 +106,10 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         owner: account!,
                         updatedAt: now,
                         tokenAddress,
-                        tokenId,
+                        tokenId:
+                            tokenId && BigNumber.isBigNumber(tokenId)
+                                ? BigNumber.from(tokenId).toHexString()
+                                : undefined,
                         minTokenAmount,
                         tokenType,
                     },
@@ -254,8 +258,10 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 <Label htmlFor="tokenId">Token ID</Label>
                                 <TextField
                                     id="tokenId"
-                                    value={tokenId}
-                                    onChange={(e) => void setTokenId(parseInt(e.target.value))}
+                                    value={tokenId.toString()}
+                                    onChange={(e) =>
+                                        void setTokenId(BigNumber.from(e.target.value))
+                                    }
                                 />
                             </>
                         )}

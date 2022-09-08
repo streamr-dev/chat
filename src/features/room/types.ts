@@ -1,4 +1,4 @@
-import { TokenType } from '$/features/tokenGatedRooms/types'
+import { HexSerializedBigNumber, TokenType } from '$/features/tokenGatedRooms/types'
 import { Address, IRecord, PrivacySetting } from '$/types'
 
 export interface RoomState {
@@ -23,7 +23,7 @@ export interface IRoom extends IRecord {
     recentMessageAt?: number
     // for token-gated rooms
     tokenAddress?: Address
-    tokenId?: number
+    tokenId?: HexSerializedBigNumber
     minTokenAmount?: number
     tokenType?: TokenType
 }

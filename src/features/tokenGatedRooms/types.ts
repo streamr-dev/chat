@@ -1,6 +1,5 @@
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
-import { BigNumber } from 'streamr-client'
 
 export enum ErcToInterfaceIds {
     ERC20 = '0x36372b07',
@@ -39,15 +38,32 @@ export const TokenTypes: { [key: string]: TokenType } = {
     },
 }
 
+export type TokenMetadata = {
+    contractAddress: Address
+}
+
+export type HexSerializedBigNumber = string
+
+export type TokenERC20Metadata = TokenMetadata & {
+    name: string
+    symbol: string
+    decimals: number
+}
+
+export type TokenERC721Metadata = TokenMetadata & {
+    tokenId: HexSerializedBigNumber
+    name: string
+    symbol: string
+    tokenUri: string
+    fetchedMetadata: { [key: string]: string }
+}
+
 export interface TokenGatedRoomState {
     selectedRoomId?: RoomId
     tokenType: TokenType
     tokenAddress?: Address
-    tokenId?: number
+    tokenId?: HexSerializedBigNumber
     minTokenAmount?: number
-    erc20Metadata?: {
-        name: string
-        symbol: string
-        decimals: BigNumber
-    }
+    erc20Metadata?: TokenERC20Metadata
+    erc721Metadata?: TokenERC721Metadata
 }

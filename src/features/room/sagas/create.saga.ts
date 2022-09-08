@@ -15,7 +15,6 @@ import { RoomAction } from '..'
 import { toast } from 'react-toastify'
 import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
-import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 
 function* onCreateAction({
@@ -57,20 +56,17 @@ function* onCreateAction({
             },
         } as StreamProperties)
 
-        if (
-            privacy === PrivacySetting.TokenGated &&
-            metadata.tokenType!.standard === TokenTypes.ERC20.standard &&
-            metadata.tokenAddress &&
-            metadata.minTokenAmount
-        ) {
+        if (privacy === PrivacySetting.TokenGated && metadata.tokenType && metadata.tokenAddress) {
             yield put(
-                TokenGatedRoomAction.registerERC20Policy({
+                TokenGatedRoomAction.registerPolicy({
                     owner,
                     tokenAddress: metadata.tokenAddress,
                     roomId: stream.id,
                     minTokenAmount: metadata.minTokenAmount,
+                    tokenId: metadata.tokenId,
                     provider,
                     streamrClient,
+                    tokenType: metadata.tokenType,
                 })
             )
         }

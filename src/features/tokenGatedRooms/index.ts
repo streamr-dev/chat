@@ -1,14 +1,20 @@
-import { TokenGatedRoomState, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
+import {
+    HexSerializedBigNumber,
+    TokenERC20Metadata,
+    TokenERC721Metadata,
+    TokenGatedRoomState,
+    TokenType,
+    TokenTypes,
+} from '$/features/tokenGatedRooms/types'
 import { Address } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
 import { Provider } from '@web3-react/types'
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import StreamrClient, { BigNumber } from 'streamr-client'
-import registerERC20Policy from '$/features/tokenGatedRooms/sagas/registerERC20Policy.saga'
-import joinERC20 from '$/features/tokenGatedRooms/sagas/joinERC20.saga'
+import StreamrClient from 'streamr-client'
 import getTokenMetadata from '$/features/tokenGatedRooms/sagas/getTokenMetadata.saga'
 import { RoomId } from '$/features/room/types'
+import registerPolicy from '$/features/tokenGatedRooms/sagas/registerPolicy.saga'
 
 const initialState: TokenGatedRoomState = {
     selectedRoomId: undefined,
@@ -20,50 +26,57 @@ const initialState: TokenGatedRoomState = {
 }
 
 export const TokenGatedRoomAction = {
-    registerERC20Policy: createAction<{
+    registerPolicy: createAction<{
         owner: Address
         tokenAddress: string
         roomId: RoomId
-        minTokenAmount: number
+        tokenType: TokenType
+        minTokenAmount?: number
+        tokenId?: HexSerializedBigNumber
         provider: Provider
         streamrClient: StreamrClient
-    }>('tokenGatedRooms: registerERC20Policy'),
+    }>('tokenGatedRooms: registerPolicy'),
 
-    joinERC20: createAction<{
+    join: createAction<{
         roomId: RoomId
         owner: Address
         tokenAddress: Address
         provider: Provider
         delegatedAccount: Address
-    }>('tokenGatedRooms: joinERC20'),
+        tokenType: TokenType
+        tokenId: HexSerializedBigNumber
+        streamrClient: StreamrClient
+    }>('tokenGatedRooms: join'),
 
     getTokenMetadata: createAction<{
         tokenAddress: Address
         tokenType: TokenType
+        tokenId?: HexSerializedBigNumber
         provider: Provider
     }>('tokenGatedRooms: getTokenMetadata'),
 
-    setERC20Metadata: createAction<{
-        name: string
-        symbol: string
-        decimals: BigNumber
-    }>('tokenGatedRooms: setERC20Metadata'),
+    setERC20Metadata: createAction<TokenERC20Metadata>('tokenGatedRooms: setERC20Metadata'),
+    setERC721Metadata: createAction<TokenERC721Metadata>('tokenGatedRooms: setERC721Metadata'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(TokenGatedRoomAction.registerERC20Policy, SEE_SAGA)
+    builder.addCase(TokenGatedRoomAction.registerPolicy, SEE_SAGA)
 
-    builder.addCase(TokenGatedRoomAction.joinERC20, SEE_SAGA)
+    builder.addCase(TokenGatedRoomAction.join, SEE_SAGA)
 
     builder.addCase(TokenGatedRoomAction.getTokenMetadata, SEE_SAGA)
 
     builder.addCase(TokenGatedRoomAction.setERC20Metadata, (state, action) => {
         state.erc20Metadata = action.payload
     })
+
+    builder.addCase(TokenGatedRoomAction.setERC721Metadata, (state, action) => {
+        state.erc721Metadata = action.payload
+    })
 })
 
 export function* tokenGatedRoomSaga() {
-    yield all([registerERC20Policy(), joinERC20(), getTokenMetadata()])
+    yield all([registerPolicy(), getTokenMetadata()])
 }
 
 export default reducer

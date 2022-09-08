@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'
 import handleError from '$/utils/handleError'
 import { error } from '$/utils/toaster'
 import { RoomId } from '$/features/room/types'
+import { HexSerializedBigNumber, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
 
 function createInformationalToast(message: string, toastId?: string | number) {
     if (toastId) {
@@ -24,42 +25,74 @@ function createInformationalToast(message: string, toastId?: string | number) {
 }
 
 async function waitForPolicyToBeDeployed(
+    tokenType: TokenType,
     factory: Contract,
     tokenAddress: Address,
-    roomId: RoomId
+    roomId: RoomId,
+    tokenId?: HexSerializedBigNumber
 ): Promise<Address> {
-    const policyAddress: Address = await factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
-    console.log({ policyAddress })
+    let policyAddress: Address
+    if (tokenType.standard === TokenTypes.ERC20.standard) {
+        policyAddress = await factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
+    } else if (tokenType.standard === TokenTypes.ERC721.standard) {
+        policyAddress = await factory.erc721TokensToJoinPolicies(tokenAddress, tokenId, roomId)
+    } else {
+        throw new Error('Unknown token type')
+    }
 
     if (policyAddress === '0x0000000000000000000000000000000000000000') {
-        console.warn(
-            'policy at 0x0000000000000000000000000000000000000000 address, waiting 1 second and trying again'
-        )
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        return waitForPolicyToBeDeployed(factory, tokenAddress, roomId)
+        console.warn('policy at 0x00...000 address, waiting 5 second and trying again')
+        await new Promise((resolve) => setTimeout(resolve, 5 * 1000))
+        return waitForPolicyToBeDeployed(tokenType, factory, tokenAddress, roomId, tokenId)
     }
 
     return policyAddress
 }
-function* onRegisterERC20Policy({
-    payload: { owner, tokenAddress, roomId, streamrClient, minTokenAmount, provider },
-}: ReturnType<typeof TokenGatedRoomAction.registerERC20Policy>) {
+
+function* onRegisterPolicy({
+    payload: {
+        owner,
+        tokenAddress,
+        roomId,
+        streamrClient,
+        tokenType,
+        minTokenAmount,
+        tokenId,
+        provider,
+    },
+}: ReturnType<typeof TokenGatedRoomAction.registerPolicy>) {
     let toastId
     try {
+        const tokenStandard = tokenType.standard
         const stream: Stream = yield streamrClient.getStream(roomId)
         toastId = createInformationalToast('Deploying Token Gate')
         const factory = getJoinPolicyFactory(provider)
-        const res: { [key: string]: any } = yield factory.registerERC20Policy(
-            tokenAddress,
-            roomId,
-            BigNumber.from(minTokenAmount)
-        )
+
+        let res: { [key: string]: any }
+        switch (tokenStandard) {
+            case TokenTypes.ERC20.standard:
+                res = yield factory.registerERC20Policy(
+                    tokenAddress,
+                    roomId,
+                    BigNumber.from(minTokenAmount)
+                )
+                break
+            case TokenTypes.ERC721.standard:
+                res = yield factory.registerERC721Policy(tokenAddress, tokenId, roomId)
+                break
+            default:
+                throw new Error('Unknown token type')
+        }
+
         yield res.wait()
 
         const policyAddress: Address = yield waitForPolicyToBeDeployed(
+            tokenType,
             factory,
             tokenAddress,
-            roomId
+
+            roomId,
+            tokenId
         )
         toastId = createInformationalToast(
             `Assigning permissions to the Token Gate at ${policyAddress}`,
@@ -92,6 +125,6 @@ function* onRegisterERC20Policy({
     }
 }
 
-export default function* registerERC20Policy() {
-    yield takeEvery(TokenGatedRoomAction.registerERC20Policy, onRegisterERC20Policy)
+export default function* registerPolicy() {
+    yield takeEvery(TokenGatedRoomAction.registerPolicy, onRegisterPolicy)
 }
