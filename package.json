@@ -49,7 +49,7 @@
         "streamr-client": "^6.0.9",
         "tailwindcss": "^3.1.8",
         "twin.macro": "^2.8.2",
-        "uuid": "^8.3.2"
+        "uuid": "^9.0.0"
     },
     "devDependencies": {
         "@emotion/babel-plugin": "^11.10.2",
