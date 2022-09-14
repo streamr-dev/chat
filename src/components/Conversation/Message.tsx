@@ -19,6 +19,10 @@ import { OptionalAddress } from '$/types'
 import { useDispatch } from 'react-redux'
 import { MembersAction } from '$/features/members'
 import { Flag } from '$/features/flag/types'
+import trunc from '$/utils/trunc'
+import { useAlias } from '$/features/alias/hooks'
+import useENSName from '$/hooks/useENSName'
+import Tooltip, { Placement } from '$/components/Tooltip'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
@@ -54,18 +58,23 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
 
     const sender = useMainAccount(createdBy)
 
+    const alias = useAlias(sender)
+
+    const ens = useENSName(sender)
+
     const previousSender = useMainAccount(previousCreatedBy)
 
     useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen })
 
     const provider = useWalletProvider()
 
-    const avatar =
-        previousCreatedBy && isSameAddress(sender, previousSender) ? (
-            <Wrap />
-        ) : (
-            <Avatar status={AvatarStatus.Offline} seed={sender?.toLowerCase()} />
-        )
+    const skipAvatar = !!previousCreatedBy && isSameAddress(sender, previousSender)
+
+    const avatar = skipAvatar ? (
+        <Wrap />
+    ) : (
+        <Avatar status={AvatarStatus.Offline} seed={sender?.toLowerCase()} />
+    )
 
     const dispatch = useDispatch()
 
@@ -84,90 +93,131 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
     }, [sender, provider, createdBy, dispatch])
 
     return (
-        <div
-            {...props}
-            ref={setElement}
-            css={[
-                tw`
-                    flex
-                `,
-                !incoming &&
-                    tw`
-                        justify-end
-                    `,
-            ]}
-        >
-            {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
-            <div
-                css={[
-                    css`
-                        flex: 0 1 auto;
-
-                        :hover div:first-of-type {
-                            opacity: 1;
-                            visibility: visible;
-                            transition-delay: 0.25s;
-                        }
-                    `,
-                    tw`
-                        bg-[#F1F4F7]
-                        rounded-xl
-                        text-[0.875rem]
-                        leading-7
-                        max-w-full
-                        min-w-0
-                        px-4
-                        py-1.5
-                        relative
-                        break-words
-                    `,
-                    !incoming &&
+        <>
+            {!skipAvatar && sender && (
+                <div
+                    css={[
                         tw`
-                            bg-[#615ef0]
-                            text-white
+                            font-medium
+                            text-[#59799C]
+                            text-[12px]
+                            pl-16
                         `,
-                ]}
-            >
-                {incoming && (
-                    <div
-                        css={[
+                        !incoming &&
                             tw`
-                                w-1.5
-                                h-1.5
-                                absolute
-                                top-1/2
-                                translate-x-full
-                                -translate-y-1/2
-                                -right-2
+                                text-right
+                                pr-16
+                                pl-0
+                            `,
+                    ]}
+                >
+                    <span
+                        css={[
+                            css`
+                                :hover div:first-of-type {
+                                    opacity: 1;
+                                    visibility: visible;
+                                    transition-delay: 0.25s;
+                                }
+                            `,
+
+                            tw`
+                                relative
                             `,
                         ]}
                     >
+                        <Tooltip placement={incoming ? Placement.Right : Placement.Left}>
+                            {sender}
+                        </Tooltip>
+                        {ens || alias || trunc(sender)}
+                    </span>
+                </div>
+            )}
+            <div
+                {...props}
+                ref={setElement}
+                css={[
+                    tw`
+                    flex
+                `,
+                    !incoming &&
+                        tw`
+                        justify-end
+                    `,
+                ]}
+            >
+                {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
+                <div
+                    css={[
+                        css`
+                            flex: 0 1 auto;
+
+                            :hover div:first-of-type {
+                                opacity: 1;
+                                visibility: visible;
+                                transition-delay: 0.25s;
+                            }
+                        `,
+                        tw`
+                            bg-[#F1F4F7]
+                            rounded-xl
+                            text-[0.875rem]
+                            leading-7
+                            max-w-full
+                            min-w-0
+                            px-4
+                            py-1.5
+                            relative
+                            break-words
+                        `,
+                        !incoming &&
+                            tw`
+                            bg-[#615ef0]
+                            text-white
+                        `,
+                    ]}
+                >
+                    <DateTooltip timestamp={createdAt} />
+                    {incoming && (
                         <div
                             css={[
                                 tw`
+                                    w-1.5
+                                    h-1.5
+                                    absolute
+                                    top-1/2
+                                    translate-x-full
+                                    -translate-y-1/2
+                                    -right-2
+                                `,
+                            ]}
+                        >
+                            <div
+                                css={[
+                                    tw`
                                     w-full
                                     h-full
                                     rounded-full
                                     bg-[#59799C]
                                 `,
-                                Boolean(isSeen) &&
-                                    css`
-                                        opacity: 0;
-                                        transform: scale(0.1);
-                                        visibility: hidden;
-                                        transition: 300ms ease-in;
-                                        transition-property: visibility, opacity, transform;
-                                        transition-delay: 300ms, 0s, 0s;
-                                    `,
-                            ]}
-                        />
-                    </div>
-                )}
-                <DateTooltip timestamp={createdAt} />
-                <Text>{formatMessage(content)}</Text>
+                                    Boolean(isSeen) &&
+                                        css`
+                                            opacity: 0;
+                                            transform: scale(0.1);
+                                            visibility: hidden;
+                                            transition: 300ms ease-in;
+                                            transition-property: visibility, opacity, transform;
+                                            transition-delay: 300ms, 0s, 0s;
+                                        `,
+                                ]}
+                            />
+                        </div>
+                    )}
+                    <Text>{formatMessage(content)}</Text>
+                </div>
+                {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
             </div>
-            {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
-        </div>
+        </>
     )
 }
 
