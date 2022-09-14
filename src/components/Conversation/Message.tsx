@@ -54,14 +54,14 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
 
     const sender = useMainAccount(createdBy)
 
-    const previouSender = useMainAccount(previousCreatedBy)
+    const previousSender = useMainAccount(previousCreatedBy)
 
     useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen })
 
     const provider = useWalletProvider()
 
     const avatar =
-        previousCreatedBy && isSameAddress(sender, previouSender) ? (
+        previousCreatedBy && isSameAddress(sender, previousSender) ? (
             <Wrap />
         ) : (
             <Avatar status={AvatarStatus.Offline} seed={sender?.toLowerCase()} />
