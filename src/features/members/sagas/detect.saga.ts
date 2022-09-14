@@ -48,7 +48,7 @@ function* onDetectAction({
 
                 // Exclude delegated accounts from the members list. When we delete a main/unset
                 // accounts from a room we're gonna fetch the list of delegatees anyway (@TODO).
-                return
+                continue
             }
 
             members.push({

@@ -8,5 +8,8 @@ function selectSelf(state: State): MembersState {
 }
 
 export function selectMembers(roomId: undefined | RoomId): (state: State) => IMember[] {
-    return createSelector(selectSelf, (substate) => (roomId ? substate[roomId] : undefined) || [])
+    return createSelector(
+        selectSelf,
+        (substate) => (roomId ? substate.members[roomId] : undefined) || []
+    )
 }
