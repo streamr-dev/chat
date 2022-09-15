@@ -94,7 +94,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
 
     return (
         <>
-            {!skipAvatar && sender && (
+            {!skipAvatar && sender && incoming && (
                 <div
                     css={[
                         tw`
