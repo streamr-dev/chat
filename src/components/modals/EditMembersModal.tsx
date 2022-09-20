@@ -202,24 +202,22 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                         </div>
                     ) : (
                         <>
-                            {members.map(({ address, permissions, accountType }) => {
-                                return accountType !== AccountType.Delegated ? (
-                                    <Item
-                                        key={address}
-                                        onMenuToggle={onMenuToggle}
-                                        address={address}
-                                        canBeDeleted={canModifyMembers}
-                                        onDeleteClick={onDeleteClick}
-                                        isCurrentAccount={isSameAddress(address, account)}
-                                        isCurrentDelegatedAccount={isSameAddress(
-                                            address,
-                                            delegatedAccount
-                                        )}
-                                        permissions={permissions}
-                                        accountType={accountType}
-                                    />
-                                ) : null
-                            })}
+                            {members.map(({ address, permissions, accountType }) => (
+                                <Item
+                                    key={address}
+                                    onMenuToggle={onMenuToggle}
+                                    address={address}
+                                    canBeDeleted={canModifyMembers}
+                                    onDeleteClick={onDeleteClick}
+                                    isCurrentAccount={isSameAddress(address, account)}
+                                    isCurrentDelegatedAccount={isSameAddress(
+                                        address,
+                                        delegatedAccount
+                                    )}
+                                    permissions={permissions}
+                                    accountType={accountType}
+                                />
+                            ))}
                         </>
                     )}
                 </div>

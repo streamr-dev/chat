@@ -15,7 +15,7 @@ export enum AvatarStatus {
 }
 
 type Props = HTMLAttributes<HTMLDivElement> & {
-    seed: string
+    seed: undefined | string
     status?: AvatarStatus
     backgroundColor?: string
 }
@@ -43,17 +43,19 @@ export default function Avatar({ seed, backgroundColor = '#EFF4F9', status, ...p
 
     const isRetrievingIdenticon = useIsRetrievingIdenticon(seed)
 
+    const busy = !seed || isRetrievingIdenticon
+
     const retrieveIdenticon = useRetrieveIdenticon()
 
     useEffect(() => {
-        if (!identicon) {
+        if (!identicon && seed) {
             retrieveIdenticon(seed)
         }
     }, [identicon, seed])
 
     return (
         <Wrap {...props}>
-            {isRetrievingIdenticon && <Spinner strokeWidth={1.5} />}
+            {busy && <Spinner strokeWidth={1.5} />}
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <mask id={maskId}>

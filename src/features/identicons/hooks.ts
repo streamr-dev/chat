@@ -6,12 +6,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selectIdenticon } from './selectors'
 import { IdenticonSeed } from './types'
 
-export function useIdenticon(seed: IdenticonSeed) {
+export function useIdenticon(seed: undefined | IdenticonSeed) {
     return useSelector(selectIdenticon(seed))
 }
 
-export function useIsRetrievingIdenticon(seed: IdenticonSeed) {
-    return useSelector(selectFlag(Flag.isIdenticonBeingRetrieved(seed)))
+export function useIsRetrievingIdenticon(seed: undefined | IdenticonSeed) {
+    return useSelector(selectFlag(seed ? Flag.isIdenticonBeingRetrieved(seed) : undefined))
 }
 
 export function useRetrieveIdenticon() {
