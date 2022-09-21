@@ -45,27 +45,18 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     const canPin = !isBlank(roomId)
 
-    const [createSubmitLabel, setCreateSubmitLabel] = useState<string>('Create')
+    const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
     const [isTokenGatedRoom, setIsTokenGatedRoom] = useState<boolean>(false)
     const [tokenAddress, setTokenAddress] = useState<Address>('')
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
     const [tokenId, setTokenId] = useState<number>(0)
     const [minTokenAmount, setMinTokenAmount] = useState<number>(0)
 
-    useEffect(() => {
-        if (privacySetting.value === PrivacySetting.TokenGated) {
-            setCreateSubmitLabel('Next')
-        } else {
-            setCreateSubmitLabel('Create')
-        }
-    }, [privacySetting])
-
     function onClose() {
         setRoomName('')
         setPrivacySetting(PrivateRoomOption)
         setRoomId('')
         setIsTokenGatedRoom(false)
-        setCreateSubmitLabel('Create')
         setTokenAddress('')
         setTokenType(TokenTypes.unknown)
         setTokenId(0)
