@@ -117,18 +117,6 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
 
     const tokenMetadata = useGetERC20Metadata()
 
-    /*const getTokenMetadata = useGetTokenMetadata(tokenAddress!, tokenType!)
-
-    useEffect(() => {
-        if (!tokenAddress || !tokenType) {
-            return
-        }
-
-        const metadata = getTokenMetadata()
-        console.log({ metadata })
-        console.log({ tokenAddress, tokenId, minTokenAmount, tokenType })
-    }, [tokenAddress, tokenId, minTokenAmount, tokenType])*/
-
     const isChangingPrivacy = useChangingPrivacy(selectedRoomId)
 
     const isGettingPrivacy = useGettingPrivacy(selectedRoomId)
