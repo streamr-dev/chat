@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
@@ -50,7 +50,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [tokenAddress, setTokenAddress] = useState<Address>('')
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
     const [tokenId, setTokenId] = useState<number>(0)
-    const [minTokenAmount, setMinTokenAmount] = useState<number>(0)
+    const [minTokenAmount, setMinTokenAmount] = useState<string>('')
 
     function onClose() {
         setRoomName('')
@@ -60,7 +60,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         setTokenAddress('')
         setTokenType(TokenTypes.unknown)
         setTokenId(0)
-        setMinTokenAmount(0)
+        setMinTokenAmount('')
     }
 
     const provider = useWalletProvider()
@@ -97,7 +97,9 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         updatedAt: now,
                         tokenAddress,
                         tokenId,
-                        minTokenAmount,
+                        minTokenAmount: isNaN(parseFloat(minTokenAmount))
+                            ? 0
+                            : parseFloat(minTokenAmount),
                         tokenType,
                     },
                     privacy: privacySetting.value,
@@ -257,9 +259,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 <TextField
                                     id="minTokenAmount"
                                     value={minTokenAmount}
-                                    onChange={(e) =>
-                                        void setMinTokenAmount(parseFloat(e.target.value))
-                                    }
+                                    onChange={(e) => void setMinTokenAmount(e.target.value)}
                                 />
                             </>
                         )}
