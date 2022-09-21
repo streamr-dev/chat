@@ -231,14 +231,14 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                     <>
                         <Label htmlFor="roomName">Room Name</Label>
 
-                        <TextField id="roomName" value={roomName} disabled={true} />
+                        <TextField id="roomName" value={roomName} readOnly />
                         <Label htmlFor="tokenAddress">Token Address</Label>
 
-                        <TextField id="tokenAddress" value={tokenAddress} disabled={true} />
+                        <TextField id="tokenAddress" value={tokenAddress} readOnly />
 
                         <Label htmlFor="tokenStandard">Token Standard</Label>
 
-                        <TextField id="tokenStandard" value={tokenType.standard} disabled={true} />
+                        <TextField id="tokenStandard" value={tokenType.standard} readOnly />
 
                         {tokenType.hasIds && (
                             <>
