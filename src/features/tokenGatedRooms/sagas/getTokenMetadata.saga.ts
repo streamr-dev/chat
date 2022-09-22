@@ -4,6 +4,7 @@ import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { put, takeEvery } from 'redux-saga/effects'
 import { getERC20 } from '$/features/tokenGatedRooms/utils/getERC20'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
+import handleError from '$/utils/handleError'
 
 function* onGetTokenMetadata({
     payload: { tokenAddress, tokenType, provider },
@@ -28,7 +29,7 @@ function* onGetTokenMetadata({
             })
         )
     } catch (e) {
-        console.error(e)
+        handleError(e)
     }
 }
 
