@@ -100,11 +100,6 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
         if (!tokenAddress || !tokenType || !provider) {
             return
         }
-        console.log({
-            tokenAddress,
-            tokenType,
-            provider,
-        })
 
         dispatch(
             TokenGatedRoomAction.getTokenMetadata({
