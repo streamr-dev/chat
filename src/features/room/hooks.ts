@@ -46,10 +46,9 @@ export function usePrivacyOption(roomId: undefined | RoomId) {
     switch (privacy) {
         case PrivacySetting.Public:
             return PublicRoomOption
-        case PrivacySetting.Private:
-            return PrivateRoomOption
         case PrivacySetting.TokenGated:
             return TokenGatedRoomOption
+        case PrivacySetting.Private:
         default:
             return PrivateRoomOption
     }
