@@ -18,7 +18,7 @@ function* onGetPrivacyAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const isTokenGated: boolean = yield isTokenGatedRoom(roomId, streamrClient)
+        const isTokenGated: boolean = isTokenGatedRoom(stream)
 
         const canEveryoneSee: boolean = yield stream.hasPermission({
             public: true,

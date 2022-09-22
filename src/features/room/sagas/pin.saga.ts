@@ -33,16 +33,16 @@ function* pinRemote(
         throw new RoomNotFoundError(roomId)
     }
 
-    const metadata = stream.extensions['thechat.eth']
+    const { createdAt, createdBy, tokenAddress } = stream.extensions['thechat.eth']
 
-    const isTokenGated: boolean = yield isTokenGatedRoom(roomId, streamrClient)
+    const isTokenGated = isTokenGatedRoom(stream)
 
-    if (isTokenGated && metadata.tokenAddress) {
+    if (isTokenGated && tokenAddress) {
         yield put(
             TokenGatedRoomAction.joinERC20({
                 roomId,
                 owner,
-                tokenAddress: metadata.tokenAddress,
+                tokenAddress,
                 provider,
                 delegatedAccount,
             })
@@ -66,8 +66,8 @@ function* pinRemote(
         yield db.rooms.where({ owner, id: roomId }).modify({ pinned: true, hidden: false })
     } else {
         yield db.rooms.add({
-            createdAt: metadata.createdAt,
-            createdBy: metadata.createdBy,
+            createdAt: createdAt,
+            createdBy: createdBy,
             id: stream.id,
             name: stream.description || '',
             owner,
