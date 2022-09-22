@@ -90,9 +90,6 @@ function* onCreateAction({
             metadata.tokenAddress &&
             metadata.minTokenAmount
         ) {
-            if (metadata.minTokenAmount <= 0) {
-                throw new Error('Minimum token amount must be greater than 0')
-            }
             yield put(
                 TokenGatedRoomAction.registerERC20Policy({
                     owner,
