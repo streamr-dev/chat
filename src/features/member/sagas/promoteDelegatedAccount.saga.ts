@@ -9,9 +9,11 @@ import { put } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 function* onPromoteDelegatedAccountAction({
-    payload: { roomId, delegatedAddress, provider, requester, streamrClient, privacy },
+    payload: { roomId, delegatedAddress, provider, streamrClient, privacy },
 }: ReturnType<typeof MemberAction.promoteDelegatedAccount>) {
     try {
+        const requester: Address = yield streamrClient.getAddress()
+
         // split for token-gated rooms
         if (privacy === PrivacySetting.TokenGated) {
             console.log('promoting token gated room')
@@ -21,14 +23,11 @@ function* onPromoteDelegatedAccountAction({
             if (!metadata.tokenAddress) {
                 throw new Error('No token address found')
             }
-            console.log({ metadata })
-
-            const owner: Address = yield streamrClient.getAddress()
 
             yield put(
                 TokenGatedRoomAction.joinERC20({
                     roomId,
-                    owner,
+                    owner: requester,
                     tokenAddress: metadata.tokenAddress,
                     provider,
                     delegatedAccount: delegatedAddress,
