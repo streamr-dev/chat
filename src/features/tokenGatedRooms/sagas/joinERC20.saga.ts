@@ -3,6 +3,7 @@ import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { getJoinPolicyFactory } from '$/features/tokenGatedRooms/utils/getJoinPolicyFactory'
 import { getERC20JoinPolicy } from '$/features/tokenGatedRooms/utils/getERC20JoinPolicy'
 import { takeEvery } from 'redux-saga/effects'
+import handleError from '$/utils/handleError'
 
 function* onJoinERC20({
     payload: { roomId, owner, tokenAddress, provider, delegatedAccount },
@@ -17,7 +18,7 @@ function* onJoinERC20({
         }
         yield policy.requestDelegatedJoin(delegatedAccount)
     } catch (e) {
-        console.error(e)
+        handleError(e)
     }
 }
 
