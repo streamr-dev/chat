@@ -18,6 +18,7 @@ import { Flag } from '$/features/flag/types'
 import PinIcon from '$/icons/PinIcon'
 import useAgo from '$/hooks/useAgo'
 import isSameAddress from '$/utils/isSameAddress'
+import { useSelectedRoomId } from '$/features/room/hooks'
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
     active?: boolean
@@ -79,6 +80,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const seen = isSameAddress(recentMessage?.createdBy, address) || Boolean(recentMessage?.seenAt)
 
+    const selectedRoomId = useSelectedRoomId()
+
     return (
         <SidebarButton
             {...props}
@@ -92,7 +95,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
                 dispatch(
                     PreferencesAction.set({
                         owner: address,
-                        selectedRoomId: id,
+                        selectedRoomId: selectedRoomId === id ? undefined : id,
                     })
                 )
             }}
