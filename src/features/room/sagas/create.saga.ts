@@ -15,6 +15,8 @@ import { RoomAction } from '..'
 import { toast } from 'react-toastify'
 import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
+import { TokenTypes } from '$/features/tokenGatedRooms/types'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 
 function* onCreateAction({
     payload: {
@@ -47,6 +49,33 @@ function* onCreateAction({
 
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
+        // validate the metadata for tokenGated rooms
+        if (privacy === PrivacySetting.TokenGated) {
+            if (!metadata.tokenAddress) {
+                throw new Error('Token address is required for tokenGated rooms')
+            }
+
+            if (!metadata.tokenType) {
+                throw new Error('TokenType is required for tokenGated rooms')
+            }
+
+            if (
+                !metadata.tokenId &&
+                (metadata.tokenType.standard === TokenTypes.ERC721.standard ||
+                    metadata.tokenType.standard === TokenTypes.ERC1155.standard)
+            ) {
+                throw new Error('Token id is required for NFT tokenGated rooms')
+            }
+
+            if (
+                (!metadata.minTokenAmount || metadata.minTokenAmount <= 0) &&
+                (metadata.tokenType.standard === TokenTypes.ERC20.standard ||
+                    metadata.tokenType.standard === TokenTypes.ERC1155.standard)
+            ) {
+                throw new Error('Min token amount is required for tokenGated rooms')
+            }
+        }
+
         const stream: Stream = yield streamrClient.createStream({
             id,
             description,
@@ -54,6 +83,24 @@ function* onCreateAction({
                 'thechat.eth': metadata,
             },
         } as StreamProperties)
+
+        if (
+            privacy === PrivacySetting.TokenGated &&
+            metadata.tokenType!.standard === TokenTypes.ERC20.standard &&
+            metadata.tokenAddress &&
+            metadata.minTokenAmount
+        ) {
+            yield put(
+                TokenGatedRoomAction.registerERC20Policy({
+                    owner,
+                    tokenAddress: metadata.tokenAddress,
+                    roomId: stream.id,
+                    minTokenAmount: metadata.minTokenAmount,
+                    provider,
+                    streamrClient,
+                })
+            )
+        }
 
         if (privacy === PrivacySetting.Public) {
             try {
@@ -101,10 +148,10 @@ function* onCreateAction({
                 })
             )
         }
-    } catch (e) {
+    } catch (e: any) {
         handleError(e)
 
-        error(`Failed to create "${params.name}".`)
+        error(`Failed to create "${params.name}". Reason:\n${e.message}`)
     } finally {
         if (toastId) {
             toast.dismiss(toastId)

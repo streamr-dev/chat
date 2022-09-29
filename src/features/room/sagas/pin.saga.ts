@@ -2,6 +2,8 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PreferencesAction } from '$/features/preferences'
 import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
 import { Address, EnhancedStream } from '$/types'
 import db from '$/utils/db'
 import getStream from '$/utils/getStream'
@@ -9,6 +11,7 @@ import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error } from '$/utils/toaster'
+import { Provider } from '@web3-react/types'
 import { toast } from 'react-toastify'
 import { call, put } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
@@ -17,15 +20,34 @@ interface PinRemoteOptions {
     streamrClient: StreamrClient
 }
 
-function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemoteOptions) {
+function* pinRemote(
+    owner: Address,
+    roomId: RoomId,
+    delegatedAccount: Address,
+    provider: Provider,
+    { streamrClient }: PinRemoteOptions
+) {
     const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
 
     if (!stream) {
         throw new RoomNotFoundError(roomId)
     }
 
-    const metadata = stream.extensions['thechat.eth']
+    const { createdAt, createdBy, tokenAddress } = stream.extensions['thechat.eth']
 
+    const isTokenGated = isTokenGatedRoom(stream)
+
+    if (isTokenGated && tokenAddress) {
+        yield put(
+            TokenGatedRoomAction.joinERC20({
+                roomId,
+                owner,
+                tokenAddress,
+                provider,
+                delegatedAccount,
+            })
+        )
+    }
     const room: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()
 
     const [permissions, isPublic]: UserPermissions = yield getUserPermissions(owner, stream)
@@ -35,7 +57,7 @@ function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemote
         return
     }
 
-    if (!isPublic) {
+    if (!isPublic && !isTokenGated) {
         error("You can't pin private rooms.")
         return
     }
@@ -44,8 +66,8 @@ function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemote
         yield db.rooms.where({ owner, id: roomId }).modify({ pinned: true, hidden: false })
     } else {
         yield db.rooms.add({
-            createdAt: metadata.createdAt,
-            createdBy: metadata.createdBy,
+            createdAt: createdAt,
+            createdBy: createdBy,
             id: stream.id,
             name: stream.description || '',
             owner,
@@ -62,7 +84,7 @@ function* pinRemote(owner: Address, roomId: RoomId, { streamrClient }: PinRemote
 }
 
 function* onPinAction({
-    payload: { roomId, requester, streamrClient },
+    payload: { roomId, requester, streamrClient, delegatedAccount, provider },
 }: ReturnType<typeof RoomAction.pin>) {
     let toastId
 
@@ -75,7 +97,9 @@ function* onPinAction({
             hideProgressBar: true,
         })
 
-        yield call(pinRemote, requester.toLowerCase(), roomId, { streamrClient })
+        yield call(pinRemote, requester.toLowerCase(), roomId, delegatedAccount, provider, {
+            streamrClient,
+        })
     } catch (e) {
         handleError(e)
 

@@ -14,7 +14,11 @@ import {
     selectTransientRoomName,
 } from './selectors'
 import { RoomId } from './types'
-import { PrivateRoomOption, PublicRoomOption } from '$/components/PrivacySelectField'
+import {
+    PrivateRoomOption,
+    PublicRoomOption,
+    TokenGatedRoomOption,
+} from '$/components/PrivacySelectField'
 
 export function useSelectedRoomId() {
     return useSelector(selectSelectedRoomId)
@@ -37,7 +41,17 @@ export function usePrivacy(roomId: undefined | RoomId) {
 }
 
 export function usePrivacyOption(roomId: undefined | RoomId) {
-    return usePrivacy(roomId) === PrivacySetting.Private ? PrivateRoomOption : PublicRoomOption
+    const privacy = usePrivacy(roomId)
+
+    switch (privacy) {
+        case PrivacySetting.Public:
+            return PublicRoomOption
+        case PrivacySetting.TokenGated:
+            return TokenGatedRoomOption
+        case PrivacySetting.Private:
+        default:
+            return PrivateRoomOption
+    }
 }
 
 export function useGettingPrivacy(roomId: undefined | RoomId) {

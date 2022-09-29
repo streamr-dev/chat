@@ -1,4 +1,5 @@
-import { IRecord, PrivacySetting } from '$/types'
+import { TokenType } from '$/features/tokenGatedRooms/types'
+import { Address, IRecord, PrivacySetting } from '$/types'
 
 export interface RoomState {
     selectedRoomId?: RoomId
@@ -20,6 +21,11 @@ export interface IRoom extends IRecord {
     hidden?: boolean
     pinned?: boolean
     recentMessageAt?: number
+    // for token-gated rooms
+    tokenAddress?: Address
+    tokenId?: number
+    minTokenAmount?: number
+    tokenType?: TokenType
 }
 
 export type RoomId = IRoom['id']

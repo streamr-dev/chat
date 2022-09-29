@@ -8,6 +8,7 @@ import tw, { css } from 'twin.macro'
 import Hint from './Hint'
 import Text from './Text'
 import Hodl from '$/components/Hodl'
+import * as Config from '$/config.json'
 
 export const PrivateRoomOption: PrivacyOption = {
     value: PrivacySetting.Private,
@@ -23,19 +24,23 @@ export const PublicRoomOption: PrivacyOption = {
     icon: PublicIcon,
 }
 
-export const TokenGatedRoom: PrivacyOption = {
+export const TokenGatedRoomOption: PrivacyOption = {
     value: PrivacySetting.TokenGated,
-    label: 'Coming soon: Token gated',
+    label: Config.disableTokenGatedRoomCreation ? 'Coming soon: Token gated' : 'Token Gated',
     desc: (
         <>
             Access granted only if you <Hodl /> a particular NFT or&nbsp;ERC&#8209;20 token
         </>
     ),
     icon: GatedIcon,
-    disabled: true,
+    disabled: Config.disableTokenGatedRoomCreation,
 }
 
-export const privacyOptions: PrivacyOption[] = [PrivateRoomOption, PublicRoomOption, TokenGatedRoom]
+export const privacyOptions: PrivacyOption[] = [
+    PrivateRoomOption,
+    PublicRoomOption,
+    TokenGatedRoomOption,
+]
 
 function isPrivacyOption(option: unknown): option is PrivacyOption {
     return !!option && typeof option === 'object'

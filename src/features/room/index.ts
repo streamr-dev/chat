@@ -19,6 +19,7 @@ import setVisibility from '$/features/room/sagas/setVisibility.saga'
 import pin from '$/features/room/sagas/pin.saga'
 import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
+import { Provider } from '@web3-react/types'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -146,7 +147,13 @@ export const RoomAction = {
     ),
 
     pin: createAction<
-        IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
+        IFingerprinted & {
+            roomId: RoomId
+            requester: Address
+            streamrClient: StreamrClient
+            provider: Provider
+            delegatedAccount: Address
+        }
     >('room: pin'),
 
     unpin: createAction<

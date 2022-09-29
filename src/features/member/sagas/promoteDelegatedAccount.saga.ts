@@ -1,4 +1,5 @@
 import { MemberAction } from '$/features/member'
+import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -6,9 +7,11 @@ import { error, success } from '$/utils/toaster'
 import { StreamPermission } from 'streamr-client'
 
 function* onPromoteDelegatedAccountAction({
-    payload: { roomId, delegatedAddress, provider, requester, streamrClient },
+    payload: { roomId, delegatedAddress, provider, streamrClient },
 }: ReturnType<typeof MemberAction.promoteDelegatedAccount>) {
     try {
+        const requester: Address = yield streamrClient.getAddress()
+
         yield setMultiplePermissions(
             roomId,
             [
