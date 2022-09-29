@@ -11,7 +11,6 @@ import getTokenMetadata from '$/features/tokenGatedRooms/sagas/getTokenMetadata.
 import { RoomId } from '$/features/room/types'
 
 const initialState: TokenGatedRoomState = {
-    selectedRoomId: undefined,
     tokenType: TokenTypes.unknown,
     tokenAddress: undefined,
     tokenId: undefined,

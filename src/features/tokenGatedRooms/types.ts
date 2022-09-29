@@ -1,4 +1,3 @@
-import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
 import { BigNumber } from 'streamr-client'
 
@@ -40,7 +39,6 @@ export const TokenTypes: { [key: string]: TokenType } = {
 }
 
 export interface TokenGatedRoomState {
-    selectedRoomId?: RoomId
     tokenType: TokenType
     tokenAddress?: Address
     tokenId?: number
