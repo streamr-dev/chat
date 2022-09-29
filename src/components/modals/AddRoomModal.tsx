@@ -97,9 +97,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         updatedAt: now,
                         tokenAddress,
                         tokenId,
-                        minTokenAmount: isNaN(parseFloat(minTokenAmount))
-                            ? 0
-                            : parseFloat(minTokenAmount),
+                        minTokenAmount: parseFloat(minTokenAmount) || 0,
                         tokenType,
                     },
                     privacy: privacySetting.value,
