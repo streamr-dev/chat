@@ -23,7 +23,7 @@ export default function useResendEffect(roomId: undefined | RoomId) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!roomId || !account || !streamrClient) {
+        if (!roomId || !account || !streamrClient || !canDelegatedSubscribe) {
             return
         }
 

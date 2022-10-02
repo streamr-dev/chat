@@ -2,7 +2,8 @@ import { RoomId } from '$/features/room/types'
 import { Address, IRecord } from '$/types'
 
 export interface IMessage extends IRecord {
-    content: string
+    content?: undefined | string
+    serializedContent: string
     createdBy: string
     id: string
     roomId: string

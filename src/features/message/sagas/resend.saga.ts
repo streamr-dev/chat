@@ -47,29 +47,38 @@ function* onResendAction({
             }
         }
 
-        const messages: StreamrMessage<StreamMessage>[] = yield resendUtil(roomId, streamrClient, {
+        const queue = resendUtil(roomId, streamrClient, {
             timestamp,
         })
 
         let minCreatedAt: undefined | number = undefined
 
-        for (let i = 0; i < messages.length; i++) {
-            const message = toLocalMessage(messages[i])
+        while (true) {
+            const { value, done }: ReadableStreamReadResult<StreamrMessage<StreamMessage>> =
+                yield queue.next()
 
-            const { createdAt } = message
+            if (value) {
+                const message = toLocalMessage(value)
 
-            if (typeof createdAt === 'number') {
-                if (typeof minCreatedAt === 'undefined' || minCreatedAt > createdAt) {
-                    minCreatedAt = createdAt
+                const { createdAt } = message
+
+                if (typeof createdAt === 'number') {
+                    if (typeof minCreatedAt === 'undefined' || minCreatedAt > createdAt) {
+                        minCreatedAt = createdAt
+                    }
                 }
+
+                yield put(
+                    MessageAction.register({
+                        owner,
+                        message,
+                    })
+                )
             }
 
-            yield put(
-                MessageAction.register({
-                    owner,
-                    message,
-                })
-            )
+            if (done) {
+                break
+            }
         }
 
         if (typeof timestamp !== 'undefined') {

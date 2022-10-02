@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import wallet, { WalletAction, walletSaga } from '$/features/wallet'
+import wallet, { walletSaga } from '$/features/wallet'
 import delegation, { delegationSaga } from '$/features/delegation'
 import room, { roomSaga } from '$/features/room'
 import rooms, { roomsSaga } from '$/features/rooms'

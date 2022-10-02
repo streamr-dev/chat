@@ -50,6 +50,8 @@ function formatMessage(message: string): ReactNode {
 export default function Message({ payload, incoming = false, previousCreatedBy, ...props }: Props) {
     const { createdBy, createdAt, content, seenAt, roomId, id } = payload
 
+    const isEncrypted = typeof content === 'undefined'
+
     const isSeen = Boolean(seenAt)
 
     const requester = useWalletAccount()
@@ -64,7 +66,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
 
     const previousSender = useMainAccount(previousCreatedBy)
 
-    useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen })
+    useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen || isEncrypted })
 
     const provider = useWalletProvider()
 
@@ -138,12 +140,12 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                 ref={setElement}
                 css={[
                     tw`
-                    flex
-                `,
+                        flex
+                    `,
                     !incoming &&
                         tw`
-                        justify-end
-                    `,
+                            justify-end
+                        `,
                 ]}
             >
                 {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
@@ -172,9 +174,18 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                         `,
                         !incoming &&
                             tw`
-                            bg-[#615ef0]
-                            text-white
-                        `,
+                                bg-[#615ef0]
+                                text-white
+                            `,
+                        isEncrypted &&
+                            tw`
+                                text-[#59799C]
+                                border-2
+                                border-dotted
+                                border-[#59799C]
+                                bg-[#F7F9FC]
+                                py-1
+                            `,
                     ]}
                 >
                     <DateTooltip timestamp={createdAt} />
@@ -195,11 +206,11 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                             <div
                                 css={[
                                     tw`
-                                    w-full
-                                    h-full
-                                    rounded-full
-                                    bg-[#59799C]
-                                `,
+                                        w-full
+                                        h-full
+                                        rounded-full
+                                        bg-[#59799C]
+                                    `,
                                     Boolean(isSeen) &&
                                         css`
                                             opacity: 0;
@@ -213,7 +224,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                             />
                         </div>
                     )}
-                    <Text>{formatMessage(content)}</Text>
+                    <Text>{isEncrypted ? 'Encrypted message' : formatMessage(content)}</Text>
                 </div>
                 {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
             </div>
