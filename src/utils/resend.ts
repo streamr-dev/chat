@@ -64,8 +64,6 @@ export default function resend(
                 }
 
                 controller.enqueue(msg)
-
-                queue.end()
             })
 
             for await (const raw of queue) {
