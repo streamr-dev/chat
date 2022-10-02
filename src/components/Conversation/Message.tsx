@@ -300,6 +300,10 @@ function ResendOneButton({
             onClick={onClick}
             type="button"
             css={[
+                isResending &&
+                    tw`
+                        block!
+                    `,
                 tw`
                     appearance-none
                     text-[#59799C]
@@ -315,7 +319,7 @@ function ResendOneButton({
                     `,
             ]}
         >
-            {isResending ? 'Resending…' : 'Resend'}
+            {isResending ? 'Retrying…' : 'Retry'}
         </button>
     )
 }
@@ -323,7 +327,7 @@ function ResendOneButton({
 function EncryptedMessage() {
     return (
         <Text>
-            <em>Encrypted message</em>
+            <em>Message could not be decrypted</em>
         </Text>
     )
 }
