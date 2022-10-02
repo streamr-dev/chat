@@ -19,7 +19,11 @@ export default function useIsResending(roomId: undefined | RoomId, requester: Op
         return Object.keys(flags).some((flag) => {
             const [key, rid, addr] = JSON.parse(flag)
 
-            if (key !== 'isResendingMessage' && key !== 'isResendingMessagesForSpecificDay') {
+            if (
+                key !== 'isResendingMessage' &&
+                key !== 'isResendingMessagesForSpecificDay' &&
+                key !== 'isResendingTimestamp'
+            ) {
                 return false
             }
 

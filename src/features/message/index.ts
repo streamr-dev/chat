@@ -37,6 +37,7 @@ export const MessageAction = {
             requester: Address
             streamrClient: StreamrClient
             timestamp?: number
+            exact?: boolean
         }
     >('message: resend'),
 

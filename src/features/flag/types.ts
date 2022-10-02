@@ -137,6 +137,11 @@ export const Flag = {
         ])
     },
 
+    // Resending particular message.
+    isResendingTimestamp(roomId: RoomId, requester: Address, timestamp: number) {
+        return JSON.stringify(['isResendingTimestamp', roomId, requester.toLowerCase(), timestamp])
+    },
+
     isLookingUpDelegation(delegatedAddress: Address) {
         return JSON.stringify(['isLookingUpDelegation', delegatedAddress.toLowerCase()])
     },

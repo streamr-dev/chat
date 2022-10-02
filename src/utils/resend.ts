@@ -7,32 +7,49 @@ import { MessageStream } from 'streamr-client/types/src/subscribe/MessageStream'
 
 interface Options {
     timestamp?: number
+    exact?: boolean
 }
 
 type Message = StreamrMessage<StreamMessage>
 
+function formatFilter(timestamp: undefined | number, exact: boolean) {
+    if (typeof timestamp === 'undefined') {
+        return {
+            last: 20,
+        }
+    }
+
+    if (exact) {
+        return {
+            from: {
+                timestamp,
+            },
+            to: {
+                timestamp,
+            },
+        }
+    }
+
+    return {
+        from: {
+            timestamp: getBeginningOfDay(timestamp),
+        },
+        to: {
+            timestamp: getBeginningOfDay(timestamp) + DayInMillis - 1,
+        },
+    }
+}
+
 export default function resend(
     roomId: RoomId,
     streamrClient: StreamrClient,
-    { timestamp }: Options = {}
+    { timestamp, exact = false }: Options = {}
 ) {
-    const filter =
-        typeof timestamp === 'number'
-            ? {
-                  from: {
-                      timestamp: getBeginningOfDay(timestamp),
-                  },
-                  to: {
-                      timestamp: getBeginningOfDay(timestamp) + DayInMillis - 1,
-                  },
-              }
-            : { last: 20 }
-
     const rs = new ReadableStream<Message>({
         async start(controller: ReadableStreamDefaultController<Message>) {
             const queue: MessageStream<StreamMessage> /* lol */ = await streamrClient.resend(
                 roomId,
-                filter
+                formatFilter(timestamp, exact)
             )
 
             function isMessage(e: any): e is Message {

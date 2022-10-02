@@ -1,5 +1,6 @@
 import {
     AnchorHTMLAttributes,
+    ButtonHTMLAttributes,
     Fragment,
     HTMLAttributes,
     ReactNode,
@@ -23,6 +24,10 @@ import trunc from '$/utils/trunc'
 import { useAlias } from '$/features/alias/hooks'
 import useENSName from '$/hooks/useENSName'
 import Tooltip, { Placement } from '$/components/Tooltip'
+import { RoomId } from '$/features/room/types'
+import { MessageAction } from '$/features/message'
+import { useDelegatedClient } from '$/features/delegation/hooks'
+import useFlag from '$/hooks/useFlag'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
@@ -139,6 +144,12 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                 {...props}
                 ref={setElement}
                 css={[
+                    isEncrypted &&
+                        css`
+                            :hover > button {
+                                display: block;
+                            }
+                        `,
                     tw`
                         flex
                     `,
@@ -149,6 +160,9 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                 ]}
             >
                 {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
+                {!incoming && isEncrypted && typeof createdAt === 'number' && (
+                    <ResendOneButton requester={requester} roomId={roomId} timestamp={createdAt} />
+                )}
                 <div
                     css={[
                         css`
@@ -199,7 +213,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                                     top-1/2
                                     translate-x-full
                                     -translate-y-1/2
-                                    -right-2
+                                    -right-2.5
                                 `,
                             ]}
                         >
@@ -224,11 +238,93 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                             />
                         </div>
                     )}
-                    <Text>{isEncrypted ? 'Encrypted message' : formatMessage(content)}</Text>
+                    {isEncrypted ? <EncryptedMessage /> : <Text>{formatMessage(content)}</Text>}
                 </div>
                 {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
+                {incoming && isEncrypted && typeof createdAt === 'number' && (
+                    <ResendOneButton
+                        left
+                        requester={requester}
+                        roomId={roomId}
+                        timestamp={createdAt}
+                    />
+                )}
             </div>
         </>
+    )
+}
+
+interface ResendOneButtonProps
+    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'onClick' | 'children'> {
+    left?: boolean
+    requester: OptionalAddress
+    roomId: RoomId
+    timestamp: number
+}
+
+function ResendOneButton({
+    left = false,
+    requester,
+    roomId,
+    timestamp,
+    ...props
+}: ResendOneButtonProps) {
+    const dispatch = useDispatch()
+
+    const delegatedClient = useDelegatedClient()
+
+    const isResending = useFlag(
+        requester ? Flag.isResendingTimestamp(roomId, requester, timestamp) : undefined
+    )
+
+    function onClick() {
+        if (!requester || !delegatedClient) {
+            return
+        }
+
+        dispatch(
+            MessageAction.resend({
+                roomId,
+                requester,
+                exact: true,
+                timestamp,
+                streamrClient: delegatedClient,
+                fingerprint: Flag.isResendingTimestamp(roomId, requester, timestamp),
+            })
+        )
+    }
+
+    return (
+        <button
+            {...props}
+            onClick={onClick}
+            type="button"
+            css={[
+                tw`
+                    appearance-none
+                    text-[#59799C]
+                    text-[12px]
+                    hidden
+                `,
+                left
+                    ? tw`
+                        ml-[22px]
+                    `
+                    : tw`
+                        mr-[22px]
+                    `,
+            ]}
+        >
+            {isResending ? 'Resending…' : 'Resend'}
+        </button>
+    )
+}
+
+function EncryptedMessage() {
+    return (
+        <Text>
+            <em>Encrypted message</em>
+        </Text>
     )
 }
 

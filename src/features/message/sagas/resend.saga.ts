@@ -11,12 +11,12 @@ import { put } from 'redux-saga/effects'
 import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 
 function* onResendAction({
-    payload: { roomId, requester, streamrClient, timestamp },
+    payload: { roomId, requester, streamrClient, timestamp, exact = false },
 }: ReturnType<typeof MessageAction.resend>) {
     try {
         const owner = requester.toLowerCase()
 
-        if (typeof timestamp !== 'undefined') {
+        if (typeof timestamp !== 'undefined' && !exact) {
             const bod = getBeginningOfDay(timestamp)
 
             // Mark timestamp's beginning of day as the moment from which we display messages.
@@ -49,6 +49,7 @@ function* onResendAction({
 
         const queue = resendUtil(roomId, streamrClient, {
             timestamp,
+            exact,
         })
 
         let minCreatedAt: undefined | number = undefined
@@ -87,6 +88,10 @@ function* onResendAction({
             if (done) {
                 break
             }
+        }
+
+        if (exact) {
+            return
         }
 
         if (typeof timestamp !== 'undefined') {
