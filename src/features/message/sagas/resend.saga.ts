@@ -62,18 +62,26 @@ function* onResendAction({
 
                 const { createdAt } = message
 
-                if (typeof createdAt === 'number') {
-                    if (typeof minCreatedAt === 'undefined' || minCreatedAt > createdAt) {
-                        minCreatedAt = createdAt
-                    }
-                }
-
                 yield put(
                     MessageAction.register({
                         owner,
                         message,
                     })
                 )
+
+                if (typeof createdAt === 'number') {
+                    yield put(
+                        MessageAction.setFromTimestamp({
+                            roomId,
+                            requester,
+                            timestamp: createdAt,
+                        })
+                    )
+
+                    if (typeof minCreatedAt === 'undefined' || minCreatedAt > createdAt) {
+                        minCreatedAt = createdAt
+                    }
+                }
             }
 
             if (done) {
