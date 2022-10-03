@@ -6,15 +6,24 @@ import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 
 type Message = StreamrMessage<StreamMessage>
 
+function isMessage(e: any): e is Message {
+    return !!e
+}
+
 export default function subscribe(roomId: RoomId, streamrClient: StreamrClient) {
     let sub: undefined | Subscription<StreamMessage>
 
+    let cancelled = false
+
+    function unsub() {
+        if (sub) {
+            streamrClient.unsubscribe(sub)
+            sub = undefined
+        }
+    }
+
     const rs = new ReadableStream<Message>({
         async start(controller: ReadableStreamDefaultController<Message>) {
-            function isMessage(e: any): e is Message {
-                return !!e
-            }
-
             try {
                 sub = await streamrClient.subscribe(
                     {
@@ -24,6 +33,10 @@ export default function subscribe(roomId: RoomId, streamrClient: StreamrClient) 
                         controller.enqueue(raw)
                     }
                 )
+
+                if (cancelled) {
+                    return void unsub()
+                }
 
                 sub.onError((e: any) => {
                     const raw = e.streamMessage
@@ -39,10 +52,8 @@ export default function subscribe(roomId: RoomId, streamrClient: StreamrClient) 
             }
         },
         cancel() {
-            if (sub) {
-                streamrClient.unsubscribe(sub)
-                sub = undefined
-            }
+            unsub()
+            cancelled = true
         },
     })
 
