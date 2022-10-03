@@ -35,6 +35,7 @@ import PinIcon from '$/icons/PinIcon'
 import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
 import EditIcon from '$/icons/EditIcon'
+import useIsResending from '$/hooks/useIsResending'
 
 type Props = {
     canModifyMembers?: boolean
@@ -137,7 +138,9 @@ export default function ConversationHeader({
         )
     }, [selectedRoomId])
 
-    const showProgress = isPersistingRoomName || isRoomBeingDeleted
+    const isResending = useIsResending(selectedRoomId, account)
+
+    const showProgress = isPersistingRoomName || isRoomBeingDeleted || isResending
 
     const isVisible = useIsRoomVisible(selectedRoomId)
 

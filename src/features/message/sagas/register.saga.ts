@@ -2,6 +2,7 @@ import { takeEvery } from 'redux-saga/effects'
 import { MessageAction } from '..'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
+import { IMessage } from '$/features/message/types'
 
 function* onRegisterAction({
     payload: { message, owner: acc },
@@ -9,10 +10,32 @@ function* onRegisterAction({
     const owner = acc.toLowerCase()
 
     try {
-        yield db.messages.add({
-            ...message,
-            owner,
-        })
+        let msg: undefined | IMessage = undefined
+
+        try {
+            msg = yield db.messages
+                .where({
+                    id: message.id,
+                    owner,
+                })
+                .first()
+        } catch (e) {
+            // Nothing.
+        }
+
+        if (!msg) {
+            yield db.messages.add({
+                ...message,
+                owner,
+            })
+        } else if (typeof msg.content === 'undefined') {
+            yield db.messages
+                .where({
+                    id: message.id,
+                    owner,
+                })
+                .modify({ content: message.content })
+        }
 
         const { createdAt: recentMessageAt } = message
 

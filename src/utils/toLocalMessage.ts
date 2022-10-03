@@ -4,8 +4,6 @@ import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 export default function toLocalMessage(
     message: StreamrMessage<StreamMessage>
 ): Omit<IMessage, 'owner'> {
-    const { content } = message.getParsedContent()
-
     const {
         messageId: {
             msgChainId,
@@ -15,7 +13,20 @@ export default function toLocalMessage(
             timestamp: createdAt,
             streamId: roomId,
         },
+        serializedContent,
     } = message
+
+    let content: undefined | string
+
+    try {
+        const parsed = message.getParsedContent()
+
+        if (typeof parsed !== 'string') {
+            content = message.getParsedContent().content
+        }
+    } catch (e) {
+        // Still encrypted.
+    }
 
     const id = `${createdAt}/${streamPartition}/${sequenceNumber}/${msgChainId}`
 
@@ -23,6 +34,7 @@ export default function toLocalMessage(
         createdAt,
         createdBy,
         content,
+        serializedContent,
         updatedAt: createdAt,
         id,
         roomId,
