@@ -27,11 +27,7 @@ export default function useIsResending(roomId: undefined | RoomId, requester: Op
                 return false
             }
 
-            if (roomId !== rid || !isSameAddress(addr, requester)) {
-                return false
-            }
-
-            return true
+            return roomId === rid && isSameAddress(addr, requester)
         })
     }, [flags, roomId, requester])
 }
