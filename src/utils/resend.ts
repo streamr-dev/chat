@@ -1,61 +1,84 @@
-import TimeoutError from '$/errors/TimeoutError'
 import { StreamMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import getBeginningOfDay, { DayInMillis } from '$/utils/getBeginningOfDay'
 import StreamrClient from 'streamr-client'
+import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 import { MessageStream } from 'streamr-client/types/src/subscribe/MessageStream'
 
-interface FetchOptions {
+interface Options {
     timestamp?: number
+    exact?: boolean
 }
 
-async function fetch(
-    roomId: RoomId,
-    streamrClient: StreamrClient,
-    { timestamp }: FetchOptions = {}
-) {
-    const scope =
-        typeof timestamp === 'number'
-            ? {
-                  from: {
-                      timestamp: getBeginningOfDay(timestamp),
-                  },
-                  to: {
-                      timestamp: getBeginningOfDay(timestamp) + DayInMillis - 1,
-                  },
-              }
-            : { last: 20 }
+type Message = StreamrMessage<StreamMessage>
 
-    const queue: MessageStream<StreamMessage> /* lol */ = await streamrClient.resend(roomId, scope)
-
-    const messages = []
-
-    for await (const raw of queue) {
-        messages.push(raw)
+function formatFilter(timestamp: undefined | number, exact: boolean) {
+    if (typeof timestamp === 'undefined') {
+        return {
+            last: 20,
+        }
     }
 
-    return messages
+    if (exact) {
+        return {
+            from: {
+                timestamp,
+            },
+            to: {
+                timestamp,
+            },
+        }
+    }
+
+    return {
+        from: {
+            timestamp: getBeginningOfDay(timestamp),
+        },
+        to: {
+            timestamp: getBeginningOfDay(timestamp) + DayInMillis - 1,
+        },
+    }
 }
 
-interface Options extends FetchOptions {
-    timeoutAfter?: number
-}
-
-export default async function resend(
+export default function resend(
     roomId: RoomId,
     streamrClient: StreamrClient,
-    { timeoutAfter = 10000, timestamp }: Options = {}
+    { timestamp, exact = false }: Options = {}
 ) {
-    const messages = await Promise.race([
-        fetch(roomId, streamrClient, {
-            timestamp,
-        }),
-        new Promise((_, reject) => {
-            setTimeout(() => {
-                reject(new TimeoutError())
-            }, timeoutAfter)
-        }),
-    ])
+    const rs = new ReadableStream<Message>({
+        async start(controller: ReadableStreamDefaultController<Message>) {
+            const queue: MessageStream<StreamMessage> /* lol */ = await streamrClient.resend(
+                roomId,
+                formatFilter(timestamp, exact)
+            )
 
-    return messages
+            function isMessage(e: any): e is Message {
+                return !!e
+            }
+
+            queue.onError((e: any) => {
+                const msg = e.streamMessage
+
+                if (!isMessage(msg)) {
+                    return
+                }
+
+                controller.enqueue(msg)
+            })
+
+            for await (const raw of queue) {
+                controller.enqueue(raw)
+            }
+
+            controller.close()
+        },
+    })
+
+    const reader = rs.getReader()
+
+    return {
+        async next() {
+            return reader.read()
+        },
+    }
 }

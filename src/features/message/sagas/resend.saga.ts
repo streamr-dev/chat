@@ -11,12 +11,12 @@ import { put } from 'redux-saga/effects'
 import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 
 function* onResendAction({
-    payload: { roomId, requester, streamrClient, timestamp },
+    payload: { roomId, requester, streamrClient, timestamp, exact = false },
 }: ReturnType<typeof MessageAction.resend>) {
     try {
         const owner = requester.toLowerCase()
 
-        if (typeof timestamp !== 'undefined') {
+        if (typeof timestamp !== 'undefined' && !exact) {
             const bod = getBeginningOfDay(timestamp)
 
             // Mark timestamp's beginning of day as the moment from which we display messages.
@@ -47,29 +47,51 @@ function* onResendAction({
             }
         }
 
-        const messages: StreamrMessage<StreamMessage>[] = yield resendUtil(roomId, streamrClient, {
+        const queue = resendUtil(roomId, streamrClient, {
             timestamp,
+            exact,
         })
 
         let minCreatedAt: undefined | number = undefined
 
-        for (let i = 0; i < messages.length; i++) {
-            const message = toLocalMessage(messages[i])
+        while (true) {
+            const { value, done }: ReadableStreamReadResult<StreamrMessage<StreamMessage>> =
+                yield queue.next()
 
-            const { createdAt } = message
+            if (value) {
+                const message = toLocalMessage(value)
 
-            if (typeof createdAt === 'number') {
-                if (typeof minCreatedAt === 'undefined' || minCreatedAt > createdAt) {
-                    minCreatedAt = createdAt
+                const { createdAt } = message
+
+                yield put(
+                    MessageAction.register({
+                        owner,
+                        message,
+                    })
+                )
+
+                if (typeof createdAt === 'number') {
+                    yield put(
+                        MessageAction.setFromTimestamp({
+                            roomId,
+                            requester,
+                            timestamp: createdAt,
+                        })
+                    )
+
+                    if (typeof minCreatedAt === 'undefined' || minCreatedAt > createdAt) {
+                        minCreatedAt = createdAt
+                    }
                 }
             }
 
-            yield put(
-                MessageAction.register({
-                    owner,
-                    message,
-                })
-            )
+            if (done) {
+                break
+            }
+        }
+
+        if (exact) {
+            return
         }
 
         if (typeof timestamp !== 'undefined') {

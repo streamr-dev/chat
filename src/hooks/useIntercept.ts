@@ -1,37 +1,20 @@
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { RoomId } from '$/features/room/types'
-import { MessageStreamOnMessage, StreamPermission } from 'streamr-client'
-import handleError from '$/utils/handleError'
+import { StreamPermission } from 'streamr-client'
 import { useDispatch } from 'react-redux'
 import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
-import { IMessage, StreamMessage } from '$/features/message/types'
 import { MessageAction } from '$/features/message'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
 import toLocalMessage from '$/utils/toLocalMessage'
+import subscribe from '$/utils/subscribe'
 
 export default function useIntercept(roomId: RoomId) {
     const client = useDelegatedClient()
 
     const dispatch = useDispatch()
 
-    const owner = useWalletAccount()
-
-    const onMessage = useCallback(
-        (message: Omit<IMessage, 'owner'>) => {
-            if (!owner) {
-                return
-            }
-
-            dispatch(
-                MessageAction.register({
-                    message,
-                    owner,
-                })
-            )
-        },
-        [owner]
-    )
+    const owner = useWalletAccount()?.toLowerCase()
 
     const delegatedAddress = useDelegatedAccount()
 
@@ -40,54 +23,38 @@ export default function useIntercept(roomId: RoomId) {
     useLoadAbilityEffect(roomId, delegatedAddress, StreamPermission.SUBSCRIBE)
 
     useEffect(() => {
-        let mounted = true
-
-        let sub: any
-
-        function unsub() {
-            if (client && sub) {
-                client.unsubscribe(sub)
-            }
-
-            sub = undefined
-        }
-
-        const onData: MessageStreamOnMessage<StreamMessage, void> = (_, raw) => {
-            if (!mounted) {
-                return
-            }
-
-            onMessage(toLocalMessage(raw))
-        }
+        let queue: undefined | ReturnType<typeof subscribe>
 
         async function fn() {
-            if (!client || !mounted || !canDelegatedSubscribe) {
+            if (!client || !canDelegatedSubscribe || !owner) {
                 return
             }
 
-            try {
-                sub = await client.subscribe(
-                    {
-                        streamId: roomId,
-                    },
-                    onData
-                )
+            queue = subscribe(roomId, client)
 
-                sub.onError(handleError)
-            } catch (e) {
-                handleError(e)
-            }
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                const { value, done } = await queue.next()
 
-            if (!mounted) {
-                unsub()
+                if (value) {
+                    dispatch(
+                        MessageAction.register({
+                            message: toLocalMessage(value),
+                            owner,
+                        })
+                    )
+                }
+
+                if (done) {
+                    break
+                }
             }
         }
 
         fn()
 
         return () => {
-            mounted = false
-            unsub()
+            queue?.abort()
         }
-    }, [client, roomId, onMessage, canDelegatedSubscribe])
+    }, [client, roomId, canDelegatedSubscribe, owner])
 }

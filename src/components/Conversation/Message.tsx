@@ -1,5 +1,6 @@
 import {
     AnchorHTMLAttributes,
+    ButtonHTMLAttributes,
     Fragment,
     HTMLAttributes,
     ReactNode,
@@ -23,6 +24,10 @@ import trunc from '$/utils/trunc'
 import { useAlias } from '$/features/alias/hooks'
 import useENSName from '$/hooks/useENSName'
 import Tooltip, { Placement } from '$/components/Tooltip'
+import { RoomId } from '$/features/room/types'
+import { MessageAction } from '$/features/message'
+import { useDelegatedClient } from '$/features/delegation/hooks'
+import useFlag from '$/hooks/useFlag'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
@@ -50,6 +55,8 @@ function formatMessage(message: string): ReactNode {
 export default function Message({ payload, incoming = false, previousCreatedBy, ...props }: Props) {
     const { createdBy, createdAt, content, seenAt, roomId, id } = payload
 
+    const isEncrypted = typeof content === 'undefined'
+
     const isSeen = Boolean(seenAt)
 
     const requester = useWalletAccount()
@@ -64,7 +71,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
 
     const previousSender = useMainAccount(previousCreatedBy)
 
-    useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen })
+    useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen || isEncrypted })
 
     const provider = useWalletProvider()
 
@@ -137,16 +144,25 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                 {...props}
                 ref={setElement}
                 css={[
+                    isEncrypted &&
+                        css`
+                            :hover > button {
+                                display: block;
+                            }
+                        `,
                     tw`
-                    flex
-                `,
+                        flex
+                    `,
                     !incoming &&
                         tw`
-                        justify-end
-                    `,
+                            justify-end
+                        `,
                 ]}
             >
                 {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
+                {!incoming && isEncrypted && typeof createdAt === 'number' && (
+                    <ResendOneButton requester={requester} roomId={roomId} timestamp={createdAt} />
+                )}
                 <div
                     css={[
                         css`
@@ -172,9 +188,18 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                         `,
                         !incoming &&
                             tw`
-                            bg-[#615ef0]
-                            text-white
-                        `,
+                                bg-[#615ef0]
+                                text-white
+                            `,
+                        isEncrypted &&
+                            tw`
+                                text-[#59799C]
+                                border-2
+                                border-dotted
+                                border-[#59799C]
+                                bg-[#F7F9FC]
+                                py-1
+                            `,
                     ]}
                 >
                     <DateTooltip timestamp={createdAt} />
@@ -188,18 +213,18 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                                     top-1/2
                                     translate-x-full
                                     -translate-y-1/2
-                                    -right-2
+                                    -right-2.5
                                 `,
                             ]}
                         >
                             <div
                                 css={[
                                     tw`
-                                    w-full
-                                    h-full
-                                    rounded-full
-                                    bg-[#59799C]
-                                `,
+                                        w-full
+                                        h-full
+                                        rounded-full
+                                        bg-[#59799C]
+                                    `,
                                     Boolean(isSeen) &&
                                         css`
                                             opacity: 0;
@@ -213,11 +238,97 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                             />
                         </div>
                     )}
-                    <Text>{formatMessage(content)}</Text>
+                    {isEncrypted ? <EncryptedMessage /> : <Text>{formatMessage(content)}</Text>}
                 </div>
                 {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
+                {incoming && isEncrypted && typeof createdAt === 'number' && (
+                    <ResendOneButton
+                        left
+                        requester={requester}
+                        roomId={roomId}
+                        timestamp={createdAt}
+                    />
+                )}
             </div>
         </>
+    )
+}
+
+interface ResendOneButtonProps
+    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'onClick' | 'children'> {
+    left?: boolean
+    requester: OptionalAddress
+    roomId: RoomId
+    timestamp: number
+}
+
+function ResendOneButton({
+    left = false,
+    requester,
+    roomId,
+    timestamp,
+    ...props
+}: ResendOneButtonProps) {
+    const dispatch = useDispatch()
+
+    const delegatedClient = useDelegatedClient()
+
+    const isResending = useFlag(
+        requester ? Flag.isResendingTimestamp(roomId, requester, timestamp) : undefined
+    )
+
+    function onClick() {
+        if (!requester || !delegatedClient) {
+            return
+        }
+
+        dispatch(
+            MessageAction.resend({
+                roomId,
+                requester,
+                exact: true,
+                timestamp,
+                streamrClient: delegatedClient,
+                fingerprint: Flag.isResendingTimestamp(roomId, requester, timestamp),
+            })
+        )
+    }
+
+    return (
+        <button
+            {...props}
+            onClick={onClick}
+            type="button"
+            css={[
+                isResending &&
+                    tw`
+                        block!
+                    `,
+                tw`
+                    appearance-none
+                    text-[#59799C]
+                    text-[12px]
+                    hidden
+                `,
+                left
+                    ? tw`
+                        ml-[22px]
+                    `
+                    : tw`
+                        mr-[22px]
+                    `,
+            ]}
+        >
+            {isResending ? 'Retrying…' : 'Retry'}
+        </button>
+    )
+}
+
+function EncryptedMessage() {
+    return (
+        <Text>
+            <em>Message could not be decrypted</em>
+        </Text>
     )
 }
 

@@ -7,7 +7,7 @@ import { IAlias } from '$/features/alias/types'
 import { IPreference } from '$/features/preferences/types'
 import { IENSName } from '$/features/ens/types'
 
-const [DbVersion, IdxVersion] = [5, 2]
+const [DbVersion, IdxVersion] = [5, 3]
 
 class StreamrChatDatabase extends Dexie {
     messages!: Table<IMessage, number>
@@ -31,7 +31,8 @@ class StreamrChatDatabase extends Dexie {
 
         this.version(IdxVersion).stores({
             rooms: '++, owner, id, &[owner+id]',
-            messages: '[createdAt+roomId+owner], id, &[owner+roomId+id], [owner+roomId]',
+            messages:
+                '[createdAt+roomId+owner], id, &[owner+roomId+id], [owner+roomId], [id+owner]',
             aliases: '++, owner, address, &[owner+address]',
             drafts: '++, owner, roomId, &[owner+roomId]',
             identicons: '++, &seed',
