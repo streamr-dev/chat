@@ -6,6 +6,8 @@ function selectSelf(state: State): IdenticonsState {
     return state.identicons
 }
 
-export function selectIdenticon(seed: IdenticonSeed): (state: State) => undefined | string {
-    return createSelector(selectSelf, (substate) => substate[seed])
+export function selectIdenticon(
+    seed: undefined | IdenticonSeed
+): (state: State) => undefined | string {
+    return createSelector(selectSelf, (substate) => (seed ? substate[seed] : undefined))
 }

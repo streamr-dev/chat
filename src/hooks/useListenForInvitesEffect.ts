@@ -64,14 +64,14 @@ export default function useListenForInvitesEffect(
 
             const canSub = subscribeExpirationTimestampSeconds.gt(now)
 
+            if (!canSub) {
+                return
+            }
+
             const canPub = publishExpirationTimestampSeconds.gt(now)
 
-            if (
-                canPub ||
-                canEdit ||
-                canDelete || // irrelevant to invites
-                !(canSub && canGrant) // both required for a potential invite
-            ) {
+            if (canPub || canEdit || canDelete) {
+                // An invite is a SUBSCRIBE+GRANT pair only.
                 return
             }
 

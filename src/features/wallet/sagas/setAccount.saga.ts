@@ -7,7 +7,7 @@ import { IPreference } from '$/features/preferences/types'
 import db from '$/utils/db'
 import { EnsAction } from '$/features/ens'
 
-function* preselectRoom({ payload: account }: ReturnType<typeof WalletAction.setAccount>) {
+function* preselectRoom({ payload: { account } }: ReturnType<typeof WalletAction.setAccount>) {
     try {
         if (!account) {
             yield put(RoomAction.select(undefined))
@@ -38,12 +38,12 @@ function* resetDelegatedPrivateKey() {
     }
 }
 
-function* fetchEns({ payload: address }: ReturnType<typeof WalletAction.setAccount>) {
-    if (!address) {
+function* fetchEns({ payload: { account } }: ReturnType<typeof WalletAction.setAccount>) {
+    if (!account) {
         return
     }
 
-    yield put(EnsAction.fetchNames([address]))
+    yield put(EnsAction.fetchNames([account]))
 }
 
 export default function* setAccount() {

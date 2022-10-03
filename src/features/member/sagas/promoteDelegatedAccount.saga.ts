@@ -1,6 +1,5 @@
 import { MemberAction } from '$/features/member'
-import joinTokenGatedRoom from '$/features/tokenGatedRooms/utils/joinTokenGatedRoom'
-import { Address, EnhancedStream, PrivacySetting } from '$/types'
+import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -8,45 +7,25 @@ import { error, success } from '$/utils/toaster'
 import { StreamPermission } from 'streamr-client'
 
 function* onPromoteDelegatedAccountAction({
-    payload: { roomId, delegatedAddress, provider, requester, streamrClient, privacy },
+    payload: { roomId, delegatedAddress, provider, streamrClient },
 }: ReturnType<typeof MemberAction.promoteDelegatedAccount>) {
     try {
-        if (privacy === PrivacySetting.TokenGated) {
-            const stream: EnhancedStream = yield streamrClient.getStream(roomId)
-            const metadata = stream.extensions['thechat.eth']
+        const requester: Address = yield streamrClient.getAddress()
 
-            if (!metadata.tokenAddress || !metadata.tokenType) {
-                throw new Error('No token address found')
-            }
-
-            const owner: Address = yield streamrClient.getAddress()
-
-            yield joinTokenGatedRoom(
-                roomId,
-                owner,
-                metadata.tokenAddress,
-                provider,
-                delegatedAddress,
-                metadata.tokenType,
-                metadata.tokenId!,
-                streamrClient
-            )
-        } else {
-            yield setMultiplePermissions(
-                roomId,
-                [
-                    {
-                        user: delegatedAddress,
-                        permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
-                    },
-                ],
+        yield setMultiplePermissions(
+            roomId,
+            [
                 {
-                    provider,
-                    requester,
-                    streamrClient,
-                }
-            )
-        }
+                    user: delegatedAddress,
+                    permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
+                },
+            ],
+            {
+                provider,
+                requester,
+                streamrClient,
+            }
+        )
 
         success('Delegated account has been promoted.')
     } catch (e) {

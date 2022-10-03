@@ -16,6 +16,7 @@ import { toast } from 'react-toastify'
 import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { TokenTypes } from '$/features/tokenGatedRooms/types'
 
 function* onCreateAction({
     payload: {
@@ -47,6 +48,33 @@ function* onCreateAction({
         // client from the given value and the account address that creates the stream.
 
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
+
+        // validate the metadata for tokenGated rooms
+        if (privacy === PrivacySetting.TokenGated) {
+            if (!metadata.tokenAddress) {
+                throw new Error('Token address is required for tokenGated rooms')
+            }
+
+            if (!metadata.tokenType) {
+                throw new Error('TokenType is required for tokenGated rooms')
+            }
+
+            if (
+                !metadata.tokenId &&
+                (metadata.tokenType.standard === TokenTypes.ERC721.standard ||
+                    metadata.tokenType.standard === TokenTypes.ERC1155.standard)
+            ) {
+                throw new Error('Token id is required for NFT tokenGated rooms')
+            }
+
+            if (
+                (!metadata.minTokenAmount || metadata.minTokenAmount <= 0) &&
+                (metadata.tokenType.standard === TokenTypes.ERC20.standard ||
+                    metadata.tokenType.standard === TokenTypes.ERC1155.standard)
+            ) {
+                throw new Error('Min token amount is required for tokenGated rooms')
+            }
+        }
 
         const stream: Stream = yield streamrClient.createStream({
             id,
@@ -117,10 +145,10 @@ function* onCreateAction({
                 })
             )
         }
-    } catch (e) {
+    } catch (e: any) {
         handleError(e)
 
-        error(`Failed to create "${params.name}".`)
+        error(`Failed to create "${params.name}". Reason:\n${e.message}`)
     } finally {
         if (toastId) {
             toast.dismiss(toastId)

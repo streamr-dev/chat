@@ -1,5 +1,5 @@
 import Identicon, { IdenticonOptions } from 'identicon.js'
-import { delay, put } from 'redux-saga/effects'
+import { put } from 'redux-saga/effects'
 import { keccak256 } from 'js-sha3'
 import { IdenticonAction } from '..'
 import { IIdenticon } from '../types'
@@ -15,9 +15,6 @@ const AVATAR_OPTIONS: IdenticonOptions = {
 
 function* onRetrieveAction({ payload: { seed } }: ReturnType<typeof IdenticonAction.retrieve>) {
     try {
-        // For debugging. Remove at some point.
-        yield delay(1000)
-
         const identicon: undefined | IIdenticon = yield db.identicons
             .where('seed')
             .equals(seed)

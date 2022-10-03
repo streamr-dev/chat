@@ -3,11 +3,12 @@ import { BigNumber } from 'ethers'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { put, takeEvery } from 'redux-saga/effects'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
+import handleError from '$/utils/handleError'
 
 import { Contract, providers } from 'ethers'
 
-import * as ERC20 from '../../../contracts/ERC20JoinPolicy.sol/TestERC20.json'
-import * as ERC721 from '../../../contracts/ERC721JoinPolicy.sol/TestERC721.json'
+import * as ERC20 from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
+import * as ERC721 from '$/contracts/tokens/ERC721Token.sol/ERC721.json'
 
 import { Provider } from '@web3-react/types'
 import { Address } from '$/types'
@@ -84,7 +85,7 @@ function* onGetTokenMetadata({
                 throw new Error(`Unsupported token type: ${tokenType.standard}`)
         }
     } catch (e) {
-        console.error(e)
+        handleError(e)
     }
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
@@ -34,7 +34,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     const account = useWalletAccount()
 
-    const [storage, setStorage] = useState<boolean>(false)
+    const [storage, setStorage] = useState<boolean>(true)
 
     function onStorageToggleClick() {
         setStorage((current) => !current)
@@ -46,31 +46,22 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
 
     const canPin = !isBlank(roomId)
 
-    const [createSubmitLabel, setCreateSubmitLabel] = useState<string>('Create')
+    const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
     const [isTokenGatedRoom, setIsTokenGatedRoom] = useState<boolean>(false)
     const [tokenAddress, setTokenAddress] = useState<Address>('')
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
     const [tokenId, setTokenId] = useState<BigNumberish>(0)
-    const [minTokenAmount, setMinTokenAmount] = useState<number>(0)
-
-    useEffect(() => {
-        if (privacySetting.value === PrivacySetting.TokenGated) {
-            setCreateSubmitLabel('Next')
-        } else {
-            setCreateSubmitLabel('Create')
-        }
-    }, [privacySetting])
+    const [minTokenAmount, setMinTokenAmount] = useState<string>('')
 
     function onClose() {
         setRoomName('')
         setPrivacySetting(PrivateRoomOption)
         setRoomId('')
         setIsTokenGatedRoom(false)
-        setCreateSubmitLabel('Create')
         setTokenAddress('')
         setTokenType(TokenTypes.unknown)
         setTokenId(0)
-        setMinTokenAmount(0)
+        setMinTokenAmount('')
     }
 
     const provider = useWalletProvider()
@@ -106,11 +97,8 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         owner: account!,
                         updatedAt: now,
                         tokenAddress,
-                        tokenId:
-                            tokenId && BigNumber.isBigNumber(tokenId)
-                                ? BigNumber.from(tokenId).toHexString()
-                                : undefined,
-                        minTokenAmount,
+                        tokenId: BigNumber.from(tokenId).toHexString(),
+                        minTokenAmount: parseFloat(minTokenAmount) || 0,
                         tokenType,
                     },
                     privacy: privacySetting.value,
@@ -244,14 +232,14 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                     <>
                         <Label htmlFor="roomName">Room Name</Label>
 
-                        <TextField id="roomName" value={roomName} disabled={true} />
+                        <TextField id="roomName" value={roomName} readOnly />
                         <Label htmlFor="tokenAddress">Token Address</Label>
 
-                        <TextField id="tokenAddress" value={tokenAddress} disabled={true} />
+                        <TextField id="tokenAddress" value={tokenAddress} readOnly />
 
                         <Label htmlFor="tokenStandard">Token Standard</Label>
 
-                        <TextField id="tokenStandard" value={tokenType.standard} disabled={true} />
+                        <TextField id="tokenStandard" value={tokenType.standard} readOnly />
 
                         {tokenType.hasIds && (
                             <>
@@ -272,9 +260,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 <TextField
                                     id="minTokenAmount"
                                     value={minTokenAmount}
-                                    onChange={(e) =>
-                                        void setMinTokenAmount(parseFloat(e.target.value))
-                                    }
+                                    onChange={(e) => void setMinTokenAmount(e.target.value)}
                                 />
                             </>
                         )}

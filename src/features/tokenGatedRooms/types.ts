@@ -1,4 +1,3 @@
-import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
 
 export enum ErcToInterfaceIds {
@@ -59,7 +58,6 @@ export type TokenERC721Metadata = TokenMetadata & {
 }
 
 export interface TokenGatedRoomState {
-    selectedRoomId?: RoomId
     tokenType: TokenType
     tokenAddress?: Address
     tokenId?: HexSerializedBigNumber

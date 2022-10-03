@@ -9,6 +9,7 @@ import { IMember } from '$/features/members/types'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { EnsAction } from '$/features/ens'
 import getAccountType, { AccountType } from '$/utils/getAccountType'
+import { Flag } from '$/features/flag/types'
 
 function* onDetectAction({
     payload: { roomId, streamrClient, provider },
@@ -35,6 +36,20 @@ function* onDetectAction({
             }
 
             const accountType: AccountType = yield getAccountType(assignment.user, provider)
+
+            if (accountType === AccountType.Delegated) {
+                yield put(
+                    MembersAction.lookupDelegation({
+                        delegated: assignment.user,
+                        provider,
+                        fingerprint: Flag.isLookingUpDelegation(assignment.user),
+                    })
+                )
+
+                // Exclude delegated accounts from the members list. When we delete a main/unset
+                // accounts from a room we're gonna fetch the list of delegatees anyway (@TODO).
+                continue
+            }
 
             members.push({
                 address: assignment.user,

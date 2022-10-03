@@ -7,7 +7,7 @@ import { IAlias } from '$/features/alias/types'
 import { IPreference } from '$/features/preferences/types'
 import { IENSName } from '$/features/ens/types'
 
-const [DbVersion, IdxVersion] = [4, 1]
+const [DbVersion, IdxVersion] = [5, 2]
 
 class StreamrChatDatabase extends Dexie {
     messages!: Table<IMessage, number>
@@ -37,7 +37,8 @@ class StreamrChatDatabase extends Dexie {
             identicons: '++, &seed',
             preferences: '++, &owner',
             ensNames: '++, &content, address',
-            resends: '[beginningOfDay+timezoneOffset+roomId+owner], owner, roomId',
+            resends:
+                '[beginningOfDay+timezoneOffset+roomId+owner], owner, roomId, [roomId+owner+timezoneOffset]',
         })
     }
 }
@@ -61,7 +62,7 @@ async function teardown() {
 
 // If you want people to lose their local histories in previous versions uncomment
 // the following line:
-// teardown()
+teardown()
 
 const db = new StreamrChatDatabase(DbVersion)
 

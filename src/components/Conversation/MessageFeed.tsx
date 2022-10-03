@@ -8,6 +8,7 @@ import { useSelectedRoomId } from '$/features/room/hooks'
 import MessageGroupLabel from '$/components/Conversation/MessageGroupLabel'
 import Text from '$/components/Text'
 import useMessageGroups from '$/hooks/useMessageGroups'
+import { useDelegatedAccount } from '$/features/delegation/hooks'
 
 type Props = {
     messages?: IMessage[]
@@ -61,6 +62,8 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
 
     const account = useWalletAccount()
 
+    const delegatedAccount = useDelegatedAccount()
+
     return (
         <div
             ref={rootRef}
@@ -75,7 +78,7 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
             ]}
         >
             {groups.map(({ timestamp, newDay, messages }, index) => {
-                let previousCreatedBy: IMessage['createdBy']
+                let previousCreatedBy: undefined | IMessage['createdBy']
 
                 return (
                     <Fragment key={timestamp}>
@@ -91,7 +94,7 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
                             </NoMessages>
                         )}
                         {messages.map((message) => {
-                            const hideAvatar = previousCreatedBy === message.createdBy
+                            const pcb = previousCreatedBy
 
                             previousCreatedBy = message.createdBy
 
@@ -99,8 +102,11 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
                                 <Message
                                     key={message.id}
                                     payload={message}
-                                    incoming={!isSameAddress(account, message.createdBy)}
-                                    hideAvatar={hideAvatar}
+                                    incoming={
+                                        !isSameAddress(account, message.createdBy) &&
+                                        !isSameAddress(delegatedAccount, message.createdBy)
+                                    }
+                                    previousCreatedBy={pcb}
                                 />
                             )
                         })}

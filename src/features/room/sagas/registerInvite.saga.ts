@@ -19,7 +19,11 @@ function* onRegisterInviteAction({
                 const a = assignments[i]
 
                 if ('user' in a && isSameAddress(a.user, invitee)) {
-                    return a.permissions.length === 1 && a.permissions[0] === StreamPermission.GRANT
+                    return (
+                        a.permissions.length === 2 &&
+                        a.permissions.includes(StreamPermission.GRANT) &&
+                        a.permissions.includes(StreamPermission.SUBSCRIBE)
+                    )
                 }
             }
 

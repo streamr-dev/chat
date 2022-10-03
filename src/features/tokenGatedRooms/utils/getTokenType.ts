@@ -1,8 +1,8 @@
 import { BigNumber, Contract, providers } from 'ethers'
 
-import * as ERC20 from '../../../contracts/ERC20JoinPolicy.sol/TestERC20.json'
+import * as ERC20 from '../../../contracts/tokens/ERC20Token.sol/ERC20.json'
 
-import * as ERC165 from '../../../contracts/ERC165.json' // supportsInterface
+import * as ERC165 from '../../../contracts/tokens/ERC165.json' // supportsInterface
 
 import { Provider } from '@web3-react/types'
 import { Address } from '$/types'

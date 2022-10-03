@@ -1,7 +1,7 @@
 import { Contract, providers } from 'ethers'
 import { useEffect, useState } from 'react'
-import { abi } from '../contracts/StreamRegistryV3.json'
-import { StreamRegistryV3 } from '../contracts/StreamRegistryV3'
+import { abi } from '../contracts/StreamRegistryV3.sol/StreamRegistryV3.json'
+import { StreamRegistryV3 } from '../contracts/StreamRegistryV3.sol/StreamRegistryV3'
 
 const StreamRegistryAddress = '0x0D483E10612F327FC11965Fc82E90dC19b141641'
 

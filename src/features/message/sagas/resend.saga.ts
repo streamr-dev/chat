@@ -6,6 +6,7 @@ import getBeginningOfDay, { DayInMillis, TimezoneOffset } from '$/utils/getBegin
 import handleError from '$/utils/handleError'
 import resendUtil from '$/utils/resend'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import toLocalMessage from '$/utils/toLocalMessage'
 import { put } from 'redux-saga/effects'
 import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 
@@ -53,11 +54,9 @@ function* onResendAction({
         let minCreatedAt: undefined | number = undefined
 
         for (let i = 0; i < messages.length; i++) {
-            const raw = messages[i]
+            const message = toLocalMessage(messages[i])
 
-            const {
-                messageId: { timestamp: createdAt },
-            } = raw
+            const { createdAt } = message
 
             if (typeof createdAt === 'number') {
                 if (typeof minCreatedAt === 'undefined' || minCreatedAt > createdAt) {
@@ -65,19 +64,10 @@ function* onResendAction({
                 }
             }
 
-            const { id, createdBy, content } = raw.getParsedContent()
-
             yield put(
                 MessageAction.register({
                     owner,
-                    message: {
-                        createdAt,
-                        createdBy,
-                        content,
-                        updatedAt: createdAt,
-                        id,
-                        roomId,
-                    },
+                    message,
                 })
             )
         }

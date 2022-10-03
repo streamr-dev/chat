@@ -9,13 +9,18 @@ export default function useJustInvited(roomId: undefined | RoomId, address: Opti
 
     return useMemo(() => {
         if (permissions[StreamPermission.GRANT]?.value !== true) {
-            // Invited people start off with `GRANT` only. If it's not there then we can skip
-            // right away.
+            return false
+        }
+
+        if (permissions[StreamPermission.SUBSCRIBE]?.value !== true) {
             return false
         }
 
         return !Object.entries(permissions).find(
-            ([permission, { value }]) => permission !== StreamPermission.GRANT && value
+            ([permission, { value }]) =>
+                permission !== StreamPermission.GRANT &&
+                permission !== StreamPermission.SUBSCRIBE &&
+                value
         )
     }, [permissions])
 }

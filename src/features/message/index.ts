@@ -14,7 +14,6 @@ export const MessageAction = {
     publish: createAction<{
         roomId: RoomId
         content: string
-        requester: Address
         streamrClient: StreamrClient
     }>('message: publish'),
 

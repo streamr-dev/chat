@@ -1,5 +1,5 @@
 import { takeEvery } from 'redux-saga/effects'
-import { Contract, Stream, StreamPermission } from 'streamr-client'
+import { Contract, StreamPermission } from 'streamr-client'
 import { BigNumber } from 'ethers'
 import { Address } from '$/types'
 import { TokenGatedRoomAction } from '..'
@@ -9,6 +9,7 @@ import handleError from '$/utils/handleError'
 import { error } from '$/utils/toaster'
 import { RoomId } from '$/features/room/types'
 import { HexSerializedBigNumber, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
+import setMultiplePermissions from '$/utils/setMultiplePermissions'
 
 function createInformationalToast(message: string, toastId?: string | number) {
     if (toastId) {
@@ -64,7 +65,6 @@ function* onRegisterPolicy({
     let toastId
     try {
         const tokenStandard = tokenType.standard
-        const stream: Stream = yield streamrClient.getStream(roomId)
         toastId = createInformationalToast('Deploying Token Gate')
         const factory = getJoinPolicyFactory(provider)
 
@@ -99,19 +99,24 @@ function* onRegisterPolicy({
             toastId
         )
 
-        // assign permissions to the freshly-deployed policy contract
-        yield stream.grantPermissions({
-            user: policyAddress,
-            permissions: [StreamPermission.GRANT],
-        })
-
-        // give up one's own control over the stream
-        // for some reason forces the owner to pin the room as if they were an invitee
-        toastId = createInformationalToast('Revoking GRANT permission for the owner', toastId)
-        yield stream.revokePermissions({
-            user: owner,
-            permissions: [StreamPermission.GRANT],
-        })
+        yield setMultiplePermissions(
+            roomId,
+            [
+                {
+                    user: owner,
+                    permissions: [StreamPermission.EDIT, StreamPermission.DELETE],
+                },
+                {
+                    user: policyAddress,
+                    permissions: [StreamPermission.GRANT],
+                },
+            ],
+            {
+                provider,
+                requester: owner,
+                streamrClient,
+            }
+        )
 
         toastId = createInformationalToast('Done!', toastId)
     } catch (e) {

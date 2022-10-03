@@ -4,7 +4,6 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from '$/store'
-import WalletIntegrationObserver from '$/components/WalletIntegrationObserver'
 import Clock from '$/components/Clock'
 import IndexPage from '$/components/IndexPage'
 
@@ -58,7 +57,6 @@ export default function App() {
         <Provider store={store}>
             <GlobalStyles />
             <Global styles={customGlobalStyles} />
-            <WalletIntegrationObserver />
             <Clock />
             <div>
                 <ToastContainer position="bottom-left" closeOnClick={false} />

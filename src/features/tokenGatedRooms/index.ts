@@ -15,9 +15,9 @@ import StreamrClient from 'streamr-client'
 import getTokenMetadata from '$/features/tokenGatedRooms/sagas/getTokenMetadata.saga'
 import { RoomId } from '$/features/room/types'
 import registerPolicy from '$/features/tokenGatedRooms/sagas/registerPolicy.saga'
+import join from '$/features/tokenGatedRooms/sagas/join.saga'
 
 const initialState: TokenGatedRoomState = {
-    selectedRoomId: undefined,
     tokenType: TokenTypes.unknown,
     tokenAddress: undefined,
     tokenId: undefined,
@@ -44,8 +44,7 @@ export const TokenGatedRoomAction = {
         provider: Provider
         delegatedAccount: Address
         tokenType: TokenType
-        tokenId: HexSerializedBigNumber
-        streamrClient: StreamrClient
+        tokenId?: HexSerializedBigNumber
     }>('tokenGatedRooms: join'),
 
     getTokenMetadata: createAction<{
@@ -76,7 +75,7 @@ const reducer = createReducer(initialState, (builder) => {
 })
 
 export function* tokenGatedRoomSaga() {
-    yield all([registerPolicy(), getTokenMetadata()])
+    yield all([registerPolicy(), getTokenMetadata(), join()])
 }
 
 export default reducer

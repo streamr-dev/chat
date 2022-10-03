@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { OptionalAddress } from '$/types'
+import { OptionalAddress, PrivacySetting } from '$/types'
 import { RoomId } from '$/features/room/types'
 import { selectFlag } from '$/features/flag/selectors'
 import { MemberAction } from '$/features/member'
@@ -99,16 +99,28 @@ export function usePromoteDelegatedAccount() {
             return
         }
 
-        dispatch(
-            MemberAction.promoteDelegatedAccount({
-                roomId,
-                delegatedAddress,
-                provider,
-                requester,
-                streamrClient,
-                fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
-                privacy,
-            })
-        )
+        if (privacy === PrivacySetting.TokenGated) {
+            dispatch(
+                MemberAction.tokenGatedPromoteDelegatedAccount({
+                    roomId,
+                    delegatedAddress,
+                    provider,
+                    requester,
+                    streamrClient,
+                    fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
+                })
+            )
+        } else {
+            dispatch(
+                MemberAction.promoteDelegatedAccount({
+                    roomId,
+                    delegatedAddress,
+                    provider,
+                    requester,
+                    streamrClient,
+                    fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
+                })
+            )
+        }
     }, [roomId, delegatedAddress, provider, requester, streamrClient])
 }
