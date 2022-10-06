@@ -42,15 +42,6 @@ export const MemberAction = {
                 streamrClient: StreamrClient
             }
     >('member: promote delegated account'),
-
-    tokenGatedPromoteDelegatedAccount: createAction<
-        IFingerprinted &
-            PreflightParams & {
-                roomId: RoomId
-                delegatedAddress: Address
-                streamrClient: StreamrClient
-            }
-    >('member: token gated promote delegated account'),
 }
 
 const reducer = createReducer({}, (builder) => {

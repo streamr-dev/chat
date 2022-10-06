@@ -8,6 +8,7 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { usePrivacy, useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 
 export function useIsMemberBeingRemoved(roomId: undefined | RoomId, address: OptionalAddress) {
     return useSelector(
@@ -101,13 +102,12 @@ export function usePromoteDelegatedAccount() {
 
         if (privacy === PrivacySetting.TokenGated) {
             dispatch(
-                MemberAction.tokenGatedPromoteDelegatedAccount({
+                TokenGatedRoomAction.join({
                     roomId,
-                    delegatedAddress,
+                    owner: requester,
                     provider,
-                    requester,
+                    delegatedAccount: delegatedAddress,
                     streamrClient,
-                    fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
                 })
             )
         } else {
@@ -122,5 +122,5 @@ export function usePromoteDelegatedAccount() {
                 })
             )
         }
-    }, [roomId, delegatedAddress, provider, requester, streamrClient])
+    }, [roomId, delegatedAddress, provider, requester, streamrClient, privacy])
 }

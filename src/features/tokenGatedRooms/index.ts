@@ -40,11 +40,9 @@ export const TokenGatedRoomAction = {
     join: createAction<{
         roomId: RoomId
         owner: Address
-        tokenAddress: Address
         provider: Provider
         delegatedAccount: Address
-        tokenType: TokenType
-        tokenId?: HexSerializedBigNumber
+        streamrClient: StreamrClient
     }>('tokenGatedRooms: join'),
 
     getTokenMetadata: createAction<{

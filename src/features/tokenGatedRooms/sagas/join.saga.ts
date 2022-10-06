@@ -1,73 +1,55 @@
-import { Address } from '$/types'
-import { getJoinPolicyFactory } from '$/features/tokenGatedRooms/utils/getJoinPolicyFactory'
-import { takeEvery } from 'redux-saga/effects'
-import { BigNumber, Contract } from 'ethers'
-import { getJoinPolicy } from '$/features/tokenGatedRooms/utils/getJoinPolicy'
+import { Address, EnhancedStream } from '$/types'
+import { put, takeEvery } from 'redux-saga/effects'
+import { Contract } from 'ethers'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import handleError from '$/utils/handleError'
-
-async function joinERC20(
-    factory: Contract,
-    roomId: string,
-    owner: Address,
-    tokenAddress: Address,
-    provider: any,
-    delegatedAccount: Address
-) {
-    const policyAddress = await factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
-    const policy = getJoinPolicy(policyAddress, provider, TokenTypes.ERC20)
-    const canJoin = await policy.canJoin(owner)
-    if (!canJoin) {
-        throw new Error('Cannot join tokenGated room')
-    }
-    await policy.requestDelegatedJoin(delegatedAccount)
-}
-
-async function joinERC721(
-    factory: Contract,
-    roomId: string,
-    owner: Address,
-    tokenAddress: Address,
-    tokenId: BigNumber,
-    provider: any,
-    delegatedAccount: Address
-) {
-    const policyAddress = await factory.erc721TokensToJoinPolicies(tokenAddress, tokenId, roomId)
-    const policy = getJoinPolicy(policyAddress, provider, TokenTypes.ERC721)
-    const canJoin = await policy.canJoin(owner, tokenId)
-
-    if (!canJoin) {
-        throw new Error('Cannot join tokenGated room')
-    }
-    await policy.requestDelegatedJoin(delegatedAccount, tokenId)
-}
+import { success } from '$/utils/toaster'
+import { MembersAction } from '$/features/members'
+import { Flag } from '$/features/flag/types'
+import { TransactionResponse } from '@ethersproject/providers'
+import { getJoinPolicy, getJoinPolicyFactory } from '$/features/tokenGatedRooms/utils'
 
 function* onJoinTokenGatedRoom({
-    payload: { roomId, owner, tokenAddress, provider, delegatedAccount, tokenType, tokenId },
+    payload: { roomId, provider, delegatedAccount, streamrClient },
 }: ReturnType<typeof TokenGatedRoomAction.join>) {
     try {
+        const stream: EnhancedStream = yield streamrClient.getStream(roomId)
+        const { tokenAddress, tokenType, tokenId } = stream.extensions['thechat.eth']
+
+        if (!tokenAddress || !tokenType) {
+            throw new Error('No token address or token type found')
+        }
         const factory = getJoinPolicyFactory(provider)
+
+        let policyAddress: Address
+        let policy: Contract
+        let tx: TransactionResponse
 
         switch (tokenType.standard) {
             case 'ERC20':
-                yield joinERC20(factory, roomId, owner, tokenAddress, provider, delegatedAccount)
+                policyAddress = yield factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
+                policy = getJoinPolicy(policyAddress, provider, TokenTypes.ERC20)
+                tx = yield policy.requestDelegatedJoin(delegatedAccount)
                 break
             case 'ERC721':
-                yield joinERC721(
-                    factory,
-                    roomId,
-                    owner,
+                if (!tokenId) {
+                    throw new Error('No token id found')
+                }
+                policyAddress = yield factory.erc721TokensToJoinPolicies(
                     tokenAddress,
-                    BigNumber.from(tokenId),
-                    provider,
-                    delegatedAccount
+                    tokenId,
+                    roomId
                 )
+                policy = getJoinPolicy(policyAddress, provider, TokenTypes.ERC721)
+                tx = yield policy.requestDelegatedJoin(delegatedAccount, tokenId)
                 break
             default:
                 throw new Error('Invalid token type')
         }
-        /*
+
+        yield tx.wait()
+
         yield put(
             MembersAction.detect({
                 roomId,
@@ -75,7 +57,8 @@ function* onJoinTokenGatedRoom({
                 provider,
                 fingerprint: Flag.isDetectingMembers(roomId),
             })
-        )*/
+        )
+        success('Joined tokenGated room')
     } catch (e) {
         handleError(e)
     }

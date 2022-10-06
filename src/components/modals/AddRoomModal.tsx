@@ -20,8 +20,8 @@ import PrivacySelectField, { PrivateRoomOption } from '$/components/PrivacySelec
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { error } from '$/utils/toaster'
 import { TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
-import { getTokenType } from '$/features/tokenGatedRooms/utils/getTokenType'
 import { BigNumber, BigNumberish } from 'ethers'
+import { getTokenType } from '$/features/tokenGatedRooms/utils'
 
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)

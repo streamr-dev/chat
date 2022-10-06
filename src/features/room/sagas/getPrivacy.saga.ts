@@ -6,7 +6,7 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
+import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils'
 
 function* onGetPrivacyAction({
     payload: { roomId, streamrClient },

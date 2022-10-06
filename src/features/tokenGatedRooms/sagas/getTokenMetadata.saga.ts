@@ -1,5 +1,3 @@
-import { BigNumber } from 'ethers'
-
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { put, takeEvery } from 'redux-saga/effects'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
@@ -38,7 +36,7 @@ function* onGetTokenMetadata({
         let instance: Contract
         let name: string
         let symbol: string
-        let decimals: BigNumber
+        let decimals: number
         let tokenUri: string
         let fetchedMetadata: { [key: string]: string }
 
@@ -54,7 +52,7 @@ function* onGetTokenMetadata({
                         contractAddress: tokenAddress,
                         name,
                         symbol,
-                        decimals: decimals.toNumber(),
+                        decimals,
                     })
                 )
                 break
