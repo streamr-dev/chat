@@ -17,37 +17,53 @@ export const getTokenType = async (address: Address, rawProvider: Provider): Pro
             new providers.Web3Provider(rawProvider).getSigner()
         )
 
-        const supportsERC1155Interface = await contract.supportsInterface(ErcToInterfaceIds.ERC1155)
-        if (supportsERC1155Interface) {
-            detectedTokenType = TokenTypes.ERC1155
-            return detectedTokenType
+        try {
+            const supportsERC1155Interface = await contract.supportsInterface(
+                ErcToInterfaceIds.ERC1155
+            )
+            if (supportsERC1155Interface) {
+                detectedTokenType = TokenTypes.ERC1155
+                return detectedTokenType
+            }
+        } catch (e) {
+            console.warn('Failed to detect ERC1155 interface', e)
         }
 
-        const supportsERC721Interface = await contract.supportsInterface(ErcToInterfaceIds.ERC721)
-        if (supportsERC721Interface) {
-            detectedTokenType = TokenTypes.ERC721
-            return detectedTokenType
+        try {
+            const supportsERC721Interface = await contract.supportsInterface(
+                ErcToInterfaceIds.ERC721
+            )
+            if (supportsERC721Interface) {
+                detectedTokenType = TokenTypes.ERC721
+                return detectedTokenType
+            }
+        } catch (e) {
+            console.warn('Failed to detect ERC721 interface', e)
         }
 
-        const supportsERC20Interface = await contract.supportsInterface(ErcToInterfaceIds.ERC20)
-        const supportsERC20NameInterface = await contract.supportsInterface(
-            ErcToInterfaceIds.ERC20Name
-        )
-        const supportsERC20SymbolInterface = await contract.supportsInterface(
-            ErcToInterfaceIds.ERC20Symbol
-        )
-        const supportsERC20DecimalsInterface = await contract.supportsInterface(
-            ErcToInterfaceIds.ERC20Decimals
-        )
+        try {
+            const supportsERC20Interface = await contract.supportsInterface(ErcToInterfaceIds.ERC20)
+            const supportsERC20NameInterface = await contract.supportsInterface(
+                ErcToInterfaceIds.ERC20Name
+            )
+            const supportsERC20SymbolInterface = await contract.supportsInterface(
+                ErcToInterfaceIds.ERC20Symbol
+            )
+            const supportsERC20DecimalsInterface = await contract.supportsInterface(
+                ErcToInterfaceIds.ERC20Decimals
+            )
 
-        if (
-            supportsERC20Interface ||
-            (supportsERC20NameInterface &&
-                supportsERC20SymbolInterface &&
-                supportsERC20DecimalsInterface)
-        ) {
-            detectedTokenType = TokenTypes.ERC20
-            return detectedTokenType
+            if (
+                supportsERC20Interface ||
+                (supportsERC20NameInterface &&
+                    supportsERC20SymbolInterface &&
+                    supportsERC20DecimalsInterface)
+            ) {
+                detectedTokenType = TokenTypes.ERC20
+                return detectedTokenType
+            }
+        } catch (e) {
+            console.warn('Failed to detect ERC20 interface', e)
         }
 
         // still, erc20 is not compulsory erc165 so time for specific checks
@@ -62,9 +78,11 @@ export const getTokenType = async (address: Address, rawProvider: Provider): Pro
 
         if (balanceCheck.gte(0) && totalSupplyCheck.gte(0)) {
             detectedTokenType = TokenTypes.ERC20
+        } else {
+            throw new Error('Unknown token type')
         }
     } catch (e) {
-        console.warn(e)
+        console.error(e)
         detectedTokenType = TokenTypes.unknown
     }
     return detectedTokenType
