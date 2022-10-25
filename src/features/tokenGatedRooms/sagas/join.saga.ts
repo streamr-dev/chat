@@ -27,12 +27,12 @@ function* onJoinTokenGatedRoom({
         let tx: TransactionResponse
 
         switch (tokenType.standard) {
-            case 'ERC20':
+            case TokenTypes.ERC20.standard:
                 policyAddress = yield factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
                 policy = getJoinPolicy(policyAddress, provider, TokenTypes.ERC20)
                 tx = yield policy.requestDelegatedJoin(delegatedAccount)
                 break
-            case 'ERC721':
+            case TokenTypes.ERC721.standard:
                 if (!tokenId) {
                     throw new Error('No token id found')
                 }

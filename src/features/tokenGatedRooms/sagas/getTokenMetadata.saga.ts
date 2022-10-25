@@ -11,11 +11,11 @@ import * as ERC721 from '$/contracts/tokens/ERC721Token.sol/ERC721.json'
 import { Provider } from '@web3-react/types'
 import { Address } from '$/types'
 
-export const getERC20 = (address: Address, rawProvider: Provider): Contract => {
+const getERC20 = (address: Address, rawProvider: Provider): Contract => {
     return new Contract(address, ERC20.abi, new providers.Web3Provider(rawProvider).getSigner())
 }
 
-export const getERC721 = (address: Address, rawProvider: Provider): Contract => {
+const getERC721 = (address: Address, rawProvider: Provider): Contract => {
     return new Contract(address, ERC721.abi, new providers.Web3Provider(rawProvider).getSigner())
 }
 

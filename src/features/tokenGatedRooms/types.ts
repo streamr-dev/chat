@@ -54,7 +54,7 @@ export type TokenERC721Metadata = TokenMetadata & {
     name: string
     symbol: string
     tokenUri: string
-    fetchedMetadata: { [key: string]: string }
+    fetchedMetadata: Record<string, string>
 }
 
 export interface TokenGatedRoomState {

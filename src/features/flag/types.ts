@@ -71,12 +71,8 @@ export const Flag = {
         ])
     },
 
-    isDelegatedAccountBeingPromoted(roomId: RoomId, delegatedAddress: Address): string {
-        return JSON.stringify([
-            'isDelegatedAccountBeingPromoted',
-            roomId,
-            delegatedAddress.toLowerCase(),
-        ])
+    isJoiningTokenGatedRoom(roomId: RoomId, delegatedAddress: Address): string {
+        return JSON.stringify(['isJoiningTokenGatedRoom', roomId, delegatedAddress.toLowerCase()])
     },
 
     isDetectingMembers(roomId: RoomId): string {

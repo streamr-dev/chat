@@ -1,4 +1,4 @@
-import { takeEvery } from 'redux-saga/effects'
+import { retry, takeEvery } from 'redux-saga/effects'
 import { Contract, StreamPermission } from 'streamr-client'
 import { BigNumber } from 'ethers'
 import { Address } from '$/types'
@@ -33,18 +33,20 @@ async function waitForPolicyToBeDeployed(
     tokenId?: HexSerializedBigNumber
 ): Promise<Address> {
     let policyAddress: Address
-    if (tokenType.standard === TokenTypes.ERC20.standard) {
-        policyAddress = await factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
-    } else if (tokenType.standard === TokenTypes.ERC721.standard) {
-        policyAddress = await factory.erc721TokensToJoinPolicies(tokenAddress, tokenId, roomId)
-    } else {
-        throw new Error('Unknown token type')
+
+    switch (tokenType.standard) {
+        case TokenTypes.ERC20.standard:
+            policyAddress = await factory.erc20TokensToJoinPolicies(tokenAddress, roomId)
+            break
+        case TokenTypes.ERC721.standard:
+            policyAddress = await factory.erc721TokensToJoinPolicies(tokenAddress, tokenId, roomId)
+            break
+        default:
+            throw new Error('Unknown token type')
     }
 
     if (policyAddress === '0x0000000000000000000000000000000000000000') {
-        console.warn('policy at 0x00...000 address, waiting 5 second and trying again')
-        await new Promise((resolve) => setTimeout(resolve, 5 * 1000))
-        return waitForPolicyToBeDeployed(tokenType, factory, tokenAddress, roomId, tokenId)
+        throw new Error('Invalid policy address. Retry in a minute.')
     }
 
     return policyAddress
@@ -68,7 +70,7 @@ function* onRegisterPolicy({
         toastId = createInformationalToast('Deploying Token Gate')
         const factory = getJoinPolicyFactory(provider)
 
-        let res: { [key: string]: any }
+        let res: Record<string, any>
         switch (tokenStandard) {
             case TokenTypes.ERC20.standard:
                 res = yield factory.registerERC20Policy(
@@ -84,16 +86,20 @@ function* onRegisterPolicy({
                 throw new Error('Unknown token type')
         }
 
-        yield res.wait()
+        // await for 5 confirmations on the tx before starting retry prolicy
+        yield res.wait(5)
 
-        const policyAddress: Address = yield waitForPolicyToBeDeployed(
+        const policyAddress: Address = yield retry(
+            5,
+            5000,
+            waitForPolicyToBeDeployed,
             tokenType,
             factory,
             tokenAddress,
-
             roomId,
             tokenId
         )
+
         toastId = createInformationalToast(
             `Assigning permissions to the Token Gate at ${policyAddress}`,
             toastId

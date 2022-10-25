@@ -66,7 +66,7 @@ export function useAcceptInvite() {
     }, [member, delegatedAddress, roomId, provider, requester, streamrClient])
 }
 
-export function useIsDelegatedAccountBeingPromoted() {
+export function useIsJoiningTokenGatedRoom() {
     const roomId = useSelectedRoomId()
 
     const delegatedAddress = useDelegatedAccount()
@@ -74,7 +74,7 @@ export function useIsDelegatedAccountBeingPromoted() {
     return useSelector(
         selectFlag(
             roomId && delegatedAddress
-                ? Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress)
+                ? Flag.isJoiningTokenGatedRoom(roomId, delegatedAddress)
                 : undefined
         )
     )
@@ -118,7 +118,7 @@ export function usePromoteDelegatedAccount() {
                     provider,
                     requester,
                     streamrClient,
-                    fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
+                    fingerprint: Flag.isJoiningTokenGatedRoom(roomId, delegatedAddress),
                 })
             )
         }

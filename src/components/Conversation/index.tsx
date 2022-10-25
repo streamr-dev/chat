@@ -28,7 +28,7 @@ import { useWalletAccount } from '$/features/wallet/hooks'
 import Spinner from '$/components/Spinner'
 import {
     useAcceptInvite,
-    useIsDelegatedAccountBeingPromoted,
+    useIsJoiningTokenGatedRoom,
     useIsInviteBeingAccepted,
     usePromoteDelegatedAccount,
 } from '$/features/member/hooks'
@@ -147,7 +147,7 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     const isBeingAccepted = useIsInviteBeingAccepted()
 
-    const isPromoting = useIsDelegatedAccountBeingPromoted()
+    const isPromoting = useIsJoiningTokenGatedRoom()
 
     const requestPrivateKey = useRequestPrivateKey()
 
