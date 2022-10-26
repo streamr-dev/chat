@@ -31,7 +31,7 @@ export const TokenGatedRoomAction = {
         tokenAddress: string
         roomId: RoomId
         tokenType: TokenType
-        minTokenAmount?: number
+        minTokenAmount?: HexSerializedBigNumber
         tokenId?: HexSerializedBigNumber
         provider: Provider
         streamrClient: StreamrClient

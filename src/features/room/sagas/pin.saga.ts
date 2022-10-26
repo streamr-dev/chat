@@ -13,7 +13,7 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error } from '$/utils/toaster'
 import { Provider } from '@web3-react/types'
 import { toast } from 'react-toastify'
-import { call, put, putResolve } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 
 interface PinRemoteOptions {
@@ -38,7 +38,7 @@ function* pinRemote(
     const isTokenGated = isTokenGatedRoom(stream)
 
     if (isTokenGated) {
-        yield putResolve(
+        yield put(
             TokenGatedRoomAction.join({
                 roomId,
                 owner,

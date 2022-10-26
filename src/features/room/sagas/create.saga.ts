@@ -17,6 +17,7 @@ import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
+import { BigNumber } from 'ethers'
 
 function* onCreateAction({
     payload: {
@@ -68,7 +69,7 @@ function* onCreateAction({
             }
 
             if (
-                (!metadata.minTokenAmount || metadata.minTokenAmount <= 0) &&
+                (!metadata.minTokenAmount || BigNumber.from(metadata.minTokenAmount).gt(0)) &&
                 (metadata.tokenType.standard === TokenTypes.ERC20.standard ||
                     metadata.tokenType.standard === TokenTypes.ERC1155.standard)
             ) {

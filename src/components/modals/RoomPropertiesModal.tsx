@@ -161,7 +161,9 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                     </Label>
                     <Label>
                         <b>Minimum Required Balance:</b>
-                        {minTokenAmount / 10 ** Number(tokenERC20Metadata.decimals)}
+                        {BigNumber.from(minTokenAmount)
+                            .div(10 ** Number(tokenERC20Metadata.decimals))
+                            .toString()}
                     </Label>
                 </>
             ) : null}

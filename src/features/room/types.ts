@@ -24,7 +24,7 @@ export interface IRoom extends IRecord {
     // for token-gated rooms
     tokenAddress?: Address
     tokenId?: HexSerializedBigNumber
-    minTokenAmount?: number
+    minTokenAmount?: HexSerializedBigNumber
     tokenType?: TokenType
 }
 

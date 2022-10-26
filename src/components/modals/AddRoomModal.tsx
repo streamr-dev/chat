@@ -23,6 +23,12 @@ import { TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { BigNumber, BigNumberish } from 'ethers'
 import { getTokenType } from '$/features/tokenGatedRooms/utils'
 
+function numericInputValidation(event: any) {
+    if (!/[0-9]/.test(event.key)) {
+        event.preventDefault()
+    }
+}
+
 export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
 
@@ -51,7 +57,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [tokenAddress, setTokenAddress] = useState<Address>('')
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
     const [tokenId, setTokenId] = useState<BigNumberish>(0)
-    const [minTokenAmount, setMinTokenAmount] = useState<string>('')
+    const [minTokenAmount, setMinTokenAmount] = useState<BigNumberish>(1)
 
     function onClose() {
         setRoomName('')
@@ -61,7 +67,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         setTokenAddress('')
         setTokenType(TokenTypes.unknown)
         setTokenId(0)
-        setMinTokenAmount('')
+        setMinTokenAmount(1)
     }
 
     const provider = useWalletProvider()
@@ -98,7 +104,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         updatedAt: now,
                         tokenAddress,
                         tokenId: BigNumber.from(tokenId).toHexString(),
-                        minTokenAmount: parseFloat(minTokenAmount) || 0,
+                        minTokenAmount: BigNumber.from(minTokenAmount).toHexString(),
                         tokenType,
                     },
                     privacy: privacySetting.value,
@@ -258,8 +264,9 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                             <>
                                 <Label htmlFor="minTokenAmount">Minimum Token Amount</Label>
                                 <TextField
+                                    onKeyPress={numericInputValidation}
                                     id="minTokenAmount"
-                                    value={minTokenAmount}
+                                    value={minTokenAmount.toString()}
                                     onChange={(e) => void setMinTokenAmount(e.target.value)}
                                 />
                             </>
