@@ -15,7 +15,7 @@
         "@emotion/styled": "^11.10.4",
         "@ethersproject/bignumber": "^5.7.0",
         "@ethersproject/experimental": "^5.7.0",
-        "@ethersproject/providers": "^5.7.1",
+        "@ethersproject/providers": "^5.7.2",
         "@ethersproject/units": "^5.6.0",
         "@metamask/eth-sig-util": "^5.0.0",
         "@reduxjs/toolkit": "^1.8.6",
