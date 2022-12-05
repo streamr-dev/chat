@@ -26,16 +26,14 @@ const reducer = createReducer(initialState, (builder) => {
 
         state.client = privateKey
             ? new StreamrClient({
-                  auth: {
-                      privateKey,
-                  },
-                  gapFill: false,
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  _timeouts: {
-                      groupKeyResponseTimeout: 2500,
-                  },
-              })
+                auth: {
+                    privateKey,
+                },
+                gapFill: false,
+                decryption: {
+                    keyRequestTimeout: 2500
+                }
+            })
             : undefined
     })
 
