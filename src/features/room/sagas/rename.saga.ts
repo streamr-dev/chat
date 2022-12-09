@@ -12,6 +12,7 @@ import RedundantRenameError from '$/errors/RedundantRenameError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },
@@ -23,7 +24,9 @@ function* onRenameAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        if (stream.description === name) {
+        const { name: oldName } = getStreamMetadata(stream)
+
+        if (oldName === name) {
             info('Room name is already up-to-date.')
 
             try {
@@ -52,11 +55,18 @@ function* onRenameAction({
             requester,
         })
 
-        stream.description = name
+        const originalMetadata = stream.getMetadata() as any
 
-        stream.extensions['thechat.eth'].updatedAt = Date.now()
-
-        yield stream.update()
+        yield stream.update({
+            ...originalMetadata,
+            description: name,
+            extensions: {
+                thechat: {
+                    ...originalMetadata.extensions.thechat,
+                    updatedAt: Date.now(),
+                },
+            },
+        } as any)
 
         yield put(
             RoomAction.renameLocal({

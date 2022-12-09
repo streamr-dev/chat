@@ -6,6 +6,7 @@ import db from '$/utils/db'
 import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { IRoom } from '../types'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 
 function* onFetchAction({
     payload: { roomId, requester, streamrClient },
@@ -17,7 +18,7 @@ function* onFetchAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const metadata = stream.extensions['thechat.eth']
+        const metadata = getStreamMetadata(stream)
 
         const owner = requester.toLowerCase()
 
@@ -31,7 +32,7 @@ function* onFetchAction({
             createdAt: metadata.createdAt,
             createdBy: metadata.createdBy,
             id: stream.id,
-            name: stream.description || '',
+            name: metadata.name || '',
             owner,
         })
     } catch (e) {

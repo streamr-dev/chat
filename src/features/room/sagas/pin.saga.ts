@@ -7,6 +7,7 @@ import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedR
 import { Address, EnhancedStream } from '$/types'
 import db from '$/utils/db'
 import getStream from '$/utils/getStream'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -33,7 +34,7 @@ function* pinRemote(
         throw new RoomNotFoundError(roomId)
     }
 
-    const { createdAt, createdBy, tokenAddress } = stream.extensions['thechat.eth']
+    const { createdAt, createdBy, tokenAddress, name } = getStreamMetadata(stream)
 
     const isTokenGated = isTokenGatedRoom(stream)
 
@@ -69,7 +70,7 @@ function* pinRemote(
             createdAt: createdAt,
             createdBy: createdBy,
             id: stream.id,
-            name: stream.description || '',
+            name: name || '',
             owner,
             pinned: true,
         })
