@@ -1,6 +1,6 @@
 import { takeEvery } from 'redux-saga/effects'
-import { Contract, StreamPermission } from 'streamr-client'
-import { BigNumber } from 'ethers'
+import { StreamPermission } from 'streamr-client'
+import { BigNumber, Contract } from 'ethers'
 import { Address } from '$/types'
 import { TokenGatedRoomAction } from '..'
 import { getJoinPolicyFactory } from '$/features/tokenGatedRooms/utils/getJoinPolicyFactory'

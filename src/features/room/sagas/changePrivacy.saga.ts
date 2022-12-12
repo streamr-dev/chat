@@ -8,6 +8,7 @@ import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { error, success } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 
 function* onChangePrivacyAction({
     payload: { roomId, privacy, provider, requester, streamrClient },
@@ -29,9 +30,7 @@ function* onChangePrivacyAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const { description = 'Unnamed room' } = stream
-
-        name = description
+        const { name } = getStreamMetadata(stream)
 
         yield streamrClient.setPermissions({
             streamId: roomId,
