@@ -29,8 +29,9 @@ export default function subscribe(roomId: RoomId, streamrClient: StreamrClient) 
                     {
                         streamId: roomId,
                     },
-                    (_, raw) => {
-                        controller.enqueue(raw)
+                    // Add proper typing (@TODO)
+                    (_, { streamMessage }: any) => {
+                        controller.enqueue(streamMessage)
                     }
                 )
 
@@ -38,7 +39,7 @@ export default function subscribe(roomId: RoomId, streamrClient: StreamrClient) 
                     return void unsub()
                 }
 
-                sub.onError((e: any) => {
+                sub.on('error', (e: any) => {
                     const raw = e.streamMessage
 
                     if (!isMessage(raw)) {

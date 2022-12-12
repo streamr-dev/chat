@@ -1,6 +1,7 @@
 import { MemberAction } from '$/features/member'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { Address, EnhancedStream } from '$/types'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { error, success } from '$/utils/toaster'
@@ -13,7 +14,7 @@ function* onTokenGatedPromoteDelegatedAccountAction({
         const requester: Address = yield streamrClient.getAddress()
 
         const stream: EnhancedStream = yield streamrClient.getStream(roomId)
-        const { tokenAddress } = stream.extensions['thechat.eth']
+        const { tokenAddress } = getStreamMetadata(stream)
 
         if (!tokenAddress) {
             throw new Error('No token address found')

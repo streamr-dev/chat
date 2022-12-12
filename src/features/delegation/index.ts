@@ -30,10 +30,8 @@ const reducer = createReducer(initialState, (builder) => {
                       privateKey,
                   },
                   gapFill: false,
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  _timeouts: {
-                      groupKeyResponseTimeout: 2500,
+                  decryption: {
+                      keyRequestTimeout: 2500,
                   },
               })
             : undefined

@@ -1,5 +1,6 @@
 import { EnhancedStream } from '$/types'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 
 export function isTokenGatedRoom(stream: EnhancedStream): boolean {
-    return !!stream.extensions['thechat.eth'].tokenAddress
+    return !!getStreamMetadata(stream).tokenAddress
 }

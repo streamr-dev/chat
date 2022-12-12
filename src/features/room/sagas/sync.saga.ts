@@ -7,6 +7,7 @@ import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 
 function* onSyncAction({
     payload: { roomId, requester, streamrClient },
@@ -31,10 +32,11 @@ function* onSyncAction({
             }
 
             if (permissions.length || pinned) {
+                const metadata: IRoom = yield getStreamMetadata(stream)
                 yield put(
                     RoomAction.renameLocal({
                         roomId,
-                        name: stream.description || '',
+                        name: metadata.name || '',
                     })
                 )
 
