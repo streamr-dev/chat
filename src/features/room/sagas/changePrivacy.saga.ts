@@ -8,11 +8,14 @@ import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { error, success } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import getStreamMetadata from '$/utils/getStreamMetadata'
 
 function* onChangePrivacyAction({
     payload: { roomId, privacy, provider, requester, streamrClient },
 }: ReturnType<typeof RoomAction.changePrivacy>) {
-    let name
+    let teardown: () => void = () => {
+        error('Failed to update privacy.')
+    }
 
     try {
         yield preflight({
@@ -29,9 +32,11 @@ function* onChangePrivacyAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const { description = 'Unnamed room' } = stream
+        const { name = 'Unnamed room' } = getStreamMetadata(stream)
 
-        name = description
+        teardown = () => {
+            error(`Failed to update privacy for "${name}".`)
+        }
 
         yield streamrClient.setPermissions({
             streamId: roomId,
@@ -53,13 +58,7 @@ function* onChangePrivacyAction({
         success(`Update privacy for "${name}".`)
     } catch (e) {
         handleError(e)
-
-        if (name) {
-            error(`Failed to update privacy for "${name}".`)
-            return
-        }
-
-        error('Failed to update privacy.')
+        teardown()
     }
 }
 

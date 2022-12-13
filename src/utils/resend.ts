@@ -1,16 +1,13 @@
-import { StreamMessage } from '$/features/message/types'
+import { StreamMessage as ChatMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
 import getBeginningOfDay, { DayInMillis } from '$/utils/getBeginningOfDay'
 import StreamrClient from 'streamr-client'
-import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
-import { MessageStream } from 'streamr-client/types/src/subscribe/MessageStream'
+import { StreamMessage } from 'streamr-client-protocol'
 
 interface Options {
     timestamp?: number
     exact?: boolean
 }
-
-type Message = StreamrMessage<StreamMessage>
 
 function formatFilter(timestamp: undefined | number, exact: boolean) {
     if (typeof timestamp === 'undefined') {
@@ -40,26 +37,24 @@ function formatFilter(timestamp: undefined | number, exact: boolean) {
     }
 }
 
-export default function resend(
+function is<T>(arg: unknown): arg is T {
+    return !!arg
+}
+
+export default function resend<T = StreamMessage<ChatMessage>>(
     roomId: RoomId,
     streamrClient: StreamrClient,
     { timestamp, exact = false }: Options = {}
 ) {
-    const rs = new ReadableStream<Message>({
-        async start(controller: ReadableStreamDefaultController<Message>) {
-            const queue: MessageStream<StreamMessage> /* lol */ = await streamrClient.resend(
-                roomId,
-                formatFilter(timestamp, exact)
-            )
+    const rs = new ReadableStream<T>({
+        async start(controller: ReadableStreamDefaultController<T>) {
+            const queue = await streamrClient.resend<T>(roomId, formatFilter(timestamp, exact))
 
-            function isMessage(e: any): e is Message {
-                return !!e
-            }
-
-            queue.onError((e: any) => {
+            // @ts-expect-error `onError` is internal.
+            queue.onError.listen((e: any) => {
                 const msg = e.streamMessage
 
-                if (!isMessage(msg)) {
+                if (!is<T>(msg)) {
                     return
                 }
 
@@ -67,7 +62,7 @@ export default function resend(
             })
 
             for await (const raw of queue) {
-                controller.enqueue(raw)
+                controller.enqueue(raw as T)
             }
 
             controller.close()
