@@ -1,6 +1,6 @@
 import { MemberAction } from '$/features/member'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
-import { Address, EnhancedStream } from '$/types'
+import { EnhancedStream } from '$/types'
 import getStreamMetadata from '$/utils/getStreamMetadata'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -8,25 +8,30 @@ import { error, success } from '$/utils/toaster'
 import { put } from 'redux-saga/effects'
 
 function* onTokenGatedPromoteDelegatedAccountAction({
-    payload: { roomId, delegatedAddress, provider, streamrClient },
-}: ReturnType<typeof MemberAction.promoteDelegatedAccount>) {
+    payload: { roomId, provider, streamrClient },
+}: ReturnType<typeof MemberAction.tokenGatedPromoteDelegatedAccount>) {
     try {
-        const requester: Address = yield streamrClient.getAddress()
-
         const stream: EnhancedStream = yield streamrClient.getStream(roomId)
-        const { tokenAddress } = getStreamMetadata(stream)
+        const { tokenAddress, tokenId, tokenType } = getStreamMetadata(stream)
 
-        if (!tokenAddress) {
-            throw new Error('No token address found')
+        if (!tokenAddress || tokenId === undefined || !tokenType) {
+            throw new Error(
+                `Missing token info on stream metadata: ${JSON.stringify({
+                    tokenAddress,
+                    tokenId,
+                    tokenType,
+                })}`
+            )
         }
 
         yield put(
-            TokenGatedRoomAction.joinERC20({
+            TokenGatedRoomAction.join({
                 roomId,
-                owner: requester,
-                tokenAddress: tokenAddress,
+                tokenAddress,
                 provider,
-                delegatedAccount: delegatedAddress,
+                tokenId,
+                tokenType,
+                stakingEnabled: false,
             })
         )
 

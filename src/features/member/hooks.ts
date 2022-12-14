@@ -103,7 +103,6 @@ export function usePromoteDelegatedAccount() {
             dispatch(
                 MemberAction.tokenGatedPromoteDelegatedAccount({
                     roomId,
-                    delegatedAddress,
                     provider,
                     requester,
                     streamrClient,

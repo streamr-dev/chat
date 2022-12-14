@@ -34,18 +34,20 @@ function* pinRemote(
         throw new RoomNotFoundError(roomId)
     }
 
-    const { createdAt, createdBy, tokenAddress, name } = getStreamMetadata(stream)
+    const { createdAt, createdBy, tokenAddress, name, tokenId, tokenType } =
+        getStreamMetadata(stream)
 
     const isTokenGated = isTokenGatedRoom(stream)
 
-    if (isTokenGated && tokenAddress) {
+    if (isTokenGated && tokenAddress && tokenId && tokenType) {
         yield put(
-            TokenGatedRoomAction.joinERC20({
+            TokenGatedRoomAction.join({
                 roomId,
-                owner,
                 tokenAddress,
                 provider,
-                delegatedAccount,
+                tokenId,
+                tokenType,
+                stakingEnabled: false,
             })
         )
     }

@@ -85,13 +85,16 @@ function* onCreateAction({
             metadata.minTokenAmount
         ) {
             yield put(
-                TokenGatedRoomAction.registerERC20Policy({
+                TokenGatedRoomAction.create({
                     owner,
                     tokenAddress: metadata.tokenAddress,
                     roomId: stream.id,
-                    minTokenAmount: metadata.minTokenAmount,
+                    tokenId: metadata.tokenId,
+                    minRequiredBalance: metadata.minTokenAmount,
                     provider,
                     streamrClient,
+                    tokenType: metadata.tokenType!,
+                    stakingEnabled: false,
                 })
             )
         }

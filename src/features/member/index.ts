@@ -8,6 +8,7 @@ import remove from '$/features/member/sagas/remove.saga'
 import acceptInvite from '$/features/member/sagas/acceptInvite.saga'
 import promoteDelegatedAccount from '$/features/member/sagas/promoteDelegatedAccount.saga'
 import StreamrClient from 'streamr-client'
+import tokenGatedPromoteDelegatedAccount from '$/features/member/sagas/tokenGatedPromoteDelegatedAccount.saga'
 
 export const MemberAction = {
     remove: createAction<
@@ -47,7 +48,6 @@ export const MemberAction = {
         IFingerprinted &
             PreflightParams & {
                 roomId: RoomId
-                delegatedAddress: Address
                 streamrClient: StreamrClient
             }
     >('member: token gated promote delegated account'),
@@ -64,7 +64,13 @@ const reducer = createReducer({}, (builder) => {
 })
 
 export function* memberSaga() {
-    yield all([add(), remove(), acceptInvite(), promoteDelegatedAccount()])
+    yield all([
+        add(),
+        remove(),
+        acceptInvite(),
+        promoteDelegatedAccount(),
+        tokenGatedPromoteDelegatedAccount(),
+    ])
 }
 
 export default reducer
