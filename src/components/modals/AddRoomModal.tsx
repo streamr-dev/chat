@@ -51,6 +51,11 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
     const [tokenId, setTokenId] = useState<number>(0)
     const [minTokenAmount, setMinTokenAmount] = useState<string>('')
+    const [stakingEnabled, setStakingEnabled] = useState<boolean>(false)
+
+    function onStakingEnabledToggleClick() {
+        setStakingEnabled((current) => !current)
+    }
 
     function onClose() {
         setRoomName('')
@@ -99,6 +104,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         tokenId,
                         minTokenAmount: parseFloat(minTokenAmount) || 0,
                         tokenType,
+                        stakingEnabled,
                     },
                     privacy: privacySetting.value,
                     storage,
@@ -262,7 +268,11 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                             </>
                         )}
 
-                        <Submit label="Create" disabled={false /*!canCreateTokenGatedRoom*/} />
+                        <Label htmlFor="tokenStandard">Enable Staking</Label>
+
+                        <Toggle value={stakingEnabled} onClick={onStakingEnabledToggleClick} />
+
+                        <Submit label="Create" disabled={false} />
                     </>
                 </Form>
             ) : (

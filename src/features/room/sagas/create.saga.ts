@@ -94,7 +94,7 @@ function* onCreateAction({
                     provider,
                     streamrClient,
                     tokenType: metadata.tokenType!,
-                    stakingEnabled: false,
+                    stakingEnabled: metadata.stakingEnabled!,
                 })
             )
         }

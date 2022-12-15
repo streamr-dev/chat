@@ -26,6 +26,7 @@ export interface IRoom extends IRecord {
     tokenId?: number
     minTokenAmount?: number
     tokenType?: TokenType
+    stakingEnabled?: boolean
 }
 
 export type RoomId = IRoom['id']
