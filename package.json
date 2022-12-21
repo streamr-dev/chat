@@ -10,7 +10,7 @@
         "prettier": "prettier --write src"
     },
     "dependencies": {
-        "@coinbase/wallet-sdk": "^3.5.3",
+        "@coinbase/wallet-sdk": "^3.6.3",
         "@emotion/react": "^11.10.4",
         "@emotion/styled": "^11.10.5",
         "@ethersproject/bignumber": "^5.7.0",
