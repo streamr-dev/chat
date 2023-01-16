@@ -113,7 +113,7 @@ function* onCreate({
             new providers.Web3Provider(provider).getSigner()
         )
 
-        yield factoryContract.create(
+        const tx: { [key: string]: any } = yield factoryContract.create(
             tokenAddress,
             roomId,
             minRequiredBalance,
@@ -121,6 +121,8 @@ function* onCreate({
             stakingEnabled,
             [PermissionType.Publish, PermissionType.Subscribe]
         )
+
+        yield tx.wait(10)
 
         const policyAddress: Address = yield waitForPolicyToBeDeployed(
             getPolicyRegistry(provider),

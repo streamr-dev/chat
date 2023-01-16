@@ -45,7 +45,7 @@ function* pinRemote(
                 roomId,
                 tokenAddress,
                 provider,
-                tokenId,
+                tokenId: tokenId.toString(),
                 tokenType,
                 stakingEnabled: false,
             })

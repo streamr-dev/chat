@@ -26,6 +26,7 @@ function* onJoin({
             JoinPolicyRegistry.abi,
             signer
         )
+
         const policyAddress: string = yield policyRegistry.getPolicy(
             tokenAddress,
             tokenId,

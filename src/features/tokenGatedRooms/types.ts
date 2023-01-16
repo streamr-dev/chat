@@ -11,7 +11,7 @@ export enum ErcToInterfaceIds {
 }
 
 export type TokenType = {
-    standard: 'ERC20' | 'ERC721' | 'ERC1155' | 'unknown'
+    standard: 'ERC20' | 'ERC721' | 'ERC777' | 'ERC1155' | 'unknown'
     isCountable: boolean
     hasIds: boolean
 }
@@ -26,6 +26,11 @@ export const TokenTypes: { [key: string]: TokenType } = {
         isCountable: false,
         hasIds: true,
     },
+    ERC777: {
+        standard: 'ERC777',
+        isCountable: true,
+        hasIds: false,
+    },
     ERC1155: {
         standard: 'ERC1155',
         isCountable: true,
@@ -38,14 +43,25 @@ export const TokenTypes: { [key: string]: TokenType } = {
     },
 }
 
+/*
+    ERC20: name, symbol, decimals
+    ERC721: name, symbol, uri
+    ERC777: name, symbol, granularity
+    ERC1155: uri
+*/
+export type TokenMetadata = {
+    name?: string
+    symbol?: string
+    decimals?: BigNumber | string
+    uri?: string
+    granularity?: BigNumber | string
+}
+
 export interface TokenGatedRoomState {
-    tokenType: TokenType
+    tokenType?: TokenType
     tokenAddress?: Address
-    tokenId?: number
-    minTokenAmount?: number
-    erc20Metadata?: {
-        name: string
-        symbol: string
-        decimals: BigNumber
-    }
+    tokenId?: BigNumber | string
+    minRequiredBalance?: BigNumber | string
+    stakingEnabled?: boolean
+    tokenMetadata?: TokenMetadata
 }

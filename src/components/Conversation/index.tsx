@@ -153,9 +153,9 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     const acceptInvite = useAcceptInvite()
 
-    const promoteDelegatedAccount = usePromoteDelegatedAccount()
-
     const privacyOption = usePrivacyOption(roomId)
+
+    const promoteDelegatedAccount = usePromoteDelegatedAccount()
 
     if (canDelegatedPublish && canDelegatedSubscribe) {
         // We can stop here. For publishing that's all that matters.

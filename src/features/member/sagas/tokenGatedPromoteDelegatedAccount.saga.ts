@@ -12,7 +12,7 @@ function* onTokenGatedPromoteDelegatedAccountAction({
 }: ReturnType<typeof MemberAction.tokenGatedPromoteDelegatedAccount>) {
     try {
         const stream: EnhancedStream = yield streamrClient.getStream(roomId)
-        const { tokenAddress, tokenId, tokenType } = getStreamMetadata(stream)
+        const { tokenAddress, tokenId, tokenType, stakingEnabled } = getStreamMetadata(stream)
 
         if (!tokenAddress || tokenId === undefined || !tokenType) {
             throw new Error(
@@ -29,9 +29,9 @@ function* onTokenGatedPromoteDelegatedAccountAction({
                 roomId,
                 tokenAddress,
                 provider,
-                tokenId,
+                tokenId: tokenId.toString(),
                 tokenType,
-                stakingEnabled: false,
+                stakingEnabled: stakingEnabled as boolean,
             })
         )
 

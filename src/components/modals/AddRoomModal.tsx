@@ -49,8 +49,8 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [isTokenGatedRoom, setIsTokenGatedRoom] = useState<boolean>(false)
     const [tokenAddress, setTokenAddress] = useState<Address>('')
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
-    const [tokenId, setTokenId] = useState<number>(0)
-    const [minTokenAmount, setMinTokenAmount] = useState<string>('')
+    const [tokenId, setTokenId] = useState<string>('0')
+    const [minRequiredBalance, setMinRequiredBalance] = useState<string>('0')
     const [stakingEnabled, setStakingEnabled] = useState<boolean>(false)
 
     function onStakingEnabledToggleClick() {
@@ -64,8 +64,8 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         setIsTokenGatedRoom(false)
         setTokenAddress('')
         setTokenType(TokenTypes.unknown)
-        setTokenId(0)
-        setMinTokenAmount('')
+        setTokenId('0')
+        setMinRequiredBalance('0')
     }
 
     const provider = useWalletProvider()
@@ -82,7 +82,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
         if (!isTokenGatedRoom && privacySetting.value === PrivacySetting.TokenGated) {
             // display the next window for the token-gated creation
             const tokenType = await getTokenType(tokenAddress, provider)
-            if (tokenType.standard === TokenTypes.ERC20.standard) {
+            if (tokenType.standard !== TokenTypes.unknown.standard) {
                 setTokenType(tokenType)
                 setCreateNew(false)
                 setIsTokenGatedRoom(true)
@@ -102,9 +102,10 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                         updatedAt: now,
                         tokenAddress,
                         tokenId,
-                        minTokenAmount: parseFloat(minTokenAmount) || 0,
+                        minRequiredBalance,
                         tokenType,
                         stakingEnabled,
+                        tokenMetadata: {},
                     },
                     privacy: privacySetting.value,
                     storage,
@@ -252,25 +253,65 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
                                 <TextField
                                     id="tokenId"
                                     value={tokenId}
-                                    onChange={(e) => void setTokenId(parseInt(e.target.value))}
+                                    onChange={(e) => void setTokenId(e.target.value)}
                                 />
                             </>
                         )}
 
                         {tokenType.isCountable && (
                             <>
-                                <Label htmlFor="minTokenAmount">Minimum Token Amount</Label>
+                                <Label htmlFor="minRequiredBalance">Minimum Token Amount</Label>
                                 <TextField
-                                    id="minTokenAmount"
-                                    value={minTokenAmount}
-                                    onChange={(e) => void setMinTokenAmount(e.target.value)}
+                                    id="minRequiredBalance"
+                                    value={minRequiredBalance}
+                                    onChange={(e) => void setMinRequiredBalance(e.target.value)}
                                 />
                             </>
                         )}
 
-                        <Label htmlFor="tokenStandard">Enable Staking</Label>
-
-                        <Toggle value={stakingEnabled} onClick={onStakingEnabledToggleClick} />
+                        <>
+                            <Label>Enable Staking</Label>
+                            <div
+                                css={[
+                                    tw`
+                                    flex
+                                `,
+                                ]}
+                            >
+                                <div
+                                    css={[
+                                        tw`
+                                        flex-grow
+                                    `,
+                                    ]}
+                                >
+                                    <Hint
+                                        css={[
+                                            tw`
+                                            pr-16
+                                        `,
+                                        ]}
+                                    >
+                                        <Text>
+                                            When token staking is enabled, participants will need to
+                                            deposit the minimum amount in order to join the room.
+                                        </Text>
+                                    </Hint>
+                                </div>
+                                <div
+                                    css={[
+                                        tw`
+                                        mt-2
+                                    `,
+                                    ]}
+                                >
+                                    <Toggle
+                                        value={stakingEnabled}
+                                        onClick={onStakingEnabledToggleClick}
+                                    />
+                                </div>
+                            </div>
+                        </>
 
                         <Submit label="Create" disabled={false} />
                     </>

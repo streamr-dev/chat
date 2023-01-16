@@ -24,13 +24,21 @@ import Modal, { ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import PrivacySelectField from '$/components/PrivacySelectField'
-import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
+import { useGetTokenMetadata } from '$/features/tokenGatedRooms/hooks'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { BigNumber } from 'ethers'
 
 export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
-    const { name: roomName = '', tokenAddress, minTokenAmount, tokenType } = useSelectedRoom() || {}
+    const {
+        name: roomName = '',
+        tokenAddress,
+        minRequiredBalance,
+        tokenType,
+        tokenId,
+        stakingEnabled,
+    } = useSelectedRoom() || {}
 
     const isStorageEnabled = useStorageNodeState(selectedRoomId, STREAMR_STORAGE_NODE_GERMANY)
 
@@ -96,6 +104,8 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
 
     const privacyOption = usePrivacyOption(selectedRoomId)
 
+    const tokenMetadata = useGetTokenMetadata()
+
     useEffect(() => {
         if (!tokenAddress || !tokenType || !provider) {
             return
@@ -106,11 +116,10 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                 tokenAddress,
                 tokenType,
                 provider,
+                tokenId: tokenId ? tokenId.toString() : BigNumber.from(0).toString(),
             })
         )
-    }, [tokenAddress, tokenType, provider])
-
-    const tokenMetadata = useGetERC20Metadata()
+    }, [tokenAddress, tokenType, provider, tokenId, tokenMetadata])
 
     const isChangingPrivacy = useChangingPrivacy(selectedRoomId)
 
@@ -132,30 +141,105 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
             title="Room properties"
             subtitle={roomName || 'Unnamed room'}
         >
-            {tokenMetadata && minTokenAmount ? (
+            {tokenMetadata && (
                 <>
-                    <Label>
-                        <b>Token Name:</b>
-                        {tokenMetadata.name}
-                    </Label>
-                    <Label>
-                        <b>Symbol:</b>
-                        {tokenMetadata.symbol}
-                    </Label>
-                    <Label>
-                        <b>Decimals:</b>
-                        {tokenMetadata.decimals.toString()}
-                    </Label>
-                    <Label>
-                        <b>Address:</b>
-                        {tokenAddress}
-                    </Label>
-                    <Label>
-                        <b>Minimum Required Balance:</b>
-                        {minTokenAmount / 10 ** Number(tokenMetadata.decimals)}
-                    </Label>
+                    {tokenType && (
+                        <Label>
+                            <b>Token Standard:</b>
+                            {tokenType.standard}
+                        </Label>
+                    )}
+
+                    {tokenAddress && (
+                        <Label>
+                            <b>Address:</b>
+                            {tokenAddress}
+                        </Label>
+                    )}
+
+                    {tokenMetadata.name && (
+                        <Label>
+                            <b>Token Name:</b>
+                            {tokenMetadata.name}
+                        </Label>
+                    )}
+
+                    {tokenMetadata.symbol && (
+                        <Label>
+                            <b>Symbol:</b>
+                            {tokenMetadata.symbol}
+                        </Label>
+                    )}
+
+                    {tokenMetadata.decimals && (
+                        <Label>
+                            <b>Decimals:</b>
+                            {tokenMetadata.decimals!.toString()}
+                        </Label>
+                    )}
+
+                    {tokenMetadata.granularity && (
+                        <Label>
+                            <b>Granularity:</b>
+                            {tokenMetadata.granularity!.toString()}
+                        </Label>
+                    )}
+
+                    {tokenMetadata.uri && (
+                        <Label>
+                            <b>URI:</b>
+                            {tokenMetadata.uri}
+                        </Label>
+                    )}
+
+                    {minRequiredBalance !== undefined && (
+                        <Label>
+                            <b>Min Token Amount:</b>
+                            {minRequiredBalance.toString()}
+                        </Label>
+                    )}
+
+                    <Label>Staking</Label>
+                    <div
+                        css={[
+                            tw`
+                                flex
+                            `,
+                        ]}
+                    >
+                        <div
+                            css={[
+                                tw`
+                                    flex-grow
+                                `,
+                            ]}
+                        >
+                            <Hint
+                                css={[
+                                    tw`
+                                        pr-16
+                                    `,
+                                ]}
+                            >
+                                <Text>
+                                    When token staking is enabled, participants will need to deposit
+                                    the minimum amount in order to join the room.
+                                </Text>
+                            </Hint>
+                        </div>
+                        <div
+                            css={[
+                                tw`
+                                    mt-2
+                                `,
+                            ]}
+                        >
+                            <Toggle value={stakingEnabled} />
+                        </div>
+                    </div>
                 </>
-            ) : null}
+            )}
+
             <Form onSubmit={onSubmit}>
                 <>
                     <Label>Privacy</Label>

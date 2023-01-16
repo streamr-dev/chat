@@ -13,6 +13,7 @@ import { Flag } from '$/features/flag/types'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import createRoomStream from '$/utils/createRoomStream'
+import { BigNumber } from 'ethers'
 
 function* onCreateAction({
     payload: {
@@ -64,7 +65,8 @@ function* onCreateAction({
             }
 
             if (
-                (!metadata.minTokenAmount || metadata.minTokenAmount <= 0) &&
+                (!metadata.minRequiredBalance ||
+                    BigNumber.from(metadata.minRequiredBalance).lte(0)) &&
                 (metadata.tokenType.standard === TokenTypes.ERC20.standard ||
                     metadata.tokenType.standard === TokenTypes.ERC1155.standard)
             ) {
@@ -82,15 +84,15 @@ function* onCreateAction({
             privacy === PrivacySetting.TokenGated &&
             metadata.tokenType!.standard === TokenTypes.ERC20.standard &&
             metadata.tokenAddress &&
-            metadata.minTokenAmount
+            metadata.minRequiredBalance
         ) {
             yield put(
                 TokenGatedRoomAction.create({
                     owner,
                     tokenAddress: metadata.tokenAddress,
                     roomId: stream.id,
-                    tokenId: metadata.tokenId,
-                    minRequiredBalance: metadata.minTokenAmount,
+                    tokenId: metadata.tokenId?.toString(),
+                    minRequiredBalance: metadata.minRequiredBalance?.toString(),
                     provider,
                     streamrClient,
                     tokenType: metadata.tokenType!,

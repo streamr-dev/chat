@@ -121,5 +121,5 @@ export function usePromoteDelegatedAccount() {
                 })
             )
         }
-    }, [roomId, delegatedAddress, provider, requester, streamrClient])
+    }, [roomId, delegatedAddress, provider, requester, streamrClient, privacy])
 }
