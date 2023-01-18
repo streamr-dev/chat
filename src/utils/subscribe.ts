@@ -11,8 +11,9 @@ function isMessage(e: any): e is Message {
 }
 
 export default function subscribe(roomId: RoomId, streamrClient: StreamrClient) {
-    let sub: undefined | Subscription<StreamMessage>
-
+    // Needs revisiting, streamr-client v7.2.0 complains about types
+    // let sub: undefined | Subscription<StreamMessage>
+    let sub: undefined | Subscription
     let cancelled = false
 
     function unsub() {
