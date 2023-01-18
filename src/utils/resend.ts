@@ -48,7 +48,9 @@ export default function resend<T = StreamMessage<ChatMessage>>(
 ) {
     const rs = new ReadableStream<T>({
         async start(controller: ReadableStreamDefaultController<T>) {
-            const queue = await streamrClient.resend<T>(roomId, formatFilter(timestamp, exact))
+            // Needs revisiting, streamr-client v7.2.0 complains about types
+            // const queue = await streamrClient.resend<T>(roomId, formatFilter(timestamp, exact))
+            const queue = await streamrClient.resend(roomId, formatFilter(timestamp, exact))
 
             // @ts-expect-error `onError` is internal.
             queue.onError.listen((e: any) => {
