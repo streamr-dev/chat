@@ -4,11 +4,39 @@ import { IResend, StreamMessage } from '$/features/message/types'
 import db from '$/utils/db'
 import getBeginningOfDay, { DayInMillis, TimezoneOffset } from '$/utils/getBeginningOfDay'
 import handleError from '$/utils/handleError'
-import resendUtil from '$/utils/resend'
+import { resend as resendUtil } from 'streamr-client-react'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import toLocalMessage from '$/utils/toLocalMessage'
 import { put } from 'redux-saga/effects'
 import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
+
+function formatFilter(timestamp: undefined | number, exact: boolean) {
+    if (typeof timestamp === 'undefined') {
+        return {
+            last: 20,
+        }
+    }
+
+    if (exact) {
+        return {
+            from: {
+                timestamp,
+            },
+            to: {
+                timestamp,
+            },
+        }
+    }
+
+    return {
+        from: {
+            timestamp: getBeginningOfDay(timestamp),
+        },
+        to: {
+            timestamp: getBeginningOfDay(timestamp) + DayInMillis - 1,
+        },
+    }
+}
 
 function* onResendAction({
     payload: { roomId, requester, streamrClient, timestamp, exact = false },
@@ -47,10 +75,7 @@ function* onResendAction({
             }
         }
 
-        const queue = resendUtil(roomId, streamrClient, {
-            timestamp,
-            exact,
-        })
+        const queue = resendUtil(roomId, formatFilter(timestamp, exact), streamrClient)
 
         let minCreatedAt: undefined | number = undefined
 
