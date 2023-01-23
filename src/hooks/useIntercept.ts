@@ -7,7 +7,9 @@ import { MessageAction } from '$/features/message'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import { useAbility, useLoadAbilityEffect } from '$/features/permission/hooks'
 import toLocalMessage from '$/utils/toLocalMessage'
-import subscribe from '$/utils/subscribe'
+import { subscribe } from 'streamr-client-react'
+import { StreamMessage } from '$/features/message/types'
+import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 
 export default function useIntercept(roomId: RoomId) {
     const client = useDelegatedClient()
@@ -39,7 +41,7 @@ export default function useIntercept(roomId: RoomId) {
                 if (value) {
                     dispatch(
                         MessageAction.register({
-                            message: toLocalMessage(value),
+                            message: toLocalMessage(value as StreamrMessage<StreamMessage>),
                             owner,
                         })
                     )

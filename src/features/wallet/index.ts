@@ -40,11 +40,15 @@ const reducer = createReducer(initialState, (builder) => {
 
         state.client = provider
             ? new StreamrClient({
-                  auth: {
-                      ethereum: provider,
-                  },
-                  gapFill: false,
-              })
+                auth: {
+                    ethereum: provider,
+                },
+                encryption: {
+                    litProtocolEnabled: true,
+                    litProtocolLogging: true
+                },
+                gapFill: false,
+            })
             : undefined
     })
 })

@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { Helmet } from 'react-helmet'
 import tw, { css } from 'twin.macro'
 import Background from './background.png'
+import pkg from '$/../package-lock.json'
 
 type Props = {
     children?: ReactNode
@@ -11,7 +12,9 @@ type Props = {
 export default function Page({ children, title = 'Streamr Chat dApp' }: Props) {
     return (
         <>
-            <Helmet title={title} />
+            <Helmet title={title}>
+                <meta name="streamr-client" content={pkg.dependencies['streamr-client'].version} />
+            </Helmet>
             <main
                 css={[
                     css`
