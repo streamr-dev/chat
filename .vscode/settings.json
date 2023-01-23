@@ -1,7 +1,0 @@
-{
-    "editor.codeActionsOnSave": {
-        "source.fixAll": true
-    },
-    "editor.formatOnSave": true,
-    "typescript.preferences.importModuleSpecifier": "non-relative"
-}
