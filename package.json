@@ -10,7 +10,7 @@
         "prettier": "prettier --write src"
     },
     "dependencies": {
-        "@coinbase/wallet-sdk": "^3.5.3",
+        "@coinbase/wallet-sdk": "^3.6.3",
         "@emotion/react": "^11.10.4",
         "@emotion/styled": "^11.10.5",
         "@ethersproject/bignumber": "^5.7.0",
@@ -41,11 +41,11 @@
         "react-dom": "^18.2.0",
         "react-helmet": "^6.1.0",
         "react-modal": "^3.16.1",
-        "react-redux": "^8.0.4",
+        "react-redux": "^8.0.5",
         "react-router-dom": "^6.6.2",
         "react-select": "^5.6.1",
         "react-toastify": "^9.0.8",
-        "redux-saga": "^1.2.1",
+        "redux-saga": "^1.2.2",
         "streamr-client": "7.3.0-beta.0",
         "streamr-client-protocol": "^13.0.0",
         "streamr-client-react": "^3.0.0-beta.5",
@@ -54,7 +54,7 @@
         "uuid": "^9.0.0"
     },
     "devDependencies": {
-        "@emotion/babel-plugin": "^11.10.2",
+        "@emotion/babel-plugin": "^11.10.5",
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
         "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
         "@types/identicon.js": "^2.3.1",
@@ -65,7 +65,7 @@
         "@types/uuid": "^8.3.4",
         "@typescript-eslint/eslint-plugin": "^5.44.0",
         "@typescript-eslint/parser": "^5.48.2",
-        "@vitejs/plugin-react": "^2.1.0",
+        "@vitejs/plugin-react": "^3.0.1",
         "babel-plugin-macros": "^3.1.0",
         "eslint": "^8.28.0",
         "ipfs-deploy": "github:ipfs-shipyard/ipfs-deploy",
