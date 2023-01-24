@@ -3,7 +3,7 @@ import { takeEvery } from 'redux-saga/effects'
 import handleError from '$/utils/handleError'
 import { JoinPolicyRegistryAddress } from '$/features/tokenGatedRooms/utils/const'
 
-import { Contract, providers } from 'ethers'
+import { Contract, providers, Transaction } from 'ethers'
 
 import * as JoinPolicyRegistry from '$/contracts/JoinPolicyRegistry.sol/JoinPolicyRegistry.json'
 
@@ -18,6 +18,7 @@ function* onJoin({
     payload: { roomId, tokenAddress, provider, tokenId, stakingEnabled, tokenType },
 }: ReturnType<typeof TokenGatedRoomAction.join>) {
     try {
+        console.log('onJoin', {roomId, tokenAddress, provider, tokenId, stakingEnabled, tokenType})
         // fetch policy address from registry
         const signer = new providers.Web3Provider(provider).getSigner()
 
@@ -55,8 +56,14 @@ function* onJoin({
 
         const policy = new Contract(policyAddress, policyAbi, signer)
 
+
+        
+        console.log('policy', policy)
         // call requestDelegatedJoin on policy
-        yield policy.requestDelegatedJoin()
+        const tx: {[key:string]: any} = yield policy.requestDelegatedJoin()
+
+        yield tx.wait()
+        console.log('delegated join requested', policy.requestDelegatedJoin)
     } catch (e) {
         handleError(e)
     }

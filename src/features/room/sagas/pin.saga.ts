@@ -3,6 +3,7 @@ import { PreferencesAction } from '$/features/preferences'
 import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { isStakeGatedRoom } from '$/features/tokenGatedRooms/utils/isStakeGatedRoom'
 import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
 import { Address, EnhancedStream } from '$/types'
 import db from '$/utils/db'
@@ -38,8 +39,10 @@ function* pinRemote(
         getStreamMetadata(stream)
 
     const isTokenGated = isTokenGatedRoom(stream)
+    const isStakeGated = isStakeGatedRoom(stream)
 
-    if (isTokenGated && tokenAddress && tokenId && tokenType) {
+    console.log('pin', {isTokenGated, isStakeGated, tokenAddress, tokenId, tokenType})
+    if (isTokenGated && !isStakeGated && tokenAddress && tokenId !== undefined && tokenType) {
         yield put(
             TokenGatedRoomAction.join({
                 roomId,
@@ -51,6 +54,8 @@ function* pinRemote(
             })
         )
     }
+
+
     const room: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()
 
     const [permissions, isPublic]: UserPermissions = yield getUserPermissions(owner, stream)
