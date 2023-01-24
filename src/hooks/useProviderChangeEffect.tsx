@@ -23,8 +23,8 @@ export default function useProviderChangeEffect() {
                 return
             }
 
-            // `onAccountsChange` may happen multiple times for a single address. `setAccount`
-            // action is aware of it and skips redundant processing.
+            // `setAccount` takes care of consecutive action calls for the same account, and skips
+            // redundant processing.
             dispatch(WalletAction.setAccount({ account: acc, provider }))
         }
 

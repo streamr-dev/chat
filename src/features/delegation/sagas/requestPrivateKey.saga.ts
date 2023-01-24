@@ -25,7 +25,7 @@ function* onRequestPrivateKeyAction({
         )
 
         if (!isDelegationAuthorized) {
-            toastId = toast.loading('Authorizing your delegated wallet...', {
+            toastId = toast.loading('Authorizing your delegated wallet…', {
                 position: 'bottom-left',
                 autoClose: false,
                 type: 'info',

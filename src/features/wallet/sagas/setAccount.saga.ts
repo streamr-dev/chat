@@ -59,7 +59,7 @@ export default function* setAccount() {
         }
 
         if (!provider) {
-            continue
+            throw new Error('Provider is missing')
         }
 
         yield put(
