@@ -1,4 +1,4 @@
-import { put, takeEvery } from 'redux-saga/effects'
+import { call, put, take } from 'redux-saga/effects'
 import { WalletAction } from '..'
 import handleError from '$/utils/handleError'
 import { DelegationAction } from '../../delegation'
@@ -6,14 +6,12 @@ import { RoomAction } from '$/features/room'
 import { IPreference } from '$/features/preferences/types'
 import db from '$/utils/db'
 import { EnsAction } from '$/features/ens'
+import { Address, OptionalAddress } from '$/types'
+import isSameAddress from '$/utils/isSameAddress'
+import { Flag } from '$/features/flag/types'
 
-function* preselectRoom({ payload: { account } }: ReturnType<typeof WalletAction.setAccount>) {
-    try {
-        if (!account) {
-            yield put(RoomAction.select(undefined))
-            return
-        }
-
+function preselectRoom(account: Address) {
+    return call(function* () {
         const preferences: null | IPreference = yield db.preferences
             .where('owner')
             .equals(account.toLowerCase())
@@ -25,29 +23,51 @@ function* preselectRoom({ payload: { account } }: ReturnType<typeof WalletAction
         }
 
         yield put(RoomAction.select(preferences.selectedRoomId))
-    } catch (e) {
-        handleError(e)
-    }
-}
-
-function* resetDelegatedPrivateKey() {
-    try {
-        yield put(DelegationAction.setPrivateKey(undefined))
-    } catch (e) {
-        handleError(e)
-    }
-}
-
-function* fetchEns({ payload: { account } }: ReturnType<typeof WalletAction.setAccount>) {
-    if (!account) {
-        return
-    }
-
-    yield put(EnsAction.fetchNames([account]))
+    })
 }
 
 export default function* setAccount() {
-    yield takeEvery(WalletAction.setAccount, fetchEns)
-    yield takeEvery(WalletAction.setAccount, preselectRoom)
-    yield takeEvery(WalletAction.setAccount, resetDelegatedPrivateKey)
+    let lastAccount: OptionalAddress = undefined
+
+    while (true) {
+        const {
+            payload: { account, provider },
+        }: ReturnType<typeof WalletAction.setAccount> = yield take(WalletAction.setAccount)
+
+        if (isSameAddress(account, lastAccount)) {
+            // Skip repeated processing of the last known account.
+            continue
+        }
+
+        lastAccount = account
+
+        // Reset previous private key (different account = different private key).
+        yield put(DelegationAction.setPrivateKey(undefined))
+
+        if (!account) {
+            // Deselect current room.
+            yield put(RoomAction.select(undefined))
+            continue
+        }
+
+        yield put(EnsAction.fetchNames([account]))
+
+        try {
+            yield preselectRoom(account)
+        } catch (e) {
+            handleError(e)
+        }
+
+        if (!provider) {
+            continue
+        }
+
+        yield put(
+            DelegationAction.requestPrivateKey({
+                owner: account,
+                provider,
+                fingerprint: Flag.isAccessBeingDelegated(account),
+            })
+        )
+    }
 }
