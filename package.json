@@ -20,7 +20,7 @@
         "@metamask/eth-sig-util": "^5.0.2",
         "@reduxjs/toolkit": "^1.8.6",
         "@rollup/plugin-inject": "^5.0.2",
-        "@walletconnect/ethereum-provider": "^1.8.0",
+        "@walletconnect/ethereum-provider": "^2.3.0",
         "@web3-react/coinbase-wallet": "^8.0.31-beta.0",
         "@web3-react/core": "^8.0.30-beta.0",
         "@web3-react/empty": "^8.0.0-beta.0",
