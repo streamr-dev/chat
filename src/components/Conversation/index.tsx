@@ -186,11 +186,11 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
                         disabled={isPromoting}
                         onClick={promoteDelegatedAccount}
                     >
-                        {isPromoting ? <>Promoting…</> : <>Promote it</>}
+                        {isPromoting ? <>Enabling…</> : <>Enable</>}
                     </Cta>
                 }
             >
-                Your delegated account is not a publisher in this room.
+                Activate hot wallet signing to send messages
             </MessageInputPlaceholder>
         )
     }
