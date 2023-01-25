@@ -9,7 +9,7 @@ import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 export default function useAddMemberModal() {
-    const { open, modal } = useModalDialog(AddMemberModal)
+    const { open: openModal, modal } = useModalDialog(AddMemberModal)
 
     const dispatch = useDispatch()
 
@@ -21,7 +21,7 @@ export default function useAddMemberModal() {
 
     const requester = useWalletAccount()
 
-    const add = useCallback(async () => {
+    const open = useCallback(async () => {
         if (!roomId || !provider || !streamrClient || !requester) {
             return
         }
@@ -29,7 +29,7 @@ export default function useAddMemberModal() {
         let member: OptionalAddress
 
         try {
-            member = await open()
+            member = await openModal()
         } catch (e) {
             // Noop
         }
@@ -48,10 +48,10 @@ export default function useAddMemberModal() {
                 fingerprint: Flag.isMemberBeingAdded(roomId, member),
             })
         )
-    }, [open, roomId, provider, streamrClient, requester])
+    }, [openModal, roomId, provider, streamrClient, requester])
 
     return {
-        open: add,
+        open,
         modal,
     }
 }

@@ -16,7 +16,7 @@ import useGlobalKeyDownEffect from 'streamr-ui/hooks/useGlobalKeyDownEffect'
 type ResolveResult<T> = T extends FC<infer R>
     ? R extends { onProceed?: (_: infer K) => void }
         ? K
-        : any
+        : void
     : never
 
 type Props<T extends FC> = {
