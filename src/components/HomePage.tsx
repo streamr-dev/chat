@@ -1,16 +1,16 @@
 import tw from 'twin.macro'
-import { useState } from 'react'
 import Page from '$/components/Page'
 import Navbar from '$/components/Navbar'
 import Button from '$/components/Button'
 import Text from '$/components/Text'
-import WalletModal from '$/components/modals/WalletModal'
+import useWalletModal from '$/hooks/useWalletModal'
 
 export default function HomePage() {
-    const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
+    const { open, modal } = useWalletModal()
 
     return (
         <>
+            {modal}
             <Page>
                 <Navbar />
                 <div
@@ -40,12 +40,11 @@ export default function HomePage() {
                         >
                             Hello world.
                         </h1>
-                        <ConnectButton onClick={() => void setWalletModalOpen(true)} />
+                        <ConnectButton onClick={() => void open()} />
                     </div>
                 </div>
                 <PoweredBy />
             </Page>
-            <WalletModal open={walletModalOpen} setOpen={setWalletModalOpen} />
         </>
     )
 }

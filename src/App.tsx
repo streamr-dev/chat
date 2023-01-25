@@ -49,6 +49,17 @@ const customGlobalStyles = css`
                 transform: translateX(100%) translateZ(0);
             }
         }
+
+        @keyframes bringIn {
+            from {
+                opacity: 0;
+                transform: translateZ(0) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateZ(0) scale(1);
+            }
+        }
     }
 `
 

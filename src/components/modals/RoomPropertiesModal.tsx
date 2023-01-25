@@ -20,14 +20,19 @@ import Label from '../Label'
 import Submit from '../Submit'
 import Text from '../Text'
 import Toggle from '../Toggle'
-import Modal, { ModalProps } from './Modal'
+import Modal, { Props as ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import PrivacySelectField from '$/components/PrivacySelectField'
 import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 
-export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
+export default function RoomPropertiesModal({
+    title = 'Room properties',
+    subtitle = 'Unnamed room',
+    onAbort,
+    ...props
+}: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
     const { name: roomName = '', tokenAddress, minTokenAmount, tokenType } = useSelectedRoom() || {}
@@ -118,20 +123,8 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
 
     const isPrivacyBusy = isChangingPrivacy || isGettingPrivacy
 
-    function onSubmit() {
-        if (typeof setOpen === 'function') {
-            setOpen(false)
-        }
-    }
-
     return (
-        <Modal
-            {...props}
-            open={open}
-            setOpen={setOpen}
-            title="Room properties"
-            subtitle={roomName || 'Unnamed room'}
-        >
+        <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
             {tokenMetadata && minTokenAmount ? (
                 <>
                     <Label>
@@ -156,7 +149,11 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                     </Label>
                 </>
             ) : null}
-            <Form onSubmit={onSubmit}>
+            <Form
+                onSubmit={() => {
+                    onAbort?.()
+                }}
+            >
                 <>
                     <Label>Privacy</Label>
                     <PrivacySelectField
@@ -233,9 +230,11 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                     </div>
                 </>
                 <>
-                    <Submit label="Ok" />
+                    <Submit label="Close" />
                 </>
             </Form>
         </Modal>
     )
 }
+
+RoomPropertiesModal.displayName = 'RoomPropertiesModal'

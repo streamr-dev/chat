@@ -14,7 +14,7 @@ import getExplorerURL from '$/utils/getExplorerURL'
 import isSameAddress from '$/utils/isSameAddress'
 import Avatar, { AvatarStatus } from '../Avatar'
 import Menu, { MenuButtonItem, MenuLinkItem, MenuSeparatorItem } from '../Menu'
-import Modal, { ModalProps } from './Modal'
+import Modal, { Props } from './Modal'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
@@ -34,17 +34,12 @@ import EditIcon from '$/icons/EditIcon'
 import useENSName from '$/hooks/useENSName'
 import trunc from '$/utils/trunc'
 import { AccountType } from '$/utils/getAccountType'
+import useCanGrant from '$/hooks/useCanGrant'
 
-type MenuOpens = {
-    [index: string]: boolean
-}
+export default function EditMembersModal({ title = 'Edit members', ...props }: Props) {
+    const menuOpenRef = useRef<Record<string, boolean>>({})
 
-type Props = ModalProps & {
-    canModifyMembers?: boolean
-}
-
-export default function EditMembersModal({ open, canModifyMembers = false, ...props }: Props) {
-    const menuOpenRef = useRef<MenuOpens>({})
+    const canGrant = useCanGrant()
 
     const [anyMenuOpen, setAnyMenuOpen] = useState<boolean>(false)
 
@@ -98,7 +93,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
     } = usePrivacyOption(selectedRoomId)
 
     return (
-        <Modal {...props} open={open} title="Edit members">
+        <Modal {...props} title={title}>
             <div
                 css={[
                     tw`
@@ -207,7 +202,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                                     key={address}
                                     onMenuToggle={onMenuToggle}
                                     address={address}
-                                    canBeDeleted={canModifyMembers}
+                                    canBeDeleted={canGrant}
                                     onDeleteClick={onDeleteClick}
                                     isCurrentAccount={isSameAddress(address, account)}
                                     isCurrentDelegatedAccount={isSameAddress(
@@ -225,6 +220,8 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
         </Modal>
     )
 }
+
+EditMembersModal.displayName = 'EditMembersModal'
 
 type ItemProps = HTMLAttributes<HTMLDivElement> & {
     address: string

@@ -6,7 +6,6 @@ import isBlank from '$/utils/isBlank'
 import Form from '../Form'
 import Hint from '../Hint'
 import Label from '../Label'
-import Modal, { ModalProps } from './Modal'
 import Submit from '../Submit'
 import Text from '../Text'
 import TextField from '../TextField'
@@ -21,8 +20,15 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { error } from '$/utils/toaster'
 import { TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { getTokenType } from '$/features/tokenGatedRooms/utils/getTokenType'
+import Modal, { Props as ModalProps } from '$/components/modals/Modal'
 
-export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
+// TODO: Move the logic to the `useAddRoomModal` hook, make it slim.
+
+interface Props extends ModalProps {
+    onProceed?: () => void
+}
+
+export default function AddRoomModal({ title = 'Add new room', onProceed, ...props }: Props) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(PrivateRoomOption)
 
     const [roomName, setRoomName] = useState<string>('')
@@ -51,17 +57,6 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
     const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
     const [tokenId, setTokenId] = useState<number>(0)
     const [minTokenAmount, setMinTokenAmount] = useState<string>('')
-
-    function onClose() {
-        setRoomName('')
-        setPrivacySetting(PrivateRoomOption)
-        setRoomId('')
-        setIsTokenGatedRoom(false)
-        setTokenAddress('')
-        setTokenType(TokenTypes.unknown)
-        setTokenId(0)
-        setMinTokenAmount('')
-    }
 
     const provider = useWalletProvider()
 
@@ -109,10 +104,7 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
             )
         }
 
-        if (typeof setOpen === 'function') {
-            setOpen(false)
-            onClose()
-        }
+        onProceed?.()
     }
 
     const delegatedAccount = useDelegatedAccount()
@@ -132,14 +124,11 @@ export default function AddRoomModal({ setOpen, ...props }: ModalProps) {
             })
         )
 
-        if (typeof setOpen === 'function') {
-            setOpen(false)
-            onClose()
-        }
+        onProceed?.()
     }
 
     return (
-        <Modal {...props} title="Add new room" setOpen={setOpen} onClose={onClose}>
+        <Modal {...props} title={title}>
             {!isTokenGatedRoom ? (
                 <ButtonGroup>
                     <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>

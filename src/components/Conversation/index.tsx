@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, useState } from 'react'
+import { ButtonHTMLAttributes } from 'react'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
 import {
@@ -11,8 +11,6 @@ import {
     useLoadCurrentDelegationAbilityEffect,
 } from '$/features/permission/hooks'
 import useMessages from '$/hooks/useMessages'
-import AddMemberModal from '../modals/AddMemberModal'
-import EditMembersModal from '../modals/EditMembersModal'
 import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
 import MessageFeed from './MessageFeed'
@@ -21,7 +19,6 @@ import MessageInputPlaceholder from './MessageInputPlaceholder'
 import Text from '../Text'
 import SecondaryButton from '../SecondaryButton'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import RoomPropertiesModal from '../modals/RoomPropertiesModal'
 import useCanGrant from '$/hooks/useCanGrant'
 import useJustInvited from '$/hooks/useJustInvited'
 import { useWalletAccount } from '$/features/wallet/hooks'
@@ -34,15 +31,18 @@ import {
 } from '$/features/member/hooks'
 import useResendEffect from '$/hooks/useResendEffect'
 import useResends from '$/hooks/useResends'
+import useAddMemberModal from '$/hooks/useAddMemberModal'
+import useEditMembersModal from '$/hooks/useEditMembersModal'
+import useRoomPropertiesModal from '$/hooks/useRoomPropertiesModal'
 
 export default function Conversation() {
     const messages = useMessages()
 
-    const [roomPropertiesModalOpen, setRoomPropertiesModalOpen] = useState<boolean>(false)
+    const { open: openAddMemberModal, modal: addMemberModal } = useAddMemberModal()
 
-    const [addMemberModalOpen, setAddMemberModalOpen] = useState<boolean>(false)
+    const { open: openEditMembersModal, modal: editMembersModal } = useEditMembersModal()
 
-    const [editMembersModalOpen, setEditMembersModalOpen] = useState<boolean>(false)
+    const { open: openRoomPropertiesModal, modal: roomPropertiesModal } = useRoomPropertiesModal()
 
     const canGrant = useCanGrant()
 
@@ -54,11 +54,14 @@ export default function Conversation() {
 
     return (
         <>
+            {addMemberModal}
+            {editMembersModal}
+            {roomPropertiesModal}
             <ConversationHeader
                 canModifyMembers={canGrant}
-                onAddMemberClick={() => void setAddMemberModalOpen(true)}
-                onEditMembersClick={() => void setEditMembersModalOpen(true)}
-                onRoomPropertiesClick={() => void setRoomPropertiesModalOpen(true)}
+                onAddMemberClick={() => void openAddMemberModal()}
+                onEditMembersClick={() => void openEditMembersModal()}
+                onRoomPropertiesClick={() => void openRoomPropertiesModal()}
             />
             <div
                 css={[
@@ -86,7 +89,7 @@ export default function Conversation() {
                     ) : (
                         <EmptyMessageFeed
                             canModifyMembers={canGrant}
-                            onAddMemberClick={() => void setAddMemberModalOpen(true)}
+                            onAddMemberClick={() => void openAddMemberModal()}
                         />
                     )}
                 </div>
@@ -104,22 +107,6 @@ export default function Conversation() {
             >
                 <MessageBox canGrant={canGrant} />
             </div>
-            <>
-                <AddMemberModal
-                    canModifyMembers={canGrant}
-                    open={addMemberModalOpen}
-                    setOpen={setAddMemberModalOpen}
-                />
-                <EditMembersModal
-                    canModifyMembers={canGrant}
-                    open={editMembersModalOpen}
-                    setOpen={setEditMembersModalOpen}
-                />
-                <RoomPropertiesModal
-                    open={roomPropertiesModalOpen}
-                    setOpen={setRoomPropertiesModalOpen}
-                />
-            </>
         </>
     )
 }
