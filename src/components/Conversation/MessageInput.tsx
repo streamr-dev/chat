@@ -147,6 +147,7 @@ export default function MessageInput({ disabled = false }: Props) {
                 type="submit"
                 css={[
                     tw`
+                        appearance-none
                         bg-[transparent]
                         block
                         w-[60px]

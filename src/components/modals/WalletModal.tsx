@@ -69,6 +69,7 @@ function WalletOption<T extends WalletIntegrationId>({
             type="button"
             css={[
                 tw`
+                    appearance-none
                     bg-[#F1F4F7]
                     flex
                     h-24
