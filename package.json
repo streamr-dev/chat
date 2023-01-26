@@ -33,7 +33,7 @@
         "dexie": "^3.2.3",
         "dexie-react-hooks": "^1.1.1",
         "empty": "^0.10.1",
-        "eth-crypto": "^2.3.0",
+        "eth-crypto": "^2.5.0",
         "ethers": "^5.7.2",
         "identicon.js": "^2.3.3",
         "js-crypto-hkdf": "^1.0.4",
