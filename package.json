@@ -30,7 +30,7 @@
         "axios": "^1.2.4",
         "copy-to-clipboard": "^3.3.3",
         "date-fns": "^2.29.3",
-        "dexie": "^3.2.2",
+        "dexie": "^3.2.3",
         "dexie-react-hooks": "^1.1.1",
         "empty": "^0.10.1",
         "eth-crypto": "^2.3.0",
