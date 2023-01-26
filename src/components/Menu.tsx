@@ -10,6 +10,7 @@ import {
 import { createPortal } from 'react-dom'
 import tw, { css } from 'twin.macro'
 import Text from './Text'
+import useOnMouseDownOutsideEffect from 'streamr-ui/hooks/useOnMouseDownOutsideEffect'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     anchorEl?: HTMLButtonElement | null
@@ -33,57 +34,29 @@ export default function Menu({ anchorEl, onMouseDownOutside, ...props }: Props) 
         }
     }, [])
 
-    const rootRef = useRef<HTMLDivElement>(null)
-
-    const anchorElRef = useRef(anchorEl)
-
-    useEffect(() => {
-        anchorElRef.current = anchorEl
-    }, [anchorEl])
-
-    const onMouseDownOutsideRef = useRef(onMouseDownOutside)
-
-    useEffect(() => {
-        onMouseDownOutsideRef.current = onMouseDownOutside
-    }, [onMouseDownOutside])
-
     useEffect(() => {
         function onResize() {
-            setRect(getRect(anchorElRef.current))
+            setRect(getRect(anchorEl))
         }
 
         window.addEventListener('resize', onResize)
 
+        onResize()
+
         return () => {
             window.removeEventListener('resize', onResize)
         }
-    }, [])
+    }, [anchorEl])
 
-    useEffect(() => {
-        function handleClickOutside(e: any) {
-            const { current: root } = rootRef
-
-            const { current: anchor } = anchorElRef
-
-            if (!root || root.contains(e.target)) {
-                return
-            }
-
-            if (!anchor || anchor.contains(e.target)) {
-                return
-            }
-
-            if (typeof onMouseDownOutsideRef.current === 'function') {
-                onMouseDownOutsideRef.current()
-            }
+    const rootRef = useOnMouseDownOutsideEffect<HTMLDivElement>(
+        () => void onMouseDownOutside?.(),
+        undefined,
+        {
+            isInside(el) {
+                return !!anchorEl?.contains(el)
+            },
         }
-
-        document.addEventListener('mousedown', handleClickOutside)
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [])
+    )
 
     return createPortal(
         <div
