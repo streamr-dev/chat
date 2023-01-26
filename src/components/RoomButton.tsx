@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { PermissionAction } from '$/features/permission'
@@ -11,7 +11,6 @@ import useRecentMessage from '$/hooks/useRecentMessage'
 import Avatar from './Avatar'
 import SidebarButton from './SidebarButton'
 import Text from './Text'
-import { PreferencesAction } from '$/features/preferences'
 import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import { Flag } from '$/features/flag/types'
@@ -19,8 +18,9 @@ import PinIcon from '$/icons/PinIcon'
 import useAgo from '$/hooks/useAgo'
 import isSameAddress from '$/utils/isSameAddress'
 import { useSelectedRoomId } from '$/features/room/hooks'
+import { Link, LinkProps } from 'react-router-dom'
 
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
+type Props = Omit<LinkProps, 'children' | 'to'> & {
     active?: boolean
     room: IRoom
 }
@@ -85,20 +85,10 @@ export default function RoomButton({ room, active, ...props }: Props) {
     return (
         <SidebarButton
             {...props}
+            tag={Link}
             active={active}
             icon={<Icon id={id} />}
-            onClick={() => {
-                if (!address) {
-                    return
-                }
-
-                dispatch(
-                    PreferencesAction.set({
-                        owner: address,
-                        selectedRoomId: selectedRoomId === id ? undefined : id,
-                    })
-                )
-            }}
+            to={selectedRoomId === id ? '/' : `/${id}`}
             misc={
                 <>
                     <div

@@ -99,6 +99,9 @@ export default function ChatPage() {
                                     w-[22rem]
                                     overflow-auto
                                     [button + button]:mt-4
+                                    [a + a]:mt-4
+                                    [button + a]:mt-4
+                                    [a + button]:mt-4
                                 `,
                             ]}
                         >

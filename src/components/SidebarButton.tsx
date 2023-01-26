@@ -1,23 +1,48 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 import tw from 'twin.macro'
+import { Link, LinkProps } from 'react-router-dom'
 
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
+interface CommonProps {
     icon?: ReactNode
     active?: boolean
     misc?: ReactNode
 }
 
-export default function SidebarButton({
+type Tag = undefined | 'a' | 'button' | typeof Link
+
+type IntristicProps<T> = T extends undefined
+    ? never
+    : T extends string
+    ? T extends 'a'
+        ? ComponentProps<'a'>
+        : T extends 'button'
+        ? Omit<ComponentProps<'button'>, 'type'>
+        : never
+    : T extends typeof Link
+    ? LinkProps
+    : never
+
+type Props<T> = { tag?: T } & IntristicProps<T> & CommonProps
+
+export default function SidebarButton<T extends Tag = 'button'>({
+    tag: Tag = 'button',
     icon = <FallbackIcon />,
     children,
     active = false,
     misc,
     ...props
-}: Props) {
+}: Props<T>) {
+    const rest =
+        Tag === 'button'
+            ? {
+                  ...props,
+                  type: 'button',
+              }
+            : props
+
     return (
-        <button
-            {...props}
-            type="button"
+        <Tag
+            {...(rest as any)}
             css={[
                 tw`
                     outline-none
@@ -64,7 +89,7 @@ export default function SidebarButton({
                 {children}
             </div>
             <div>{misc}</div>
-        </button>
+        </Tag>
     )
 }
 
