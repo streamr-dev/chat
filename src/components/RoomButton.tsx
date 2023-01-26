@@ -17,7 +17,6 @@ import { Flag } from '$/features/flag/types'
 import PinIcon from '$/icons/PinIcon'
 import useAgo from '$/hooks/useAgo'
 import isSameAddress from '$/utils/isSameAddress'
-import { useSelectedRoomId } from '$/features/room/hooks'
 import { Link, LinkProps } from 'react-router-dom'
 
 type Props = Omit<LinkProps, 'children' | 'to'> & {
@@ -80,15 +79,13 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const seen = isSameAddress(recentMessage?.createdBy, address) || Boolean(recentMessage?.seenAt)
 
-    const selectedRoomId = useSelectedRoomId()
-
     return (
         <SidebarButton
             {...props}
             tag={Link}
             active={active}
             icon={<Icon id={id} />}
-            to={selectedRoomId === id ? '/' : `/${id}`}
+            to={`/${id}`}
             misc={
                 <>
                     <div
