@@ -1,5 +1,5 @@
 import { RoomAction } from '$/features/room'
-import { useWalletAccount } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
@@ -9,14 +9,21 @@ export default function usePreselectRoomEffect() {
 
     const dispatch = useDispatch()
 
+    const streamrClient = useWalletClient()
+
     const { pathname } = useLocation()
 
     useEffect(() => {
+        if (!streamrClient) {
+            return
+        }
+
         dispatch(
             RoomAction.preselect({
-                roomId: pathname.replace(/^\//, ''),
                 account,
+                roomId: pathname.replace(/^\//, ''),
+                streamrClient,
             })
         )
-    }, [account, dispatch, pathname])
+    }, [account, dispatch, pathname, streamrClient])
 }

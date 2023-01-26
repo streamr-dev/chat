@@ -70,7 +70,11 @@ export const RoomAction = {
 
     select: createAction<RoomState['selectedRoomId']>('room: select'),
 
-    preselect: createAction<{ roomId: RoomId; account: OptionalAddress }>('room: preselect'),
+    preselect: createAction<{
+        roomId: RoomId
+        account: OptionalAddress
+        streamrClient: StreamrClient
+    }>('room: preselect'),
 
     sync: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
