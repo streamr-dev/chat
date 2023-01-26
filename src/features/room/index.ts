@@ -1,6 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { Address, IFingerprinted, PreflightParams, PrivacySetting } from '$/types'
+import { Address, IFingerprinted, OptionalAddress, PreflightParams, PrivacySetting } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
 import changePrivacy from './sagas/changePrivacy.saga'
 import create from './sagas/create.saga'
@@ -20,6 +20,7 @@ import pin from '$/features/room/sagas/pin.saga'
 import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
 import { Provider } from '@web3-react/types'
+import preselect from '$/features/room/sagas/preselect.saga'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -68,6 +69,8 @@ export const RoomAction = {
     renameLocal: createAction<{ roomId: RoomId; name: string }>('room: rename local'),
 
     select: createAction<RoomState['selectedRoomId']>('room: select'),
+
+    preselect: createAction<{ roomId: RoomId; account: OptionalAddress }>('room: preselect'),
 
     sync: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
@@ -229,6 +232,8 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(RoomAction.pin, SEE_SAGA)
 
     builder.addCase(RoomAction.unpin, SEE_SAGA) // See `pin` saga.
+
+    builder.addCase(RoomAction.preselect, SEE_SAGA)
 })
 
 export function* roomSaga() {
@@ -248,6 +253,7 @@ export function* roomSaga() {
         sync(),
         toggleStorageNode(),
         unpin(),
+        preselect(),
     ])
 }
 

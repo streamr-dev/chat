@@ -13,6 +13,7 @@ import tokenGatedRooms, { tokenGatedRoomSaga } from '$/features/tokenGatedRooms'
 import clock from '$/features/clock'
 import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
+import misc, { miscSaga } from '$/features/misc'
 import preferences, { preferencesSaga } from '$/features/preferences'
 import { aliasSaga } from '$/features/alias'
 import flag from '$/features/flag'
@@ -37,14 +38,24 @@ const store = configureStore({
         rooms,
         wallet,
         tokenGatedRooms,
+        misc,
     },
     middleware(getDefaultMiddleware) {
         return [
             ...getDefaultMiddleware({
                 serializableCheck: {
-                    ignoredActionPaths: ['payload.provider', 'payload.streamrClient'],
+                    ignoredActionPaths: [
+                        'payload.provider',
+                        'payload.streamrClient',
+                        'payload.navigate',
+                    ],
                     ignoredActions: [],
-                    ignoredPaths: ['wallet.provider', 'wallet.client', 'delegation.client'],
+                    ignoredPaths: [
+                        'wallet.provider',
+                        'wallet.client',
+                        'delegation.client',
+                        'misc.navigate',
+                    ],
                 },
             }),
             sagaMiddleware,
@@ -68,6 +79,7 @@ sagaMiddleware.run(function* saga() {
         roomsSaga(),
         walletSaga(),
         tokenGatedRoomSaga(),
+        miscSaga(),
     ])
 })
 

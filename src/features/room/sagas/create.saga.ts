@@ -8,11 +8,11 @@ import { error, success } from '$/utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
 import { toast } from 'react-toastify'
-import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import createRoomStream from '$/utils/createRoomStream'
+import { MiscAction } from '$/features/misc'
 
 function* onCreateAction({
     payload: {
@@ -118,13 +118,7 @@ function* onCreateAction({
 
         success(`Room "${params.name}" created.`)
 
-        // Select the newly created room.
-        yield put(
-            PreferencesAction.set({
-                owner,
-                selectedRoomId: stream.id,
-            })
-        )
+        yield put(MiscAction.goto(`/${stream.id}`))
 
         if (storage) {
             yield put(

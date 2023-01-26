@@ -19,6 +19,7 @@ import { Flag } from '$/features/flag/types'
 import useDetectMembersEffect from '$/hooks/useDetectMembersEffect'
 import useAccountModal from '$/hooks/useAccountModal'
 import useAddRoomModal from '$/hooks/useAddRoomModal'
+import usePreselectRoomEffect from '$/hooks/usePreselectRoomEffect'
 
 export default function ChatPage() {
     const { open: openAccountModal, modal: accountModal } = useAccountModal()
@@ -66,6 +67,8 @@ export default function ChatPage() {
     })
 
     useDetectMembersEffect()
+
+    usePreselectRoomEffect()
 
     return (
         <>

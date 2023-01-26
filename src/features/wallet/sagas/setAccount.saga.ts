@@ -1,30 +1,11 @@
-import { call, put, take } from 'redux-saga/effects'
+import { put, take } from 'redux-saga/effects'
 import { WalletAction } from '..'
-import handleError from '$/utils/handleError'
 import { DelegationAction } from '../../delegation'
 import { RoomAction } from '$/features/room'
-import { IPreference } from '$/features/preferences/types'
-import db from '$/utils/db'
 import { EnsAction } from '$/features/ens'
-import { Address, OptionalAddress } from '$/types'
+import { OptionalAddress } from '$/types'
 import isSameAddress from '$/utils/isSameAddress'
 import { Flag } from '$/features/flag/types'
-
-function preselectRoom(account: Address) {
-    return call(function* () {
-        const preferences: null | IPreference = yield db.preferences
-            .where('owner')
-            .equals(account.toLowerCase())
-            .first()
-
-        if (!preferences) {
-            yield put(RoomAction.select(undefined))
-            return
-        }
-
-        yield put(RoomAction.select(preferences.selectedRoomId))
-    })
-}
 
 export default function* setAccount() {
     let lastAccount: OptionalAddress = undefined
@@ -51,12 +32,6 @@ export default function* setAccount() {
         }
 
         yield put(EnsAction.fetchNames([account]))
-
-        try {
-            yield preselectRoom(account)
-        } catch (e) {
-            handleError(e)
-        }
 
         if (!provider) {
             throw new Error('Provider is missing')

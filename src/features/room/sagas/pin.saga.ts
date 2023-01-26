@@ -1,5 +1,5 @@
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import { PreferencesAction } from '$/features/preferences'
+import { MiscAction } from '$/features/misc'
 import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
@@ -76,12 +76,7 @@ function* pinRemote(
         })
     }
 
-    yield put(
-        PreferencesAction.set({
-            owner,
-            selectedRoomId: roomId,
-        })
-    )
+    yield put(MiscAction.goto(`/${roomId}`))
 }
 
 function* onPinAction({
