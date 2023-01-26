@@ -52,7 +52,7 @@ export default function Menu({ anchorEl, onMouseDownOutside, ...props }: Props) 
         () => void onMouseDownOutside?.(),
         undefined,
         {
-            isInside(el) {
+            isInside(_, el) {
                 return !!anchorEl?.contains(el)
             },
         }
