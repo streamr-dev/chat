@@ -76,7 +76,7 @@ function* pinRemote(
         })
     }
 
-    yield put(MiscAction.goto(`/${roomId}`))
+    yield put(MiscAction.goto(roomId))
 }
 
 function* onPinAction({

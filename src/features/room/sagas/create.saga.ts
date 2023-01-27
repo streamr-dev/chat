@@ -118,7 +118,7 @@ function* onCreateAction({
 
         success(`Room "${params.name}" created.`)
 
-        yield put(MiscAction.goto(`/${stream.id}`))
+        yield put(MiscAction.goto(stream.id))
 
         if (storage) {
             yield put(
