@@ -1,7 +1,9 @@
 import { RoomAction } from '$/features/room'
+import { RoomId } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { OptionalAddress } from '$/types'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -14,6 +16,8 @@ export default function usePreselectRoomEffect() {
 
     const { pathname } = useLocation()
 
+    const lastPreselectRef = useRef<undefined | [OptionalAddress, RoomId]>(undefined)
+
     useEffect(() => {
         if (!streamrClient) {
             return
@@ -21,13 +25,24 @@ export default function usePreselectRoomEffect() {
 
         const partials = pathnameToRoomIdPartials(pathname)
 
+        const roomId =
+            typeof partials === 'string'
+                ? partials
+                : `${partials.account}/streamr-chat/room/${partials.uuid}`
+
+        const { current: lastPreselect } = lastPreselectRef
+
+        if (lastPreselect && lastPreselect[0] === account && lastPreselect[1] === roomId) {
+            // Avoid preselecting the same thing twice.
+            return
+        }
+
+        lastPreselectRef.current = [account, roomId]
+
         dispatch(
             RoomAction.preselect({
                 account,
-                roomId:
-                    typeof partials === 'string'
-                        ? partials
-                        : `${partials.account}/streamr-chat/room/${partials.uuid}`,
+                roomId,
                 streamrClient,
             })
         )
