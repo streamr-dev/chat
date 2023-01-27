@@ -1,5 +1,6 @@
 import Id from '$/components/Id'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import { MiscAction } from '$/features/misc'
 import { PreferencesAction } from '$/features/preferences'
 import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
@@ -40,9 +41,10 @@ export default function* preselect() {
 
                 if (!roomId) {
                     // No room id? Let's see what room was selected last time the current account
-                    // visited the site.
-                    // FIXME: Currently we don't store `selectedRoomId`. Gotta fix it.
-                    yield put(RoomAction.select(preferences?.selectedRoomId))
+                    // visited the site and go there.
+                    if (preferences?.selectedRoomId) {
+                        yield put(MiscAction.goto(preferences?.selectedRoomId))
+                    }
 
                     return
                 }
