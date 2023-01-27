@@ -16,10 +16,10 @@ import tw from 'twin.macro'
 import Modal, { Props as ModalProps } from './Modal'
 
 interface Props extends ModalProps {
-    onChangeClick?: () => void | Promise<void>
+    onProceed?: () => void
 }
 
-export default function AccountModal({ title = 'Account', onChangeClick, ...props }: Props) {
+export default function AccountModal({ title = 'Account', onProceed, ...props }: Props) {
     const integrationId = useWalletIntegrationId()
 
     const { label } = integrations.get(integrationId!)!
@@ -54,7 +54,7 @@ export default function AccountModal({ title = 'Account', onChangeClick, ...prop
                         Connected with {label}
                     </div>
                     <div>
-                        <SecondaryButton onClick={onChangeClick}>
+                        <SecondaryButton onClick={() => void onProceed?.()}>
                             <Text>Change</Text>
                         </SecondaryButton>
                     </div>

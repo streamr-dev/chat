@@ -4,35 +4,25 @@ import useModalDialog from '$/hooks/useModalDialog'
 import { useCallback } from 'react'
 
 export default function useAccountModal() {
-    const {
-        open: openAccountModal,
-        toggle: toggleAccountModal,
-        modal: accountModal,
-    } = useModalDialog(AccountModal)
+    const { open: openAccountModal, modal: accountModal } = useModalDialog(AccountModal)
 
     const { open: openWalletModal, modal: walletModal } = useModalDialog(WalletModal)
 
     const open = useCallback(async () => {
-        try {
-            await openAccountModal({
-                async onChangeClick() {
-                    toggleAccountModal(false)
+        while (true) {
+            try {
+                await openAccountModal()
 
-                    try {
-                        await openWalletModal({
-                            onAbort() {
-                                toggleAccountModal(true)
-                            },
-                        })
-                    } catch (e) {
-                        // ignore
-                    }
-                },
-            })
-        } catch (e) {
-            // Ignore
+                try {
+                    await openWalletModal()
+                } catch (e) {
+                    // Noop.
+                }
+            } catch (e) {
+                break
+            }
         }
-    }, [openAccountModal, openWalletModal, toggleAccountModal])
+    }, [openAccountModal, openWalletModal])
 
     return {
         open,
