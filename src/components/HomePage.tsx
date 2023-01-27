@@ -1,18 +1,24 @@
 import tw from 'twin.macro'
 import Page from '$/components/Page'
-import Navbar from '$/components/Navbar'
+import Navbar, { NavButton } from '$/components/Navbar'
 import Button from '$/components/Button'
 import Text from '$/components/Text'
 import useWalletModal from '$/hooks/useWalletModal'
+import useHowItWorksModal from '$/hooks/useHowItWorksModal'
 
 export default function HomePage() {
     const { open, modal } = useWalletModal()
 
+    const { open: openHiwModal, modal: hiwModal } = useHowItWorksModal()
+
     return (
         <>
             {modal}
+            {hiwModal}
             <Page>
-                <Navbar />
+                <Navbar>
+                    <NavButton onClick={() => void openHiwModal()}>How it works?</NavButton>
+                </Navbar>
                 <div
                     css={[
                         tw`
