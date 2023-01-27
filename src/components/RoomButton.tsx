@@ -18,6 +18,7 @@ import PinIcon from '$/icons/PinIcon'
 import useAgo from '$/hooks/useAgo'
 import isSameAddress from '$/utils/isSameAddress'
 import { Link, LinkProps } from 'react-router-dom'
+import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 
 type Props = Omit<LinkProps, 'children' | 'to'> & {
     active?: boolean
@@ -79,13 +80,18 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const seen = isSameAddress(recentMessage?.createdBy, address) || Boolean(recentMessage?.seenAt)
 
+    const partials = pathnameToRoomIdPartials(id)
+
+    const url =
+        typeof partials === 'string' ? `/${partials}` : `/${partials.account}~${partials.uuid}`
+
     return (
         <SidebarButton
             {...props}
             tag={Link}
             active={active}
             icon={<Icon id={id} />}
-            to={`/${id}`}
+            to={url}
             misc={
                 <>
                     <div

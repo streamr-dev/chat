@@ -1,5 +1,6 @@
 import { RoomAction } from '$/features/room'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
@@ -18,10 +19,15 @@ export default function usePreselectRoomEffect() {
             return
         }
 
+        const partials = pathnameToRoomIdPartials(pathname)
+
         dispatch(
             RoomAction.preselect({
                 account,
-                roomId: pathname.replace(/^\//, ''),
+                roomId:
+                    typeof partials === 'string'
+                        ? partials
+                        : `${partials.account}/streamr-chat/room/${partials.uuid}`,
                 streamrClient,
             })
         )
