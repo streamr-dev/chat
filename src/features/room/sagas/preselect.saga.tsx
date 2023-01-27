@@ -10,7 +10,7 @@ import getStreamMetadata from '$/utils/getStreamMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import { error } from '$/utils/toaster'
 import { Id as ToastId, toast } from 'react-toastify'
-import { delay, put, takeLatest } from 'redux-saga/effects'
+import { put, takeLatest } from 'redux-saga/effects'
 
 export default function* preselect() {
     yield takeLatest(
@@ -160,10 +160,10 @@ export default function* preselect() {
                     error('Failed to open the room.')
                 }
             } finally {
-                // Let the toast stick around for halfa second for better UX.
-                yield delay(1000)
-
-                toast.dismiss(toastId)
+                window.setTimeout(() => {
+                    // Let the toast stick around for halfa second for better UX.
+                    toast.dismiss(toastId)
+                }, 1000)
             }
         }
     )
