@@ -1,5 +1,6 @@
 import Id from '$/components/Id'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import { PreferencesAction } from '$/features/preferences'
 import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
@@ -89,6 +90,14 @@ export default function* preselect() {
                     // At this point the room is known and unhidden. Select it!
                     yield put(RoomAction.select(roomId))
 
+                    // …and remember our last selection.
+                    yield put(
+                        PreferencesAction.set({
+                            owner,
+                            selectedRoomId: roomId,
+                        })
+                    )
+
                     return
                 }
 
@@ -153,6 +162,13 @@ export default function* preselect() {
                     }
 
                     yield put(RoomAction.select(roomId))
+
+                    yield put(
+                        PreferencesAction.set({
+                            owner,
+                            selectedRoomId: roomId,
+                        })
+                    )
                 } catch (e) {
                     error('Failed to open the room.')
                 }
