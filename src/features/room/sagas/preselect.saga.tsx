@@ -10,31 +10,22 @@ import getStreamMetadata from '$/utils/getStreamMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import { error } from '$/utils/toaster'
 import { Id as ToastId, toast } from 'react-toastify'
-import { Task } from 'redux-saga'
-import { delay, fork, put, take } from 'redux-saga/effects'
+import { delay, put, takeLatest } from 'redux-saga/effects'
 
 export default function* preselect() {
-    let task: undefined | Task
+    yield takeLatest(
+        RoomAction.preselect,
+        function* ({ payload: { roomId, account, streamrClient } }) {
+            if (!account) {
+                // No account means that either someone locked their wallet or we're in the middle of
+                // a switch. Either way, deselect and wait for another `preselect` call.
+                yield put(RoomAction.select(undefined))
 
-    while (true) {
-        const {
-            payload: { roomId, account, streamrClient },
-        }: ReturnType<typeof RoomAction.preselect> = yield take(RoomAction.preselect)
+                return
+            }
 
-        task?.cancel()
+            const owner = account.toLowerCase()
 
-        if (!account) {
-            // No account means that either someone locked their wallet or we're in the middle of
-            // a switch. Either way, deselect and wait for another `preselect` call.
-            yield put(RoomAction.select(undefined))
-            continue
-        }
-
-        const owner = account.toLowerCase()
-
-        // We operate in the background and immediately go back to top, and wait for another
-        // `preselect` (doesn't block the UI in a confusing way).
-        task = yield fork(function* () {
             let toastId: undefined | ToastId
 
             try {
@@ -174,6 +165,6 @@ export default function* preselect() {
 
                 toast.dismiss(toastId)
             }
-        })
-    }
+        }
+    )
 }
