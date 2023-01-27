@@ -29,20 +29,19 @@ export default function* preselect() {
             let toastId: undefined | ToastId
 
             try {
+                let preferences: null | IPreference = null
+
+                try {
+                    preferences = yield db.preferences.where('owner').equals(owner).first()
+                } catch (e) {
+                    // Ignore.
+                }
+
                 if (!roomId) {
                     // No room id? Let's see what room was selected last time the current account
                     // visited the site.
                     // FIXME: Currently we don't store `selectedRoomId`. Gotta fix it.
-                    try {
-                        const preferences: null | IPreference = yield db.preferences
-                            .where('owner')
-                            .equals(owner)
-                            .first()
-
-                        yield put(RoomAction.select(preferences?.selectedRoomId))
-                    } catch (_) {
-                        // Worse case scenario: select nothing. Doesn't hurt.
-                    }
+                    yield put(RoomAction.select(preferences?.selectedRoomId))
 
                     return
                 }
@@ -76,10 +75,8 @@ export default function* preselect() {
                 }
 
                 if (selectedRoom) {
-                    if (selectedRoom.hidden) {
-                        // Room is known but it's been hidden. Let's change that. We may wanna
-                        // consider skipping this step if the user has "show hidden rooms" checked
-                        // in their preferences.
+                    if (selectedRoom.hidden && !preferences?.showHiddenRooms) {
+                        // Room is known but it's been hidden. Let's change that.
                         try {
                             yield db.rooms.where({ owner, id: roomId }).modify({
                                 hidden: false,
