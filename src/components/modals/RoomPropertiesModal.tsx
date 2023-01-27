@@ -26,6 +26,7 @@ import { Flag } from '$/features/flag/types'
 import PrivacySelectField from '$/components/PrivacySelectField'
 import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import TextField from '$/components/TextField'
 
 export default function RoomPropertiesModal({
     title = 'Room properties',
@@ -154,6 +155,13 @@ export default function RoomPropertiesModal({
                     onAbort?.()
                 }}
             >
+                {!!selectedRoomId && (
+                    <>
+                        <Label>Room id</Label>
+                        <TextField defaultValue={selectedRoomId} readOnly />
+                    </>
+                )}
+
                 <>
                     <Label>Privacy</Label>
                     <PrivacySelectField
