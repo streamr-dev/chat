@@ -2,8 +2,8 @@ import goto from '$/features/misc/sagas/goto.saga'
 import { MiscState } from '$/features/misc/types'
 import { SEE_SAGA } from '$/utils/consts'
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { all } from 'axios'
 import { NavigateFunction } from 'react-router-dom'
+import { all } from 'redux-saga/effects'
 
 export const MiscAction = {
     goto: createAction<string>('misc: goto'),
