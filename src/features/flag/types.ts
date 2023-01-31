@@ -145,4 +145,12 @@ export const Flag = {
     isLookingUpDelegation(delegatedAddress: Address) {
         return JSON.stringify(['isLookingUpDelegation', delegatedAddress.toLowerCase()])
     },
+
+    isFetchingKnownTokens() {
+        return JSON.stringify(['isFetchingKnownTokens'])
+    },
+
+    isFetchingTokenStandard(tokenAddress: Address) {
+        return JSON.stringify(['isFetchingTokenStandard', tokenAddress.toLowerCase()])
+    },
 }

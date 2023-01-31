@@ -20,6 +20,7 @@ export default function Form({ onSubmit: onSubmitProp, ...props }: Props) {
             onSubmit={onSubmit}
             css={[
                 tw`
+                    [* + & label:first-child]:mt-8
                     [* + label]:mt-8
                 `,
             ]}

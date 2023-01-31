@@ -1,17 +1,7 @@
 import defer from '$/utils/defer'
-import React, {
-    ComponentProps,
-    FC,
-    HTMLAttributes,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react'
+import { ComponentProps, FC, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import uniqueId from 'lodash/uniqueId'
-import tw from 'twin.macro'
-import useGlobalKeyDownEffect from 'streamr-ui/hooks/useGlobalKeyDownEffect'
 
 type ResolveResult<T> = T extends FC<infer R>
     ? R extends { onProceed?: (_: infer K) => void }
@@ -106,11 +96,7 @@ export default function useModalDialog<T extends FC, P extends Props<T>>(
     }, [])
 
     const close = useCallback(() => {
-        if (!deferRef.current) {
-            return
-        }
-
-        deferRef.current.reject()
+        deferRef.current?.reject()
     }, [])
 
     const toggle = useCallback((open?: boolean) => {
@@ -134,43 +120,10 @@ export default function useModalDialog<T extends FC, P extends Props<T>>(
         []
     )
 
-    useGlobalKeyDownEffect((e) => {
-        if (e.key === 'Escape' && isOpen) {
-            close()
-        }
-    })
-
     return {
         open,
         close,
         toggle,
-        modal: isOpen
-            ? createPortal(
-                  <>
-                      <Backdrop onMouseDown={() => void close()} />
-                      <C {...props} />
-                  </>,
-                  divRef.current
-              )
-            : null,
+        modal: isOpen ? createPortal(<C {...props} />, divRef.current) : null,
     }
-}
-
-function Backdrop(props: HTMLAttributes<HTMLDivElement>) {
-    return (
-        <div
-            {...props}
-            css={[
-                tw`
-                    bg-[rgba(0, 0, 0, 0.3)]
-                    backdrop-blur
-                    fixed
-                    top-0
-                    left-0
-                    w-full
-                    h-full
-                `,
-            ]}
-        />
-    )
 }
