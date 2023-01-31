@@ -1,19 +1,12 @@
 import defer from '$/utils/defer'
-import {
-    ComponentProps,
-    FC,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react'
+import { ComponentProps, FC, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import uniqueId from 'lodash/uniqueId'
 
 type ResolveResult<T> = T extends FC<infer R>
     ? R extends { onProceed?: (_: infer K) => void }
-    ? K
-    : void
+        ? K
+        : void
     : never
 
 type Props<T extends FC> = {
@@ -131,11 +124,6 @@ export default function useModalDialog<T extends FC, P extends Props<T>>(
         open,
         close,
         toggle,
-        modal: isOpen
-            ? createPortal(
-                <C {...props} />,
-                divRef.current
-            )
-            : null,
+        modal: isOpen ? createPortal(<C {...props} />, divRef.current) : null,
     }
 }

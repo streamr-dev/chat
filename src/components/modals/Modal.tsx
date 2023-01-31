@@ -6,7 +6,7 @@ import tw from 'twin.macro'
 export enum AbortReason {
     CloseButton,
     Backdrop,
-    Escape
+    Escape,
 }
 
 export interface Props {
@@ -17,7 +17,13 @@ export interface Props {
     onBeforeAbort?: (reason?: any) => boolean | void
 }
 
-export default function Modal({ title = 'Untitled dialog', subtitle, children, onAbort, onBeforeAbort }: Props) {
+export default function Modal({
+    title = 'Untitled dialog',
+    subtitle,
+    children,
+    onAbort,
+    onBeforeAbort,
+}: Props) {
     const wigglyRef = useRef<HTMLDivElement>(null)
 
     const tweenRef = useRef<ReturnType<typeof gsap.to>>()
@@ -27,29 +33,35 @@ export default function Modal({ title = 'Untitled dialog', subtitle, children, o
 
         tweenRef.current?.kill()
 
-        tweenRef.current = gsap.to({}, {
-            duration: 0.75,
-            onUpdate() {
-                const { current: wiggly } = wigglyRef
+        tweenRef.current = gsap.to(
+            {},
+            {
+                duration: 0.75,
+                onUpdate() {
+                    const { current: wiggly } = wigglyRef
 
-                if (!wiggly) {
-                    return
-                }
+                    if (!wiggly) {
+                        return
+                    }
 
-                const p = this.progress()
+                    const p = this.progress()
 
-                const intensity = (1 + Math.sin((p * 2 - 0.5) * Math.PI)) * 0.5
+                    const intensity = (1 + Math.sin((p * 2 - 0.5) * Math.PI)) * 0.5
 
-                const wave = 5 * Math.sin(6 * p * Math.PI)
+                    const wave = 5 * Math.sin(6 * p * Math.PI)
 
-                wiggly.style.transform = `rotate(${intensity * wave}deg)`
+                    wiggly.style.transform = `rotate(${intensity * wave}deg)`
+                },
             }
-        })
+        )
     }
 
-    useEffect(() => () => {
-        tweenRef.current?.kill()
-    }, [])
+    useEffect(
+        () => () => {
+            tweenRef.current?.kill()
+        },
+        []
+    )
 
     function close(reason?: any) {
         if (onBeforeAbort?.(reason) === false) {
@@ -114,8 +126,9 @@ export default function Modal({ title = 'Untitled dialog', subtitle, children, o
                                 pt-8
                                 rounded-[20px]
                                 shadow-lg
-                            `]
-                        }>
+                            `,
+                        ]}
+                    >
                         <div
                             css={[
                                 tw`

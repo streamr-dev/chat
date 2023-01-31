@@ -20,11 +20,15 @@ export default function AddMemberModal({ title = 'Add member', onProceed, ...pro
     const canSubmit = !isBlank(address) && canGrant
 
     return (
-        <Modal {...props} title={title} onBeforeAbort={(reason) => {
-            if (reason === AbortReason.Backdrop) {
-                return isBlank(address)
-            }
-        }}>
+        <Modal
+            {...props}
+            title={title}
+            onBeforeAbort={(reason) => {
+                if (reason === AbortReason.Backdrop) {
+                    return isBlank(address)
+                }
+            }}
+        >
             <Form
                 onSubmit={() => {
                     if (canSubmit) {

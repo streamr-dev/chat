@@ -84,15 +84,23 @@ export default function AddRoomModal({
     const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
 
     return (
-        <Modal {...props} title={title} onBeforeAbort={(reason) => {
-            if (reason === AbortReason.Backdrop) {
-                if (createNew) {
-                    return privacySetting === PrivateRoomOption && isBlank(roomName) && storage === defaultParams.storage
-                }
+        <Modal
+            {...props}
+            title={title}
+            onBeforeAbort={(reason) => {
+                if (reason === AbortReason.Backdrop) {
+                    if (createNew) {
+                        return (
+                            privacySetting === PrivateRoomOption &&
+                            isBlank(roomName) &&
+                            storage === defaultParams.storage
+                        )
+                    }
 
-                return isBlank(roomId)
-            }
-        }}>
+                    return isBlank(roomId)
+                }
+            }}
+        >
             <ButtonGroup>
                 <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>
                     Add a room
