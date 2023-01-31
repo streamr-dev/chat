@@ -3,6 +3,7 @@ import AddTokenGatedRoomModal from '$/components/modals/AddTokenGatedRoomModal'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
+import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useModalDialog from '$/hooks/useModalDialog'
 import { Prefix, PrivacySetting } from '$/types'
@@ -92,8 +93,31 @@ export default function useAddRoomModal() {
                         subtitle: params.name,
                     })
 
-                    // We're gonna place our token-gated logic here. Lovely.
-                    console.info(tokenParams)
+                    const now = Date.now()
+
+                    const tokenType = TokenTypes[tokenParams.standard]
+
+                    dispatch(
+                        RoomAction.create({
+                            params: {
+                                createdAt: now,
+                                createdBy: account,
+                                id: `/${Prefix.Room}/${uuidv4()}`,
+                                name: params.name,
+                                owner: account,
+                                updatedAt: now,
+                                tokenAddress: tokenParams.tokenAddress,
+                                tokenId: tokenParams.tokenId,
+                                minTokenAmount: tokenParams.tokenCount,
+                                tokenType,
+                            },
+                            privacy: params.privacy,
+                            storage: params.storage,
+                            provider,
+                            requester: account,
+                            streamrClient,
+                        })
+                    )
 
                     break
                 } catch (e) {
