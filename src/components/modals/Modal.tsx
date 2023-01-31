@@ -1,4 +1,5 @@
-import { HTMLAttributes, ReactNode } from 'react'
+import gsap from 'gsap'
+import { HTMLAttributes, ReactNode, useEffect, useRef } from 'react'
 import useGlobalKeyDownEffect from 'streamr-ui/hooks/useGlobalKeyDownEffect'
 import tw from 'twin.macro'
 
@@ -17,8 +18,43 @@ export interface Props {
 }
 
 export default function Modal({ title = 'Untitled dialog', subtitle, children, onAbort, onBeforeAbort }: Props) {
+    const wigglyRef = useRef<HTMLDivElement>(null)
+
+    const tweenRef = useRef<ReturnType<typeof gsap.to>>()
+
+    function wiggle() {
+        const { current: wiggly } = wigglyRef
+
+        tweenRef.current?.kill()
+
+        tweenRef.current = gsap.to({}, {
+            duration: 0.75,
+            onUpdate() {
+                const { current: wiggly } = wigglyRef
+
+                if (!wiggly) {
+                    return
+                }
+
+                const p = this.progress()
+
+                const intensity = (1 + Math.sin((p * 2 - 0.5) * Math.PI)) * 0.5
+
+                const wave = 5 * Math.sin(6 * p * Math.PI)
+
+                wiggly.style.transform = `rotate(${intensity * wave}deg)`
+            }
+        })
+    }
+
+    useEffect(() => () => {
+        tweenRef.current?.kill()
+    }, [])
+
     function close(reason?: any) {
         if (onBeforeAbort?.(reason) === false) {
+            wiggle()
+
             return
         }
 
@@ -65,80 +101,87 @@ export default function Modal({ title = 'Untitled dialog', subtitle, children, o
                 <div
                     css={[
                         tw`
-                            bg-[white]
-                            p-12
-                            pt-8
-                            rounded-[20px]
-                            shadow-lg
-                            animate-[bringIn 150ms ease-in-out 1]
+                        animate-[bringIn 150ms ease-in-out 1]
                         `,
                     ]}
                 >
                     <div
+                        ref={wigglyRef}
                         css={[
                             tw`
-                                flex
-                                items-center
-                                mb-6
-                            `,
-                        ]}
-                    >
-                        <div tw="flex-grow min-w-0">
-                            <h2
-                                css={[
-                                    tw`
-                                        font-medium
-                                        text-[1.25rem]
-                                        truncate
-                                    `,
-                                ]}
-                            >
-                                {title}
-                            </h2>
-                            {!!subtitle && (
-                                <p
+                                bg-[white]
+                                p-12
+                                pt-8
+                                rounded-[20px]
+                                shadow-lg
+                            `]
+                        }>
+                        <div
+                            css={[
+                                tw`
+                                    flex
+                                    items-center
+                                    mb-6
+                                `,
+                            ]}
+                        >
+                            <div tw="flex-grow min-w-0">
+                                <h2
                                     css={[
                                         tw`
-                                            text-[#59799C]
-                                            text-[0.875rem]
+                                            font-medium
+                                            text-[1.25rem]
                                             truncate
                                         `,
                                     ]}
                                 >
-                                    {subtitle}
-                                </p>
-                            )}
-                        </div>
-                        <div>
-                            <button
-                                type="button"
-                                css={[
-                                    tw`
-                                        block
-                                        appearance-none
-                                        [svg]:block
-                                    `,
-                                ]}
-                                onClick={() => void close(AbortReason.CloseButton)}
-                            >
-                                <svg
-                                    width="32"
-                                    height="32"
-                                    viewBox="0 0 32 32"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
+                                    {title}
+                                </h2>
+                                {!!subtitle && (
+                                    <p
+                                        css={[
+                                            tw`
+                                                text-[#59799C]
+                                                text-[0.875rem]
+                                                truncate
+                                            `,
+                                        ]}
+                                    >
+                                        {subtitle}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <button
+                                    type="button"
+                                    css={[
+                                        tw`
+                                            block
+                                            appearance-none
+                                            [svg]:block
+                                        `,
+                                    ]}
+                                    onClick={() => void close(AbortReason.CloseButton)}
                                 >
-                                    <path
-                                        fillRule="evenodd"
-                                        clipRule="evenodd"
-                                        d="M8.47 8.47a.75.75 0 0 1 1.06 0L16 14.94l6.47-6.47a.75.75 0 1 1 1.06 1.06L17.06 16l6.47 6.47a.75.75 0 1 1-1.06 1.06L16 17.06l-6.47 6.47a.75.75 0 0 1-1.06-1.06L14.94 16 8.47 9.53a.75.75 0 0 1 0-1.06z"
-                                        fill="#59799C"
-                                    />
-                                </svg>
-                            </button>
+                                    <svg
+                                        width="32"
+                                        height="32"
+                                        viewBox="0 0 32 32"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            clipRule="evenodd"
+                                            d="M8.47 8.47a.75.75 0 0 1 1.06 0L16 14.94l6.47-6.47a.75.75 0 1 1 1.06 1.06L17.06 16l6.47 6.47a.75.75 0 1 1-1.06 1.06L16 17.06l-6.47 6.47a.75.75 0 0 1-1.06-1.06L14.94 16 8.47 9.53a.75.75 0 0 1 0-1.06z"
+                                            fill="#59799C"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
+                        {children}
                     </div>
-                    {children}
                 </div>
             </div>
         </>

@@ -14,7 +14,7 @@ import PrivacySelectField, {
     privacyOptions,
     PrivateRoomOption,
 } from '$/components/PrivacySelectField'
-import Modal, { Props as ModalProps } from '$/components/modals/Modal'
+import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
 import { RoomId } from '$/features/room/types'
 
 export interface Pin {
@@ -84,7 +84,15 @@ export default function AddRoomModal({
     const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
 
     return (
-        <Modal {...props} title={title}>
+        <Modal {...props} title={title} onBeforeAbort={(reason) => {
+            if (reason === AbortReason.Backdrop) {
+                if (createNew) {
+                    return privacySetting === PrivateRoomOption && isBlank(roomName) && storage === defaultParams.storage
+                }
+
+                return isBlank(roomId)
+            }
+        }}>
             <ButtonGroup>
                 <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>
                     Add a room

@@ -5,7 +5,7 @@ import Label from '../Label'
 import Submit from '../Submit'
 import TextField from '../TextField'
 import { Address } from '$/types'
-import Modal, { Props as ModalProps } from '$/components/modals/Modal'
+import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
 import useCanGrant from '$/hooks/useCanGrant'
 
 interface Props extends ModalProps {
@@ -20,7 +20,11 @@ export default function AddMemberModal({ title = 'Add member', onProceed, ...pro
     const canSubmit = !isBlank(address) && canGrant
 
     return (
-        <Modal {...props} title={title}>
+        <Modal {...props} title={title} onBeforeAbort={(reason) => {
+            if (reason === AbortReason.Backdrop) {
+                return isBlank(address)
+            }
+        }}>
             <Form
                 onSubmit={() => {
                     if (canSubmit) {
