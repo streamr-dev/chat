@@ -31,7 +31,7 @@ function P(props: HTMLAttributes<HTMLParagraphElement>) {
             css={[
                 tw`
                     text-[14px]
-                    [& + &]:mt-6
+                    [& + p]:mt-6
                     leading-6
                 `,
             ]}
