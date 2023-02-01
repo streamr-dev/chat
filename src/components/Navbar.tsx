@@ -24,7 +24,7 @@ export default function Navbar({ children, ...props }: Props) {
                 `,
             ]}
         >
-            <div tw="flex-grow">
+            <div css={tw`grow`}>
                 <h4
                     css={[
                         tw`
@@ -40,7 +40,7 @@ export default function Navbar({ children, ...props }: Props) {
                             css={[
                                 tw`
                                     font-medium
-                                    text-[20px]
+                                    text-[16px]
                                     md:text-[22px]
                                     tracking-widest
                                 `,
@@ -52,12 +52,13 @@ export default function Navbar({ children, ...props }: Props) {
                             css={[
                                 tw`
                                     absolute
-                                    bg-[#ffffff]
+                                    bg-white
                                     inline-block
                                     px-2
                                     py-[2px]
                                     rounded-[10%]
-                                    text-[14px]
+                                    text-[12px]
+                                    md:text-[14px]
                                     -top-5
                                     -right-8
                                 `,
@@ -67,7 +68,7 @@ export default function Navbar({ children, ...props }: Props) {
                             <div
                                 css={[
                                     tw`
-                                        bg-[white]
+                                        bg-white
                                         h-2
                                         w-2
                                         absolute
@@ -110,13 +111,13 @@ export function NavButton({ children, ...props }: ButtonProps) {
                     font-medium
                     h-full
                     items-center
-                    px-8
-                    py-[10px]
+                    px-5
+                    md:px-8
+                    py-2.5
                     rounded-[1.5rem]
                     text-[14px]
-                    text-[15px]
-                    tracking-wider
                     md:text-[1rem]
+                    tracking-wider
                     hover:bg-[#fefefe]
                     active:bg-[#f7f7f7]
                 `,

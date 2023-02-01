@@ -16,40 +16,45 @@ export default function HomePage() {
             {modal}
             {hiwModal}
             <Page>
-                <Navbar>
-                    <NavButton onClick={() => void openHiwModal()}>How it works?</NavButton>
-                </Navbar>
-                <div
-                    css={[
-                        tw`
-                            flex
-                            flex-col
-                            h-screen
-                            items-center
-                            justify-center
-                            text-center
-                            w-screen
-                        `,
-                    ]}
-                >
-                    <div>
-                        <h1
-                            css={[
-                                tw`
-                                    animate-float
-                                    font-medium
-                                    m-0
-                                    mb-[6.25rem]
-                                    text-h1
-                                `,
-                            ]}
-                        >
-                            Hello world.
-                        </h1>
-                        <ConnectButton onClick={() => void open()} />
+                <div css={tw`relative`}>
+                    <Navbar>
+                        <NavButton onClick={() => void openHiwModal()}>How it works?</NavButton>
+                    </Navbar>
+                    <div
+                        css={[
+                            tw`
+                                flex
+                                flex-col
+                                items-center
+                                justify-center
+                                text-center
+                                w-screen
+                                h-screen
+                            `,
+                        ]}
+                    >
+                        <div>
+                            <h1
+                                css={[
+                                    tw`
+                                        animate-float
+                                        font-medium
+                                        m-0
+                                        mb-[3rem]
+                                        md:mb-[6.25rem]
+                                        text-[2.5rem]
+                                        md:text-[5rem]
+                                        leading-normal
+                                    `,
+                                ]}
+                            >
+                                <Text>Hello world.</Text>
+                            </h1>
+                            <ConnectButton onClick={() => void open()} />
+                        </div>
                     </div>
+                    <PoweredBy />
                 </div>
-                <PoweredBy />
             </Page>
         </>
     )
@@ -66,8 +71,10 @@ function ConnectButton(props: CreateRoomButtonProps) {
                     bg-[#ff5924]
                     font-karelia
                     h-auto
-                    px-12
-                    py-6
+                    px-9
+                    md:px-12
+                    py-5
+                    md:py-6
                     rounded-[6.25rem]
                     shadow-lg
                     text-[#ffffff]
@@ -90,38 +97,32 @@ function PoweredBy() {
                 tw`
                     -translate-x-1/2
                     absolute
-                    bg-[#ffffff]
-                    bottom-5
+                    bottom-6
                     left-1/2
-                    px-5
-                    py-[10px]
-                    rounded-[50px]
-                    text-center
-                    text-plug
-                    w-[90%]
-                    shadow-sm
+                    w-full
+                    px-6
+                    md:px-0
                     md:left-5
-                    md:text-left
                     md:translate-x-0
-                    md:w-auto
+                    md:w-fit
                 `,
             ]}
         >
-            <Text>
-                Decentralised, encrypted chat powered by&nbsp;
-                <a
-                    css={[
-                        tw`
-                            !text-[#ff5924]
-                        `,
-                    ]}
-                    href="https://streamr.network"
-                    rel="noreferrer"
-                    target="_blank"
-                >
-                    Streamr
-                </a>
-            </Text>
+            <div
+                css={tw`bg-white px-5 py-2.5 rounded-full text-plug shadow-sm text-center md:text-left`}
+            >
+                <Text>
+                    Decentralised, encrypted chat powered by&nbsp;
+                    <a
+                        css={tw`!text-[#ff5924]`}
+                        href="https://streamr.network"
+                        rel="noreferrer"
+                        target="_blank"
+                    >
+                        Streamr
+                    </a>
+                </Text>
+            </div>
         </div>
     )
 }
