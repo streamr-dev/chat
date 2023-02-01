@@ -5,6 +5,7 @@ import {
     HTMLAttributes,
     ReactNode,
     useEffect,
+    useReducer,
     useState,
 } from 'react'
 import tw, { css } from 'twin.macro'
@@ -23,7 +24,6 @@ import { Flag } from '$/features/flag/types'
 import trunc from '$/utils/trunc'
 import { useAlias } from '$/features/alias/hooks'
 import useENSName from '$/hooks/useENSName'
-import Tooltip, { Placement } from '$/components/Tooltip'
 import { RoomId } from '$/features/room/types'
 import { MessageAction } from '$/features/message'
 import { useDelegatedClient } from '$/features/delegation/hooks'
@@ -118,26 +118,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                             `,
                     ]}
                 >
-                    <span
-                        css={[
-                            css`
-                                :hover div:first-of-type {
-                                    opacity: 1;
-                                    visibility: visible;
-                                    transition-delay: 0.25s;
-                                }
-                            `,
-
-                            tw`
-                                relative
-                            `,
-                        ]}
-                    >
-                        <Tooltip placement={incoming ? Placement.Right : Placement.Left}>
-                            {sender}
-                        </Tooltip>
-                        {ens || alias || trunc(sender)}
-                    </span>
+                    <Sender short={ens || alias || trunc(sender)} full={sender} />
                 </div>
             )}
             <div
@@ -344,5 +325,37 @@ function Link(props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'r
                 `,
             ]}
         />
+    )
+}
+
+interface SenderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+    short: string
+    full: string
+}
+
+function Sender({ short, full, ...props }: SenderProps) {
+    const [showFull, toggle] = useReducer((x) => !x, false)
+
+    return (
+        <button
+            type="button"
+            onClick={() => void toggle()}
+            css={[
+                css`
+                    span {
+                        transition: 200ms ease-in-out all;
+                        transition-property: visibility, opacity;
+                        transition-delay: 0s;
+                    }
+                `,
+                tw`appearance-none relative [span]:(absolute top-0 left-0)`,
+            ]}
+        >
+            &zwnj;
+            <span css={showFull && tw`invisible opacity-0 delay-200`}>{short}</span>
+            <span css={[tw`invisible opacity-0 delay-200`, showFull && tw`visible opacity-100`]}>
+                {full}
+            </span>
+        </button>
     )
 }
