@@ -10,14 +10,14 @@ import Text from '$/components/Text'
 import useMessageGroups from '$/hooks/useMessageGroups'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 
-type Props = {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     messages?: IMessage[]
     resends?: IResend[]
 }
 
 const AutoScrollTolerance = 5
 
-export default function MessageFeed({ messages = [], resends = [] }: Props) {
+export default function MessageFeed({ messages = [], resends = [], ...props }: Props) {
     const rootRef = useRef<HTMLDivElement>(null)
 
     const stickyRef = useRef<boolean>(true)
@@ -66,16 +66,9 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
 
     return (
         <div
+            {...props}
             ref={rootRef}
-            css={[
-                tw`
-                    max-h-full
-                    overflow-auto
-                    px-6
-                    pt-6
-                    [> *]:mt-[0.625rem]
-                `,
-            ]}
+            css={tw`max-h-full overflow-auto px-6 pt-6 [> *]:mt-[0.625rem]`}
         >
             {groups.map(({ timestamp, newDay, messages }, index) => {
                 let previousCreatedBy: undefined | IMessage['createdBy']
@@ -118,17 +111,5 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
 }
 
 function NoMessages(props: HTMLAttributes<HTMLParagraphElement>) {
-    return (
-        <p
-            {...props}
-            css={[
-                tw`
-                    text-[#59799C]
-                    text-[12px]
-                    m-0
-                    text-center
-                `,
-            ]}
-        />
-    )
+    return <p {...props} css={tw`text-[#59799C] text-[12px] m-0 text-center`} />
 }

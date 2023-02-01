@@ -1,5 +1,6 @@
 import { ButtonHTMLAttributes } from 'react'
 import { StreamPermission } from 'streamr-client'
+import type StreamrClient from 'streamr-client'
 import tw from 'twin.macro'
 import {
     useDelegatedClient,
@@ -52,70 +53,6 @@ export default function Conversation() {
 
     useResendEffect(selectedRoomId)
 
-    return (
-        <>
-            {addMemberModal}
-            {editMembersModal}
-            {roomPropertiesModal}
-            <ConversationHeader
-                canModifyMembers={canGrant}
-                onAddMemberClick={() => void openAddMemberModal()}
-                onEditMembersClick={() => void openEditMembersModal()}
-                onRoomPropertiesClick={() => void openRoomPropertiesModal()}
-            />
-            <div
-                css={[
-                    tw`
-                        h-full
-                        pt-[92px]
-                        pb-[92px]
-                    `,
-                ]}
-            >
-                <div tw="h-full">
-                    {(messages || []).length ? (
-                        <div
-                            css={[
-                                tw`
-                                    h-full
-                                    flex
-                                    flex-col
-                                `,
-                            ]}
-                        >
-                            <div tw="flex-grow" />
-                            <MessageFeed messages={messages} resends={resends} />
-                        </div>
-                    ) : (
-                        <EmptyMessageFeed
-                            canModifyMembers={canGrant}
-                            onAddMemberClick={() => void openAddMemberModal()}
-                        />
-                    )}
-                </div>
-            </div>
-            <div
-                css={[
-                    tw`
-                        absolute
-                        p-6
-                        bottom-0
-                        left-0
-                        w-full
-                    `,
-                ]}
-            >
-                <MessageBox canGrant={canGrant} />
-            </div>
-        </>
-    )
-}
-
-interface MessageBoxProps {
-    canGrant?: boolean
-}
-
-function MessageBox({ canGrant = false }: MessageBoxProps) {
     const delegatedClient = useDelegatedClient()
 
     const canDelegatedPublish = useCurrentDelegationAbility(StreamPermission.PUBLISH)
@@ -128,15 +65,81 @@ function MessageBox({ canGrant = false }: MessageBoxProps) {
 
     const justInvited = useJustInvited(useSelectedRoomId(), useWalletAccount())
 
+    const canDoAnything =
+        (canDelegatedPublish && canDelegatedSubscribe) ||
+        !delegatedClient ||
+        justInvited ||
+        canGrant
+
+    return (
+        <>
+            {addMemberModal}
+            {editMembersModal}
+            {roomPropertiesModal}
+            <ConversationHeader
+                canModifyMembers={canGrant}
+                onAddMemberClick={() => void openAddMemberModal()}
+                onEditMembersClick={() => void openEditMembersModal()}
+                onRoomPropertiesClick={() => void openRoomPropertiesModal()}
+            />
+            <div css={[tw`h-full pt-[92px]`, canDoAnything && tw`pb-[92px]`]}>
+                <div css={tw`h-full`}>
+                    {(messages || []).length ? (
+                        <div css={tw`h-full flex flex-col`}>
+                            <div tw="grow" />
+                            <MessageFeed
+                                messages={messages}
+                                resends={resends}
+                                css={!canDoAnything && tw`pb-10`}
+                            />
+                        </div>
+                    ) : (
+                        <EmptyMessageFeed
+                            canModifyMembers={canGrant}
+                            onAddMemberClick={() => void openAddMemberModal()}
+                        />
+                    )}
+                </div>
+            </div>
+            {canDoAnything && (
+                <div css={tw`absolute p-6 bottom-0 left-0 w-full`}>
+                    <MessageBox
+                        canGrant={canGrant}
+                        delegatedClient={delegatedClient}
+                        canDelegatedPublish={canDelegatedPublish}
+                        canDelegatedSubscribe={canDelegatedSubscribe}
+                        justInvited={justInvited}
+                    />
+                </div>
+            )}
+        </>
+    )
+}
+
+interface MessageBoxProps {
+    canGrant: boolean
+    canDelegatedPublish: boolean
+    canDelegatedSubscribe: boolean
+    delegatedClient: undefined | StreamrClient
+    justInvited: boolean
+}
+
+function MessageBox({
+    canGrant,
+    canDelegatedPublish,
+    canDelegatedSubscribe,
+    delegatedClient,
+    justInvited,
+}: MessageBoxProps) {
     const isDelegatingAccess = useIsDelegatingAccess()
-
-    const isBeingAccepted = useIsInviteBeingAccepted()
-
-    const isPromoting = useIsDelegatedAccountBeingPromoted()
 
     const requestPrivateKey = useRequestPrivateKey()
 
+    const isBeingAccepted = useIsInviteBeingAccepted()
+
     const acceptInvite = useAcceptInvite()
+
+    const isPromoting = useIsDelegatedAccountBeingPromoted()
 
     const promoteDelegatedAccount = usePromoteDelegatedAccount()
 
@@ -204,38 +207,13 @@ type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 function Cta({ children, busy = false, ...props }: CtaProps) {
     return (
-        <SecondaryButton
-            {...props}
-            css={[
-                tw`
-                    text-[0.875rem]
-                    h-8
-                    px-4
-                `,
-            ]}
-        >
-            <div
-                css={[
-                    tw`
-                        flex
-                        items-center
-                    `,
-                ]}
-            >
+        <SecondaryButton {...props} css={tw`text-[0.875rem] h-8 px-4`}>
+            <div css={tw`flex items-center`}>
                 <div>
                     <Text>{children}</Text>
                 </div>
                 {busy && (
-                    <div
-                        css={[
-                            tw`
-                                ml-2
-                                relative
-                                w-4
-                                h-4
-                            `,
-                        ]}
-                    >
+                    <div css={tw`ml-2 relative w-4 h-4`}>
                         <Spinner r={5} strokeWidth={1} />
                     </div>
                 )}
