@@ -9,6 +9,7 @@ import { Provider } from '@web3-react/types'
 import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
 import { selectTokenStandard } from '$/hooks/useTokenStandard'
+import { Id, toast } from 'react-toastify'
 
 async function getTokenStandard(address: Address, provider: Provider) {
     const contract = new Contract(
@@ -92,7 +93,17 @@ async function getTokenStandard(address: Address, provider: Provider) {
 
 export default function* fetchTokenStandard() {
     yield takeLatest(MiscAction.fetchTokenStandard, function* ({ payload: { address, provider } }) {
+        let toastId: undefined | Id = undefined
+
         try {
+            toastId = toast.loading('Loading token info…', {
+                position: 'bottom-left',
+                autoClose: false,
+                type: 'info',
+                closeOnClick: false,
+                hideProgressBar: true,
+            })
+
             yield put(FlagAction.set(Flag.isFetchingTokenStandard(address)))
 
             const currentStandard: undefined | TokenStandard = yield select(
@@ -112,6 +123,8 @@ export default function* fetchTokenStandard() {
         } catch (e) {
             // Noop.
         } finally {
+            toast.dismiss(toastId)
+
             yield put(FlagAction.unset(Flag.isFetchingTokenStandard(address)))
         }
     })
