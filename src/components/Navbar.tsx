@@ -15,8 +15,8 @@ export default function Navbar({ children, ...props }: Props) {
                     flex
                     items-center
                     pb-6
-                    pt-10
-                    md:pt-[35px]
+                    pt-5
+                    md:pt-8
                     px-4
                     md:px-10
                     top-0

@@ -82,7 +82,8 @@ export default function ChatPage() {
                             w-screen
                             h-screen
                             md:p-10
-                            pt-[91px]
+                            pt-20
+                            md:pt-24
                         `,
                     ]}
                 >
