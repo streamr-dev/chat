@@ -48,12 +48,19 @@ export default function Menu({ anchorEl, onMouseDownOutside, ...props }: Props) 
         }
     }, [anchorEl])
 
+    const anchorElRef = useRef(anchorEl)
+
+    useEffect(() => {
+        anchorElRef.current = anchorEl
+    }, [anchorEl])
+
     const rootRef = useOnMouseDownOutsideEffect<HTMLDivElement>(
         () => void onMouseDownOutside?.(),
         undefined,
         {
             isInside(_, el) {
-                return !!anchorEl?.contains(el)
+                // Let's make isInside in `streamr-ui` use a ref, eh?
+                return !!anchorElRef.current?.contains(el)
             },
         }
     )
