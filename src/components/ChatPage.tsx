@@ -81,7 +81,7 @@ export default function ChatPage() {
                         tw`
                             w-screen
                             h-screen
-                            p-10
+                            md:p-10
                             pt-[91px]
                         `,
                     ]}
@@ -98,6 +98,8 @@ export default function ChatPage() {
                         <aside
                             css={[
                                 tw`
+                                    hidden
+                                    md:block
                                     h-full
                                     w-[22rem]
                                     overflow-auto
@@ -121,10 +123,11 @@ export default function ChatPage() {
                             css={[
                                 tw`
                                     bg-white
-                                    rounded-[20px]
+                                    md:rounded-[20px]
                                     absolute
                                     bottom-0
-                                    left-[24rem]
+                                    left-0
+                                    md:left-[24rem]
                                     right-0
                                     top-0
                                 `,

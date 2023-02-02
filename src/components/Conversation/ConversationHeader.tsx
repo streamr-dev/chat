@@ -177,7 +177,7 @@ export default function ConversationHeader({
                 ]}
                 onSubmit={onRenameSubmit}
             >
-                <div tw="flex-grow">
+                <div css={tw`grow`}>
                     {isRoomNameEditable ? (
                         <div>
                             <input
@@ -297,7 +297,7 @@ export default function ConversationHeader({
                 ) : (
                     <>
                         {canEdit && !isRoomBeingDeleted && (
-                            <ActionButton onClick={edit}>
+                            <ActionButton onClick={edit} css={tw`hidden md:block`}>
                                 <EditIcon />
                             </ActionButton>
                         )}
@@ -346,6 +346,15 @@ export default function ConversationHeader({
                                         </MenuButtonItem>
                                         <MenuSeparatorItem />
                                     </>
+                                )}
+                                {canEdit && !isRoomBeingDeleted && (
+                                    <MenuButtonItem
+                                        icon={<EditIcon />}
+                                        onClick={edit}
+                                        css={tw`md:hidden`}
+                                    >
+                                        Rename room
+                                    </MenuButtonItem>
                                 )}
                                 <MenuButtonItem
                                     icon={<CopyIcon />}

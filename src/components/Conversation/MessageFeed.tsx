@@ -68,7 +68,14 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
         <div
             {...props}
             ref={rootRef}
-            css={tw`max-h-full overflow-auto px-6 pt-6 [> *]:mt-[0.625rem]`}
+            css={tw`
+                max-h-full
+                overflow-auto
+                px-4
+                md:px-6
+                pt-6
+                [> *]:mt-[0.625rem]
+            `}
         >
             {groups.map(({ timestamp, newDay, messages }, index) => {
                 let previousCreatedBy: undefined | IMessage['createdBy']

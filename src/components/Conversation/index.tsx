@@ -82,15 +82,38 @@ export default function Conversation() {
                 onEditMembersClick={() => void openEditMembersModal()}
                 onRoomPropertiesClick={() => void openRoomPropertiesModal()}
             />
-            <div css={[tw`h-full pt-[92px]`, canDoAnything && tw`pb-[92px]`]}>
-                <div css={tw`h-full`}>
+            <div
+                css={[
+                    tw`
+                        h-full
+                        pt-[92px]
+                        md:pt-[92px]
+                    `,
+                    canDoAnything &&
+                        tw`
+                            pb-[80px]
+                            md:pb-[96px]
+                        `,
+                ]}
+            >
+                <div
+                    css={tw`
+                        h-full
+                    `}
+                >
                     {(messages || []).length ? (
-                        <div css={tw`h-full flex flex-col`}>
-                            <div tw="grow" />
+                        <div
+                            css={tw`
+                                h-full
+                                flex
+                                flex-col
+                            `}
+                        >
+                            <div css={tw`grow`} />
                             <MessageFeed
                                 messages={messages}
                                 resends={resends}
-                                css={!canDoAnything && tw`pb-10`}
+                                css={[!canDoAnything && tw`pb-10`]}
                             />
                         </div>
                     ) : (
@@ -102,7 +125,17 @@ export default function Conversation() {
                 </div>
             </div>
             {canDoAnything && (
-                <div css={tw`absolute p-6 bottom-0 left-0 w-full`}>
+                <div
+                    css={tw`
+                        absolute
+                        p-4
+                        md:p-6
+                        bottom-0
+                        left-0
+                        w-full
+                        z-10
+                    `}
+                >
                     <MessageBox
                         canGrant={canGrant}
                         delegatedClient={delegatedClient}

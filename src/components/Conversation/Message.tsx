@@ -110,12 +110,6 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                             text-[12px]
                             pl-16
                         `,
-                        !incoming &&
-                            tw`
-                                text-right
-                                pr-16
-                                pl-0
-                            `,
                     ]}
                 >
                     <Sender short={ens || alias || trunc(sender)} full={sender} />
@@ -131,16 +125,11 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                                 display: block;
                             }
                         `,
-                    tw`
-                        flex
-                    `,
-                    !incoming &&
-                        tw`
-                            justify-end
-                        `,
+                    tw`flex`,
+                    !incoming && tw`justify-end`,
                 ]}
             >
-                {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
+                {incoming && <div tw="mr-4 shrink-0">{avatar}</div>}
                 {!incoming && isEncrypted && typeof createdAt === 'number' && (
                     <ResendOneButton requester={requester} roomId={roomId} timestamp={createdAt} />
                 )}
@@ -194,7 +183,8 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                                     top-1/2
                                     translate-x-full
                                     -translate-y-1/2
-                                    -right-2.5
+                                    right-[-5px]
+                                    md:-right-2.5
                                 `,
                             ]}
                         >
@@ -221,7 +211,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                     )}
                     {isEncrypted ? <EncryptedMessage /> : <Text>{formatMessage(content)}</Text>}
                 </div>
-                {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
+                {!incoming && <div tw="ml-4 shrink-0">{avatar}</div>}
                 {incoming && isEncrypted && typeof createdAt === 'number' && (
                     <ResendOneButton
                         left
@@ -314,18 +304,7 @@ function EncryptedMessage() {
 }
 
 function Link(props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'rel'>) {
-    return (
-        <a
-            {...props}
-            target="_blank"
-            rel="noreferrer noopener"
-            css={[
-                tw`
-                    underline
-                `,
-            ]}
-        />
-    )
+    return <a {...props} target="_blank" rel="noreferrer noopener" css={tw`underline`} />
 }
 
 interface SenderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
@@ -342,20 +321,50 @@ function Sender({ short, full, ...props }: SenderProps) {
             onClick={() => void toggle()}
             css={[
                 css`
-                    span {
-                        transition: 200ms ease-in-out all;
+                    div {
+                        transition: 200ms ease-in-out;
                         transition-property: visibility, opacity;
                         transition-delay: 0s;
                     }
                 `,
-                tw`appearance-none relative [span]:(absolute top-0 left-0)`,
+                tw`
+                    appearance-none
+                    relative
+                    w-min
+                    max-w-full
+                    [div]:(absolute top-0 left-0)
+                `,
             ]}
         >
             &zwnj;
-            <span css={showFull && tw`invisible opacity-0 delay-200`}>{short}</span>
-            <span css={[tw`invisible opacity-0 delay-200`, showFull && tw`visible opacity-100`]}>
+            <div
+                css={
+                    showFull &&
+                    tw`
+                        invisible
+                        opacity-0
+                        delay-200
+                    `
+                }
+            >
+                {short}
+            </div>
+            <div
+                css={[
+                    tw`
+                        invisible
+                        opacity-0
+                        delay-200
+                    `,
+                    showFull &&
+                        tw`
+                            visible
+                            opacity-100
+                        `,
+                ]}
+            >
                 {full}
-            </span>
+            </div>
         </button>
     )
 }
