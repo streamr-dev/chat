@@ -84,104 +84,88 @@ export default function Modal({
 
     return (
         <div
-            css={[
-                tw`
-                    bg-[rgba(0, 0, 0, 0.3)]
-                    backdrop-blur
-                    fixed
-                    w-full
-                    h-full
-                    top-0
-                    left-0
-                    overflow-auto
-                `,
-            ]}
+            css={tw`
+                bg-[rgba(0, 0, 0, 0.3)]
+                backdrop-blur
+                fixed
+                w-full
+                h-full
+                top-0
+                left-0
+                overflow-auto
+            `}
         >
             <div
-                css={[
-                    tw`
-                        flex
-                        items-center
-                        justify-center
-                        h-full
-                        relative
-                    `,
-                ]}
+                css={tw`
+                    flex
+                    items-center
+                    justify-center
+                    h-full
+                    relative
+                `}
             >
                 <div
-                    css={[
-                        tw`
-                            max-h-full
-                            overflow-visible
-                        `,
-                    ]}
+                    css={tw`
+                        max-h-full
+                        overflow-visible
+                    `}
                 >
                     <div
-                        css={[
-                            tw`
-                                py-16
-                            `,
-                        ]}
+                        css={tw`
+                            py-10
+                            md:py-16
+                        `}
                     >
                         <div
                             ref={modalRef}
-                            css={[
-                                tw`
-                                    pointer-events-auto
-                                    max-w-[560px]
-                                    w-[90vw]
-                                `,
-                            ]}
+                            css={tw`
+                                pointer-events-auto
+                                max-w-[560px]
+                                w-[90vw]
+                            `}
                         >
-                            <div
-                                css={[
-                                    tw`
-                                        animate-[bringIn 150ms ease-in-out 1]
-                                    `,
-                                ]}
-                            >
+                            <div css={tw`animate-[bringIn 150ms ease-in-out 1]`}>
                                 <div
                                     ref={wigglyRef}
-                                    css={[
-                                        tw`
-                                            bg-[white]
-                                            p-12
-                                            pt-8
-                                            rounded-[20px]
-                                            shadow-lg
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        bg-[white]
+                                        p-8
+                                        pt-7
+                                        md:p-12
+                                        md:pt-10
+                                        rounded-[20px]
+                                        shadow-lg
+                                    `}
                                 >
                                     <div
-                                        css={[
-                                            tw`
-                                                flex
-                                                items-center
-                                                mb-6
-                                            `,
-                                        ]}
+                                        css={tw`
+                                            flex
+                                            items-center
+                                            mb-6
+                                        `}
                                     >
-                                        <div tw="grow min-w-0">
+                                        <div
+                                            css={tw`
+                                                grow
+                                                min-w-0
+                                            `}
+                                        >
                                             <h2
-                                                css={[
-                                                    tw`
-                                                        font-medium
-                                                        text-[1.25rem]
-                                                        truncate
-                                                    `,
-                                                ]}
+                                                css={tw`
+                                                    font-medium
+                                                    text-[1.25rem]
+                                                    truncate
+                                                `}
                                             >
                                                 {title}
                                             </h2>
                                             {!!subtitle && (
                                                 <p
-                                                    css={[
-                                                        tw`
-                                                            text-[#59799C]
-                                                            text-[0.875rem]
-                                                            truncate
-                                                        `,
-                                                    ]}
+                                                    css={tw`
+                                                        text-[#59799C]
+                                                        text-[0.875rem]
+                                                        truncate
+                                                    `}
                                                 >
                                                     {subtitle}
                                                 </p>
@@ -190,13 +174,11 @@ export default function Modal({
                                         <div>
                                             <button
                                                 type="button"
-                                                css={[
-                                                    tw`
-                                                        block
-                                                        appearance-none
-                                                        [svg]:block
-                                                    `,
-                                                ]}
+                                                css={tw`
+                                                    block
+                                                    appearance-none
+                                                    [svg]:block
+                                                `}
                                                 onClick={() => void close(AbortReason.CloseButton)}
                                             >
                                                 <svg

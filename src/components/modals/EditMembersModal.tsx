@@ -458,33 +458,29 @@ function Item({
                     </div>
                 </div>
                 <div
-                    css={[
-                        tw`
-                            h-full
-                            flex
-                            items-center
-                            flex-shrink-0
-                            justify-center
-                            w-[72px]
-                        `,
-                    ]}
+                    css={tw`
+                        h-full
+                        flex
+                        items-center
+                        shrink-0
+                        justify-center
+                        w-[72px]
+                    `}
                 >
                     {isAddingNickname ? (
                         <ActionButton type="submit" light>
-                            <CheckIcon tw="w-10" />
+                            <CheckIcon css={tw`w-10`} />
                         </ActionButton>
                     ) : (
                         <MoreActionButton
                             icon={
                                 <RemoveUserIcon
-                                    css={[
-                                        tw`
-                                            w-4
-                                            h-4
-                                            translate-x-[1px]
-                                            translate-y-[-1px]
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        w-4
+                                        h-4
+                                        translate-x-[1px]
+                                        translate-y-[-1px]
+                                    `}
                                 />
                             }
                             deleting={isBeingRemoved}
@@ -539,12 +535,10 @@ function Item({
                                     <MenuButtonItem
                                         icon={
                                             <RemoveUserIcon
-                                                css={[
-                                                    tw`
-                                                        w-4
-                                                        h-4
-                                                    `,
-                                                ]}
+                                                css={tw`
+                                                    w-4
+                                                    h-4
+                                                `}
                                             />
                                         }
                                         onClick={() => {

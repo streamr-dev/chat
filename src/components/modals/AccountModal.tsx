@@ -36,20 +36,19 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
         <>
             <Modal {...props} title={title}>
                 <div
-                    css={[
-                        tw`
-                            text-[#59799C]
-                            flex
-                            items-center
-                        `,
-                    ]}
+                    css={tw`
+                        text-[#59799C]
+                        flex
+                        items-center
+                    `}
                 >
                     <div
-                        css={[
-                            tw`
-                            flex-grow
-                        `,
-                        ]}
+                        css={tw`
+                            text-[14px]
+                            md:text-[1em]
+                            grow
+                            mr-4
+                        `}
                     >
                         Connected with {label}
                     </div>
@@ -59,23 +58,13 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                         </SecondaryButton>
                     </div>
                 </div>
-                <TextField
-                    readOnly
-                    value={trunc(account)}
-                    css={[
-                        tw`
-                        mt-3
-                    `,
-                    ]}
-                />
+                <TextField readOnly value={trunc(account)} css={tw`mt-3`} />
                 <div
-                    css={[
-                        tw`
+                    css={tw`
                         mt-3
                         flex
                         [> a + a]:ml-10
-                    `,
-                    ]}
+                    `}
                 >
                     <ExternalLink
                         href={getExplorerURL(account!)}
@@ -119,38 +108,14 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                         <Text>{isCopied ? 'Copied!' : 'Copy address'}</Text>
                     </ExternalLink>
                 </div>
-                <hr tw="my-3" />
-                <div
-                    css={[
-                        tw`
-                        flex
-                    `,
-                    ]}
-                >
-                    <div
-                        css={[
-                            tw`
-                            flex-grow
-                        `,
-                        ]}
-                    >
-                        <Hint
-                            css={[
-                                tw`
-                                pr-16
-                            `,
-                            ]}
-                        >
+                <hr css={tw`my-3`} />
+                <div css={tw`flex`}>
+                    <div css={tw`grow`}>
+                        <Hint css={tw`pr-16`}>
                             <Text>Show hidden rooms</Text>
                         </Hint>
                     </div>
-                    <div
-                        css={[
-                            tw`
-                            mt-2
-                        `,
-                        ]}
-                    >
+                    <div css={tw`mt-2`}>
                         <Toggle
                             value={showHiddenRooms}
                             onClick={() => {
@@ -181,16 +146,15 @@ function ExternalLink(props: ExternalLinkProps) {
     return (
         <a
             {...props}
-            css={[
-                tw`
-                    flex
-                    items-center
-                    text-[14px]
-                    !text-[#FF5924]
-                    [svg]:block
-                    [svg]:mr-2
-                `,
-            ]}
+            css={tw`
+                flex
+                items-center
+                text-[12px]
+                md:text-[14px]
+                !text-[#FF5924]
+                [svg]:block
+                [svg]:mr-2
+            `}
         />
     )
 }
