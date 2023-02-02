@@ -17,7 +17,7 @@ export default function Navbar({ children, ...props }: Props) {
                     pb-6
                     pt-10
                     md:pt-[35px]
-                    px-5
+                    px-4
                     md:px-10
                     top-0
                     w-full

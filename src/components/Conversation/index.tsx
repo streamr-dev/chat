@@ -86,7 +86,7 @@ export default function Conversation() {
                 css={[
                     tw`
                         h-full
-                        pt-[92px]
+                        pt-[72px]
                         md:pt-[92px]
                     `,
                     canDoAnything &&
@@ -96,11 +96,7 @@ export default function Conversation() {
                         `,
                 ]}
             >
-                <div
-                    css={tw`
-                        h-full
-                    `}
-                >
+                <div css={tw`h-full`}>
                     {(messages || []).length ? (
                         <div
                             css={tw`

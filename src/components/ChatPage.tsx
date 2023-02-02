@@ -123,6 +123,7 @@ export default function ChatPage() {
                             css={[
                                 tw`
                                     bg-white
+                                    rounded-t-[10px]
                                     md:rounded-[20px]
                                     absolute
                                     bottom-0

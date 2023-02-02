@@ -155,13 +155,19 @@ export default function ConversationHeader({
                     absolute
                     left-0
                     top-0
-                    h-[92px]
+                    h-[72px]
+                    md:h-[92px]
                     w-full
                 `,
             ]}
         >
             <LoadingIndicator
-                tw="absolute bottom-0 left-0 w-full"
+                css={tw`
+                    absolute
+                    bottom-0
+                    left-0
+                    w-full
+                `}
                 state={showProgress ? LoadingState.Busy : undefined}
             />
             <Form
@@ -169,7 +175,8 @@ export default function ConversationHeader({
                     tw`
                         flex
                         items-center
-                        px-6
+                        px-4
+                        md:px-6
                         shadow-[inset 0 -1px 0 #dee6ee]
                         w-full
                         h-full
@@ -241,14 +248,16 @@ export default function ConversationHeader({
                                         line-height: normal;
                                     `,
                                     tw`
-                                        h-9
-                                        text-[1.625rem]
+                                        h-8
+                                        md:h-9
+                                        text-[20px]
+                                        md:text-[26px]
                                         font-medium
                                         select-none
                                     `,
                                 ]}
                             >
-                                <Text tw="truncate">{name || 'Unnamed room'}&zwnj;</Text>
+                                <Text truncate>{name || 'Unnamed room'}&zwnj;</Text>
                             </div>
                             <div
                                 css={[
@@ -256,7 +265,8 @@ export default function ConversationHeader({
                                         flex
                                         items-center
                                         text-[#59799C]
-                                        text-[0.875rem]
+                                        text-[12px]
+                                        md:text-[14px]
                                     `,
                                 ]}
                             >
