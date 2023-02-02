@@ -331,7 +331,14 @@ function Sender({ short, full, ...props }: SenderProps) {
                 `,
                 tw`
                     appearance-none
-                    [div]:(absolute top-0 left-0 truncate w-min max-w-full)
+                    [div]:(
+                        absolute
+                        top-0
+                        left-0
+                        truncate
+                        w-min
+                        max-w-full
+                    )
                 `,
             ]}
         >
