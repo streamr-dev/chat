@@ -112,7 +112,9 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                         `,
                     ]}
                 >
-                    <Sender short={ens || alias || trunc(sender)} full={sender} />
+                    <div css={tw`relative`}>
+                        <Sender short={ens || alias || trunc(sender)} full={sender} />
+                    </div>
                 </div>
             )}
             <div
@@ -329,10 +331,7 @@ function Sender({ short, full, ...props }: SenderProps) {
                 `,
                 tw`
                     appearance-none
-                    relative
-                    w-min
-                    max-w-full
-                    [div]:(absolute top-0 left-0)
+                    [div]:(absolute top-0 left-0 truncate w-min max-w-full)
                 `,
             ]}
         >
