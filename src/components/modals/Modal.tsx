@@ -15,7 +15,7 @@ export interface Props {
     title?: string
     subtitle?: string
     onAbort?: (reason?: any) => void
-    onBeforeAbort?: (reason?: any) => boolean | void
+    onBeforeAbort?: (reason?: any) => boolean | null | void
 }
 
 export default function Modal({
@@ -65,9 +65,13 @@ export default function Modal({
     )
 
     function close(reason?: any) {
-        if (onBeforeAbort?.(reason) === false) {
-            wiggle()
+        const beforeAbort = onBeforeAbort?.(reason)
 
+        if (beforeAbort === false) {
+            wiggle()
+        }
+
+        if (beforeAbort === null || beforeAbort === false) {
             return
         }
 

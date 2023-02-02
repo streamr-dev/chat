@@ -93,7 +93,7 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
     } = usePrivacyOption(selectedRoomId)
 
     return (
-        <Modal {...props} title={title}>
+        <Modal {...props} title={title} onBeforeAbort={() => (anyMenuOpen ? null : undefined)}>
             <div
                 css={[
                     tw`
