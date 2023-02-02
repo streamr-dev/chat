@@ -95,49 +95,40 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
     return (
         <Modal {...props} title={title} onBeforeAbort={() => (anyMenuOpen ? null : undefined)}>
             <div
-                css={[
-                    tw`
-                        py-6
-                        pr-6
-                        bg-[#F7F9FC]
-                        text-[#59799C]
-                        flex
-                        items-center
-                        rounded-lg
-                        mb-3
-                    `,
-                ]}
+                css={tw`
+                    py-4
+                    md:py-6
+                    pr-6
+                    bg-[#F7F9FC]
+                    text-[#59799C]
+                    flex
+                    items-center
+                    rounded-lg
+                    mb-3
+                `}
             >
-                <div
-                    css={[
-                        tw`
-                            w-[72px]
-                        `,
-                    ]}
-                >
-                    <PrivacyIcon tw="mx-auto" />
+                <div css={tw`w-[72px]`}>
+                    <PrivacyIcon css={tw`mx-auto`} />
                 </div>
                 <div>
-                    <p tw="text-[0.75rem]">
+                    <p css={tw`text-[0.75rem]`}>
                         <strong>{privacyLabel} room</strong>
                         <br />
                         {privacyDesc}
                     </p>
                 </div>
             </div>
-            <div tw="relative">
+            <div css={tw`relative`}>
                 {anyMenuOpen && (
                     // If any item has its menu open we block list's scroll by covering it
                     // with a thin layer of unscrollable div.
                     <div
-                        css={[
-                            tw`
-                                absolute
-                                h-full
-                                w-full
-                                z-10
-                            `,
-                        ]}
+                        css={tw`
+                            absolute
+                            h-full
+                            w-full
+                            z-10
+                        `}
                     />
                 )}
                 <div
@@ -149,47 +140,38 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
                             box-content
                             [> * + *]:mt-4
                         `,
-                        isFetchingMembers &&
-                            tw`
-                                bg-[#F7F9FC]
-                            `,
+                        isFetchingMembers && tw`bg-[#F7F9FC]`,
                     ]}
                 >
                     {isFetchingMembers ? (
                         <div
-                            css={[
-                                tw`
-                                    flex
-                                    flex-col
-                                    h-full
-                                    justify-center
-                                `,
-                            ]}
+                            css={tw`
+                                flex
+                                flex-col
+                                h-full
+                                justify-center
+                            `}
                         >
                             <div>
                                 <div
-                                    css={[
-                                        tw`
-                                            w-6
-                                            h-6
-                                            relative
-                                            mx-auto
-                                            mb-1
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        w-6
+                                        h-6
+                                        relative
+                                        mx-auto
+                                        mb-1
+                                    `}
                                 >
                                     <Spinner />
                                 </div>
                                 <p
-                                    css={[
-                                        tw`
-                                            text-[#59799C]
-                                            uppercase
-                                            text-[0.625rem]
-                                            font-medium
-                                            text-center
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        text-[#59799C]
+                                        uppercase
+                                        text-[0.625rem]
+                                        font-medium
+                                        text-center
+                                    `}
                                 >
                                     Loading…
                                 </p>
@@ -307,51 +289,44 @@ function Item({
 
                 setIsAddingNickname(false)
             }}
-            css={[
-                tw`
-                    h-[96px]
-                    bg-[#F1F4F7]
-                    rounded-lg
-                    relative
-                `,
-            ]}
+            css={tw`
+                h-20
+                md:h-[96px]
+                bg-[#F1F4F7]
+                rounded-lg
+                relative
+            `}
         >
             <div
-                css={[
-                    tw`
-                        absolute
-                        top-0
-                        left-1/2
-                        -translate-y-1/4
-                        -translate-x-1/2
-                        flex
-                        [* + *]:ml-1
-                    `,
-                ]}
+                css={tw`
+                    absolute
+                    top-0
+                    left-1/2
+                    -translate-y-1/4
+                    -translate-x-1/2
+                    flex
+                    [* + *]:ml-1
+                `}
             >
                 {justInvited && <Tag>Invite pending</Tag>}
             </div>
             <div
                 {...props}
-                css={[
-                    tw`
+                css={tw`
+                    h-full
+                    flex
+                    items-center
+                `}
+            >
+                <div
+                    css={tw`
                         h-full
                         flex
                         items-center
-                    `,
-                ]}
-            >
-                <div
-                    css={[
-                        tw`
-                            h-full
-                            flex
-                            items-center
-                            flex-shrink-0
-                            justify-center
-                            w-[72px]
-                        `,
-                    ]}
+                        shrink-0
+                        justify-center
+                        w-[72px]
+                    `}
                 >
                     <Avatar
                         seed={address.toLowerCase()}
@@ -360,22 +335,18 @@ function Item({
                     />
                 </div>
                 <div
-                    css={[
-                        tw`
-                            flex-grow
-                            min-w-0
-                        `,
-                    ]}
+                    css={tw`
+                        grow
+                        min-w-0
+                    `}
                 >
                     <div
-                        css={[
-                            tw`
-                                flex
-                                items-center
-                                h-[28px]
-                                w-full
-                            `,
-                        ]}
+                        css={tw`
+                            flex
+                            items-center
+                            h-[28px]
+                            w-full
+                        `}
                     >
                         {isAddingNickname ? (
                             <input
@@ -390,45 +361,41 @@ function Item({
                                         e.stopPropagation()
                                     }
                                 }}
-                                css={[
-                                    tw`
-                                        text-[1.125rem]
-                                        placeholder:text-[#DEE6EE]
-                                        border
-                                        border-[#DEE6EE]
-                                        rounded-lg
-                                        w-[90%]
-                                        px-3
-                                        outline-none
-                                        focus:border-[#59799C]
-                                    `,
-                                ]}
+                                css={tw`
+                                    text-[1rem]
+                                    md:text-[1.125rem]
+                                    placeholder:text-[#DEE6EE]
+                                    border
+                                    border-[#DEE6EE]
+                                    rounded-lg
+                                    w-[90%]
+                                    px-3
+                                    outline-none
+                                    focus:border-[#59799C]
+                                `}
                             />
                         ) : (
                             <div
                                 onDoubleClick={editAlias}
-                                css={[
-                                    tw`
-                                        text-[1.125rem]
-                                        font-medium
-                                        truncate
-                                    `,
-                                ]}
+                                css={tw`
+                                    text-[1rem]
+                                    md:text-[1.125rem]
+                                    font-medium
+                                    truncate
+                                `}
                             >
                                 {alias || displayName}
                             </div>
                         )}
                     </div>
                     <div
-                        css={[
-                            tw`
-                                text-[#59799C]
-                                text-[0.875rem]
-                            `,
-                        ]}
+                        css={tw`
+                            text-[#59799C]
+                            text-[0.875rem]
+                        `}
                     >
                         {isAddingNickname ? (
-                            <div css={[tw``]}>
+                            <div>
                                 <Text>Nickname is only visible to you</Text>
                             </div>
                         ) : (
