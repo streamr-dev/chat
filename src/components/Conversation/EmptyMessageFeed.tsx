@@ -54,7 +54,7 @@ export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = 
                 <div tw="mr-2">
                     <AddMemberIcon />
                 </div>
-                <div tw="flex-grow">
+                <div tw="grow">
                     <Text>Add member</Text>
                 </div>
             </UtilityButton>

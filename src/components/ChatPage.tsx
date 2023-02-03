@@ -21,6 +21,9 @@ import useAccountModal from '$/hooks/useAccountModal'
 import useAddRoomModal from '$/hooks/useAddRoomModal'
 import usePreselectRoomEffect from '$/hooks/usePreselectRoomEffect'
 import useFlag from '$/hooks/useFlag'
+import ArrowIcon from '$/icons/ArrowIcon'
+import { FlagAction } from '$/features/flag'
+import ActionButton from '$/components/ActionButton'
 
 export default function ChatPage() {
     const { open: openAccountModal, modal: accountModal } = useAccountModal()
@@ -159,9 +162,27 @@ export default function ChatPage() {
                                         `,
                                     ]}
                                 >
-                                    <UtilityButton onClick={() => void openAddRoomModal()}>
-                                        <Text>Add new room</Text>
-                                    </UtilityButton>
+                                    <div css={tw`flex`}>
+                                        <ActionButton
+                                            css={tw`
+                                                block
+                                                md:hidden
+                                                h-14
+                                                w-14
+                                                mr-4
+                                            `}
+                                            onClick={() =>
+                                                void dispatch(
+                                                    FlagAction.set(Flag.isDisplayingRooms())
+                                                )
+                                            }
+                                        >
+                                            <ArrowIcon />
+                                        </ActionButton>
+                                        <UtilityButton onClick={() => void openAddRoomModal()}>
+                                            <Text>Add new room</Text>
+                                        </UtilityButton>
+                                    </div>
                                 </div>
                             )}
                         </div>
