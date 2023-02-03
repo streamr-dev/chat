@@ -206,6 +206,7 @@ export default function ConversationHeader({
             >
                 <ActionButton
                     css={tw`
+                        shrink-0
                         block
                         md:hidden
                         mr-4
