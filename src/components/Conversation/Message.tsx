@@ -10,7 +10,7 @@ import {
 } from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '$/features/message/types'
-import Avatar, { AvatarStatus, Wrap } from '../Avatar'
+import Avatar, { Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
 import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
@@ -77,11 +77,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
 
     const skipAvatar = !!previousCreatedBy && isSameAddress(sender, previousSender)
 
-    const avatar = skipAvatar ? (
-        <Wrap />
-    ) : (
-        <Avatar status={AvatarStatus.Offline} seed={sender?.toLowerCase()} />
-    )
+    const avatar = skipAvatar ? <Wrap /> : <Avatar seed={sender?.toLowerCase()} />
 
     const dispatch = useDispatch()
 
