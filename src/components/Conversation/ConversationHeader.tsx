@@ -36,12 +36,23 @@ import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
 import EditIcon from '$/icons/EditIcon'
 import useIsResending from '$/hooks/useIsResending'
+import Dot from '$/components/Dot'
+import { useMembers } from '$/features/members/hooks'
+import useFlag from '$/hooks/useFlag'
 
 type Props = {
     canModifyMembers?: boolean
     onAddMemberClick?: () => void
     onEditMembersClick?: () => void
     onRoomPropertiesClick?: () => void
+}
+
+function formatMembersCount(value: number) {
+    if (value !== 1) {
+        return `${value} members`
+    }
+
+    return '1 member'
 }
 
 export default function ConversationHeader({
@@ -147,6 +158,12 @@ export default function ConversationHeader({
     const isPinned = useIsRoomPinned(selectedRoomId)
 
     const provider = useWalletProvider()
+
+    const membersCount = useMembers(selectedRoomId).length
+
+    const isDetectingMembers = useFlag(
+        selectedRoomId ? Flag.isDetectingMembers(selectedRoomId) : undefined
+    )
 
     return (
         <div
@@ -270,8 +287,26 @@ export default function ConversationHeader({
                                     `,
                                 ]}
                             >
-                                <PrivacyIcon tw="w-3 mr-1.5 ml-0.5" />
+                                <PrivacyIcon
+                                    css={tw`
+                                        w-3
+                                        mr-1.5
+                                        ml-0.5
+                                    `}
+                                />
                                 <Text>{privacyLabel} room</Text>
+                                <Dot css={tw`mx-2`} />
+                                <Text
+                                    css={
+                                        isDetectingMembers &&
+                                        tw`
+                                            animate-pulse
+                                            [animation-duration: 0.5s]
+                                        `
+                                    }
+                                >
+                                    {formatMembersCount(membersCount)}
+                                </Text>
                             </div>
                         </div>
                     )}
