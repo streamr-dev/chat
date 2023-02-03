@@ -129,7 +129,6 @@ export default function Conversation() {
                         bottom-0
                         left-0
                         w-full
-                        z-10
                     `}
                 >
                     <MessageBox
