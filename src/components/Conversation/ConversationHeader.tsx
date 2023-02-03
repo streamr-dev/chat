@@ -207,14 +207,16 @@ export default function ConversationHeader({
                             <input
                                 css={[
                                     tw`
+                                        leading-normal
                                         text-black
+                                        font-medium
                                         appearance-none
                                         border-0
                                         outline-none
                                         p-0
                                         w-full
-                                        h-9
-                                        text-[1.375rem]
+                                        text-[20px]
+                                        md:text-[26px]
                                         placeholder:text-[#59799C]
                                         disabled:bg-transparent
                                     `,
@@ -241,12 +243,13 @@ export default function ConversationHeader({
                             <div
                                 css={[
                                     tw`
-                                        text-[0.875rem]
+                                        text-[12px]
+                                        md:text-[14px]
                                         text-[#59799C]
                                     `,
                                 ]}
                             >
-                                <Text>
+                                <Text truncate>
                                     {isPersistingRoomName ? (
                                         <>
                                             Renaming "{name}" to "{transientRoomName}"…
@@ -265,16 +268,15 @@ export default function ConversationHeader({
                                         line-height: normal;
                                     `,
                                     tw`
-                                        h-8
-                                        md:h-9
                                         text-[20px]
                                         md:text-[26px]
                                         font-medium
                                         select-none
+                                        leading-normal
                                     `,
                                 ]}
                             >
-                                <Text truncate>{name || 'Unnamed room'}&zwnj;</Text>
+                                <div css={tw`truncate`}>{name || 'Unnamed room'}&zwnj;</div>
                             </div>
                             <div
                                 css={[
@@ -414,7 +416,10 @@ export default function ConversationHeader({
                                 {canEdit && !isRoomBeingDeleted && (
                                     <MenuButtonItem
                                         icon={<EditIcon />}
-                                        onClick={edit}
+                                        onClick={() => {
+                                            edit()
+                                            setRoomMenuOpen(false)
+                                        }}
                                         css={tw`md:hidden`}
                                     >
                                         Rename room
@@ -434,16 +439,7 @@ export default function ConversationHeader({
                                     Copy room id
                                 </MenuButtonItem>
                                 <MenuButtonItem
-                                    icon={
-                                        <EyeIcon
-                                            open={!isVisible}
-                                            css={[
-                                                tw`
-                                                    w-4
-                                                `,
-                                            ]}
-                                        />
-                                    }
+                                    icon={<EyeIcon open={!isVisible} css={tw`w-4`} />}
                                     onClick={() => {
                                         if (selectedRoomId && account) {
                                             dispatch(
