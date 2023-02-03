@@ -296,17 +296,36 @@ export default function ConversationHeader({
                                 />
                                 <Text>{privacyLabel} room</Text>
                                 <Dot css={tw`mx-2`} />
-                                <Text
-                                    css={
-                                        isDetectingMembers &&
-                                        tw`
-                                            animate-pulse
-                                            [animation-duration: 0.5s]
-                                        `
-                                    }
-                                >
-                                    {formatMembersCount(membersCount)}
-                                </Text>
+                                {canModifyMembers ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => void onEditMembersClick?.()}
+                                    >
+                                        <Text
+                                            css={
+                                                isDetectingMembers &&
+                                                tw`
+                                                    animate-pulse
+                                                    [animation-duration: 0.5s]
+                                                `
+                                            }
+                                        >
+                                            {formatMembersCount(membersCount)}
+                                        </Text>
+                                    </button>
+                                ) : (
+                                    <Text
+                                        css={
+                                            isDetectingMembers &&
+                                            tw`
+                                                animate-pulse
+                                                [animation-duration: 0.5s]
+                                            `
+                                        }
+                                    >
+                                        {formatMembersCount(membersCount)}
+                                    </Text>
+                                )}
                             </div>
                         </div>
                     )}
