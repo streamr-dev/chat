@@ -215,7 +215,12 @@ export default function ConversationHeader({
                 >
                     <ArrowIcon />
                 </ActionButton>
-                <div css={tw`grow`}>
+                <div
+                    css={tw`
+                        grow
+                        min-w-0
+                    `}
+                >
                     {isRoomNameEditable ? (
                         <div>
                             <input
