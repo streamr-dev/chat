@@ -20,6 +20,7 @@ import useDetectMembersEffect from '$/hooks/useDetectMembersEffect'
 import useAccountModal from '$/hooks/useAccountModal'
 import useAddRoomModal from '$/hooks/useAddRoomModal'
 import usePreselectRoomEffect from '$/hooks/usePreselectRoomEffect'
+import useFlag from '$/hooks/useFlag'
 
 export default function ChatPage() {
     const { open: openAccountModal, modal: accountModal } = useAccountModal()
@@ -70,6 +71,8 @@ export default function ChatPage() {
 
     usePreselectRoomEffect()
 
+    const isDisplayingRooms = useFlag(Flag.isDisplayingRooms())
+
     return (
         <>
             {accountModal}
@@ -102,13 +105,17 @@ export default function ChatPage() {
                                     hidden
                                     md:block
                                     h-full
-                                    w-[22rem]
+                                    w-full
+                                    md:w-[22rem]
+                                    p-4
+                                    md:p-0
                                     overflow-auto
                                     [button + button]:mt-4
                                     [a + a]:mt-4
                                     [button + a]:mt-4
                                     [a + button]:mt-4
                                 `,
+                                isDisplayingRooms && tw`block`,
                             ]}
                         >
                             <AddRoomButton onClick={() => void openAddRoomModal()} />
@@ -123,6 +130,7 @@ export default function ChatPage() {
                         <div
                             css={[
                                 tw`
+                                    md:block
                                     bg-white
                                     rounded-t-[10px]
                                     md:rounded-[20px]
@@ -133,6 +141,7 @@ export default function ChatPage() {
                                     right-0
                                     top-0
                                 `,
+                                isDisplayingRooms && tw`hidden`,
                             ]}
                         >
                             {selectedRoom ? (

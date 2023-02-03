@@ -35,6 +35,9 @@ import useResends from '$/hooks/useResends'
 import useAddMemberModal from '$/hooks/useAddMemberModal'
 import useEditMembersModal from '$/hooks/useEditMembersModal'
 import useRoomPropertiesModal from '$/hooks/useRoomPropertiesModal'
+import { Flag } from '$/features/flag/types'
+import { useDispatch } from 'react-redux'
+import { FlagAction } from '$/features/flag'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -71,6 +74,8 @@ export default function Conversation() {
         justInvited ||
         canGrant
 
+    const dispatch = useDispatch()
+
     return (
         <>
             {addMemberModal}
@@ -81,6 +86,7 @@ export default function Conversation() {
                 onAddMemberClick={() => void openAddMemberModal()}
                 onEditMembersClick={() => void openEditMembersModal()}
                 onRoomPropertiesClick={() => void openRoomPropertiesModal()}
+                onGoBackClick={() => void dispatch(FlagAction.set(Flag.isDisplayingRooms()))}
             />
             <div
                 css={[

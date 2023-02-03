@@ -24,6 +24,7 @@ const ActionButton = forwardRef(
                         w-10
                         h-10
                         hover:bg-[#E0E7F2]
+                        [svg]:mx-auto
                     `,
                     active &&
                         tw`

@@ -39,12 +39,14 @@ import useIsResending from '$/hooks/useIsResending'
 import Dot from '$/components/Dot'
 import { useMembers } from '$/features/members/hooks'
 import useFlag from '$/hooks/useFlag'
+import ArrowIcon from '$/icons/ArrowIcon'
 
 type Props = {
     canModifyMembers?: boolean
     onAddMemberClick?: () => void
     onEditMembersClick?: () => void
     onRoomPropertiesClick?: () => void
+    onGoBackClick?: () => void
 }
 
 function formatMembersCount(value: number) {
@@ -60,6 +62,7 @@ export default function ConversationHeader({
     onAddMemberClick,
     onEditMembersClick,
     onRoomPropertiesClick,
+    onGoBackClick,
 }: Props) {
     const dispatch = useDispatch()
 
@@ -201,6 +204,16 @@ export default function ConversationHeader({
                 ]}
                 onSubmit={onRenameSubmit}
             >
+                <ActionButton
+                    css={tw`
+                        block
+                        md:hidden
+                        mr-4
+                    `}
+                    onClick={onGoBackClick}
+                >
+                    <ArrowIcon />
+                </ActionButton>
                 <div css={tw`grow`}>
                     {isRoomNameEditable ? (
                         <div>

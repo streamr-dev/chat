@@ -153,4 +153,8 @@ export const Flag = {
     isFetchingTokenStandard(tokenAddress: Address) {
         return JSON.stringify(['isFetchingTokenStandard', tokenAddress.toLowerCase()])
     },
+
+    isDisplayingRooms() {
+        return JSON.stringify(['isDisplayingRooms'])
+    }
 }
