@@ -1,18 +1,25 @@
+import { HTMLAttributes } from 'react'
 import tw, { css } from 'twin.macro'
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     r?: number
     strokeWidth?: number
     strokeColor?: string
 }
 
-export default function Spinner({ r = 6, strokeWidth = 2, strokeColor = '#59799C' }: Props) {
+export default function Spinner({
+    r = 6,
+    strokeWidth = 2,
+    strokeColor = '#59799C',
+    ...props
+}: Props) {
     const d = 2 * Math.PI * r
 
     const size = (r + strokeWidth) * 2
 
     return (
         <div
+            {...props}
             css={[
                 css`
                     width: ${size}px;
