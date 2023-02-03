@@ -123,7 +123,7 @@ export default function MessageInput({ disabled = false }: Props) {
                         appearance-none
                         bg-[transparent]
                         border-0
-                        flex-grow
+                        grow
                         outline-none
                         h-full
                         p-0
