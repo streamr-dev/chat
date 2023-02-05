@@ -1,5 +1,3 @@
-import { FlagAction } from '$/features/flag'
-import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
@@ -48,7 +46,5 @@ export default function usePreselectRoomEffect() {
                 streamrClient,
             })
         )
-
-        dispatch(FlagAction.unset(Flag.isDisplayingRooms()))
     }, [account, dispatch, pathname, streamrClient])
 }

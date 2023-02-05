@@ -19,6 +19,7 @@ import useAgo from '$/hooks/useAgo'
 import isSameAddress from '$/utils/isSameAddress'
 import { Link, LinkProps } from 'react-router-dom'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
+import { FlagAction } from '$/features/flag'
 
 type Props = Omit<LinkProps, 'children' | 'to'> & {
     active?: boolean
@@ -92,6 +93,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
             active={active}
             icon={<Icon id={id} />}
             to={url}
+            onClick={() => void dispatch(FlagAction.unset(Flag.isDisplayingRooms()))}
             misc={
                 <>
                     <div
