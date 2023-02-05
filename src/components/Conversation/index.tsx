@@ -93,12 +93,12 @@ export default function Conversation() {
                     tw`
                         h-full
                         pt-[72px]
-                        md:pt-[92px]
+                        lg:pt-[92px]
                     `,
                     canDoAnything &&
                         tw`
                             pb-[80px]
-                            md:pb-[96px]
+                            lg:pb-[96px]
                         `,
                 ]}
             >
@@ -131,7 +131,7 @@ export default function Conversation() {
                     css={tw`
                         absolute
                         p-4
-                        md:p-6
+                        lg:p-6
                         bottom-0
                         left-0
                         w-full

@@ -109,14 +109,12 @@ export default function ChatPage() {
                                     md:block
                                     h-full
                                     w-full
-                                    md:w-[22rem]
+                                    md:w-[18rem]
+                                    lg:w-[22rem]
                                     p-4
                                     md:p-0
                                     overflow-auto
-                                    [button + button]:mt-4
-                                    [a + a]:mt-4
-                                    [button + a]:mt-4
-                                    [a + button]:mt-4
+                                    [> * + *]:mt-4
                                 `,
                                 isDisplayingRooms && tw`block`,
                             ]}
@@ -140,7 +138,8 @@ export default function ChatPage() {
                                     absolute
                                     bottom-0
                                     left-0
-                                    md:left-[24rem]
+                                    md:left-[19rem]
+                                    lg:left-[24rem]
                                     right-0
                                     top-0
                                 `,

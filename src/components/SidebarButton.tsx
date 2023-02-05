@@ -47,9 +47,11 @@ export default function SidebarButton<T extends Tag = 'button'>({
                 tw`
                     outline-none
                     appearance-none
-                    h-[92px]
+                    h-20
+                    lg:h-[92px]
                     rounded-[20px]
-                    p-6
+                    px-3
+                    lg:px-6
                     bg-[rgba(255, 255, 255, 0.3)]
                     text-left
                     w-full
@@ -60,10 +62,7 @@ export default function SidebarButton<T extends Tag = 'button'>({
                     relative
                     hover:bg-[rgba(255, 255, 255, 0.85)]
                 `,
-                active &&
-                    tw`
-                        !bg-white
-                    `,
+                active && tw`!bg-white`,
             ]}
         >
             <div
@@ -71,8 +70,9 @@ export default function SidebarButton<T extends Tag = 'button'>({
                     tw`
                         h-12
                         w-12
-                        mr-4
-                        flex-shrink-0
+                        mr-3
+                        lg:mr-4
+                        shrink-0
                     `,
                 ]}
             >
@@ -82,7 +82,7 @@ export default function SidebarButton<T extends Tag = 'button'>({
                 css={[
                     tw`
                         min-w-0
-                        flex-grow
+                        grow
                     `,
                 ]}
             >

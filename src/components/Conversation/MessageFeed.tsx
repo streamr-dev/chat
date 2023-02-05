@@ -72,9 +72,9 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
                 max-h-full
                 overflow-auto
                 px-4
-                md:px-6
+                lg:px-6
                 pt-4
-                md:pt-6
+                lg:pt-6
                 [> *]:mt-[0.625rem]
             `}
         >

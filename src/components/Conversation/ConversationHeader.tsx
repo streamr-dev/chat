@@ -176,7 +176,7 @@ export default function ConversationHeader({
                     left-0
                     top-0
                     h-[72px]
-                    md:h-[92px]
+                    lg:h-[92px]
                     w-full
                 `,
             ]}
@@ -196,7 +196,7 @@ export default function ConversationHeader({
                         flex
                         items-center
                         px-4
-                        md:px-6
+                        lg:px-6
                         shadow-[inset 0 -1px 0 #dee6ee]
                         w-full
                         h-full
@@ -208,7 +208,7 @@ export default function ConversationHeader({
                     css={tw`
                         shrink-0
                         block
-                        md:hidden
+                        lg:hidden
                         mr-4
                     `}
                     onClick={onGoBackClick}
@@ -235,7 +235,7 @@ export default function ConversationHeader({
                                         p-0
                                         w-full
                                         text-[20px]
-                                        md:text-[26px]
+                                        lg:text-[26px]
                                         placeholder:text-[#59799C]
                                         disabled:bg-transparent
                                     `,
@@ -263,7 +263,7 @@ export default function ConversationHeader({
                                 css={[
                                     tw`
                                         text-[12px]
-                                        md:text-[14px]
+                                        lg:text-[14px]
                                         text-[#59799C]
                                     `,
                                 ]}
@@ -283,12 +283,9 @@ export default function ConversationHeader({
                         <div onDoubleClick={edit}>
                             <div
                                 css={[
-                                    css`
-                                        line-height: normal;
-                                    `,
                                     tw`
                                         text-[20px]
-                                        md:text-[26px]
+                                        lg:text-[26px]
                                         font-medium
                                         select-none
                                         leading-normal
@@ -304,7 +301,7 @@ export default function ConversationHeader({
                                         items-center
                                         text-[#59799C]
                                         text-[12px]
-                                        md:text-[14px]
+                                        lg:text-[14px]
                                     `,
                                 ]}
                             >
@@ -382,7 +379,7 @@ export default function ConversationHeader({
                 ) : (
                     <>
                         {canEdit && !isRoomBeingDeleted && (
-                            <ActionButton onClick={edit} css={tw`hidden md:block`}>
+                            <ActionButton onClick={edit} css={tw`hidden lg:block`}>
                                 <EditIcon />
                             </ActionButton>
                         )}
@@ -439,7 +436,7 @@ export default function ConversationHeader({
                                             edit()
                                             setRoomMenuOpen(false)
                                         }}
-                                        css={tw`md:hidden`}
+                                        css={tw`lg:hidden`}
                                     >
                                         Rename room
                                     </MenuButtonItem>

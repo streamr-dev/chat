@@ -182,7 +182,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                                     translate-x-full
                                     -translate-y-1/2
                                     right-[-5px]
-                                    md:-right-2.5
+                                    lg:-right-2.5
                                 `,
                             ]}
                         >
