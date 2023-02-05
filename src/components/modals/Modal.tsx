@@ -1,8 +1,7 @@
 import gsap from 'gsap'
-import { HTMLAttributes, ReactNode, useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 import useGlobalKeyDownEffect from 'streamr-ui/hooks/useGlobalKeyDownEffect'
-import useOnMouseDownOutsideEffect from 'streamr-ui/hooks/useOnMouseDownOutsideEffect'
-import tw, { css } from 'twin.macro'
+import tw from 'twin.macro'
 
 export enum AbortReason {
     CloseButton,
@@ -30,8 +29,6 @@ export default function Modal({
     const tweenRef = useRef<ReturnType<typeof gsap.to>>()
 
     function wiggle() {
-        const { current: wiggly } = wigglyRef
-
         tweenRef.current?.kill()
 
         tweenRef.current = gsap.to(
@@ -84,8 +81,6 @@ export default function Modal({
         }
     })
 
-    const modalRef = useOnMouseDownOutsideEffect(() => void close(AbortReason.Backdrop))
-
     return (
         <div
             css={tw`
@@ -101,11 +96,21 @@ export default function Modal({
         >
             <div
                 css={tw`
+                    backdrop-blur
+                    fixed
+                    w-full
+                    h-full
+                `}
+                onMouseDown={() => void close(AbortReason.Backdrop)}
+            />
+            <div
+                css={tw`
                     flex
                     items-center
                     justify-center
                     h-full
                     relative
+                    pointer-events-none
                 `}
             >
                 <div
@@ -121,7 +126,6 @@ export default function Modal({
                         `}
                     >
                         <div
-                            ref={modalRef}
                             css={tw`
                                 pointer-events-auto
                                 max-w-[560px]
