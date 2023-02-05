@@ -22,7 +22,7 @@ export default function toLocalMessage(
         const parsed = message.getParsedContent()
 
         if (typeof parsed !== 'string') {
-            content = message.getParsedContent().content
+            content = parsed.content
         }
     } catch (e) {
         // Still encrypted.
