@@ -16,16 +16,14 @@ export default function useProviderChangeEffect() {
         }
 
         function onAccountsChange(accounts: string[]) {
-            const acc = accounts[0]
+            const account = accounts[0]
 
-            if (!provider || !acc) {
+            if (!provider || !account) {
                 dispatch(WalletAction.setAccount({ account: null }))
                 return
             }
 
-            // `setAccount` takes care of consecutive action calls for the same account, and skips
-            // redundant processing.
-            dispatch(WalletAction.setAccount({ account: acc, provider }))
+            dispatch(WalletAction.setAccount({ account, provider }))
         }
 
         provider.addListener('accountsChanged', onAccountsChange)
