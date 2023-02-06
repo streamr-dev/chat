@@ -305,7 +305,8 @@ function Link(props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'r
     return <a {...props} target="_blank" rel="noreferrer noopener" css={tw`underline`} />
 }
 
-interface SenderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+interface SenderProps
+    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'type' | 'onClick'> {
     short: string
     full: string
 }
@@ -315,6 +316,7 @@ function Sender({ short, full, ...props }: SenderProps) {
 
     return (
         <button
+            {...props}
             type="button"
             onClick={() => void toggle()}
             css={[

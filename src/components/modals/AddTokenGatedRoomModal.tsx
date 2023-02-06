@@ -20,8 +20,7 @@ import trunc from '$/utils/trunc'
 import isSameAddress from '$/utils/isSameAddress'
 import { useWalletProvider } from '$/features/wallet/hooks'
 import useTokenStandard from '$/hooks/useTokenStandard'
-import titleize from 'streamr-ui/utils/titleize'
-import { TokenStandard, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
+import { TokenStandard, TokenTypes } from '$/features/tokenGatedRooms/types'
 import TextField from '$/components/TextField'
 
 interface TokenParams {

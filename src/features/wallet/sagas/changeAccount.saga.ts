@@ -3,9 +3,7 @@ import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import { WalletAction } from '$/features/wallet'
-import { OptionalAddress } from '$/types'
-import isSameAddress from '$/utils/isSameAddress'
-import { put, take, takeEvery } from 'redux-saga/effects'
+import { put, takeEvery } from 'redux-saga/effects'
 
 export default function* changeAccount() {
     yield takeEvery(WalletAction.changeAccount, function* ({ payload: { account, provider } }) {
