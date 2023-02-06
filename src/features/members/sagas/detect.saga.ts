@@ -10,6 +10,7 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import { EnsAction } from '$/features/ens'
 import getAccountType, { AccountType } from '$/utils/getAccountType'
 import { Flag } from '$/features/flag/types'
+import { DelegationAction } from '$/features/delegation'
 
 function* onDetectAction({
     payload: { roomId, streamrClient, provider },
@@ -39,7 +40,7 @@ function* onDetectAction({
 
             if (accountType === AccountType.Delegated) {
                 yield put(
-                    MembersAction.lookupDelegation({
+                    DelegationAction.lookup({
                         delegated: assignment.user,
                         provider,
                         fingerprint: Flag.isLookingUpDelegation(assignment.user),

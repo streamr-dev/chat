@@ -7,11 +7,9 @@ import { IMember, MembersState } from './types'
 import StreamrClient from 'streamr-client'
 import { Address, IFingerprinted } from '$/types'
 import { Provider } from '@web3-react/types'
-import lookupDelegation from '$/features/members/sagas/lookupDelegation.saga'
 
 const initialState: MembersState = {
     members: {},
-    delegations: {},
 }
 
 export const MembersAction = {
@@ -20,15 +18,6 @@ export const MembersAction = {
     detect: createAction<
         IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient; provider: Provider }
     >('members: detect'),
-
-    setDelegation: createAction<{ main: Address; delegated: Address }>('members: set delegation'),
-
-    lookupDelegation: createAction<
-        IFingerprinted & {
-            delegated: Address
-            provider: Provider
-        }
-    >('members: lookup delegation'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -37,16 +26,10 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(MembersAction.set, (state, { payload: { roomId, members } }) => {
         state.members[roomId] = members
     })
-
-    builder.addCase(MembersAction.setDelegation, (state, { payload: { main, delegated } }) => {
-        state.delegations[delegated] = main
-    })
-
-    builder.addCase(MembersAction.lookupDelegation, SEE_SAGA)
 })
 
 export function* membersSaga() {
-    yield all([detect(), lookupDelegation()])
+    yield all([detect()])
 }
 
 export default reducer

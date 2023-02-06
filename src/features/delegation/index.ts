@@ -6,17 +6,31 @@ import { createAction } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
 import requestPrivateKey from './sagas/requestPrivateKey.saga'
 import { Provider } from '@web3-react/types'
-import { IFingerprinted, IOwnable } from '$/types'
+import { Address, IFingerprinted, IOwnable } from '$/types'
+import lookup from '$/features/delegation/sagas/lookup.saga'
 
 const initialState: DelegationState = {
     privateKey: undefined,
     client: undefined,
+    delegations: {},
 }
 
 export const DelegationAction = {
     setPrivateKey: createAction<string | undefined>('delegation: set delegated private key'),
+
     requestPrivateKey: createAction<IOwnable & IFingerprinted & { provider: Provider }>(
         'delegation: request private key'
+    ),
+
+    lookup: createAction<
+        IFingerprinted & {
+            delegated: Address
+            provider: Provider
+        }
+    >('delegation: lookup'),
+
+    setDelegation: createAction<{ main: Address; delegated: Address }>(
+        'delegation: set delegation'
     ),
 }
 
@@ -42,10 +56,16 @@ const reducer = createReducer(initialState, (builder) => {
     })
 
     builder.addCase(DelegationAction.requestPrivateKey, SEE_SAGA)
+
+    builder.addCase(DelegationAction.lookup, SEE_SAGA)
+
+    builder.addCase(DelegationAction.setDelegation, (state, { payload: { main, delegated } }) => {
+        state.delegations[delegated.toLowerCase()] = main.toLowerCase()
+    })
 })
 
 export function* delegationSaga() {
-    yield all([requestPrivateKey()])
+    yield all([requestPrivateKey(), lookup()])
 }
 
 export default reducer

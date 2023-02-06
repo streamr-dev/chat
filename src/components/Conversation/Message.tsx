@@ -19,7 +19,6 @@ import useMainAccount from '$/hooks/useMainAccount'
 import isSameAddress from '$/utils/isSameAddress'
 import { OptionalAddress } from '$/types'
 import { useDispatch } from 'react-redux'
-import { MembersAction } from '$/features/members'
 import { Flag } from '$/features/flag/types'
 import trunc from '$/utils/trunc'
 import { useAlias } from '$/features/alias/hooks'
@@ -28,6 +27,7 @@ import { RoomId } from '$/features/room/types'
 import { MessageAction } from '$/features/message'
 import { useDelegatedClient } from '$/features/delegation/hooks'
 import useFlag from '$/hooks/useFlag'
+import { DelegationAction } from '$/features/delegation'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
@@ -87,7 +87,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
         }
 
         dispatch(
-            MembersAction.lookupDelegation({
+            DelegationAction.lookup({
                 delegated: createdBy,
                 provider,
                 fingerprint: Flag.isLookingUpDelegation(createdBy),
