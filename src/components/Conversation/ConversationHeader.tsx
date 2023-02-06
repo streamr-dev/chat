@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import { useCurrentAbility, useLoadCurrentAbilityEffect } from '$/features/permission/hooks'
+import useCurrentAbility from '$/hooks/useCurrentAbility'
+import useLoadCurrentAbilityEffect from '$/hooks/useLoadCurrentAbilityEffect'
 import { RoomAction } from '$/features/room'
 import {
     useEditingRoomName,

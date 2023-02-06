@@ -2,6 +2,8 @@ import { PermissionsAction } from '$/features/permissions'
 import acceptInvite from '$/features/permissions/sagas/helpers/acceptInvite'
 import addMember from '$/features/permissions/sagas/helpers/addMember'
 import detectRoomMembers from '$/features/permissions/sagas/helpers/detectRoomMembers'
+import fetchPermission from '$/features/permissions/sagas/helpers/fetchPermission'
+import fetchPermissions from '$/features/permissions/sagas/helpers/fetchPermissions'
 import promoteDelegatedAccount from '$/features/permissions/sagas/helpers/promoteDelegatedAccount'
 import removeMember from '$/features/permissions/sagas/helpers/removeMember'
 import tokenGatedPromoteDelegatedAccount from '$/features/permissions/sagas/helpers/tokenGatedPromoteDelegatedAccount'
@@ -43,6 +45,14 @@ export default function* lifecycle() {
                         yield tokenGatedPromoteDelegatedAccount(payload)
                     }
                 )
+
+                yield takeEveryUnique(PermissionsAction.fetchPermission, function* ({ payload }) {
+                    yield fetchPermission(payload)
+                })
+
+                yield takeEveryUnique(PermissionsAction.fetchPermissions, function* ({ payload }) {
+                    yield fetchPermissions(payload)
+                })
             }),
         ])
     }

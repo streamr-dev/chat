@@ -1,5 +1,6 @@
 import { StreamPermission } from 'streamr-client'
-import { useCurrentAbility, useLoadCurrentAbilityEffect } from '$/features/permission/hooks'
+import useCurrentAbility from '$/hooks/useCurrentAbility'
+import useLoadCurrentAbilityEffect from '$/hooks/useLoadCurrentAbilityEffect'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useJustInvited from './useJustInvited'

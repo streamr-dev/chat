@@ -7,10 +7,8 @@ import {
     useIsDelegatingAccess,
     useRequestPrivateKey,
 } from '$/features/delegation/hooks'
-import {
-    useCurrentDelegationAbility,
-    useLoadCurrentDelegationAbilityEffect,
-} from '$/features/permission/hooks'
+import useCurrentDelegationAbility from '$/hooks/useCurrentDelegationAbility'
+import useLoadCurrentDelegationAbilityEffect from '$/hooks/useLoadCurrentDelegationAbilityEffect'
 import useMessages from '$/hooks/useMessages'
 import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'

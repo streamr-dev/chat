@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { StreamPermission } from 'streamr-client'
 import { OptionalAddress } from '$/types'
-import { usePermissions } from '$/features/permission/hooks'
+import usePermissions from '$/hooks/usePermissions'
 import { RoomId } from '$/features/room/types'
 
 export default function useJustInvited(roomId: undefined | RoomId, address: OptionalAddress) {

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { PermissionAction } from '$/features/permission'
+import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
@@ -62,7 +62,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
         }
 
         dispatch(
-            PermissionAction.fetchAll({
+            PermissionsAction.fetchPermissions({
                 roomId: id,
                 address,
                 streamrClient,

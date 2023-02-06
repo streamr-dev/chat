@@ -1,6 +1,5 @@
 import { Flag } from '$/features/flag/types'
 import { PermissionsAction } from '$/features/permissions'
-import { PermissionAction } from '$/features/permission'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
 import waitForPermissions, { Validator } from '$/utils/waitForPermissions'
@@ -37,7 +36,7 @@ export default function setMultiplePermissions(
         })
 
         for (let i = 0; i < assignments.length; i++) {
-            yield put(PermissionAction.invalidateAll({ roomId, address: assignments[i].user }))
+            yield put(PermissionsAction.invalidateAll({ roomId, address: assignments[i].user }))
         }
 
         if (validate === true) {

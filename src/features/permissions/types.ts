@@ -11,4 +11,18 @@ export interface IMember {
 
 export interface PermissionsState {
     roomMembers: Record<RoomId, IMember[]>
+
+    permissions: Record<
+        RoomId,
+        Record<
+            Address,
+            Record<
+                string,
+                {
+                    cache?: number
+                    value?: boolean
+                }
+            >
+        >
+    >
 }
