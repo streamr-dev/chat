@@ -108,10 +108,6 @@ export const Flag = {
         return JSON.stringify(['isIdenticonBeingRetrieved', seed])
     },
 
-    areMembersBeingFetched(roomId: RoomId): string {
-        return JSON.stringify(['areMembersBeingFetched', roomId])
-    },
-
     isENSNameBeingStored(name: string): string {
         return JSON.stringify(['isENSNameBeingStored', name.toLowerCase()])
     },
@@ -156,5 +152,5 @@ export const Flag = {
 
     isDisplayingRooms() {
         return JSON.stringify(['isDisplayingRooms'])
-    }
+    },
 }

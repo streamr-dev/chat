@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
-import tw, { css } from 'twin.macro'
+import tw from 'twin.macro'
 import { useCurrentAbility, useLoadCurrentAbilityEffect } from '$/features/permission/hooks'
 import { RoomAction } from '$/features/room'
 import {
@@ -37,8 +37,8 @@ import { FlagAction } from '$/features/flag'
 import EditIcon from '$/icons/EditIcon'
 import useIsResending from '$/hooks/useIsResending'
 import Dot from '$/components/Dot'
-import { useMembers } from '$/features/members/hooks'
-import useFlag from '$/hooks/useFlag'
+import useRoomMembers from '$/hooks/useRoomMembers'
+import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import ArrowIcon from '$/icons/ArrowIcon'
 
 type Props = {
@@ -162,11 +162,9 @@ export default function ConversationHeader({
 
     const provider = useWalletProvider()
 
-    const membersCount = useMembers(selectedRoomId).length
+    const membersCount = useRoomMembers(selectedRoomId).length
 
-    const isDetectingMembers = useFlag(
-        selectedRoomId ? Flag.isDetectingMembers(selectedRoomId) : undefined
-    )
+    const isDetectingMembers = useIsDetectingRoomMembers(selectedRoomId)
 
     return (
         <div

@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Address } from '$/types'
 import { MemberAction } from '$/features/member'
-import { useMembers, useMembersFetching } from '$/features/members/hooks'
+import useRoomMembers from '$/hooks/useRoomMembers'
+import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
@@ -78,9 +79,9 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
         [dispatch, selectedRoomId, provider, requester, streamrClient]
     )
 
-    const members = useMembers(selectedRoomId)
+    const members = useRoomMembers(selectedRoomId)
 
-    const isFetchingMembers = useMembersFetching(selectedRoomId)
+    const isDetectingRoomMembers = useIsDetectingRoomMembers(selectedRoomId)
 
     const account = useWalletAccount()
 
@@ -140,10 +141,10 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
                             box-content
                             [> * + *]:mt-4
                         `,
-                        isFetchingMembers && tw`bg-[#F7F9FC]`,
+                        isDetectingRoomMembers && tw`bg-[#F7F9FC]`,
                     ]}
                 >
-                    {isFetchingMembers ? (
+                    {isDetectingRoomMembers ? (
                         <div
                             css={tw`
                                 flex

@@ -4,7 +4,7 @@ import wallet, { walletSaga } from '$/features/wallet'
 import delegation, { delegationSaga } from '$/features/delegation'
 import room, { roomSaga } from '$/features/room'
 import rooms, { roomsSaga } from '$/features/rooms'
-import members, { membersSaga } from '$/features/members'
+import permissions, { permissionsSaga } from '$/features/permissions'
 import member, { memberSaga } from '$/features/member'
 import permission, { permissionSaga } from '$/features/permission'
 import drafts, { draftsSaga } from '$/features/drafts'
@@ -30,7 +30,7 @@ const store = configureStore({
         flag,
         identicons,
         member,
-        members,
+        permissions,
         message,
         permission,
         preferences,
@@ -71,7 +71,7 @@ sagaMiddleware.run(function* saga() {
         ensSaga(),
         identiconsSaga(),
         memberSaga(),
-        membersSaga(),
+        permissionsSaga(),
         messageSaga(),
         permissionSaga(),
         preferencesSaga(),

@@ -1,5 +1,5 @@
 import { Flag } from '$/features/flag/types'
-import { MembersAction } from '$/features/members'
+import { PermissionsAction } from '$/features/permissions'
 import { PermissionAction } from '$/features/permission'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
@@ -101,7 +101,7 @@ export default function setMultiplePermissions(
         }
 
         yield put(
-            MembersAction.detect({
+            PermissionsAction.detectRoomMembers({
                 roomId,
                 streamrClient,
                 provider,
