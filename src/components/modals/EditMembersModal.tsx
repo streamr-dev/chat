@@ -2,7 +2,7 @@ import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Address } from '$/types'
-import { MemberAction } from '$/features/member'
+import { PermissionsAction } from '$/features/permissions'
 import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
@@ -20,7 +20,7 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
-import { useIsMemberBeingRemoved } from '$/features/member/hooks'
+import useIsMemberBeingRemoved from '$/hooks/useIsMemberBeingRemoved'
 import { success } from '$/utils/toaster'
 import MoreActionButton from '$/components/MoreActionButton'
 import { useAlias } from '$/features/alias/hooks'
@@ -66,7 +66,7 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
             }
 
             dispatch(
-                MemberAction.remove({
+                PermissionsAction.removeMember({
                     roomId: selectedRoomId,
                     member,
                     provider,

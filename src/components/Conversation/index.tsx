@@ -24,12 +24,10 @@ import useCanGrant from '$/hooks/useCanGrant'
 import useJustInvited from '$/hooks/useJustInvited'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import Spinner from '$/components/Spinner'
-import {
-    useAcceptInvite,
-    useIsDelegatedAccountBeingPromoted,
-    useIsInviteBeingAccepted,
-    usePromoteDelegatedAccount,
-} from '$/features/member/hooks'
+import useAcceptInvite from '$/hooks/useAcceptInvite'
+import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
+import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
+import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 import useResendEffect from '$/hooks/useResendEffect'
 import useResends from '$/hooks/useResends'
 import useAddMemberModal from '$/hooks/useAddMemberModal'

@@ -1,6 +1,6 @@
 import AddMemberModal from '$/components/modals/AddMemberModal'
 import { Flag } from '$/features/flag/types'
-import { MemberAction } from '$/features/member'
+import { PermissionsAction } from '$/features/permissions'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useModalDialog from '$/hooks/useModalDialog'
@@ -39,7 +39,7 @@ export default function useAddMemberModal() {
         }
 
         dispatch(
-            MemberAction.add({
+            PermissionsAction.addMember({
                 roomId,
                 member,
                 provider,
