@@ -52,6 +52,6 @@ function* onRequestPrivateKeyAction({
 
 export default function* requestPrivateKey() {
     yield takeEveryUnique(DelegationAction.requestPrivateKey, onRequestPrivateKeyAction, {
-        cancellationPattern: WalletAction.setAccount,
+        cancellationPattern: WalletAction.changeAccount,
     })
 }
