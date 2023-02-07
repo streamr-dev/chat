@@ -73,8 +73,8 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
                 overflow-auto
                 px-4
                 lg:px-6
-                pt-4
-                lg:pt-6
+                py-4
+                lg:py-6
                 [> *]:mt-[0.625rem]
             `}
         >

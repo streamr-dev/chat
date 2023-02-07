@@ -125,6 +125,7 @@ export default function Conversation() {
             {canDoAnything && (
                 <div
                     css={tw`
+                        shadow-[inset 0 1px 0 #dee6ee]
                         absolute
                         p-4
                         lg:p-6
@@ -201,7 +202,7 @@ function MessageBox({
             <MessageInputPlaceholder
                 cta={
                     <Cta busy={isBeingAccepted} disabled={isBeingAccepted} onClick={acceptInvite}>
-                        {isBeingAccepted ? <>Accepting the invite…</> : <>Accept</>}
+                        {isBeingAccepted ? <>Joining…</> : <>Join</>}
                     </Cta>
                 }
             >
@@ -238,12 +239,24 @@ type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 function Cta({ children, busy = false, ...props }: CtaProps) {
     return (
         <SecondaryButton {...props} css={tw`text-[0.875rem] h-8 px-4`}>
-            <div css={tw`flex items-center`}>
+            <div
+                css={tw`
+                    flex
+                    items-center
+                `}
+            >
                 <div>
                     <Text>{children}</Text>
                 </div>
                 {busy && (
-                    <div css={tw`ml-2 relative w-4 h-4`}>
+                    <div
+                        css={tw`
+                            ml-2
+                            relative
+                            w-4
+                            h-4
+                        `}
+                    >
                         <Spinner r={5} strokeWidth={1} />
                     </div>
                 )}
