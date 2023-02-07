@@ -6,6 +6,12 @@ import trunc from '$/utils/trunc'
 import UtilityButton from '../UtilityButton'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import useDisplayUsername from '$/hooks/useDisplayUsername'
+import useJustInvited from '$/hooks/useJustInvited'
+import { useSelectedRoomId } from '$/features/room/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
+import useAcceptInvite from '$/hooks/useAcceptInvite'
+import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
+import Spinner from '$/components/Spinner'
 
 type Props = {
     onAddMemberClick?: () => void
@@ -13,6 +19,12 @@ type Props = {
 }
 
 export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = false }: Props) {
+    const invited = useJustInvited(useSelectedRoomId(), useWalletAccount())
+
+    const acceptInvite = useAcceptInvite()
+
+    const accepting = useIsInviteBeingAccepted()
+
     return (
         <div
             css={[
@@ -41,23 +53,46 @@ export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = 
             >
                 <Credits />
             </div>
-            <UtilityButton
-                disabled={!canModifyMembers}
-                onClick={onAddMemberClick}
-                css={[
-                    tw`
+            {invited ? (
+                <UtilityButton
+                    disabled={accepting}
+                    onClick={() => void acceptInvite()}
+                    css={tw`
                         flex
                         items-center
-                    `,
-                ]}
-            >
-                <div tw="mr-2">
-                    <AddMemberIcon />
-                </div>
-                <div tw="grow">
-                    <Text>Add member</Text>
-                </div>
-            </UtilityButton>
+                    `}
+                >
+                    <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
+                    {accepting && (
+                        <div
+                            css={tw`
+                                relative
+                                w-4
+                                h-4
+                                ml-3
+                            `}
+                        >
+                            <Spinner strokeColor="currentColor" />
+                        </div>
+                    )}
+                </UtilityButton>
+            ) : (
+                <UtilityButton
+                    disabled={!canModifyMembers}
+                    onClick={onAddMemberClick}
+                    css={tw`
+                        flex
+                        items-center
+                    `}
+                >
+                    <div tw="mr-2">
+                        <AddMemberIcon />
+                    </div>
+                    <div tw="grow">
+                        <Text>Add member</Text>
+                    </div>
+                </UtilityButton>
+            )}
         </div>
     )
 }
