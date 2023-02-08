@@ -44,7 +44,7 @@
         "react-helmet": "^6.1.0",
         "react-modal": "^3.16.1",
         "react-redux": "^8.0.5",
-        "react-router-dom": "^6.8.0",
+        "react-router-dom": "^6.8.1",
         "react-select": "^5.6.1",
         "react-toastify": "^9.1.1",
         "redux-saga": "^1.2.2",
