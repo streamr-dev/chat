@@ -9,40 +9,39 @@ import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
+import useRoomSubscriber from '$/hooks/useRoomSubscriber'
 
 export default function useResendEffect(roomId: undefined | RoomId) {
-    const streamrClient = useDelegatedClient()
+    const [account, streamrClient] = useRoomSubscriber(roomId)
 
-    const delegatedAddress = useDelegatedAccount()
+    const canSubscriberSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
 
-    const canDelegatedSubscribe = useAbility(roomId, delegatedAddress, StreamPermission.SUBSCRIBE)
+    useLoadAbilityEffect(roomId, account, StreamPermission.SUBSCRIBE)
 
-    useLoadAbilityEffect(roomId, delegatedAddress, StreamPermission.SUBSCRIBE)
-
-    const account = useWalletAccount()?.toLowerCase()
+    const requester = useWalletAccount()?.toLowerCase()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!roomId || !account || !streamrClient || !canDelegatedSubscribe) {
+        if (!roomId || !requester || !streamrClient || !canSubscriberSubscribe) {
             return
         }
 
         dispatch(
             MessageAction.resend({
                 roomId,
-                requester: account,
+                requester,
                 streamrClient,
-                fingerprint: Flag.isResendingMessage(roomId, account),
+                fingerprint: Flag.isResendingMessage(roomId, requester),
             })
         )
 
         dispatch(
             MessageAction.setFromTimestamp({
                 roomId,
-                requester: account,
+                requester,
                 timestamp: getBeginningOfDay(Date.now()),
             })
         )
-    }, [roomId, streamrClient, canDelegatedSubscribe, account])
+    }, [roomId, streamrClient, canSubscriberSubscribe, requester])
 }
