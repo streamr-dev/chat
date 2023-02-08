@@ -4,10 +4,9 @@ import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
-import { Address, EnhancedStream } from '$/types'
+import { Address } from '$/types'
 import db from '$/utils/db'
-import getStream from '$/utils/getStream'
-import getStreamMetadata from '$/utils/getStreamMetadata'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -15,7 +14,7 @@ import { error } from '$/utils/toaster'
 import { Provider } from '@web3-react/types'
 import { toast } from 'react-toastify'
 import { call, put } from 'redux-saga/effects'
-import StreamrClient from 'streamr-client'
+import StreamrClient, { Stream } from 'streamr-client'
 
 interface PinRemoteOptions {
     streamrClient: StreamrClient
@@ -28,13 +27,13 @@ function* pinRemote(
     provider: Provider,
     { streamrClient }: PinRemoteOptions
 ) {
-    const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
+    const stream: null | Stream = yield streamrClient.getStream(roomId)
 
     if (!stream) {
         throw new RoomNotFoundError(roomId)
     }
 
-    const { createdAt, createdBy, tokenAddress, name } = getStreamMetadata(stream)
+    const { createdAt, createdBy, tokenAddress, name = '' } = getRoomMetadata(stream)
 
     const isTokenGated = isTokenGatedRoom(stream)
 
@@ -67,10 +66,10 @@ function* pinRemote(
         yield db.rooms.where({ owner, id: roomId }).modify({ pinned: true, hidden: false })
     } else {
         yield db.rooms.add({
-            createdAt: createdAt,
-            createdBy: createdBy,
+            createdAt,
+            createdBy,
             id: stream.id,
-            name: name || '',
+            name,
             owner,
             pinned: true,
         })

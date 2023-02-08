@@ -2,7 +2,6 @@ import { put } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 import { RoomAction } from '..'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 
@@ -10,7 +9,7 @@ function* onGetStorageNodesAction({
     payload: { roomId, streamrClient },
 }: ReturnType<typeof RoomAction.getStorageNodes>) {
     try {
-        const stream: Stream = yield getStream(streamrClient, roomId)
+        const stream: null | Stream = yield streamrClient.getStream(roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

@@ -1,8 +1,6 @@
 import { call, put } from 'redux-saga/effects'
-import { PermissionAssignment } from 'streamr-client'
-import { EnhancedStream } from '$/types'
+import { PermissionAssignment, Stream } from 'streamr-client'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { EnsAction } from '$/features/ens'
 import getAccountType, { AccountType } from '$/utils/getAccountType'
@@ -20,7 +18,7 @@ export default function detectRoomMembers({
         try {
             const members: IMember[] = []
 
-            const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
+            const stream: null | Stream = yield streamrClient.getStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

@@ -5,14 +5,13 @@ import { PreferencesAction } from '$/features/preferences'
 import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
-import { EnhancedStream } from '$/types'
 import db from '$/utils/db'
-import getStream from '$/utils/getStream'
-import getStreamMetadata from '$/utils/getStreamMetadata'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import { error } from '$/utils/toaster'
 import { Id as ToastId, toast } from 'react-toastify'
 import { put, takeLatest } from 'redux-saga/effects'
+import { Stream } from 'streamr-client'
 
 export default function* preselect() {
     yield takeLatest(
@@ -115,16 +114,13 @@ export default function* preselect() {
                 })
 
                 try {
-                    const stream: undefined | EnhancedStream = yield getStream(
-                        streamrClient,
-                        roomId
-                    )
+                    const stream: null | Stream = yield streamrClient.getStream(roomId)
 
                     if (!stream) {
                         throw new RoomNotFoundError(roomId)
                     }
 
-                    const { createdAt, createdBy, name } = getStreamMetadata(stream)
+                    const { createdAt, createdBy, name = '' } = getRoomMetadata(stream)
 
                     const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
                         owner,
@@ -149,10 +145,10 @@ export default function* preselect() {
 
                     try {
                         yield db.rooms.add({
-                            createdAt: createdAt,
-                            createdBy: createdBy,
+                            createdAt,
+                            createdBy,
                             id: stream.id,
-                            name: name || '',
+                            name,
                             owner,
                             pinned,
                         })

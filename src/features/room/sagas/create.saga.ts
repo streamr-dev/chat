@@ -1,6 +1,11 @@
 import db from '$/utils/db'
 import { put, takeEvery } from 'redux-saga/effects'
-import { Stream, StreamPermission, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
+import {
+    Stream,
+    StreamMetadata,
+    StreamPermission,
+    STREAMR_STORAGE_NODE_GERMANY,
+} from 'streamr-client'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { PrivacySetting } from '$/types'
@@ -11,8 +16,8 @@ import { toast } from 'react-toastify'
 import { Flag } from '$/features/flag/types'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
-import createRoomStream from '$/utils/createRoomStream'
 import { MiscAction } from '$/features/misc'
+import { RoomMetadata } from '$/utils/getRoomMetadata'
 
 function* onCreateAction({
     payload: {
@@ -72,11 +77,13 @@ function* onCreateAction({
             }
         }
 
-        const stream: Stream = yield createRoomStream(streamrClient, {
+        const stream: Stream = yield streamrClient.createStream({
             id,
-            name: description,
-            ...metadata,
-        })
+            description,
+            extensions: {
+                'thechat.eth': metadata,
+            },
+        } as Partial<StreamMetadata> & { id: string } & Record<'extensions', Record<'thechat.eth', RoomMetadata>>)
 
         if (
             privacy === PrivacySetting.TokenGated &&

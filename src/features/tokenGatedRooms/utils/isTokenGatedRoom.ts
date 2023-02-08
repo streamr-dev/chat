@@ -1,6 +1,6 @@
-import { EnhancedStream } from '$/types'
-import getStreamMetadata from '$/utils/getStreamMetadata'
+import type { Stream } from 'streamr-client'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 
-export function isTokenGatedRoom(stream: EnhancedStream): boolean {
-    return !!getStreamMetadata(stream).tokenAddress
+export function isTokenGatedRoom(stream: Stream) {
+    return !!getRoomMetadata(stream).tokenAddress
 }

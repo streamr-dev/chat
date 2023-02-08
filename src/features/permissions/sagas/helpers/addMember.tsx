@@ -10,7 +10,6 @@ import { Flag } from '$/features/flag/types'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import MemberExistsError from '$/errors/MemberExistsError'
-import getStream from '$/utils/getStream'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import trunc from '$/utils/trunc'
 import { PermissionsAction } from '$/features/permissions'
@@ -88,7 +87,7 @@ export default function addMember({
                 throw new Error('Address could not be resolved')
             }
 
-            const stream: null | Stream = yield getStream(streamrClient, roomId)
+            const stream: null | Stream = yield streamrClient.getStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

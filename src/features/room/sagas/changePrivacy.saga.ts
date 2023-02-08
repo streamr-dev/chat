@@ -3,12 +3,11 @@ import { Stream, StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
 import { PrivacySetting } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { error, success } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import getStreamMetadata from '$/utils/getStreamMetadata'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 
 function* onChangePrivacyAction({
     payload: { roomId, privacy, provider, requester, streamrClient },
@@ -23,7 +22,7 @@ function* onChangePrivacyAction({
             requester,
         })
 
-        const stream: undefined | Stream = yield getStream(streamrClient, roomId)
+        const stream: null | Stream = yield streamrClient.getStream(roomId)
 
         const permissions: StreamPermission[] =
             privacy === PrivacySetting.Public ? [StreamPermission.SUBSCRIBE] : []
@@ -32,7 +31,7 @@ function* onChangePrivacyAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const { name = 'Unnamed room' } = getStreamMetadata(stream)
+        const { name = 'Unnamed room' } = getRoomMetadata(stream)
 
         teardown = () => {
             error(`Failed to update privacy for "${name}".`)
