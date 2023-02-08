@@ -1,6 +1,5 @@
 import ChatPage from '$/components/ChatPage'
 import HomePage from '$/components/HomePage'
-import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { MiscAction } from '$/features/misc'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useEagerConnectEffect from '$/hooks/useEagerConnectEffect'
@@ -10,8 +9,6 @@ import { useNavigate } from 'react-router-dom'
 
 export default function IndexPage() {
     const account = useWalletAccount()
-
-    const delegatedAccount = useDelegatedAccount()
 
     useEagerConnectEffect()
 
@@ -23,7 +20,7 @@ export default function IndexPage() {
         dispatch(MiscAction.setNavigate({ navigate }))
     }, [navigate, dispatch])
 
-    if (!account || !delegatedAccount) {
+    if (!account) {
         return <HomePage />
     }
 
