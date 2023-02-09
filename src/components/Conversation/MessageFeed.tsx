@@ -1,14 +1,11 @@
 import { Fragment, HTMLAttributes, useEffect, useLayoutEffect, useRef } from 'react'
 import tw from 'twin.macro'
 import { IMessage, IResend } from '$/features/message/types'
-import { useWalletAccount } from '$/features/wallet/hooks'
-import isSameAddress from '$/utils/isSameAddress'
 import Message from './Message'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import MessageGroupLabel from '$/components/Conversation/MessageGroupLabel'
 import Text from '$/components/Text'
 import useMessageGroups from '$/hooks/useMessageGroups'
-import { useDelegatedAccount } from '$/features/delegation/hooks'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     messages?: IMessage[]
@@ -60,10 +57,6 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
         }
     }, [groups])
 
-    const account = useWalletAccount()
-
-    const delegatedAccount = useDelegatedAccount()
-
     return (
         <div
             {...props}
@@ -103,10 +96,6 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
                                 <Message
                                     key={message.id}
                                     payload={message}
-                                    incoming={
-                                        !isSameAddress(account, message.createdBy) &&
-                                        !isSameAddress(delegatedAccount, message.createdBy)
-                                    }
                                     previousCreatedBy={pcb}
                                 />
                             )
