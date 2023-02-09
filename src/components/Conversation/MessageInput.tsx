@@ -9,6 +9,7 @@ import db from '$/utils/db'
 import { DraftAction } from '$/features/drafts'
 import { MessageAction } from '$/features/message'
 import { useDelegatedClient } from '$/features/delegation/hooks'
+import isBlank from '$/utils/isBlank'
 
 type Props = {
     disabled?: boolean
@@ -19,7 +20,7 @@ export default function MessageInput({ disabled = false }: Props) {
 
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const submittable = !/^\s*$/.test(value)
+    const submittable = !isBlank(value)
 
     const selectedRoomId = useSelectedRoomId()
 
