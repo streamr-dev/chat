@@ -9,12 +9,12 @@ import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
-import useRoomSubscriber from '$/hooks/useRoomSubscriber'
+import useOperator from '$/hooks/useOperator'
 
 export default function useResendEffect(roomId: undefined | RoomId) {
-    const [account, streamrClient] = useRoomSubscriber(roomId)
+    const [account, streamrClient] = useOperator(roomId)
 
-    const canSubscriberSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
+    const canOperatorSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
 
     useLoadAbilityEffect(roomId, account, StreamPermission.SUBSCRIBE)
 
@@ -23,7 +23,7 @@ export default function useResendEffect(roomId: undefined | RoomId) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!roomId || !requester || !streamrClient || !canSubscriberSubscribe) {
+        if (!roomId || !requester || !streamrClient || !canOperatorSubscribe) {
             return
         }
 
@@ -43,5 +43,5 @@ export default function useResendEffect(roomId: undefined | RoomId) {
                 timestamp: getBeginningOfDay(Date.now()),
             })
         )
-    }, [roomId, streamrClient, canSubscriberSubscribe, requester])
+    }, [roomId, streamrClient, canOperatorSubscribe, requester])
 }

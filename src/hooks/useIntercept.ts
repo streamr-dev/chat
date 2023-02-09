@@ -10,16 +10,16 @@ import toLocalMessage from '$/utils/toLocalMessage'
 import { subscribe } from 'streamr-client-react'
 import { StreamMessage } from '$/features/message/types'
 import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
-import useRoomSubscriber from '$/hooks/useRoomSubscriber'
+import useOperator from '$/hooks/useOperator'
 
 export default function useIntercept(roomId: RoomId) {
     const owner = useWalletAccount()?.toLowerCase()
 
-    const [account, client] = useRoomSubscriber(roomId)
+    const [account, client] = useOperator(roomId)
 
     const dispatch = useDispatch()
 
-    const canSubscriberSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
+    const canOperatorSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
 
     useLoadAbilityEffect(roomId, account, StreamPermission.SUBSCRIBE)
 
@@ -27,7 +27,7 @@ export default function useIntercept(roomId: RoomId) {
         let queue: undefined | ReturnType<typeof subscribe>
 
         async function fn() {
-            if (!client || !canSubscriberSubscribe || !owner) {
+            if (!client || !canOperatorSubscribe || !owner) {
                 return
             }
 
@@ -56,5 +56,5 @@ export default function useIntercept(roomId: RoomId) {
         return () => {
             queue?.abort()
         }
-    }, [client, roomId, canSubscriberSubscribe, owner])
+    }, [client, roomId, canOperatorSubscribe, owner])
 }
