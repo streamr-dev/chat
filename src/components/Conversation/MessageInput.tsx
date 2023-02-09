@@ -105,33 +105,29 @@ export default function MessageInput({ disabled = false }: Props) {
 
     return (
         <Form
-            css={[
-                tw`
-                    bg-[#f7f9fc]
-                    rounded-xl
-                    flex
-                    h-12
-                    w-full
-                `,
-            ]}
+            css={tw`
+                bg-[#f7f9fc]
+                rounded-xl
+                flex
+                h-12
+                w-full
+            `}
             onSubmit={onSubmit}
         >
             <input
                 disabled={disabled}
-                css={[
-                    tw`
-                        disabled:opacity-25
-                        appearance-none
-                        bg-[transparent]
-                        border-0
-                        grow
-                        outline-none
-                        h-full
-                        p-0
-                        pl-5
-                        placeholder:text-[#59799C]
-                    `,
-                ]}
+                css={tw`
+                    disabled:opacity-25
+                    appearance-none
+                    bg-[transparent]
+                    border-0
+                    grow
+                    outline-none
+                    h-full
+                    p-0
+                    pl-5
+                    placeholder:text-[#59799C]
+                `}
                 autoFocus
                 onChange={(e) => {
                     setValue(e.currentTarget.value)
@@ -164,12 +160,10 @@ export default function MessageInput({ disabled = false }: Props) {
                 ]}
             >
                 <svg
-                    css={[
-                        tw`
-                            block
-                            mx-auto
-                        `,
-                    ]}
+                    css={tw`
+                        block
+                        mx-auto
+                    `}
                     width="20"
                     height="20"
                     viewBox="0 0 20 20"
