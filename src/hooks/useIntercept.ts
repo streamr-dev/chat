@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux'
 import { MessageAction } from '$/features/message'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useAbility from '$/hooks/useAbility'
-import useLoadAbilityEffect from '$/hooks/useLoadAbilityEffect'
 import toLocalMessage from '$/utils/toLocalMessage'
 import { subscribe } from 'streamr-client-react'
 import { StreamMessage } from '$/features/message/types'
@@ -20,8 +19,6 @@ export default function useIntercept(roomId: RoomId) {
     const dispatch = useDispatch()
 
     const canOperatorSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
-
-    useLoadAbilityEffect(roomId, account, StreamPermission.SUBSCRIBE)
 
     useEffect(() => {
         let queue: undefined | ReturnType<typeof subscribe>

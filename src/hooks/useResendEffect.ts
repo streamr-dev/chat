@@ -1,8 +1,6 @@
-import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
 import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
 import useAbility from '$/hooks/useAbility'
-import useLoadAbilityEffect from '$/hooks/useLoadAbilityEffect'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import getBeginningOfDay from '$/utils/getBeginningOfDay'
@@ -15,8 +13,6 @@ export default function useResendEffect(roomId: undefined | RoomId) {
     const [account, streamrClient] = useOperator(roomId)
 
     const canOperatorSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
-
-    useLoadAbilityEffect(roomId, account, StreamPermission.SUBSCRIBE)
 
     const requester = useWalletAccount()?.toLowerCase()
 

@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import useCurrentAbility from '$/hooks/useCurrentAbility'
-import useLoadCurrentAbilityEffect from '$/hooks/useLoadCurrentAbilityEffect'
+import useAbility from '$/hooks/useAbility'
 import { RoomAction } from '$/features/room'
 import {
     useEditingRoomName,
@@ -67,17 +66,15 @@ export default function ConversationHeader({
 }: Props) {
     const dispatch = useDispatch()
 
-    const canEdit = useCurrentAbility(StreamPermission.EDIT)
-
-    useLoadCurrentAbilityEffect(StreamPermission.EDIT)
-
-    const canDelete = useCurrentAbility(StreamPermission.DELETE)
-
-    useLoadCurrentAbilityEffect(StreamPermission.DELETE)
-
-    const { name = '' } = useSelectedRoom() || {}
+    const account = useWalletAccount()
 
     const selectedRoomId = useSelectedRoomId()
+
+    const canEdit = useAbility(selectedRoomId, account, StreamPermission.EDIT)
+
+    const canDelete = useAbility(selectedRoomId, account, StreamPermission.DELETE)
+
+    const { name = '' } = useSelectedRoom() || {}
 
     const isRoomNameEditable = useEditingRoomName(selectedRoomId)
 
@@ -115,8 +112,6 @@ export default function ConversationHeader({
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
 
     const { copy } = useCopy()
-
-    const account = useWalletAccount()
 
     const streamrClient = useWalletClient()
 

@@ -3,12 +3,12 @@ import { StreamPermission } from 'streamr-client'
 import type StreamrClient from 'streamr-client'
 import tw from 'twin.macro'
 import {
+    useDelegatedAccount,
     useDelegatedClient,
     useIsDelegatingAccess,
     useRequestPrivateKey,
 } from '$/features/delegation/hooks'
-import useCurrentDelegationAbility from '$/hooks/useCurrentDelegationAbility'
-import useLoadCurrentDelegationAbilityEffect from '$/hooks/useLoadCurrentDelegationAbilityEffect'
+import useAbility from '$/hooks/useAbility'
 import useMessages from '$/hooks/useMessages'
 import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
@@ -54,13 +54,19 @@ export default function Conversation() {
 
     const delegatedClient = useDelegatedClient()
 
-    const canDelegatedPublish = useCurrentDelegationAbility(StreamPermission.PUBLISH)
+    const delegatedAccount = useDelegatedAccount()
 
-    useLoadCurrentDelegationAbilityEffect(StreamPermission.PUBLISH)
+    const canDelegatedPublish = useAbility(
+        selectedRoomId,
+        delegatedAccount,
+        StreamPermission.PUBLISH
+    )
 
-    const canDelegatedSubscribe = useCurrentDelegationAbility(StreamPermission.SUBSCRIBE)
-
-    useLoadCurrentDelegationAbilityEffect(StreamPermission.SUBSCRIBE)
+    const canDelegatedSubscribe = useAbility(
+        selectedRoomId,
+        delegatedAccount,
+        StreamPermission.SUBSCRIBE
+    )
 
     const justInvited = useJustInvited(useSelectedRoomId(), useWalletAccount())
 
