@@ -6,7 +6,7 @@ import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
 import MessageFeed from './MessageFeed'
 import MessageInput from './MessageInput'
-import { useSelectedRoomId } from '$/features/room/hooks'
+import { usePrivacy, useSelectedRoomId } from '$/features/room/hooks'
 import useCanGrant from '$/hooks/useCanGrant'
 import useResendEffect from '$/hooks/useResendEffect'
 import useResends from '$/hooks/useResends'
@@ -27,6 +27,8 @@ import { ButtonHTMLAttributes } from 'react'
 import SecondaryButton from '$/components/SecondaryButton'
 import Text from '$/components/Text'
 import Spinner from '$/components/Spinner'
+import { useWalletAccount } from '$/features/wallet/hooks'
+import { PrivacySetting } from '$/types'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -49,9 +51,11 @@ export default function Conversation() {
 
     const client = useDelegatedClient()
 
-    const needsDelegation = !client
+    const canMainPublish = useAbility(selectedRoomId, useWalletAccount(), StreamPermission.PUBLISH)
 
-    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
+    const needsDelegation = canMainPublish && !client
+
+    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH) && !!client
 
     const canAct = needsDelegation || canPublish
 
@@ -115,7 +119,7 @@ export default function Conversation() {
                         w-full
                     `}
                 >
-                    {needsDelegation ? <DelegationBox /> : <MessageInput streamrClient={client} />}
+                    {canPublish ? <MessageInput streamrClient={client} /> : <DelegationBox />}
                 </div>
             )}
         </>
@@ -126,6 +130,10 @@ function DelegationBox() {
     const isDelegatingAccess = useIsDelegatingAccess()
 
     const requestPrivateKey = useRequestPrivateKey()
+
+    const roomId = useSelectedRoomId()
+
+    const actions = usePrivacy(roomId) === PrivacySetting.Public ? 'send' : 'send and receive'
 
     return (
         <MessageInputPlaceholder
@@ -139,7 +147,7 @@ function DelegationBox() {
                 </Cta>
             }
         >
-            Activate hot wallet signing to send messages.
+            Activate hot wallet signing to {actions} messages.
         </MessageInputPlaceholder>
     )
 }
