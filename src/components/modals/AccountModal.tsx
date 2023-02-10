@@ -4,7 +4,7 @@ import Text from '$/components/Text'
 import TextField from '$/components/TextField'
 import Toggle from '$/components/Toggle'
 import { PreferencesAction } from '$/features/preferences'
-import { useShowHiddenRooms } from '$/features/preferences/hooks'
+import { usePreferences } from '$/features/preferences/hooks'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
@@ -28,7 +28,11 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
 
     const { copy, isCopied } = useCopy()
 
-    const showHiddenRooms = useShowHiddenRooms()
+    const preferences = usePreferences()
+
+    const showHiddenRooms = Boolean(preferences?.showHiddenRooms)
+
+    const retrieveHotWalletImmediately = Boolean(preferences?.retrieveHotWalletImmediately)
 
     const dispatch = useDispatch()
 
@@ -127,6 +131,30 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                                     PreferencesAction.set({
                                         owner: account,
                                         showHiddenRooms: !showHiddenRooms,
+                                    })
+                                )
+                            }}
+                        />
+                    </div>
+                </div>
+                <div css={tw`flex`}>
+                    <div css={tw`grow`}>
+                        <Hint css={tw`pr-16`}>
+                            <Text>Retrieve hot wallet immediately</Text>
+                        </Hint>
+                    </div>
+                    <div css={tw`mt-2`}>
+                        <Toggle
+                            value={retrieveHotWalletImmediately}
+                            onClick={() => {
+                                if (!account) {
+                                    return
+                                }
+
+                                dispatch(
+                                    PreferencesAction.set({
+                                        owner: account,
+                                        retrieveHotWalletImmediately: !retrieveHotWalletImmediately,
                                     })
                                 )
                             }}

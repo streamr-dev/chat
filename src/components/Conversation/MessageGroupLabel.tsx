@@ -1,5 +1,4 @@
 import Text from '$/components/Text'
-import { useDelegatedClient } from '$/features/delegation/hooks'
 import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
 import { useSelectedRoomId } from '$/features/room/hooks'
