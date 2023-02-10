@@ -40,6 +40,7 @@ import Dot from '$/components/Dot'
 import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import ArrowIcon from '$/icons/ArrowIcon'
+import useJustInvited from '$/hooks/useJustInvited'
 
 type Props = {
     canModifyMembers?: boolean
@@ -83,6 +84,8 @@ export default function ConversationHeader({
     const transientRoomName = useTransientRoomName(selectedRoomId)
 
     const isRoomBeingDeleted = useIsBeingDeleted(selectedRoomId)
+
+    const invitePending = useJustInvited(selectedRoomId, account)
 
     function edit() {
         if (canEdit && selectedRoomId && !isRoomBeingDeleted) {
@@ -211,8 +214,8 @@ export default function ConversationHeader({
                 </ActionButton>
                 <div
                     css={tw`
-                        grow
                         min-w-0
+                        grow
                     `}
                 >
                     {isRoomNameEditable ? (
@@ -372,8 +375,25 @@ export default function ConversationHeader({
                     </div>
                 ) : (
                     <>
+                        {invitePending && (
+                            <ActionTextButton
+                                css={tw`
+                                    bg-[#FFF2EE]
+                                    text-[#FF5924]
+                                `}
+                            >
+                                <Text>Join</Text>
+                            </ActionTextButton>
+                        )}
                         {canEdit && !isRoomBeingDeleted && (
-                            <ActionButton onClick={edit} css={tw`hidden lg:block`}>
+                            <ActionButton
+                                onClick={edit}
+                                css={tw`
+                                    hidden
+                                    lg:block
+                                    ml-3
+                                `}
+                            >
                                 <EditIcon />
                             </ActionButton>
                         )}

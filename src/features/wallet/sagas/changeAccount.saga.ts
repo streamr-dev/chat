@@ -1,6 +1,5 @@
 import { DelegationAction } from '$/features/delegation'
 import { EnsAction } from '$/features/ens'
-import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import { WalletAction } from '$/features/wallet'
 import { put, takeEvery } from 'redux-saga/effects'
@@ -21,13 +20,5 @@ export default function* changeAccount() {
         if (!provider) {
             throw new Error('Provider is missing')
         }
-
-        yield put(
-            DelegationAction.requestPrivateKey({
-                owner: account,
-                provider,
-                fingerprint: Flag.isAccessBeingDelegated(account),
-            })
-        )
     })
 }

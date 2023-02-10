@@ -8,14 +8,15 @@ import Form from '../Form'
 import db from '$/utils/db'
 import { DraftAction } from '$/features/drafts'
 import { MessageAction } from '$/features/message'
-import { useDelegatedClient } from '$/features/delegation/hooks'
 import isBlank from '$/utils/isBlank'
+import StreamrClient from 'streamr-client'
 
 type Props = {
     disabled?: boolean
+    streamrClient: StreamrClient
 }
 
-export default function MessageInput({ disabled = false }: Props) {
+export default function MessageInput({ streamrClient, disabled = false }: Props) {
     const [value, setValue] = useState<string>('')
 
     const inputRef = useRef<HTMLInputElement>(null)
@@ -46,10 +47,8 @@ export default function MessageInput({ disabled = false }: Props) {
         )
     }
 
-    const delegatedClient = useDelegatedClient()
-
     function send(content: string) {
-        if (!selectedRoomId || !delegatedClient || !account) {
+        if (!selectedRoomId || !account) {
             return
         }
 
@@ -57,7 +56,7 @@ export default function MessageInput({ disabled = false }: Props) {
             MessageAction.publish({
                 roomId: selectedRoomId,
                 content,
-                streamrClient: delegatedClient,
+                streamrClient,
             })
         )
     }

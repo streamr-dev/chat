@@ -108,5 +108,15 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
 }
 
 function NoMessages(props: HTMLAttributes<HTMLParagraphElement>) {
-    return <p {...props} css={tw`text-[#59799C] text-[12px] m-0 text-center`} />
+    return (
+        <p
+            {...props}
+            css={tw`
+                text-[#59799C]
+                text-[12px]
+                m-0
+                text-center
+            `}
+        />
+    )
 }
