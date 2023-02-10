@@ -4,7 +4,7 @@ import { MessageAction } from '$/features/message'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useFlag from '$/hooks/useFlag'
-import useOperator from '$/hooks/useOperator'
+import useSubscriber from '$/hooks/useSubscriber'
 import { DayInMillis } from '$/utils/getBeginningOfDay'
 import { format } from 'date-fns'
 import { HTMLAttributes } from 'react'
@@ -29,7 +29,7 @@ export default function MessageGroupLabel({
 
     const requester = useWalletAccount()
 
-    const [, streamrClient] = useOperator(roomId)
+    const streamrClient = useSubscriber(roomId)
 
     const isLoadingPreviousDay = useFlag(
         roomId && requester

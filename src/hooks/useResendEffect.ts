@@ -1,25 +1,21 @@
 import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
-import useAbility from '$/hooks/useAbility'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { StreamPermission } from 'streamr-client'
-import useOperator from '$/hooks/useOperator'
+import useSubscriber from '$/hooks/useSubscriber'
 
 export default function useResendEffect(roomId: undefined | RoomId) {
-    const [account, streamrClient] = useOperator(roomId)
-
-    const canOperatorSubscribe = useAbility(roomId, account, StreamPermission.SUBSCRIBE)
+    const streamrClient = useSubscriber(roomId)
 
     const requester = useWalletAccount()?.toLowerCase()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!roomId || !requester || !streamrClient || !canOperatorSubscribe) {
+        if (!roomId || !requester || !streamrClient) {
             return
         }
 
@@ -39,5 +35,5 @@ export default function useResendEffect(roomId: undefined | RoomId) {
                 timestamp: getBeginningOfDay(Date.now()),
             })
         )
-    }, [roomId, streamrClient, canOperatorSubscribe, requester])
+    }, [roomId, streamrClient, requester])
 }
