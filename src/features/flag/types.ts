@@ -38,10 +38,6 @@ export const Flag = {
         return JSON.stringify(['isRoomBeingUnpinned', roomId, owner.toLowerCase()])
     },
 
-    isPrivacyBeingChanged(roomId: RoomId): string {
-        return JSON.stringify(['isPrivacyBeingChanged', roomId])
-    },
-
     isRoomNameBeingEdited(roomId: RoomId): string {
         return JSON.stringify(['isRoomNameBeingEdited', roomId])
     },

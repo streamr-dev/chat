@@ -6,7 +6,7 @@ import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 
 function* onSyncAction({
     payload: { roomId, requester, streamrClient },

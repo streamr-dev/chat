@@ -37,27 +37,11 @@ export function selectGettingStorageNodes(roomId: undefined | RoomId) {
     return selectFlag(Flag.isGettingStorageNodes(roomId))
 }
 
-export function selectPrivacyChanging(roomId: undefined | RoomId) {
-    if (!roomId) {
-        return () => false
-    }
-
-    return selectFlag(Flag.isPrivacyBeingChanged(roomId))
-}
-
 export function selectPrivacy(roomId: undefined | RoomId) {
     return createSelector(
         selectCache,
         (cache) => (roomId ? cache[roomId]?.privacy : undefined) || PrivacySetting.Private
     )
-}
-
-export function selectPrivacyGetting(roomId: undefined | RoomId) {
-    if (!roomId) {
-        return () => false
-    }
-
-    return selectFlag(Flag.isGettingPrivacy(roomId))
 }
 
 export function selectEditingRoomName(roomId: undefined | RoomId) {

@@ -2,7 +2,6 @@ import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
 import { Address, IFingerprinted, OptionalAddress, PreflightParams, PrivacySetting } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
-import changePrivacy from './sagas/changePrivacy.saga'
 import create from './sagas/create.saga'
 import del from './sagas/del.saga'
 import delLocal from './sagas/delLocal.saga'
@@ -110,15 +109,6 @@ export const RoomAction = {
         'room: set toggling storage node'
     ),
 
-    changePrivacy: createAction<
-        IFingerprinted &
-            PreflightParams & {
-                roomId: RoomId
-                privacy: PrivacySetting
-                streamrClient: StreamrClient
-            }
-    >('room: change privacy'),
-
     setLocalPrivacy: createAction<{ roomId: RoomId; privacy: PrivacySetting }>(
         'room: set local privacy'
     ),
@@ -215,8 +205,6 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RoomAction.toggleStorageNode, SEE_SAGA)
 
-    builder.addCase(RoomAction.changePrivacy, SEE_SAGA)
-
     builder.addCase(RoomAction.setLocalPrivacy, (state, { payload: { roomId, privacy } }) => {
         roomCache(state, roomId).privacy = privacy
     })
@@ -242,7 +230,6 @@ const reducer = createReducer(initialState, (builder) => {
 
 export function* roomSaga() {
     yield all([
-        changePrivacy(),
         create(),
         del(),
         delLocal(),

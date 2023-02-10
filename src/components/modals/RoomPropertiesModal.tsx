@@ -2,13 +2,9 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import tw from 'twin.macro'
-import { PrivacySetting } from '$/types'
 import { RoomAction } from '$/features/room'
 import {
-    useChangingPrivacy,
-    useGettingPrivacy,
     useGettingStorageNodes,
-    usePrivacyOption,
     useSelectedRoomId,
     useStorageNodeState,
     useStorageNodeToggling,
@@ -23,7 +19,6 @@ import Toggle from '../Toggle'
 import Modal, { Props as ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
-import PrivacySelectField from '$/components/PrivacySelectField'
 import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import TextField from '$/components/TextField'
@@ -90,17 +85,7 @@ export default function RoomPropertiesModal({
                 fingerprint: Flag.isGettingStorageNodes(selectedRoomId),
             })
         )
-
-        dispatch(
-            RoomAction.getPrivacy({
-                roomId: selectedRoomId,
-                streamrClient,
-                fingerprint: Flag.isGettingPrivacy(selectedRoomId),
-            })
-        )
     }, [open, selectedRoomId])
-
-    const privacyOption = usePrivacyOption(selectedRoomId)
 
     useEffect(() => {
         if (!tokenAddress || !tokenType || !provider) {
@@ -117,12 +102,6 @@ export default function RoomPropertiesModal({
     }, [tokenAddress, tokenType, provider])
 
     const tokenMetadata = useGetERC20Metadata()
-
-    const isChangingPrivacy = useChangingPrivacy(selectedRoomId)
-
-    const isGettingPrivacy = useGettingPrivacy(selectedRoomId)
-
-    const isPrivacyBusy = isChangingPrivacy || isGettingPrivacy
 
     return (
         <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
@@ -150,85 +129,25 @@ export default function RoomPropertiesModal({
                     </Label>
                 </>
             ) : null}
-            <Form
-                onSubmit={() => {
-                    onAbort?.()
-                }}
-            >
+            <Form onSubmit={() => void onAbort?.()}>
                 {!!selectedRoomId && (
                     <>
                         <Label>Room id</Label>
                         <TextField defaultValue={selectedRoomId} readOnly />
                     </>
                 )}
-
-                <>
-                    <Label>Privacy</Label>
-                    <PrivacySelectField
-                        isDisabled={
-                            isPrivacyBusy || privacyOption.value === PrivacySetting.TokenGated
-                        }
-                        value={privacyOption}
-                        onChange={(option: any) => {
-                            if (
-                                !selectedRoomId ||
-                                !provider ||
-                                !requester ||
-                                !streamrClient ||
-                                option.value === PrivacySetting.TokenGated
-                            ) {
-                                return
-                            }
-
-                            dispatch(
-                                RoomAction.changePrivacy({
-                                    roomId: selectedRoomId,
-                                    privacy: option.value,
-                                    provider,
-                                    requester,
-                                    streamrClient,
-                                    fingerprint: Flag.isPrivacyBeingChanged(selectedRoomId),
-                                })
-                            )
-                        }}
-                    />
-                </>
                 <>
                     <Label>Message storage</Label>
-                    <div
-                        css={[
-                            tw`
-                                flex
-                            `,
-                        ]}
-                    >
-                        <div
-                            css={[
-                                tw`
-                                    flex-grow
-                                `,
-                            ]}
-                        >
-                            <Hint
-                                css={[
-                                    tw`
-                                        pr-16
-                                    `,
-                                ]}
-                            >
+                    <div css={tw`flex`}>
+                        <div css={tw`grow`}>
+                            <Hint css={tw`pr-16`}>
                                 <Text>
                                     When message storage is disabled, participants will only see
                                     messages sent while they are online.
                                 </Text>
                             </Hint>
                         </div>
-                        <div
-                            css={[
-                                tw`
-                                    mt-2
-                                `,
-                            ]}
-                        >
+                        <div css={tw`mt-2`}>
                             <Toggle
                                 value={isStorageBusy ? undefined : isStorageEnabled}
                                 onClick={onStorageToggleClick}
