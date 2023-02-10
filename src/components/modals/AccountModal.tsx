@@ -140,7 +140,7 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                 <div css={tw`flex`}>
                     <div css={tw`grow`}>
                         <Hint css={tw`pr-16`}>
-                            <Text>Retrieve hot wallet immediately</Text>
+                            <Text>Retrieve hot wallet on login</Text>
                         </Hint>
                     </div>
                     <div css={tw`mt-2`}>
