@@ -151,11 +151,11 @@ function PermitBox() {
             <MessageInputPlaceholder
                 cta={
                     <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
-                        {isPromoting ? <>Permitting…</> : <>Permit</>}
+                        {isPromoting ? <>Enabling…</> : <>Enable</>}
                     </Cta>
                 }
             >
-                Permit your hot wallet to publish in this room.
+                Use your hot wallet to sign messages in this room.
             </MessageInputPlaceholder>
         </Wrap>
     )
