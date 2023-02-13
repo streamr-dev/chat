@@ -3,7 +3,7 @@ import useModalDialog from '$/hooks/useModalDialog'
 import { useCallback } from 'react'
 
 export default function useWalletModal() {
-    const { open: openModal, modal } = useModalDialog(WalletModal)
+    const { open: openModal, modal } = useModalDialog(WalletModal, { showTryMetaMask: true })
 
     const open = useCallback(async () => {
         try {

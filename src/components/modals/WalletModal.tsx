@@ -1,4 +1,5 @@
 import Modal from '$/components/modals/Modal'
+import TryMetaMask from '$/components/TryMetaMask'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { WalletAction } from '$/features/wallet'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
@@ -8,7 +9,15 @@ import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Props as ModalProps } from './Modal'
 
-export default function WalletModal({ title = 'Select a wallet', ...props }: ModalProps) {
+interface Props extends ModalProps {
+    showTryMetaMask?: boolean
+}
+
+export default function WalletModal({
+    title = 'Select a wallet',
+    showTryMetaMask = false,
+    ...props
+}: Props) {
     const dispatch = useDispatch()
 
     const iid = useWalletIntegrationId()
@@ -27,13 +36,7 @@ export default function WalletModal({ title = 'Select a wallet', ...props }: Mod
 
     return (
         <Modal {...props} title={title}>
-            <div
-                css={[
-                    tw`
-                        [button + button]:mt-4
-                    `,
-                ]}
-            >
+            <div css={tw`[button + button]:mt-4`}>
                 {[...integrations.keys()].map((integrationId) => (
                     <WalletOption
                         key={integrationId}
@@ -42,6 +45,7 @@ export default function WalletModal({ title = 'Select a wallet', ...props }: Mod
                     />
                 ))}
             </div>
+            {showTryMetaMask && <TryMetaMask onWhite css={tw`mt-6`} />}
         </Modal>
     )
 }
@@ -75,7 +79,6 @@ function WalletOption<T extends WalletIntegrationId>({
                     h-24
                     items-center
                     px-8
-                    rounded
                     rounded-lg
                     text-left
                     w-full
@@ -95,15 +98,7 @@ function WalletOption<T extends WalletIntegrationId>({
                     `,
             ]}
         >
-            <div
-                css={[
-                    tw`
-                        flex-grow
-                    `,
-                ]}
-            >
-                {label}
-            </div>
+            <div css={tw`grow`}>{label}</div>
             <div>
                 <Icon />
             </div>

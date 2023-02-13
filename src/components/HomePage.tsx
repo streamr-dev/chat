@@ -5,6 +5,7 @@ import Button from '$/components/Button'
 import Text from '$/components/Text'
 import useWalletModal from '$/hooks/useWalletModal'
 import useHowItWorksModal from '$/hooks/useHowItWorksModal'
+import TryMetaMask from '$/components/TryMetaMask'
 
 export default function HomePage() {
     const { open, modal } = useWalletModal()
@@ -51,6 +52,12 @@ export default function HomePage() {
                                 <Text>Hello world.</Text>
                             </h1>
                             <ConnectButton onClick={() => void open()} />
+                            <TryMetaMask
+                                css={tw`
+                                    justify-center
+                                    mt-6
+                                `}
+                            />
                         </div>
                     </div>
                     <PoweredBy />
