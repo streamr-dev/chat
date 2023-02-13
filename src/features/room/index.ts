@@ -15,7 +15,6 @@ import sync from './sagas/sync.saga'
 import toggleStorageNode from './sagas/toggleStorageNode.saga'
 import { IRoom, RoomId, RoomState } from './types'
 import setVisibility from '$/features/room/sagas/setVisibility.saga'
-import pin from '$/features/room/sagas/pin.saga'
 import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
 import { Provider } from '@web3-react/types'
@@ -143,15 +142,12 @@ export const RoomAction = {
         'room: set visibility'
     ),
 
-    pin: createAction<
-        IFingerprinted & {
-            roomId: RoomId
-            requester: Address
-            streamrClient: StreamrClient
-            provider: Provider
-            delegatedAccount: Address
-        }
-    >('room: pin'),
+    pin: createAction<{
+        roomId: RoomId
+        requester: Address
+        streamrClient: StreamrClient
+        provider: Provider
+    }>('room: pin'),
 
     unpin: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
@@ -236,7 +232,6 @@ export function* roomSaga() {
         fetch(),
         getPrivacy(),
         getStorageNodes(),
-        pin(),
         registerInvite(),
         rename(),
         renameLocal(),

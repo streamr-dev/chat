@@ -6,7 +6,7 @@ import { TokenGatedRoomAction } from '..'
 import { getJoinPolicyFactory } from '$/features/tokenGatedRooms/utils/getJoinPolicyFactory'
 import { toast } from 'react-toastify'
 import handleError from '$/utils/handleError'
-import { error } from '$/utils/toaster'
+import { error, loading } from '$/utils/toaster'
 import { RoomId } from '$/features/room/types'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 
@@ -15,13 +15,7 @@ function createInformationalToast(message: string, toastId?: string | number) {
         toast.dismiss(toastId)
     }
 
-    return toast.loading(message, {
-        position: 'bottom-left',
-        autoClose: false,
-        type: 'info',
-        closeOnClick: false,
-        hideProgressBar: true,
-    })
+    return loading(message)
 }
 
 async function waitForPolicyToBeDeployed(

@@ -9,7 +9,7 @@ import {
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { PrivacySetting } from '$/types'
-import { error, success } from '$/utils/toaster'
+import { error, loading, success } from '$/utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
 import { toast } from 'react-toastify'
@@ -32,13 +32,7 @@ function* onCreateAction({
     let toastId
 
     try {
-        toastId = toast.loading(`Creating "${params.name}"…`, {
-            position: 'bottom-left',
-            autoClose: false,
-            type: 'info',
-            closeOnClick: false,
-            hideProgressBar: true,
-        })
+        toastId = loading(`Creating "${params.name}"…`)
 
         yield preflight({
             provider,

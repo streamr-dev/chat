@@ -8,7 +8,7 @@ import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
-import { error } from '$/utils/toaster'
+import { error, loading } from '$/utils/toaster'
 import { Id as ToastId, toast } from 'react-toastify'
 import { put, takeLatest } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
@@ -48,17 +48,10 @@ export default function* preselect() {
                     return
                 }
 
-                toastId = toast.loading(
+                toastId = loading(
                     <>
                         Opening <Id>{roomId}</Id>…
-                    </>,
-                    {
-                        position: 'bottom-left',
-                        autoClose: false,
-                        type: 'info',
-                        closeOnClick: false,
-                        hideProgressBar: true,
-                    }
+                    </>
                 )
 
                 let selectedRoom: null | IRoom = null

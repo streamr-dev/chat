@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { OptionalAddress, PrivacySetting, State } from '$/types'
+import { PrivacySetting, State } from '$/types'
 import { RoomId, RoomState } from './types'
 import { selectFlag } from '$/features/flag/selectors'
 import { Flag } from '$/features/flag/types'
@@ -73,12 +73,4 @@ export function selectIsBeingDeleted(roomId: undefined | RoomId) {
     }
 
     return selectFlag(Flag.isRoomBeingDeleted(roomId))
-}
-
-export function selectIsPinning(owner: OptionalAddress, roomId: undefined | RoomId) {
-    if (!owner || !roomId) {
-        return () => false
-    }
-
-    return selectFlag(Flag.isRoomBeingPinned(roomId, owner))
 }

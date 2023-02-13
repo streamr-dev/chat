@@ -1,7 +1,5 @@
 import AddRoomModal, { NewRoom, Pin } from '$/components/modals/AddRoomModal'
 import AddTokenGatedRoomModal from '$/components/modals/AddTokenGatedRoomModal'
-import { useDelegatedAccount } from '$/features/delegation/hooks'
-import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
@@ -21,8 +19,6 @@ export default function useAddRoomModal() {
     const provider = useWalletProvider()
 
     const streamrClient = useWalletClient()
-
-    const delegatedAccount = useDelegatedAccount()
 
     const dispatch = useDispatch()
 
@@ -46,18 +42,12 @@ export default function useAddRoomModal() {
                 lastParams = params
 
                 if ('roomId' in params) {
-                    if (!delegatedAccount) {
-                        return
-                    }
-
                     dispatch(
                         RoomAction.pin({
                             roomId: params.roomId,
                             requester: account,
                             streamrClient,
-                            fingerprint: Flag.isRoomBeingPinned(params.roomId, account),
                             provider,
-                            delegatedAccount,
                         })
                     )
 
@@ -127,7 +117,7 @@ export default function useAddRoomModal() {
                 break
             }
         }
-    }, [openNameModal, account, streamrClient, provider, delegatedAccount])
+    }, [openNameModal, account, streamrClient, provider])
 
     return {
         open,

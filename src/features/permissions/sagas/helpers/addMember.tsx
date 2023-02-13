@@ -1,5 +1,5 @@
 import handleError from '$/utils/handleError'
-import { error, success } from '$/utils/toaster'
+import { error, loading, success } from '$/utils/toaster'
 import { call, put } from 'redux-saga/effects'
 import { Stream, StreamPermission } from 'streamr-client'
 import { toast } from 'react-toastify'
@@ -68,17 +68,10 @@ export default function addMember({
         let toastId
 
         try {
-            toastId = toast.loading(
+            toastId = loading(
                 <>
                     Adding <strong>{trunc(member)}</strong>…
-                </>,
-                {
-                    position: 'bottom-left',
-                    autoClose: false,
-                    type: 'info',
-                    closeOnClick: false,
-                    hideProgressBar: true,
-                }
+                </>
             )
 
             const user: null | string = yield resolveName(member)

@@ -3,11 +3,8 @@ import StreamrClient from 'streamr-client'
 import { SEE_SAGA } from '$/utils/consts'
 import { DelegationState } from './types'
 import { createAction } from '@reduxjs/toolkit'
-import { all } from 'redux-saga/effects'
-import requestPrivateKey from './sagas/requestPrivateKey.saga'
 import { Provider } from '@web3-react/types'
 import { Address, IFingerprinted, IOwnable } from '$/types'
-import lookup from '$/features/delegation/sagas/lookup.saga'
 
 const initialState: DelegationState = {
     privateKey: undefined,
@@ -63,9 +60,5 @@ const reducer = createReducer(initialState, (builder) => {
         state.delegations[delegated.toLowerCase()] = main.toLowerCase()
     })
 })
-
-export function* delegationSaga() {
-    yield all([requestPrivateKey(), lookup()])
-}
 
 export default reducer

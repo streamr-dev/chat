@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
 import wallet, { walletSaga } from '$/features/wallet'
-import delegation, { delegationSaga } from '$/features/delegation'
+import delegation from '$/features/delegation'
 import room, { roomSaga } from '$/features/room'
 import rooms, { roomsSaga } from '$/features/rooms'
 import permissions, { permissionsSaga } from '$/features/permissions'
@@ -16,6 +16,7 @@ import preferences, { preferencesSaga } from '$/features/preferences'
 import { aliasSaga } from '$/features/alias'
 import flag from '$/features/flag'
 import ens, { ensSaga } from '$/features/ens'
+import lifecycle from '$/features/lifecycle.saga'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -62,7 +63,6 @@ const store = configureStore({
 sagaMiddleware.run(function* saga() {
     yield all([
         aliasSaga(),
-        delegationSaga(),
         draftsSaga(),
         ensSaga(),
         identiconsSaga(),
@@ -74,6 +74,7 @@ sagaMiddleware.run(function* saga() {
         walletSaga(),
         tokenGatedRoomSaga(),
         miscSaga(),
+        lifecycle(),
     ])
 })
 

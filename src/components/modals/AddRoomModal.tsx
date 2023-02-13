@@ -16,6 +16,8 @@ import PrivacySelectField, {
 } from '$/components/PrivacySelectField'
 import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
 import { RoomId } from '$/features/room/types'
+import useFlag from '$/hooks/useFlag'
+import { Flag } from '$/features/flag/types'
 
 export interface Pin {
     roomId: RoomId
@@ -79,7 +81,9 @@ export default function AddRoomModal({
 
     const [createNew, setCreateNew] = useState<boolean>(true)
 
-    const canPin = !isBlank(roomId)
+    const isPinning = useFlag(Flag.isRoomBeingPinned())
+
+    const canPin = !isBlank(roomId) && !isPinning
 
     const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
 
@@ -101,14 +105,16 @@ export default function AddRoomModal({
                 }
             }}
         >
-            <ButtonGroup>
-                <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>
-                    Add a room
-                </GroupedButton>
-                <GroupedButton active={!createNew} onClick={() => void setCreateNew(false)}>
-                    Pin existing room
-                </GroupedButton>
-            </ButtonGroup>
+            {!isPinning && (
+                <ButtonGroup>
+                    <GroupedButton active={createNew} onClick={() => void setCreateNew(true)}>
+                        Add a room
+                    </GroupedButton>
+                    <GroupedButton active={!createNew} onClick={() => void setCreateNew(false)}>
+                        Pin existing room
+                    </GroupedButton>
+                </ButtonGroup>
+            )}
             {createNew ? (
                 <Form
                     onSubmit={() => {
@@ -143,40 +149,16 @@ export default function AddRoomModal({
                     </>
                     <>
                         <Label>Message storage</Label>
-                        <div
-                            css={[
-                                tw`
-                                    flex
-                                `,
-                            ]}
-                        >
-                            <div
-                                css={[
-                                    tw`
-                                        flex-grow
-                                    `,
-                                ]}
-                            >
-                                <Hint
-                                    css={[
-                                        tw`
-                                            pr-16
-                                        `,
-                                    ]}
-                                >
+                        <div css={tw`flex`}>
+                            <div css={tw`grow`}>
+                                <Hint css={tw`pr-16`}>
                                     <Text>
                                         When message storage is disabled, participants will only see
                                         messages sent while they are online.
                                     </Text>
                                 </Hint>
                             </div>
-                            <div
-                                css={[
-                                    tw`
-                                        mt-2
-                                    `,
-                                ]}
-                            >
+                            <div css={tw`mt-2`}>
                                 <Toggle
                                     value={storage}
                                     onClick={() => {
