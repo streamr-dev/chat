@@ -1,31 +1,13 @@
-import { ButtonHTMLAttributes } from 'react'
 import { StreamPermission } from 'streamr-client'
-import type StreamrClient from 'streamr-client'
 import tw from 'twin.macro'
-import {
-    useDelegatedClient,
-    useIsDelegatingAccess,
-    useRequestPrivateKey,
-} from '$/features/delegation/hooks'
-import useCurrentDelegationAbility from '$/hooks/useCurrentDelegationAbility'
-import useLoadCurrentDelegationAbilityEffect from '$/hooks/useLoadCurrentDelegationAbilityEffect'
+import useAbility from '$/hooks/useAbility'
 import useMessages from '$/hooks/useMessages'
 import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
 import MessageFeed from './MessageFeed'
 import MessageInput from './MessageInput'
-import MessageInputPlaceholder from './MessageInputPlaceholder'
-import Text from '../Text'
-import SecondaryButton from '../SecondaryButton'
-import { useSelectedRoomId } from '$/features/room/hooks'
+import { usePrivacy, useSelectedRoomId } from '$/features/room/hooks'
 import useCanGrant from '$/hooks/useCanGrant'
-import useJustInvited from '$/hooks/useJustInvited'
-import { useWalletAccount } from '$/features/wallet/hooks'
-import Spinner from '$/components/Spinner'
-import useAcceptInvite from '$/hooks/useAcceptInvite'
-import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
-import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
-import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 import useResendEffect from '$/hooks/useResendEffect'
 import useResends from '$/hooks/useResends'
 import useAddMemberModal from '$/hooks/useAddMemberModal'
@@ -34,6 +16,21 @@ import useRoomPropertiesModal from '$/hooks/useRoomPropertiesModal'
 import { Flag } from '$/features/flag/types'
 import { useDispatch } from 'react-redux'
 import { FlagAction } from '$/features/flag'
+import {
+    useDelegatedAccount,
+    useDelegatedClient,
+    useIsDelegatingAccess,
+    useRequestPrivateKey,
+} from '$/features/delegation/hooks'
+import MessageInputPlaceholder from '$/components/Conversation/MessageInputPlaceholder'
+import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
+import SecondaryButton from '$/components/SecondaryButton'
+import Text from '$/components/Text'
+import Spinner from '$/components/Spinner'
+import { useWalletAccount } from '$/features/wallet/hooks'
+import { PrivacySetting } from '$/types'
+import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
+import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -52,23 +49,19 @@ export default function Conversation() {
 
     useResendEffect(selectedRoomId)
 
-    const delegatedClient = useDelegatedClient()
+    const account = useDelegatedAccount()
 
-    const canDelegatedPublish = useCurrentDelegationAbility(StreamPermission.PUBLISH)
+    const client = useDelegatedClient()
 
-    useLoadCurrentDelegationAbilityEffect(StreamPermission.PUBLISH)
+    const mainAccount = useWalletAccount()
 
-    const canDelegatedSubscribe = useCurrentDelegationAbility(StreamPermission.SUBSCRIBE)
+    const canMainPublish = useAbility(selectedRoomId, mainAccount, StreamPermission.PUBLISH)
 
-    useLoadCurrentDelegationAbilityEffect(StreamPermission.SUBSCRIBE)
+    const canMainGrant = useAbility(selectedRoomId, mainAccount, StreamPermission.GRANT)
 
-    const justInvited = useJustInvited(useSelectedRoomId(), useWalletAccount())
+    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
 
-    const canDoAnything =
-        (canDelegatedPublish && canDelegatedSubscribe) ||
-        !delegatedClient ||
-        justInvited ||
-        canGrant
+    const canAct = !client ? canMainPublish : canPublish || canMainGrant
 
     const dispatch = useDispatch()
 
@@ -91,7 +84,7 @@ export default function Conversation() {
                         pt-[72px]
                         lg:pt-[92px]
                     `,
-                    canDoAnything &&
+                    canAct &&
                         tw`
                             pb-[80px]
                             lg:pb-[96px]
@@ -108,11 +101,7 @@ export default function Conversation() {
                             `}
                         >
                             <div css={tw`grow`} />
-                            <MessageFeed
-                                messages={messages}
-                                resends={resends}
-                                css={[!canDoAnything && tw`pb-10`]}
-                            />
+                            <MessageFeed messages={messages} resends={resends} />
                         </div>
                     ) : (
                         <EmptyMessageFeed
@@ -122,65 +111,67 @@ export default function Conversation() {
                     )}
                 </div>
             </div>
-            {canDoAnything && (
-                <div
-                    css={tw`
-                        shadow-[inset 0 1px 0 #dee6ee]
-                        absolute
-                        p-4
-                        lg:p-6
-                        bottom-0
-                        left-0
-                        w-full
-                    `}
-                >
-                    <MessageBox
-                        canGrant={canGrant}
-                        delegatedClient={delegatedClient}
-                        canDelegatedPublish={canDelegatedPublish}
-                        canDelegatedSubscribe={canDelegatedSubscribe}
-                        justInvited={justInvited}
-                    />
-                </div>
+            {!client ? (
+                canMainPublish && <DelegationBox />
+            ) : canPublish ? (
+                <Wrap>
+                    <MessageInput streamrClient={client} />
+                </Wrap>
+            ) : (
+                canMainGrant && <PermitBox />
             )}
         </>
     )
 }
 
-interface MessageBoxProps {
-    canGrant: boolean
-    canDelegatedPublish: boolean
-    canDelegatedSubscribe: boolean
-    delegatedClient: undefined | StreamrClient
-    justInvited: boolean
+function Wrap(props: HTMLAttributes<HTMLDivElement>) {
+    return (
+        <div
+            {...props}
+            css={tw`
+                shadow-[inset 0 1px 0 #dee6ee]
+                absolute
+                p-4
+                lg:p-6
+                bottom-0
+                left-0
+                w-full
+            `}
+        />
+    )
 }
 
-function MessageBox({
-    canGrant,
-    canDelegatedPublish,
-    canDelegatedSubscribe,
-    delegatedClient,
-    justInvited,
-}: MessageBoxProps) {
+function PermitBox() {
+    const isPromoting = useIsDelegatedAccountBeingPromoted()
+
+    const promote = usePromoteDelegatedAccount()
+
+    return (
+        <Wrap>
+            <MessageInputPlaceholder
+                cta={
+                    <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
+                        {isPromoting ? <>Permitting…</> : <>Permit</>}
+                    </Cta>
+                }
+            >
+                Permit your hot wallet to publish in this room.
+            </MessageInputPlaceholder>
+        </Wrap>
+    )
+}
+
+function DelegationBox() {
     const isDelegatingAccess = useIsDelegatingAccess()
 
     const requestPrivateKey = useRequestPrivateKey()
 
-    const isBeingAccepted = useIsInviteBeingAccepted()
+    const roomId = useSelectedRoomId()
 
-    const acceptInvite = useAcceptInvite()
+    const actions = usePrivacy(roomId) === PrivacySetting.Public ? 'send' : 'send and receive'
 
-    const isPromoting = useIsDelegatedAccountBeingPromoted()
-
-    const promoteDelegatedAccount = usePromoteDelegatedAccount()
-
-    if (canDelegatedPublish && canDelegatedSubscribe) {
-        // We can stop here. For publishing that's all that matters.
-        return <MessageInput />
-    }
-
-    if (!delegatedClient) {
-        return (
+    return (
+        <Wrap>
             <MessageInputPlaceholder
                 cta={
                     <Cta
@@ -188,48 +179,14 @@ function MessageBox({
                         disabled={isDelegatingAccess}
                         onClick={requestPrivateKey}
                     >
-                        {isDelegatingAccess ? <>Delegating…</> : <>Delegate now</>}
+                        {isDelegatingAccess ? <>Enabling…</> : <>Enable</>}
                     </Cta>
                 }
             >
-                Publishing messages requires room access delegation.
+                Activate hot wallet signing to {actions} messages.
             </MessageInputPlaceholder>
-        )
-    }
-
-    if (justInvited) {
-        return (
-            <MessageInputPlaceholder
-                cta={
-                    <Cta busy={isBeingAccepted} disabled={isBeingAccepted} onClick={acceptInvite}>
-                        {isBeingAccepted ? <>Joining…</> : <>Join</>}
-                    </Cta>
-                }
-            >
-                You've been invited into this room.
-            </MessageInputPlaceholder>
-        )
-    }
-
-    if (canGrant) {
-        return (
-            <MessageInputPlaceholder
-                cta={
-                    <Cta
-                        busy={isPromoting}
-                        disabled={isPromoting}
-                        onClick={promoteDelegatedAccount}
-                    >
-                        {isPromoting ? <>Enabling…</> : <>Enable</>}
-                    </Cta>
-                }
-            >
-                Activate hot wallet signing to send messages
-            </MessageInputPlaceholder>
-        )
-    }
-
-    return <MessageInput disabled />
+        </Wrap>
+    )
 }
 
 type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & {

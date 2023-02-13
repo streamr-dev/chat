@@ -4,4 +4,5 @@ import { IRecord } from '$/types'
 export interface IPreference extends IRecord {
     showHiddenRooms?: boolean
     selectedRoomId?: RoomId
+    retrieveHotWalletImmediately?: boolean
 }

@@ -6,13 +6,23 @@ const Options: ToastOptions = {
 }
 
 export function error(message: ReactNode) {
-    toast.error(message, Options)
+    return toast.error(message, Options)
 }
 
 export function success(message: ReactNode) {
-    toast.success(message, Options)
+    return toast.success(message, Options)
 }
 
 export function info(message: ReactNode) {
-    toast.info(message, Options)
+    return toast.info(message, Options)
+}
+
+export function loading(message: ReactNode) {
+    return toast.loading(message, {
+        position: 'bottom-left',
+        autoClose: false,
+        type: 'info',
+        closeOnClick: false,
+        hideProgressBar: true,
+    })
 }

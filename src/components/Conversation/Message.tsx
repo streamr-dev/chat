@@ -25,13 +25,12 @@ import { useAlias } from '$/features/alias/hooks'
 import useENSName from '$/hooks/useENSName'
 import { RoomId } from '$/features/room/types'
 import { MessageAction } from '$/features/message'
-import { useDelegatedClient } from '$/features/delegation/hooks'
+import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
 import useFlag from '$/hooks/useFlag'
 import { DelegationAction } from '$/features/delegation'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
-    incoming?: boolean
     previousCreatedBy?: OptionalAddress
 }
 
@@ -52,7 +51,7 @@ function formatMessage(message: string): ReactNode {
     )
 }
 
-export default function Message({ payload, incoming = false, previousCreatedBy, ...props }: Props) {
+export default function Message({ payload, previousCreatedBy, ...props }: Props) {
     const { createdBy, createdAt, content, seenAt, roomId, id } = payload
 
     const isEncrypted = typeof content === 'undefined'
@@ -94,6 +93,13 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
             })
         )
     }, [sender, provider, createdBy, dispatch])
+
+    const delegatedAccount = useDelegatedAccount()
+
+    const incoming =
+        !isSameAddress(requester, createdBy) &&
+        !isSameAddress(delegatedAccount, createdBy) &&
+        !isSameAddress(sender, requester)
 
     return (
         <>

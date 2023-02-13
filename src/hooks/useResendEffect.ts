@@ -1,48 +1,39 @@
-import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
 import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
-import useAbility from '$/hooks/useAbility'
-import useLoadAbilityEffect from '$/hooks/useLoadAbilityEffect'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { StreamPermission } from 'streamr-client'
+import useSubscriber from '$/hooks/useSubscriber'
 
 export default function useResendEffect(roomId: undefined | RoomId) {
-    const streamrClient = useDelegatedClient()
+    const streamrClient = useSubscriber(roomId)
 
-    const delegatedAddress = useDelegatedAccount()
-
-    const canDelegatedSubscribe = useAbility(roomId, delegatedAddress, StreamPermission.SUBSCRIBE)
-
-    useLoadAbilityEffect(roomId, delegatedAddress, StreamPermission.SUBSCRIBE)
-
-    const account = useWalletAccount()?.toLowerCase()
+    const requester = useWalletAccount()?.toLowerCase()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!roomId || !account || !streamrClient || !canDelegatedSubscribe) {
+        if (!roomId || !requester || !streamrClient) {
             return
         }
 
         dispatch(
             MessageAction.resend({
                 roomId,
-                requester: account,
+                requester,
                 streamrClient,
-                fingerprint: Flag.isResendingMessage(roomId, account),
+                fingerprint: Flag.isResendingMessage(roomId, requester),
             })
         )
 
         dispatch(
             MessageAction.setFromTimestamp({
                 roomId,
-                requester: account,
+                requester,
                 timestamp: getBeginningOfDay(Date.now()),
             })
         )
-    }, [roomId, streamrClient, canDelegatedSubscribe, account])
+    }, [roomId, streamrClient, requester])
 }

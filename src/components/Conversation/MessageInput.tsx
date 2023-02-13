@@ -8,18 +8,20 @@ import Form from '../Form'
 import db from '$/utils/db'
 import { DraftAction } from '$/features/drafts'
 import { MessageAction } from '$/features/message'
-import { useDelegatedClient } from '$/features/delegation/hooks'
+import isBlank from '$/utils/isBlank'
+import StreamrClient from 'streamr-client'
 
 type Props = {
     disabled?: boolean
+    streamrClient: StreamrClient
 }
 
-export default function MessageInput({ disabled = false }: Props) {
+export default function MessageInput({ streamrClient, disabled = false }: Props) {
     const [value, setValue] = useState<string>('')
 
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const submittable = !/^\s*$/.test(value)
+    const submittable = !isBlank(value)
 
     const selectedRoomId = useSelectedRoomId()
 
@@ -45,10 +47,8 @@ export default function MessageInput({ disabled = false }: Props) {
         )
     }
 
-    const delegatedClient = useDelegatedClient()
-
     function send(content: string) {
-        if (!selectedRoomId || !delegatedClient || !account) {
+        if (!selectedRoomId || !account) {
             return
         }
 
@@ -56,7 +56,7 @@ export default function MessageInput({ disabled = false }: Props) {
             MessageAction.publish({
                 roomId: selectedRoomId,
                 content,
-                streamrClient: delegatedClient,
+                streamrClient,
             })
         )
     }
@@ -104,33 +104,29 @@ export default function MessageInput({ disabled = false }: Props) {
 
     return (
         <Form
-            css={[
-                tw`
-                    bg-[#f7f9fc]
-                    rounded-xl
-                    flex
-                    h-12
-                    w-full
-                `,
-            ]}
+            css={tw`
+                bg-[#f7f9fc]
+                rounded-xl
+                flex
+                h-12
+                w-full
+            `}
             onSubmit={onSubmit}
         >
             <input
                 disabled={disabled}
-                css={[
-                    tw`
-                        disabled:opacity-25
-                        appearance-none
-                        bg-[transparent]
-                        border-0
-                        grow
-                        outline-none
-                        h-full
-                        p-0
-                        pl-5
-                        placeholder:text-[#59799C]
-                    `,
-                ]}
+                css={tw`
+                    disabled:opacity-25
+                    appearance-none
+                    bg-[transparent]
+                    border-0
+                    grow
+                    outline-none
+                    h-full
+                    p-0
+                    pl-5
+                    placeholder:text-[#59799C]
+                `}
                 autoFocus
                 onChange={(e) => {
                     setValue(e.currentTarget.value)
@@ -163,12 +159,10 @@ export default function MessageInput({ disabled = false }: Props) {
                 ]}
             >
                 <svg
-                    css={[
-                        tw`
-                            block
-                            mx-auto
-                        `,
-                    ]}
+                    css={tw`
+                        block
+                        mx-auto
+                    `}
                     width="20"
                     height="20"
                     viewBox="0 0 20 20"

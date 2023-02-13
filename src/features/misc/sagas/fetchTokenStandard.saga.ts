@@ -10,6 +10,7 @@ import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
 import { selectTokenStandard } from '$/hooks/useTokenStandard'
 import { Id, toast } from 'react-toastify'
+import { loading } from '$/utils/toaster'
 
 async function getTokenStandard(address: Address, provider: Provider) {
     const contract = new Contract(
@@ -96,13 +97,7 @@ export default function* fetchTokenStandard() {
         let toastId: undefined | Id = undefined
 
         try {
-            toastId = toast.loading('Loading token info…', {
-                position: 'bottom-left',
-                autoClose: false,
-                type: 'info',
-                closeOnClick: false,
-                hideProgressBar: true,
-            })
+            toastId = loading('Loading token info…')
 
             yield put(FlagAction.set(Flag.isFetchingTokenStandard(address)))
 
@@ -123,7 +118,9 @@ export default function* fetchTokenStandard() {
         } catch (e) {
             // Noop.
         } finally {
-            toast.dismiss(toastId)
+            if (toastId) {
+                toast.dismiss(toastId)
+            }
 
             yield put(FlagAction.unset(Flag.isFetchingTokenStandard(address)))
         }

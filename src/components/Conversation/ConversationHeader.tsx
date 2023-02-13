@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
-import useCurrentAbility from '$/hooks/useCurrentAbility'
-import useLoadCurrentAbilityEffect from '$/hooks/useLoadCurrentAbilityEffect'
+import useAbility from '$/hooks/useAbility'
 import { RoomAction } from '$/features/room'
 import {
     useEditingRoomName,
@@ -41,6 +40,7 @@ import Dot from '$/components/Dot'
 import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import ArrowIcon from '$/icons/ArrowIcon'
+import useJustInvited from '$/hooks/useJustInvited'
 
 type Props = {
     canModifyMembers?: boolean
@@ -67,17 +67,15 @@ export default function ConversationHeader({
 }: Props) {
     const dispatch = useDispatch()
 
-    const canEdit = useCurrentAbility(StreamPermission.EDIT)
-
-    useLoadCurrentAbilityEffect(StreamPermission.EDIT)
-
-    const canDelete = useCurrentAbility(StreamPermission.DELETE)
-
-    useLoadCurrentAbilityEffect(StreamPermission.DELETE)
-
-    const { name = '' } = useSelectedRoom() || {}
+    const account = useWalletAccount()
 
     const selectedRoomId = useSelectedRoomId()
+
+    const canEdit = useAbility(selectedRoomId, account, StreamPermission.EDIT)
+
+    const canDelete = useAbility(selectedRoomId, account, StreamPermission.DELETE)
+
+    const { name = '' } = useSelectedRoom() || {}
 
     const isRoomNameEditable = useEditingRoomName(selectedRoomId)
 
@@ -86,6 +84,8 @@ export default function ConversationHeader({
     const transientRoomName = useTransientRoomName(selectedRoomId)
 
     const isRoomBeingDeleted = useIsBeingDeleted(selectedRoomId)
+
+    const invitePending = useJustInvited(selectedRoomId, account)
 
     function edit() {
         if (canEdit && selectedRoomId && !isRoomBeingDeleted) {
@@ -115,8 +115,6 @@ export default function ConversationHeader({
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
 
     const { copy } = useCopy()
-
-    const account = useWalletAccount()
 
     const streamrClient = useWalletClient()
 
@@ -216,8 +214,8 @@ export default function ConversationHeader({
                 </ActionButton>
                 <div
                     css={tw`
-                        grow
                         min-w-0
+                        grow
                     `}
                 >
                     {isRoomNameEditable ? (
@@ -377,8 +375,25 @@ export default function ConversationHeader({
                     </div>
                 ) : (
                     <>
+                        {invitePending && (
+                            <ActionTextButton
+                                css={tw`
+                                    bg-[#FFF2EE]
+                                    text-[#FF5924]
+                                `}
+                            >
+                                <Text>Join</Text>
+                            </ActionTextButton>
+                        )}
                         {canEdit && !isRoomBeingDeleted && (
-                            <ActionButton onClick={edit} css={tw`hidden lg:block`}>
+                            <ActionButton
+                                onClick={edit}
+                                css={tw`
+                                    hidden
+                                    lg:block
+                                    ml-3
+                                `}
+                            >
                                 <EditIcon />
                             </ActionButton>
                         )}

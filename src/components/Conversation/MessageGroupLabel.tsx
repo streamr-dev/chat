@@ -1,10 +1,10 @@
 import Text from '$/components/Text'
-import { useDelegatedClient } from '$/features/delegation/hooks'
 import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useFlag from '$/hooks/useFlag'
+import useSubscriber from '$/hooks/useSubscriber'
 import { DayInMillis } from '$/utils/getBeginningOfDay'
 import { format } from 'date-fns'
 import { HTMLAttributes } from 'react'
@@ -29,7 +29,7 @@ export default function MessageGroupLabel({
 
     const requester = useWalletAccount()
 
-    const client = useDelegatedClient()
+    const streamrClient = useSubscriber(roomId)
 
     const isLoadingPreviousDay = useFlag(
         roomId && requester
@@ -65,7 +65,7 @@ export default function MessageGroupLabel({
                         &middot;{' '}
                         <button
                             onClick={() => {
-                                if (!roomId || !requester || !client) {
+                                if (!roomId || !requester || !streamrClient) {
                                     return
                                 }
 
@@ -73,7 +73,7 @@ export default function MessageGroupLabel({
                                     MessageAction.resend({
                                         roomId,
                                         requester,
-                                        streamrClient: client,
+                                        streamrClient,
                                         timestamp: timestamp - DayInMillis,
                                         fingerprint: Flag.isResendingMessagesForSpecificDay(
                                             roomId,

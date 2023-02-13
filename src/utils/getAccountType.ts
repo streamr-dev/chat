@@ -14,15 +14,24 @@ export default async function getAccountType(
 ): Promise<AccountType> {
     const contract = getDelegatedAccessRegistry(rawProvider)
 
-    const [metamaskAccount]: boolean[] = await contract.functions.isMainWallet(account)
+    try {
+        const [metamaskAccount]: boolean[] = await contract.functions.isMainWallet(account)
 
-    if (metamaskAccount) {
-        return AccountType.Main
+        if (metamaskAccount) {
+            return AccountType.Main
+        }
+    } catch (e) {
+        // Proceed.
     }
-    const [delegatedAccount]: boolean[] = await contract.functions.isDelegatedWallet(account)
 
-    if (delegatedAccount) {
-        return AccountType.Delegated
+    try {
+        const [delegatedAccount]: boolean[] = await contract.functions.isDelegatedWallet(account)
+
+        if (delegatedAccount) {
+            return AccountType.Delegated
+        }
+    } catch (e) {
+        // Proceed.
     }
 
     return AccountType.Unset
