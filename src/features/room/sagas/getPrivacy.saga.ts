@@ -5,7 +5,7 @@ import { PrivacySetting } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 
 function* onGetPrivacyAction({
     payload: { roomId, streamrClient },
@@ -17,7 +17,7 @@ function* onGetPrivacyAction({
             throw new RoomNotFoundError(roomId)
         }
 
-        const isTokenGated: boolean = isTokenGatedRoom(stream)
+        const isTokenGated = !!getRoomMetadata(stream).tokenAddress
 
         const canEveryoneSee: boolean = yield stream.hasPermission({
             public: true,

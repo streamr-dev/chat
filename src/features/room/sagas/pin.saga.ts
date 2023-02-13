@@ -3,7 +3,6 @@ import { MiscAction } from '$/features/misc'
 import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
-import { isTokenGatedRoom } from '$/features/tokenGatedRooms/utils/isTokenGatedRoom'
 import { Address } from '$/types'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
@@ -35,9 +34,9 @@ function* pinRemote(
 
     const { createdAt, createdBy, tokenAddress, name = '' } = getRoomMetadata(stream)
 
-    const isTokenGated = isTokenGatedRoom(stream)
+    const isTokenGated = !!tokenAddress
 
-    if (isTokenGated && tokenAddress) {
+    if (tokenAddress) {
         yield put(
             TokenGatedRoomAction.joinERC20({
                 roomId,
