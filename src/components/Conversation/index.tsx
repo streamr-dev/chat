@@ -23,12 +23,14 @@ import {
     useRequestPrivateKey,
 } from '$/features/delegation/hooks'
 import MessageInputPlaceholder from '$/components/Conversation/MessageInputPlaceholder'
-import { ButtonHTMLAttributes } from 'react'
+import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
 import SecondaryButton from '$/components/SecondaryButton'
 import Text from '$/components/Text'
 import Spinner from '$/components/Spinner'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import { PrivacySetting } from '$/types'
+import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
+import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -51,13 +53,15 @@ export default function Conversation() {
 
     const client = useDelegatedClient()
 
-    const canMainPublish = useAbility(selectedRoomId, useWalletAccount(), StreamPermission.PUBLISH)
+    const mainAccount = useWalletAccount()
 
-    const needsDelegation = canMainPublish && !client
+    const canMainPublish = useAbility(selectedRoomId, mainAccount, StreamPermission.PUBLISH)
 
-    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH) && !!client
+    const canMainGrant = useAbility(selectedRoomId, mainAccount, StreamPermission.GRANT)
 
-    const canAct = needsDelegation || canPublish
+    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
+
+    const canAct = !client ? canMainPublish : canPublish || canMainGrant
 
     const dispatch = useDispatch()
 
@@ -107,22 +111,53 @@ export default function Conversation() {
                     )}
                 </div>
             </div>
-            {canAct && (
-                <div
-                    css={tw`
-                        shadow-[inset 0 1px 0 #dee6ee]
-                        absolute
-                        p-4
-                        lg:p-6
-                        bottom-0
-                        left-0
-                        w-full
-                    `}
-                >
-                    {canPublish ? <MessageInput streamrClient={client} /> : <DelegationBox />}
-                </div>
+            {!client ? (
+                canMainPublish && <DelegationBox />
+            ) : canPublish ? (
+                <Wrap>
+                    <MessageInput streamrClient={client} />
+                </Wrap>
+            ) : (
+                canMainGrant && <PermitBox />
             )}
         </>
+    )
+}
+
+function Wrap(props: HTMLAttributes<HTMLDivElement>) {
+    return (
+        <div
+            {...props}
+            css={tw`
+                shadow-[inset 0 1px 0 #dee6ee]
+                absolute
+                p-4
+                lg:p-6
+                bottom-0
+                left-0
+                w-full
+            `}
+        />
+    )
+}
+
+function PermitBox() {
+    const isPromoting = useIsDelegatedAccountBeingPromoted()
+
+    const promote = usePromoteDelegatedAccount()
+
+    return (
+        <Wrap>
+            <MessageInputPlaceholder
+                cta={
+                    <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
+                        {isPromoting ? <>Permitting…</> : <>Permit</>}
+                    </Cta>
+                }
+            >
+                Permit your hot wallet to publish in this room.
+            </MessageInputPlaceholder>
+        </Wrap>
     )
 }
 
@@ -136,19 +171,21 @@ function DelegationBox() {
     const actions = usePrivacy(roomId) === PrivacySetting.Public ? 'send' : 'send and receive'
 
     return (
-        <MessageInputPlaceholder
-            cta={
-                <Cta
-                    busy={isDelegatingAccess}
-                    disabled={isDelegatingAccess}
-                    onClick={requestPrivateKey}
-                >
-                    {isDelegatingAccess ? <>Enabling…</> : <>Enable</>}
-                </Cta>
-            }
-        >
-            Activate hot wallet signing to {actions} messages.
-        </MessageInputPlaceholder>
+        <Wrap>
+            <MessageInputPlaceholder
+                cta={
+                    <Cta
+                        busy={isDelegatingAccess}
+                        disabled={isDelegatingAccess}
+                        onClick={requestPrivateKey}
+                    >
+                        {isDelegatingAccess ? <>Enabling…</> : <>Enable</>}
+                    </Cta>
+                }
+            >
+                Activate hot wallet signing to {actions} messages.
+            </MessageInputPlaceholder>
+        </Wrap>
     )
 }
 
