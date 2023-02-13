@@ -8,7 +8,7 @@ import Submit from '../Submit'
 import Text from '../Text'
 import TextField from '../TextField'
 import Toggle from '../Toggle'
-import { PrivacyOption, PrivacySetting } from '$/types'
+import { Prefix, PrivacyOption, PrivacySetting } from '$/types'
 import ButtonGroup, { GroupedButton } from '$/components/ButtonGroup'
 import PrivacySelectField, {
     privacyOptions,
@@ -18,6 +18,7 @@ import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Mod
 import { RoomId } from '$/features/room/types'
 import useFlag from '$/hooks/useFlag'
 import { Flag } from '$/features/flag/types'
+import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 
 export interface Pin {
     roomId: RoomId
@@ -83,7 +84,9 @@ export default function AddRoomModal({
 
     const isPinning = useFlag(Flag.isRoomBeingPinned())
 
-    const canPin = !isBlank(roomId) && !isPinning
+    const partials = pathnameToRoomIdPartials(roomId)
+
+    const canPin = typeof partials !== 'string' && !isPinning
 
     const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
 
@@ -180,7 +183,7 @@ export default function AddRoomModal({
                         }
 
                         onProceed?.({
-                            roomId,
+                            roomId: `${partials.account}/${Prefix.Room}/${partials.uuid}`,
                         })
                     }}
                 >
