@@ -17,6 +17,7 @@ import { aliasSaga } from '$/features/alias'
 import flag from '$/features/flag'
 import ens, { ensSaga } from '$/features/ens'
 import lifecycle from '$/features/lifecycle.saga'
+import anon from '$/features/anon'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -36,6 +37,7 @@ const store = configureStore({
         wallet,
         tokenGatedRooms,
         misc,
+        anon,
     },
     middleware(getDefaultMiddleware) {
         return [
@@ -45,6 +47,7 @@ const store = configureStore({
                         'payload.provider',
                         'payload.streamrClient',
                         'payload.navigate',
+                        'payload.wallet',
                     ],
                     ignoredActions: [],
                     ignoredPaths: [
@@ -52,6 +55,8 @@ const store = configureStore({
                         'wallet.client',
                         'delegation.client',
                         'misc.navigate',
+                        'anon.wallet',
+                        'anon.client',
                     ],
                 },
             }),
