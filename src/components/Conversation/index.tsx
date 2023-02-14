@@ -1,6 +1,5 @@
-import { StreamPermission } from 'streamr-client'
+import StreamrClient from 'streamr-client'
 import tw from 'twin.macro'
-import useAbility from '$/hooks/useAbility'
 import useMessages from '$/hooks/useMessages'
 import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
@@ -16,21 +15,16 @@ import useRoomPropertiesModal from '$/hooks/useRoomPropertiesModal'
 import { Flag } from '$/features/flag/types'
 import { useDispatch } from 'react-redux'
 import { FlagAction } from '$/features/flag'
-import {
-    useDelegatedAccount,
-    useDelegatedClient,
-    useIsDelegatingAccess,
-    useRequestPrivateKey,
-} from '$/features/delegation/hooks'
+import { useIsDelegatingAccess, useRequestPrivateKey } from '$/features/delegation/hooks'
 import MessageInputPlaceholder from '$/components/Conversation/MessageInputPlaceholder'
 import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
 import SecondaryButton from '$/components/SecondaryButton'
 import Text from '$/components/Text'
 import Spinner from '$/components/Spinner'
-import { useWalletAccount } from '$/features/wallet/hooks'
 import { PrivacySetting } from '$/types'
 import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
 import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
+import usePublisher, { PublisherState } from '$/hooks/usePublisher'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -49,19 +43,9 @@ export default function Conversation() {
 
     useResendEffect(selectedRoomId)
 
-    const account = useDelegatedAccount()
+    const publisher = usePublisher(selectedRoomId)
 
-    const client = useDelegatedClient()
-
-    const mainAccount = useWalletAccount()
-
-    const canMainPublish = useAbility(selectedRoomId, mainAccount, StreamPermission.PUBLISH)
-
-    const canMainGrant = useAbility(selectedRoomId, mainAccount, StreamPermission.GRANT)
-
-    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
-
-    const canAct = !client ? canMainPublish : canPublish || canMainGrant
+    const canAct = publisher !== PublisherState.Unavailable
 
     const dispatch = useDispatch()
 
@@ -111,15 +95,13 @@ export default function Conversation() {
                     )}
                 </div>
             </div>
-            {!client ? (
-                canMainPublish && <DelegationBox />
-            ) : canPublish ? (
+            {publisher instanceof StreamrClient && (
                 <Wrap>
-                    <MessageInput streamrClient={client} />
+                    <MessageInput streamrClient={publisher} />
                 </Wrap>
-            ) : (
-                canMainGrant && <PermitBox />
             )}
+            {publisher === PublisherState.NeedsDelegation && <DelegationBox />}
+            {publisher === PublisherState.NeedsPermission && <PermitBox />}
         </>
     )
 }

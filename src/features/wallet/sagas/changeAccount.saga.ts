@@ -1,3 +1,4 @@
+import { AnonAction } from '$/features/anon'
 import { DelegationAction } from '$/features/delegation'
 import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
@@ -12,9 +13,13 @@ export default function* changeAccount() {
         // Reset previous private key (different account = different private key).
         yield put(DelegationAction.setPrivateKey(undefined))
 
+        // Reset all anon wallets and clients.
+        yield put(AnonAction.reset())
+
         if (!account) {
             // Deselect current room.
             yield put(RoomAction.select(undefined))
+
             return
         }
 

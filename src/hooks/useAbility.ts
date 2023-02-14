@@ -13,11 +13,11 @@ function selectAbility(
     permission: StreamPermission
 ) {
     if (!roomId || !address) {
-        return () => false
+        return () => undefined
     }
 
     return (state: State) =>
-        Boolean(state.permissions.permissions[roomId]?.[address.toLowerCase()]?.[permission]?.value)
+        state.permissions.permissions[roomId]?.[address.toLowerCase()]?.[permission]?.value
 }
 
 function selectPermissionCache(
@@ -37,7 +37,7 @@ export default function useAbility(
     roomId: undefined | RoomId,
     address: OptionalAddress,
     permission: StreamPermission
-): boolean {
+) {
     const dispatch = useDispatch()
 
     const cache = useSelector(selectPermissionCache(roomId, address, permission))
