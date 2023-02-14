@@ -6,7 +6,6 @@ import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { WalletAction } from '$/features/wallet'
 import db from '$/utils/db'
-import { Wallet } from 'ethers'
 import { put, takeEvery } from 'redux-saga/effects'
 
 export default function* changeAccount() {
@@ -14,12 +13,13 @@ export default function* changeAccount() {
         // Reset previous private key (different account = different private key).
         yield put(DelegationAction.setPrivateKey(undefined))
 
-        // Similar sitch with the anon account!
-        yield put(AnonAction.setWallet({ wallet: account ? Wallet.createRandom() : undefined }))
+        // Reset all anon wallets and clients.
+        yield put(AnonAction.reset())
 
         if (!account) {
             // Deselect current room.
             yield put(RoomAction.select(undefined))
+
             return
         }
 

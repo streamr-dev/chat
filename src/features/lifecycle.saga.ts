@@ -1,3 +1,4 @@
+import { AnonAction } from '$/features/anon'
 import { DelegationAction } from '$/features/delegation'
 import lookup from '$/features/delegation/helpers/lookup'
 import retrieve from '$/features/delegation/helpers/retrieve'
@@ -6,7 +7,8 @@ import pin from '$/features/room/helpers/pin'
 import { WalletAction } from '$/features/wallet'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import { call, race, take, takeLatest } from 'redux-saga/effects'
+import { Wallet } from 'ethers'
+import { call, put, race, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
 export default function* lifecycle() {
     while (true) {
@@ -29,6 +31,14 @@ export default function* lifecycle() {
 
                 yield takeLatest(RoomAction.pin, function* ({ payload }) {
                     yield pin(payload)
+                })
+
+                yield takeEvery(RoomAction.select, function* ({ payload: roomId }) {
+                    if (!roomId) {
+                        return
+                    }
+
+                    yield put(AnonAction.setWallet({ roomId, wallet: Wallet.createRandom() }))
                 })
             }),
         ])

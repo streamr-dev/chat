@@ -108,9 +108,9 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
         }
     }, [account, selectedRoomId])
 
-    const anonAccount = useAnonAccount()
+    const anonAccount = useAnonAccount(selectedRoomId)
 
-    const anonClient = useAnonClient()
+    const anonClient = useAnonClient(selectedRoomId)
 
     const anonRoom = anonClient === streamrClient
 

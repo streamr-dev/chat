@@ -13,9 +13,9 @@ export enum PublisherState {
 }
 
 export default function usePublisher(roomId: RoomId | undefined) {
-    const anonClient = useAnonClient()
+    const anonClient = useAnonClient(roomId)
 
-    const anonAccount = useAnonAccount()
+    const anonAccount = useAnonAccount(roomId)
 
     const canAnonPublish = useAbility(roomId, anonAccount, StreamPermission.PUBLISH)
 

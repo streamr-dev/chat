@@ -97,7 +97,7 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
 
     const delegatedAccount = useDelegatedAccount()
 
-    const anonAccount = useAnonAccount()
+    const anonAccount = useAnonAccount(roomId)
 
     const incoming =
         !isSameAddress(requester, createdBy) &&
