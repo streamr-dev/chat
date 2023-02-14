@@ -41,6 +41,8 @@ import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import ArrowIcon from '$/icons/ArrowIcon'
 import useJustInvited from '$/hooks/useJustInvited'
+import { RoomId } from '$/features/room/types'
+import useAnonAccount from '$/hooks/useAnonAccount'
 
 type Props = {
     canModifyMembers?: boolean
@@ -160,10 +162,6 @@ export default function ConversationHeader({
     const isPinned = useIsRoomPinned(selectedRoomId)
 
     const provider = useWalletProvider()
-
-    const membersCount = useRoomMembers(selectedRoomId).length
-
-    const isDetectingMembers = useIsDetectingRoomMembers(selectedRoomId)
 
     return (
         <div
@@ -310,37 +308,11 @@ export default function ConversationHeader({
                                     `}
                                 />
                                 <Text>{privacyLabel} room</Text>
-                                <Dot css={tw`mx-2`} />
-                                {canModifyMembers ? (
-                                    <button
-                                        type="button"
-                                        onClick={() => void onEditMembersClick?.()}
-                                    >
-                                        <Text
-                                            css={
-                                                isDetectingMembers &&
-                                                tw`
-                                                    animate-pulse
-                                                    [animation-duration: 0.5s]
-                                                `
-                                            }
-                                        >
-                                            {formatMembersCount(membersCount)}
-                                        </Text>
-                                    </button>
-                                ) : (
-                                    <Text
-                                        css={
-                                            isDetectingMembers &&
-                                            tw`
-                                                animate-pulse
-                                                [animation-duration: 0.5s]
-                                            `
-                                        }
-                                    >
-                                        {formatMembersCount(membersCount)}
-                                    </Text>
-                                )}
+                                <MemberCount
+                                    roomId={selectedRoomId}
+                                    canModifyMembers={canModifyMembers}
+                                    onClick={() => void onEditMembersClick?.()}
+                                />
                             </div>
                         </div>
                     )}
@@ -567,5 +539,56 @@ export default function ConversationHeader({
                 )}
             </Form>
         </div>
+    )
+}
+
+interface MemberCountProps {
+    onClick: () => void
+    canModifyMembers: boolean
+    roomId: RoomId | undefined
+}
+
+function MemberCount({ roomId, onClick, canModifyMembers = false }: MemberCountProps) {
+    const membersCount = useRoomMembers(roomId).length
+
+    const isDetectingMembers = useIsDetectingRoomMembers(roomId)
+
+    const canAnonSubscribe = useAbility(roomId, useAnonAccount(roomId), StreamPermission.SUBSCRIBE)
+
+    if (canAnonSubscribe !== false) {
+        return null
+    }
+
+    return (
+        <>
+            <Dot css={tw`mx-2`} />
+            {canModifyMembers ? (
+                <button type="button" onClick={() => void onClick?.()}>
+                    <Text
+                        css={
+                            isDetectingMembers &&
+                            tw`
+                                animate-pulse
+                                [animation-duration: 0.5s]
+                            `
+                        }
+                    >
+                        {formatMembersCount(membersCount)}
+                    </Text>
+                </button>
+            ) : (
+                <Text
+                    css={
+                        isDetectingMembers &&
+                        tw`
+                            animate-pulse
+                            [animation-duration: 0.5s]
+                        `
+                    }
+                >
+                    {formatMembersCount(membersCount)}
+                </Text>
+            )}
+        </>
     )
 }
