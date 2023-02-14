@@ -71,9 +71,9 @@ export default function ConversationHeader({
 
     const selectedRoomId = useSelectedRoomId()
 
-    const canEdit = useAbility(selectedRoomId, account, StreamPermission.EDIT)
+    const canEdit = !!useAbility(selectedRoomId, account, StreamPermission.EDIT)
 
-    const canDelete = useAbility(selectedRoomId, account, StreamPermission.DELETE)
+    const canDelete = !!useAbility(selectedRoomId, account, StreamPermission.DELETE)
 
     const { name = '' } = useSelectedRoom() || {}
 

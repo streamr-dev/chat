@@ -55,11 +55,11 @@ export default function Conversation() {
 
     const mainAccount = useWalletAccount()
 
-    const canMainPublish = useAbility(selectedRoomId, mainAccount, StreamPermission.PUBLISH)
+    const canMainPublish = !!useAbility(selectedRoomId, mainAccount, StreamPermission.PUBLISH)
 
-    const canMainGrant = useAbility(selectedRoomId, mainAccount, StreamPermission.GRANT)
+    const canMainGrant = !!useAbility(selectedRoomId, mainAccount, StreamPermission.GRANT)
 
-    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
+    const canPublish = !!useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
 
     const canAct = !client ? canMainPublish : canPublish || canMainGrant
 

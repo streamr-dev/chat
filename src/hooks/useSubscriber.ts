@@ -13,11 +13,11 @@ import { StreamPermission } from 'streamr-client'
 export default function useSubscriber(roomId: RoomId | undefined) {
     const mainClient = useWalletClient()
 
-    const canMainSubscribe = useAbility(roomId, useWalletAccount(), StreamPermission.SUBSCRIBE)
+    const canMainSubscribe = !!useAbility(roomId, useWalletAccount(), StreamPermission.SUBSCRIBE)
 
     const hotClient = useDelegatedClient()
 
-    const canHotSubscribe = useAbility(roomId, useDelegatedAccount(), StreamPermission.SUBSCRIBE)
+    const canHotSubscribe = !!useAbility(roomId, useDelegatedAccount(), StreamPermission.SUBSCRIBE)
 
     if (usePrivacy(roomId) === PrivacySetting.Public && canMainSubscribe) {
         return mainClient
