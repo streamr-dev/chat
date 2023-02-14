@@ -16,6 +16,8 @@ import useAnonAccount from '$/hooks/useAnonAccount'
 import useAnonClient from '$/hooks/useAnonClient'
 import useInfoModal from '$/hooks/useInfoModal'
 import { P } from '$/components/modals/HowItWorksModal'
+import TextField from '$/components/TextField'
+import Hint from '$/components/Hint'
 
 type Props = {
     disabled?: boolean
@@ -166,9 +168,12 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                     <P>
                                         Your randomly generated wallet address used for sending
                                         messages to others in this room:
-                                        <br />
-                                        {anonAccount}
                                     </P>
+                                    <TextField defaultValue={anonAccount} readOnly css={tw`mt-6`} />
+                                    <Hint>
+                                        It'll change on refresh or when you switch to a different
+                                        account.
+                                    </Hint>
                                 </>,
                                 {
                                     title: 'Anonymous mode',
