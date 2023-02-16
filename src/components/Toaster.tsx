@@ -231,6 +231,7 @@ export default function Toaster() {
                 fixed
                 right-4
                 bottom-4
+                z-10
             `}
         >
             {toasts.map(({ id, bread: Bread, props }) => (
