@@ -1,4 +1,3 @@
-import { ToastType } from '$/components/Toast'
 import { ToasterAction } from '$/features/toaster'
 import defer from '$/utils/defer'
 import uniqueId from 'lodash/uniqueId'
@@ -200,28 +199,6 @@ export default function Toaster() {
                     instance: undefined,
                 })
             )
-        }
-    }, [dispatch])
-
-    useEffect(() => {
-        function okd({ key }: KeyboardEvent) {
-            if (key === 'Escape') {
-                dispatch(
-                    ToasterAction.show({
-                        type: ToastType.Warning,
-                        okLabel: 'Understood',
-                        cancelLabel: 'No thanks',
-                        title: 'Haha, lol',
-                        desc: 'You good, mate?',
-                    })
-                )
-            }
-        }
-
-        window.addEventListener('keydown', okd)
-
-        return () => {
-            window.removeEventListener('keydown', okd)
         }
     }, [dispatch])
 
