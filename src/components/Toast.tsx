@@ -222,17 +222,22 @@ export default function Toast({
                 css`
                     transition: 200ms height;
                 `,
-                tw`mt-3`,
+                tw`
+                    mt-2
+                    md:mt-3
+                    pr-3
+                    md:pr-6
+                `,
                 shown
                     ? tw`
-                        animate-[0.15s 1 toastIn both]
+                        animate-[0.15s 1 toastIn both ease-in]
                     `
                     : squeezed
                     ? tw`
-                        animate-[0.15s 1 toastSqueeze forwards]
+                        animate-[0.15s 1 toastSqueeze forwards ease-in]
                     `
                     : tw`
-                        animate-[0.15s 1 toastOut forwards]
+                        animate-[0.15s 1 toastOut forwards ease-in]
                     `,
             ]}
         >
@@ -240,7 +245,7 @@ export default function Toast({
                 ref={innerRef}
                 css={[
                     css`
-                        box-shadow: 0 0 1px rgba(9, 30, 66, 0.05), 0 4px 4px rgba(9, 30, 66, 0.05);
+                        box-shadow: 0 0 1px rgba(9, 30, 66, 0.15), 0 4px 4px rgba(9, 30, 66, 0.08);
                     `,
                     tw`
                         px-4
@@ -251,6 +256,7 @@ export default function Toast({
                         flex
                         items-start
                         w-[400px]
+                        max-w-full
                     `,
                 ]}
             >

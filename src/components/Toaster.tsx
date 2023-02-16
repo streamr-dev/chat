@@ -206,9 +206,14 @@ export default function Toaster() {
         <div
             css={tw`
                 fixed
-                right-4
-                bottom-4
+                pb-3
+                md:pb-6
+                pl-3
+                md:pl-6
+                bottom-0
+                right-0
                 z-10
+                max-w-full
             `}
         >
             {toasts.map(({ id, bread: Bread, props }) => (

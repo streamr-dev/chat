@@ -51,7 +51,7 @@ const customGlobalStyles = css`
 
         @keyframes toastIn {
             from {
-                transform: translateX(100%) translateX(1rem) translateZ(0);
+                transform: translateX(100%) translateZ(0);
             }
             to {
                 transform: translateX(0) translateZ(0);
@@ -63,18 +63,19 @@ const customGlobalStyles = css`
                 transform: translateX(0) translateZ(0);
             }
             to {
-                transform: translateX(100%) translateX(1rem) translateZ(0);
+                transform: translateX(100%) translateZ(0);
             }
         }
 
         @keyframes toastSqueeze {
             from {
-                transform: translateX(100%) translateX(1rem) translateZ(0);
+                transform: translateX(100%) translateZ(0);
             }
             to {
                 height: 0;
                 margin-top: 0;
-                transform: translateX(100%) translateX(1rem) translateZ(0);
+                margin-right: 0;
+                transform: translateX(100%) translateZ(0);
             }
         }
     }
