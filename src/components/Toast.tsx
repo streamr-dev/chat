@@ -210,7 +210,7 @@ export default function Toast({
         const { height } = root.getBoundingClientRect()
 
         setHeight(height)
-    }, [])
+    }, [title, desc, okLabel, cancelLabel])
 
     return (
         <div
