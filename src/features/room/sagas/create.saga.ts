@@ -16,8 +16,9 @@ import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { MiscAction } from '$/features/misc'
 import { RoomMetadata } from '$/utils/getRoomMetadata'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
+import retoast from '$/features/toaster/helpers/retoast'
 
 function* onCreateAction({
     payload: {
@@ -34,7 +35,7 @@ function* onCreateAction({
     let dismissToast = false
 
     try {
-        tc = yield toast({
+        tc = yield retoast(tc, {
             title: `Creating "${params.name}"…`,
             type: ToastType.Processing,
         })
@@ -116,7 +117,7 @@ function* onCreateAction({
             } catch (e) {
                 dismissToast = false
 
-                tc?.update({
+                tc = yield retoast(tc, {
                     title: `Failed to make "${params.name}" public`,
                     type: ToastType.Error,
                 })
@@ -131,7 +132,7 @@ function* onCreateAction({
 
         dismissToast = false
 
-        tc?.update({
+        tc = yield retoast(tc, {
             title: `Room "${params.name}" created`,
             type: ToastType.Success,
         })
@@ -159,7 +160,7 @@ function* onCreateAction({
 
         dismissToast = false
 
-        tc?.update({
+        tc = yield retoast(tc, {
             title: `Failed to create "${params.name}". Reason:\n${e.message}`,
             type: ToastType.Error,
         })

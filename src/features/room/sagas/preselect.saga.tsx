@@ -197,7 +197,9 @@ export default function* preselect() {
                 }
             } finally {
                 if (dismissToast) {
-                    tc?.dismiss()
+                    setTimeout(() => {
+                        tc?.dismiss()
+                    }, 2000)
                 }
             }
         }

@@ -9,6 +9,7 @@ import { RoomId } from '$/features/room/types'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
+import retoast from '$/features/toaster/helpers/retoast'
 
 async function waitForPolicyToBeDeployed(
     factory: Contract,
@@ -35,7 +36,7 @@ function* onRegisterERC20Policy({
     let dismissToast = false
 
     try {
-        tc = yield toast({
+        tc = yield retoast(tc, {
             title: 'Deploying Token Gate…',
             type: ToastType.Processing,
         })
@@ -56,7 +57,7 @@ function* onRegisterERC20Policy({
             roomId
         )
 
-        tc?.update({
+        tc = yield retoast(tc, {
             title: `Assigning permissions to the Token Gate at ${policyAddress}…`,
         })
 
@@ -79,28 +80,24 @@ function* onRegisterERC20Policy({
             }
         )
 
-        // `success` toasts disappear automatically.
         dismissToast = false
 
-        tc?.update({
+        tc = yield retoast(tc, {
             title: 'Done!',
             type: ToastType.Success,
         })
     } catch (e) {
         handleError(e)
 
-        // `error` toasts disappear automatically.
         dismissToast = false
 
-        tc?.update({
+        tc = yield retoast(tc, {
             title: 'Failed to deploy Token Gate',
             type: ToastType.Error,
         })
     } finally {
         if (dismissToast) {
-            setTimeout(() => {
-                tc?.dismiss()
-            }, 1000)
+            tc?.dismiss()
         }
     }
 }

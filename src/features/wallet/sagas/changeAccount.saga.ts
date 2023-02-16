@@ -6,10 +6,10 @@ import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { WalletAction } from '$/features/wallet'
 import db from '$/utils/db'
-import { put, takeEvery } from 'redux-saga/effects'
+import { put, takeLatest } from 'redux-saga/effects'
 
 export default function* changeAccount() {
-    yield takeEvery(WalletAction.changeAccount, function* ({ payload: { account, provider } }) {
+    yield takeLatest(WalletAction.changeAccount, function* ({ payload: { account, provider } }) {
         // Reset previous private key (different account = different private key).
         yield put(DelegationAction.setPrivateKey(undefined))
 

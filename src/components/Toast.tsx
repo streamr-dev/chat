@@ -274,8 +274,9 @@ export default function Toast({
                     {...props}
                     css={tw`
                         grow
-                        [h4]:(text-[14px] font-medium text-[#42526E] leading-5)
-                        [p]:(text-[14px] text-[#59799C] leading-5 mt-1)
+                        min-w-0
+                        [h4]:(text-[14px] font-medium text-[#42526E] leading-5 break-words)
+                        [p]:(text-[14px] text-[#59799C] leading-5 mt-1 break-words)
                     `}
                 >
                     <h4>{title}</h4>
@@ -329,6 +330,7 @@ export default function Toast({
                                 w-6
                                 h-6
                                 text-[#59799C]
+                                ml-4
                             `}
                         >
                             <svg

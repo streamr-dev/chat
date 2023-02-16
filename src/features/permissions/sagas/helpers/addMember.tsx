@@ -11,8 +11,9 @@ import MemberExistsError from '$/errors/MemberExistsError'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import trunc from '$/utils/trunc'
 import { PermissionsAction } from '$/features/permissions'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
+import retoast from '$/features/toaster/helpers/retoast'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -67,8 +68,10 @@ export default function addMember({
     return call(function* () {
         let tc: Controller | undefined
 
+        let dismissToast = false
+
         try {
-            tc = yield toast({
+            tc = yield retoast(tc, {
                 title: (
                     <>
                         Adding <strong>{trunc(member)}</strong>…
@@ -76,6 +79,8 @@ export default function addMember({
                 ),
                 type: ToastType.Processing,
             })
+
+            dismissToast = true
 
             const user: null | string = yield resolveName(member)
 
@@ -110,7 +115,9 @@ export default function addMember({
                 }
             )
 
-            tc.update({
+            dismissToast = false
+
+            tc = yield retoast(tc, {
                 title: (
                     <>
                         <strong>{trunc(member)}</strong> has been added
@@ -131,8 +138,10 @@ export default function addMember({
                 )
             }
         } catch (e) {
+            dismissToast = false
+
             if (e instanceof MemberExistsError) {
-                tc?.update({
+                tc = yield retoast(tc, {
                     title: (
                         <>
                             <strong>{trunc(e.member)}</strong> is already a member
@@ -146,7 +155,7 @@ export default function addMember({
 
             handleError(e)
 
-            tc?.update({
+            tc = yield retoast(tc, {
                 title: (
                     <>
                         Failed to add <strong>{trunc(member)}</strong>
@@ -155,7 +164,9 @@ export default function addMember({
                 type: ToastType.Error,
             })
         } finally {
-            tc?.dismiss()
+            if (dismissToast) {
+                tc?.dismiss()
+            }
         }
     })
 }

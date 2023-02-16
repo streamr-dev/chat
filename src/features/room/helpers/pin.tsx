@@ -8,7 +8,8 @@ import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
+import retoast from '$/features/toaster/helpers/retoast'
+import { Controller } from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { Address, OptionalAddress } from '$/types'
 import db from '$/utils/db'
@@ -29,10 +30,12 @@ export default function pin({
 
         let tc: Controller | undefined
 
+        let dismissToast = false
+
         try {
             yield put(FlagAction.set(Flag.isRoomBeingPinned()))
 
-            tc = yield toast({
+            tc = yield retoast(tc, {
                 title: (
                     <>
                         Pinning <Id>{roomId}</Id>…
@@ -40,6 +43,8 @@ export default function pin({
                 ),
                 type: ToastType.Processing,
             })
+
+            dismissToast = true
 
             const owner = requester.toLowerCase()
 
@@ -81,7 +86,9 @@ export default function pin({
                 yield getUserPermissions(owner, stream)
 
             if (permissions.length) {
-                tc.update({
+                dismissToast = false
+
+                tc = yield retoast(tc, {
                     title: 'You should already have the room on your list',
                     type: ToastType.Error,
                 })
@@ -90,7 +97,9 @@ export default function pin({
             }
 
             if (!isPublic && !isTokenGated) {
-                tc.update({
+                dismissToast = false
+
+                tc = yield retoast(tc, {
                     title: "You can't pin private rooms",
                     type: ToastType.Error,
                 })
@@ -115,12 +124,16 @@ export default function pin({
         } catch (e) {
             handleError(e)
 
-            tc?.update({
+            dismissToast = false
+
+            tc = yield retoast(tc, {
                 title: 'Pinning failed',
                 type: ToastType.Error,
             })
         } finally {
-            tc?.dismiss()
+            if (dismissToast) {
+                tc?.dismiss()
+            }
 
             if (retrievedAccess) {
                 yield put(FlagAction.unset(Flag.isAccessBeingDelegated(requester)))
