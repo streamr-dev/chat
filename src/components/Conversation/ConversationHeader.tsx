@@ -44,6 +44,8 @@ import { RoomId } from '$/features/room/types'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
+import useAcceptInvite from '$/hooks/useAcceptInvite'
+import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 
 type Props = {
     canModifyMembers?: boolean
@@ -163,6 +165,10 @@ export default function ConversationHeader({
     const isPinned = useIsRoomPinned(selectedRoomId)
 
     const provider = useWalletProvider()
+
+    const acceptInvite = useAcceptInvite()
+
+    const accepting = useIsInviteBeingAccepted()
 
     return (
         <div
@@ -350,12 +356,14 @@ export default function ConversationHeader({
                     <>
                         {invitePending && (
                             <ActionTextButton
+                                disabled={accepting}
+                                onClick={() => void acceptInvite()}
                                 css={tw`
                                     bg-[#FFF2EE]
                                     text-[#FF5924]
                                 `}
                             >
-                                <Text>Join</Text>
+                                <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
                             </ActionTextButton>
                         )}
                         {canEdit && !isRoomBeingDeleted && (
