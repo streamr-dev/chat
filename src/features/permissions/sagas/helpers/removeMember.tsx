@@ -1,9 +1,10 @@
+import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
+import toast from '$/features/toaster/helpers/toast'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getDisplayUsername from '$/utils/getDisplayUsername'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { error, success } from '$/utils/toaster'
 import { call } from 'redux-saga/effects'
 import type { UserPermissionAssignment } from 'streamr-client'
 
@@ -44,19 +45,25 @@ export default function removeMember({
                 streamrClient,
             })
 
-            success(
-                <>
-                    <strong>{displayName}</strong> has been removed
-                </>
-            )
+            yield toast({
+                title: (
+                    <>
+                        <strong>{displayName}</strong> has been removed
+                    </>
+                ),
+                type: ToastType.Success,
+            })
         } catch (e) {
             handleError(e)
 
-            error(
-                <>
-                    Failed to remove <strong>{displayName}</strong>
-                </>
-            )
+            yield toast({
+                title: (
+                    <>
+                        Failed to remove <strong>{displayName}</strong>
+                    </>
+                ),
+                type: ToastType.Error,
+            })
         }
     })
 }

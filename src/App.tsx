@@ -1,23 +1,11 @@
-import tw, { styled, GlobalStyles } from 'twin.macro'
+import tw, { GlobalStyles } from 'twin.macro'
 import { css, Global } from '@emotion/react'
 import { HashRouter } from 'react-router-dom'
-import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from '$/store'
 import Clock from '$/components/Clock'
 import IndexPage from '$/components/IndexPage'
-
-const ToastContainer = styled(PrestyledToastContainer)`
-    width: auto;
-
-    .Toastify__toast-body {
-        font-family: inherit;
-    }
-
-    .Toastify__toast-icon {
-        margin-right: 20px;
-    }
-`
+import Toaster from '$/components/Toaster'
 
 const customGlobalStyles = css`
     body {
@@ -60,6 +48,36 @@ const customGlobalStyles = css`
                 transform: translateZ(0) scale(1);
             }
         }
+
+        @keyframes toastIn {
+            from {
+                transform: translateX(100%) translateZ(0);
+            }
+            to {
+                transform: translateX(0) translateZ(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                transform: translateX(0) translateZ(0);
+            }
+            to {
+                transform: translateX(100%) translateZ(0);
+            }
+        }
+
+        @keyframes toastSqueeze {
+            from {
+                transform: translateX(100%) translateZ(0);
+            }
+            to {
+                height: 0;
+                margin-top: 0;
+                margin-right: 0;
+                transform: translateX(100%) translateZ(0);
+            }
+        }
     }
 `
 
@@ -70,11 +88,11 @@ export default function App() {
             <Global styles={customGlobalStyles} />
             <Clock />
             <div>
-                <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>
                     <IndexPage />
                 </HashRouter>
             </div>
+            <Toaster />
         </Provider>
     )
 }

@@ -58,13 +58,8 @@ export const Flag = {
         return JSON.stringify(['isMemberBeingRemoved', roomId, member.toLowerCase()])
     },
 
-    isInviteBeingAccepted(roomId: RoomId, member: Address, delegatedAddress: Address): string {
-        return JSON.stringify([
-            'isInviteBeingAccepted',
-            roomId,
-            member.toLowerCase(),
-            delegatedAddress.toLowerCase(),
-        ])
+    isInviteBeingAccepted(roomId: RoomId, member: Address): string {
+        return JSON.stringify(['isInviteBeingAccepted', roomId, member.toLowerCase()])
     },
 
     isDelegatedAccountBeingPromoted(roomId: RoomId, delegatedAddress: Address): string {

@@ -9,15 +9,16 @@ import {
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { PrivacySetting } from '$/types'
-import { error, loading, success } from '$/utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
-import { toast } from 'react-toastify'
 import { Flag } from '$/features/flag/types'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { MiscAction } from '$/features/misc'
 import { RoomMetadata } from '$/utils/getRoomMetadata'
+import { Controller } from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
+import retoast from '$/features/toaster/helpers/retoast'
 
 function* onCreateAction({
     payload: {
@@ -29,10 +30,17 @@ function* onCreateAction({
         streamrClient,
     },
 }: ReturnType<typeof RoomAction.create>) {
-    let toastId
+    let tc: Controller | undefined
+
+    let dismissToast = false
 
     try {
-        toastId = loading(`Creating "${params.name}"…`)
+        tc = yield retoast(tc, {
+            title: `Creating "${params.name}"…`,
+            type: ToastType.Processing,
+        })
+
+        dismissToast = true
 
         yield preflight({
             provider,
@@ -107,7 +115,12 @@ function* onCreateAction({
                 // We don't bother the user with an extra "we made your room public"
                 // toast. That'd be too much.
             } catch (e) {
-                error(`Failed to make "${params.name}" public.`)
+                dismissToast = false
+
+                tc = yield retoast(tc, {
+                    title: `Failed to make "${params.name}" public`,
+                    type: ToastType.Error,
+                })
             }
         }
 
@@ -117,7 +130,12 @@ function* onCreateAction({
             owner: owner.toLowerCase(),
         })
 
-        success(`Room "${params.name}" created.`)
+        dismissToast = false
+
+        tc = yield retoast(tc, {
+            title: `Room "${params.name}" created`,
+            type: ToastType.Success,
+        })
 
         yield put(MiscAction.goto(stream.id))
 
@@ -140,10 +158,15 @@ function* onCreateAction({
     } catch (e: any) {
         handleError(e)
 
-        error(`Failed to create "${params.name}". Reason:\n${e.message}`)
+        dismissToast = false
+
+        tc = yield retoast(tc, {
+            title: `Failed to create "${params.name}". Reason:\n${e.message}`,
+            type: ToastType.Error,
+        })
     } finally {
-        if (toastId) {
-            toast.dismiss(toastId)
+        if (dismissToast) {
+            tc?.dismiss()
         }
     }
 }

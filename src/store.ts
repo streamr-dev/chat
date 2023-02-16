@@ -18,6 +18,7 @@ import flag from '$/features/flag'
 import ens, { ensSaga } from '$/features/ens'
 import lifecycle from '$/features/lifecycle.saga'
 import anon from '$/features/anon'
+import toaster from '$/features/toaster'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -38,6 +39,7 @@ const store = configureStore({
         tokenGatedRooms,
         misc,
         anon,
+        toaster,
     },
     middleware(getDefaultMiddleware) {
         return [
@@ -47,7 +49,10 @@ const store = configureStore({
                         'payload.provider',
                         'payload.streamrClient',
                         'payload.navigate',
+                        'payload.instance',
                         'payload.wallet',
+                        'payload.title',
+                        'payload.desc',
                     ],
                     ignoredActions: [],
                     ignoredPaths: [
@@ -57,6 +62,7 @@ const store = configureStore({
                         'misc.navigate',
                         'anon.rooms',
                         'anon.rooms',
+                        'toaster.instance',
                     ],
                 },
             }),

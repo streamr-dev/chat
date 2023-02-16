@@ -2,8 +2,9 @@ import { put } from 'redux-saga/effects'
 import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
-import { error, success } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import toast from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
 
 function* onDeleteAction({
     payload: { roomId, provider, requester, streamrClient },
@@ -18,11 +19,17 @@ function* onDeleteAction({
 
         yield put(RoomAction.deleteLocal({ roomId, requester }))
 
-        success('Room has been deleted.')
+        yield toast({
+            title: 'Room has been deleted',
+            type: ToastType.Success,
+        })
     } catch (e) {
         handleError(e)
 
-        error('Failed to delete room.')
+        yield toast({
+            title: 'Failed to delete room',
+            type: ToastType.Error,
+        })
     }
 }
 

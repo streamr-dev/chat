@@ -4,19 +4,12 @@ import { Contract, BigNumber } from 'ethers'
 import { Address } from '$/types'
 import { TokenGatedRoomAction } from '..'
 import { getJoinPolicyFactory } from '$/features/tokenGatedRooms/utils/getJoinPolicyFactory'
-import { toast } from 'react-toastify'
 import handleError from '$/utils/handleError'
-import { error, loading } from '$/utils/toaster'
 import { RoomId } from '$/features/room/types'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-
-function createInformationalToast(message: string, toastId?: string | number) {
-    if (toastId) {
-        toast.dismiss(toastId)
-    }
-
-    return loading(message)
-}
+import { Controller } from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
+import retoast from '$/features/toaster/helpers/retoast'
 
 async function waitForPolicyToBeDeployed(
     factory: Contract,
@@ -38,9 +31,18 @@ async function waitForPolicyToBeDeployed(
 function* onRegisterERC20Policy({
     payload: { owner, tokenAddress, roomId, streamrClient, minTokenAmount, provider },
 }: ReturnType<typeof TokenGatedRoomAction.registerERC20Policy>) {
-    let toastId
+    let tc: Controller | undefined
+
+    let dismissToast = false
+
     try {
-        toastId = createInformationalToast('Deploying Token Gate')
+        tc = yield retoast(tc, {
+            title: 'Deploying Token Gate…',
+            type: ToastType.Processing,
+        })
+
+        dismissToast = true
+
         const factory = getJoinPolicyFactory(provider)
         const res: { [key: string]: any } = yield factory.registerERC20Policy(
             tokenAddress,
@@ -54,10 +56,10 @@ function* onRegisterERC20Policy({
             tokenAddress,
             roomId
         )
-        toastId = createInformationalToast(
-            `Assigning permissions to the Token Gate at ${policyAddress}`,
-            toastId
-        )
+
+        tc = yield retoast(tc, {
+            title: `Assigning permissions to the Token Gate at ${policyAddress}…`,
+        })
 
         yield setMultiplePermissions(
             roomId,
@@ -78,14 +80,24 @@ function* onRegisterERC20Policy({
             }
         )
 
-        toastId = createInformationalToast('Done!', toastId)
+        dismissToast = false
+
+        tc = yield retoast(tc, {
+            title: 'Done!',
+            type: ToastType.Success,
+        })
     } catch (e) {
         handleError(e)
 
-        error('Failed to deploy Token Gate')
+        dismissToast = false
+
+        tc = yield retoast(tc, {
+            title: 'Failed to deploy Token Gate',
+            type: ToastType.Error,
+        })
     } finally {
-        if (toastId) {
-            toast.dismiss(toastId)
+        if (dismissToast) {
+            tc?.dismiss()
         }
     }
 }

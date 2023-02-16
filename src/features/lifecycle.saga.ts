@@ -4,6 +4,8 @@ import lookup from '$/features/delegation/helpers/lookup'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import { RoomAction } from '$/features/room'
 import pin from '$/features/room/helpers/pin'
+import { ToasterAction } from '$/features/toaster'
+import toast from '$/features/toaster/helpers/toast'
 import { WalletAction } from '$/features/wallet'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -39,6 +41,10 @@ export default function* lifecycle() {
                     }
 
                     yield put(AnonAction.setWallet({ roomId, wallet: Wallet.createRandom() }))
+                })
+
+                yield takeEvery(ToasterAction.show, function* ({ payload }) {
+                    yield toast(payload)
                 })
             }),
         ])

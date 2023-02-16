@@ -5,12 +5,14 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
     r?: number
     strokeWidth?: number
     strokeColor?: string
+    gap?: number
 }
 
 export default function Spinner({
     r = 6,
     strokeWidth = 2,
     strokeColor = '#59799C',
+    gap = 0.4,
     ...props
 }: Props) {
     const d = 2 * Math.PI * r
@@ -51,7 +53,7 @@ export default function Spinner({
                     strokeWidth={strokeWidth}
                     stroke={strokeColor}
                     strokeLinecap="round"
-                    strokeDasharray={`${0.6 * d}, ${0.4 * d}`}
+                    strokeDasharray={`${(1 - gap) * d}, ${gap * d}`}
                     strokeDashoffset="0"
                 />
             </svg>
