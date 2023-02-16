@@ -18,6 +18,11 @@ import useInfoModal from '$/hooks/useInfoModal'
 import { P } from '$/components/modals/HowItWorksModal'
 import TextField from '$/components/TextField'
 import Hint from '$/components/Hint'
+import useAnonPrivateKey from '$/hooks/useAnonPrivateKey'
+import Label from '$/components/Label'
+import useCopy from '$/hooks/useCopy'
+import { ToasterAction } from '$/features/toaster'
+import { ToastType } from '$/components/Toast'
 
 type Props = {
     disabled?: boolean
@@ -112,6 +117,8 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
 
     const anonAccount = useAnonAccount(selectedRoomId)
 
+    const anonPKey = useAnonPrivateKey(selectedRoomId)
+
     const anonClient = useAnonClient(selectedRoomId)
 
     const anonRoom = anonClient === streamrClient
@@ -119,6 +126,8 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
     const seed = (anonRoom ? anonAccount : account)?.toLowerCase()
 
     const { open, modal } = useInfoModal()
+
+    const { copy } = useCopy()
 
     return (
         <>
@@ -169,11 +178,49 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                         Your randomly generated wallet address used for sending
                                         messages to others in this room:
                                     </P>
-                                    <TextField defaultValue={anonAccount} readOnly css={tw`mt-6`} />
+                                    <Label css={tw`mt-6`}>Address</Label>
+                                    <TextField defaultValue={anonAccount} readOnly />
                                     <Hint>
                                         It'll change on refresh or when you switch to a different
                                         account.
                                     </Hint>
+                                    {!!anonPKey && (
+                                        <>
+                                            <Label css={tw`mt-6`}>
+                                                <div
+                                                    css={tw`
+                                                        flex
+                                                        items-center
+                                                    `}
+                                                >
+                                                    <div css={tw`grow`}>Private key</div>
+                                                    <button
+                                                        type="button"
+                                                        css={tw`
+                                                            appearance-none
+                                                        `}
+                                                        onClick={() => {
+                                                            copy(anonPKey)
+
+                                                            dispatch(
+                                                                ToasterAction.show({
+                                                                    title: 'Copied to clipboard',
+                                                                    type: ToastType.Success,
+                                                                })
+                                                            )
+                                                        }}
+                                                    >
+                                                        Copy
+                                                    </button>
+                                                </div>
+                                            </Label>
+                                            <TextField
+                                                defaultValue={anonPKey}
+                                                readOnly
+                                                type="password"
+                                            />
+                                        </>
+                                    )}
                                 </>,
                                 {
                                     title: 'Anonymous mode',
