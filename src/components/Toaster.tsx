@@ -93,6 +93,8 @@ function forge({
                     onDiscardable() {
                         if (t) {
                             remove(t)
+
+                            t = undefined
                         }
                     },
                 }
@@ -121,8 +123,6 @@ function forge({
                     throw e
                 } finally {
                     abortController = undefined
-
-                    t = undefined
                 }
             },
             update(props) {
