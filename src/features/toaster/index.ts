@@ -1,8 +1,7 @@
-import { ToastType } from '$/components/Toast'
-import { ToasterCallback } from '$/components/Toster'
-import { ToastParams } from '$/features/toaster/helpers/toast'
+import Toast from '$/components/Toast'
+import { ToasterCallback } from '$/components/Toaster'
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import React, { ReactNode } from 'react'
+import { ComponentProps } from 'react'
 
 interface ToasterState {
     instance?: ToasterCallback
@@ -13,7 +12,7 @@ const initialState: ToasterState = {
 }
 
 export const ToasterAction = {
-    show: createAction<ToastParams>('toaster: show'),
+    show: createAction<ComponentProps<typeof Toast>>('toaster: show'),
 
     set: createAction<{ instance: ToasterCallback | undefined }>('toaster: set'),
 }

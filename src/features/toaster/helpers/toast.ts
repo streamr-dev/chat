@@ -1,17 +1,35 @@
 import Toast from '$/components/Toast'
-import { Controller as ToastController, ToasterCallback } from '$/components/Toster'
-import toaster from '$/features/toaster/helpers/toaster'
+import { Controller as ToastController, ToasterCallback } from '$/components/Toaster'
+import { State } from '$/types'
 import handleError from '$/utils/handleError'
 import { ComponentProps } from 'react'
-import { call, spawn } from 'redux-saga/effects'
+import { call, select, spawn } from 'redux-saga/effects'
 
 export type Controller = Pick<ToastController<typeof Toast>, 'dismiss' | 'update'>
 
 export default function toast(props: ComponentProps<typeof Toast>) {
     return call(function* () {
-        const t: ToasterCallback = yield toaster()
+        let cb: ToasterCallback | undefined = yield select(
+            ({ toaster: { instance } }: State) => instance
+        )
 
-        const { open, dismiss, update } = t(Toast, props)
+        if (!cb) {
+            console.warn('No toaster? No toasts!')
+
+            cb = () => ({
+                dismiss() {
+                    // Do nothing
+                },
+                async open() {
+                    // Do nothing
+                },
+                update() {
+                    // Do nothing
+                },
+            })
+        }
+
+        const { open, dismiss, update } = cb(Toast, props)
 
         yield spawn(function* () {
             try {

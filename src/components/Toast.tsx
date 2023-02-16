@@ -1,5 +1,8 @@
+import Dot from '$/components/Dot'
 import Spinner from '$/components/Spinner'
+import Text from '$/components/Text'
 import {
+    ButtonHTMLAttributes,
     FC,
     HTMLAttributes,
     ReactNode,
@@ -103,7 +106,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'c
 
 export default function Toast({
     type = ToastType.None,
-    autoCloseAfter = 3,
+    autoCloseAfter: autoCloseAfterProp = 3,
     onAbort,
     onProceed,
     onDiscardable,
@@ -130,13 +133,15 @@ export default function Toast({
 
     useEffect(() => {
         if (!abortSignal) {
-            return () => {}
+            return () => {
+                // Noop
+            }
         }
 
         function abort() {
-            hide()
-
             onAbort?.()
+
+            hide()
         }
 
         abortSignal.addEventListener('abort', abort)
@@ -154,7 +159,9 @@ export default function Toast({
         const { current: root } = ref
 
         if (!root) {
-            return () => {}
+            return () => {
+                // Noop
+            }
         }
 
         function onAnimationEnd({ animationName }: AnimationEvent) {
@@ -174,9 +181,16 @@ export default function Toast({
         }
     }, [onDiscardable])
 
+    const autoCloseAfter =
+        type !== ToastType.Processing && okLabel == null && cancelLabel == null
+            ? autoCloseAfterProp
+            : false
+
     useEffect(() => {
-        if (autoCloseAfter === false || type === ToastType.Processing) {
-            return () => {}
+        if (autoCloseAfter === false) {
+            return () => {
+                // Do nothing
+            }
         }
 
         const timeoutId = setTimeout(hide, autoCloseAfter * 1000)
@@ -184,13 +198,13 @@ export default function Toast({
         return () => {
             clearTimeout(timeoutId)
         }
-    }, [autoCloseAfter, type])
+    }, [autoCloseAfter])
 
     useLayoutEffect(() => {
         const { current: root } = innerRef
 
         if (!root) {
-            return () => {}
+            return
         }
 
         const { height } = root.getBoundingClientRect()
@@ -266,8 +280,36 @@ export default function Toast({
                 >
                     <h4>{title}</h4>
                     {typeof desc === 'string' ? <p>{desc}</p> : desc}
-                </div>
+                    {(okLabel || cancelLabel) != null && (
+                        <div
+                            css={tw`
+                                mt-1
+                                flex
+                                items-center
+                            `}
+                        >
+                            <Button
+                                onClick={() => {
+                                    onProceed?.()
 
+                                    hide()
+                                }}
+                            >
+                                <Text>{okLabel}</Text>
+                            </Button>
+                            <Dot size={3} css={tw`mx-2`} />
+                            <Button
+                                onClick={() => {
+                                    onAbort?.()
+
+                                    hide()
+                                }}
+                            >
+                                <Text>{cancelLabel}</Text>
+                            </Button>
+                        </div>
+                    )}
+                </div>
                 {type !== ToastType.Processing && (
                     <>
                         {/* Close button */}
@@ -306,5 +348,21 @@ export default function Toast({
                 )}
             </div>
         </div>
+    )
+}
+
+function Button({ type = 'button', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+    return (
+        <button
+            {...props}
+            type={type}
+            css={tw`
+                block
+                text-[14px]
+                font-semibold
+                text-[#59799C]
+                hover:text-[#42526E]
+            `}
+        />
     )
 }

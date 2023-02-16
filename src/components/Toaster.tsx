@@ -209,6 +209,8 @@ export default function Toaster() {
                 dispatch(
                     ToasterAction.show({
                         type: ToastType.Warning,
+                        okLabel: 'Understood',
+                        cancelLabel: 'No thanks',
                         title: 'Haha, lol',
                         desc: 'You good, mate?',
                     })
