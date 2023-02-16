@@ -281,6 +281,7 @@ export default function Toast({
                     css={tw`
                         grow
                         min-w-0
+                        pt-0.5
                         [h4]:(text-[14px] font-medium text-[#42526E] leading-5 break-words)
                         [p]:(text-[14px] text-[#59799C] leading-5 mt-1 break-words)
                     `}

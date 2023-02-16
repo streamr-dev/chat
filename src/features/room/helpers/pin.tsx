@@ -89,7 +89,7 @@ export default function pin({
                 dismissToast = false
 
                 tc = yield retoast(tc, {
-                    title: 'You should already have the room on your list',
+                    title: <>You should already have the room on your&nbsp;list</>,
                     type: ToastType.Error,
                 })
 
