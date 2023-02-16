@@ -295,25 +295,31 @@ export default function Toast({
                                 items-center
                             `}
                         >
-                            <Button
-                                onClick={() => {
-                                    onProceed?.()
+                            {okLabel != null && (
+                                <Button
+                                    onClick={() => {
+                                        onProceed?.()
 
-                                    hide()
-                                }}
-                            >
-                                <Text>{okLabel}</Text>
-                            </Button>
-                            <Dot size={3} css={tw`mx-2`} />
-                            <Button
-                                onClick={() => {
-                                    onAbort?.()
+                                        hide()
+                                    }}
+                                >
+                                    <Text>{okLabel}</Text>
+                                </Button>
+                            )}
+                            {okLabel != null && cancelLabel != null && (
+                                <Dot size={3} css={tw`mx-2`} />
+                            )}
+                            {cancelLabel != null && (
+                                <Button
+                                    onClick={() => {
+                                        onAbort?.()
 
-                                    hide()
-                                }}
-                            >
-                                <Text>{cancelLabel}</Text>
-                            </Button>
+                                        hide()
+                                    }}
+                                >
+                                    <Text>{cancelLabel}</Text>
+                                </Button>
+                            )}
                         </div>
                     )}
                 </div>
