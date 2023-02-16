@@ -7,7 +7,7 @@ import { getJoinPolicyFactory } from '$/features/tokenGatedRooms/utils/getJoinPo
 import handleError from '$/utils/handleError'
 import { RoomId } from '$/features/room/types'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 
