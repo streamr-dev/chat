@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import store from '$/store'
 import Clock from '$/components/Clock'
 import IndexPage from '$/components/IndexPage'
+import Toaster from '$/components/Toster'
 
 const ToastContainer = styled(PrestyledToastContainer)`
     width: auto;
@@ -60,6 +61,35 @@ const customGlobalStyles = css`
                 transform: translateZ(0) scale(1);
             }
         }
+
+        @keyframes toastIn {
+            from {
+                transform: translateX(100%) translateX(1rem) translateZ(0);
+            }
+            to {
+                transform: translateX(0) translateZ(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                transform: translateX(0) translateZ(0);
+            }
+            to {
+                transform: translateX(100%) translateX(1rem) translateZ(0);
+            }
+        }
+
+        @keyframes toastSqueeze {
+            from {
+                transform: translateX(100%) translateX(1rem) translateZ(0);
+            }
+            to {
+                height: 0;
+                margin-top: 0;
+                transform: translateX(100%) translateX(1rem) translateZ(0);
+            }
+        }
     }
 `
 
@@ -75,6 +105,7 @@ export default function App() {
                     <IndexPage />
                 </HashRouter>
             </div>
+            <Toaster />
         </Provider>
     )
 }

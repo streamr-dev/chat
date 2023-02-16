@@ -1,15 +1,15 @@
 import Id from '$/components/Id'
+import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { MiscAction } from '$/features/misc'
 import { PreferencesAction } from '$/features/preferences'
 import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
+import t, { Controller } from '$/features/toaster/helpers/toast'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
-import { error, loading } from '$/utils/toaster'
-import { Id as ToastId, toast } from 'react-toastify'
 import { put, takeLatest } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
@@ -27,7 +27,7 @@ export default function* preselect() {
 
             const owner = account.toLowerCase()
 
-            let toastId: undefined | ToastId
+            let tc: Controller | undefined
 
             try {
                 let preferences: null | IPreference = null
@@ -48,11 +48,14 @@ export default function* preselect() {
                     return
                 }
 
-                toastId = loading(
-                    <>
-                        Opening <Id>{roomId}</Id>…
-                    </>
-                )
+                tc = yield t({
+                    type: ToastType.Processing,
+                    title: (
+                        <>
+                            Opening <Id>{roomId}</Id>…
+                        </>
+                    ),
+                })
 
                 let selectedRoom: null | IRoom = null
 
@@ -64,7 +67,10 @@ export default function* preselect() {
                         })
                         .first()
                 } catch (e) {
-                    error('Failed to find the room')
+                    tc?.update({
+                        type: ToastType.Error,
+                        title: 'Failed to find the room',
+                    })
 
                     return
                 }
@@ -77,7 +83,10 @@ export default function* preselect() {
                                 hidden: false,
                             })
                         } catch (e) {
-                            error('Failed to unhide the room.')
+                            tc?.update({
+                                type: ToastType.Error,
+                                title: 'Failed to unhide the room',
+                            })
                         }
                     }
 
@@ -98,8 +107,8 @@ export default function* preselect() {
                 // The requested room isn't on the list of rooms the app knows. In the next steps
                 // we're gonna make efforts to pin/bookmark it.
 
-                toast.update(toastId, {
-                    render: (
+                tc?.update({
+                    title: (
                         <>
                             Pinning <Id>{roomId}</Id>…
                         </>
@@ -121,7 +130,11 @@ export default function* preselect() {
                     )
 
                     if (!permissions.length && !isPublic) {
-                        error("You don't have access to the room.")
+                        tc?.update({
+                            type: ToastType.Error,
+                            title: "You don't have access to the room",
+                        })
+
                         return
                     }
 
@@ -161,12 +174,15 @@ export default function* preselect() {
                         })
                     )
                 } catch (e) {
-                    error('Failed to open the room.')
+                    tc?.update({
+                        type: ToastType.Error,
+                        title: 'Failed to open the room',
+                    })
                 }
             } finally {
                 window.setTimeout(() => {
                     // Let the toast stick around for halfa second for better UX.
-                    toast.dismiss(toastId)
+                    tc?.dismiss()
                 }, 1000)
             }
         }
