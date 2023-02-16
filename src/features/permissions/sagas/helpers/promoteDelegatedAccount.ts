@@ -1,8 +1,9 @@
+import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
+import toast from '$/features/toaster/helpers/toast'
 import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { error, success } from '$/utils/toaster'
 import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
@@ -31,11 +32,17 @@ export default function promoteDelegatedAccount({
                 }
             )
 
-            success('Delegated account has been promoted.')
+            yield toast({
+                title: 'Delegated account has been promoted',
+                type: ToastType.Success,
+            })
         } catch (e) {
             handleError(e)
 
-            error('Failed to promote the delegated account.')
+            yield toast({
+                title: 'Failed to promote the delegated account',
+                type: ToastType.Error,
+            })
         }
     })
 }

@@ -20,7 +20,6 @@ import CopyIcon from '$/icons/CopyIcon'
 import DeleteIcon from '$/icons/DeleteIcon'
 import EditMembersIcon from '$/icons/EditMembersIcon'
 import GearIcon from '$/icons/GearIcon'
-import { success } from '$/utils/toaster'
 import ActionButton from '../ActionButton'
 import Form from '../Form'
 import Menu, { MenuButtonItem, MenuSeparatorItem } from '../Menu'
@@ -43,6 +42,8 @@ import ArrowIcon from '$/icons/ArrowIcon'
 import useJustInvited from '$/hooks/useJustInvited'
 import { RoomId } from '$/features/room/types'
 import useAnonAccount from '$/hooks/useAnonAccount'
+import { ToasterAction } from '$/features/toaster'
+import { ToastType } from '$/components/Toast'
 
 type Props = {
     canModifyMembers?: boolean
@@ -433,7 +434,12 @@ export default function ConversationHeader({
                                         if (selectedRoomId) {
                                             copy(selectedRoomId)
 
-                                            success('Copied to clipboard.')
+                                            dispatch(
+                                                ToasterAction.show({
+                                                    title: 'Copied to clipboard',
+                                                    type: ToastType.Success,
+                                                })
+                                            )
                                         }
                                         setRoomMenuOpen(false)
                                     }}

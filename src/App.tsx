@@ -1,24 +1,11 @@
-import tw, { styled, GlobalStyles } from 'twin.macro'
+import tw, { GlobalStyles } from 'twin.macro'
 import { css, Global } from '@emotion/react'
 import { HashRouter } from 'react-router-dom'
-import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from '$/store'
 import Clock from '$/components/Clock'
 import IndexPage from '$/components/IndexPage'
 import Toaster from '$/components/Toaster'
-
-const ToastContainer = styled(PrestyledToastContainer)`
-    width: auto;
-
-    .Toastify__toast-body {
-        font-family: inherit;
-    }
-
-    .Toastify__toast-icon {
-        margin-right: 20px;
-    }
-`
 
 const customGlobalStyles = css`
     body {
@@ -100,7 +87,6 @@ export default function App() {
             <Global styles={customGlobalStyles} />
             <Clock />
             <div>
-                <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>
                     <IndexPage />
                 </HashRouter>

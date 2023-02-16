@@ -1,8 +1,6 @@
 import handleError from '$/utils/handleError'
-import { error, loading, success } from '$/utils/toaster'
 import { call, put } from 'redux-saga/effects'
 import { Stream, StreamPermission } from 'streamr-client'
-import { toast } from 'react-toastify'
 import axios from 'axios'
 import { Address } from '$/types'
 import { EnsAction } from '$/features/ens'
@@ -13,6 +11,8 @@ import MemberExistsError from '$/errors/MemberExistsError'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import trunc from '$/utils/trunc'
 import { PermissionsAction } from '$/features/permissions'
+import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -65,14 +65,17 @@ export default function addMember({
     streamrClient,
 }: ReturnType<typeof PermissionsAction.addMember>['payload']) {
     return call(function* () {
-        let toastId
+        let tc: Controller | undefined
 
         try {
-            toastId = loading(
-                <>
-                    Adding <strong>{trunc(member)}</strong>…
-                </>
-            )
+            tc = yield toast({
+                title: (
+                    <>
+                        Adding <strong>{trunc(member)}</strong>…
+                    </>
+                ),
+                type: ToastType.Processing,
+            })
 
             const user: null | string = yield resolveName(member)
 
@@ -107,11 +110,14 @@ export default function addMember({
                 }
             )
 
-            success(
-                <>
-                    <strong>{trunc(member)}</strong> has been added
-                </>
-            )
+            tc.update({
+                title: (
+                    <>
+                        <strong>{trunc(member)}</strong> has been added
+                    </>
+                ),
+                type: ToastType.Success,
+            })
 
             if (isENS(member)) {
                 yield put(
@@ -126,26 +132,30 @@ export default function addMember({
             }
         } catch (e) {
             if (e instanceof MemberExistsError) {
-                error(
-                    <>
-                        <strong>{trunc(e.member)}</strong> is already a member
-                    </>
-                )
+                tc?.update({
+                    title: (
+                        <>
+                            <strong>{trunc(e.member)}</strong> is already a member
+                        </>
+                    ),
+                    type: ToastType.Error,
+                })
 
                 return
             }
 
             handleError(e)
 
-            error(
-                <>
-                    Failed to add <strong>{trunc(member)}</strong>
-                </>
-            )
+            tc?.update({
+                title: (
+                    <>
+                        Failed to add <strong>{trunc(member)}</strong>
+                    </>
+                ),
+                type: ToastType.Error,
+            })
         } finally {
-            if (toastId) {
-                toast.dismiss(toastId)
-            }
+            tc?.dismiss()
         }
     })
 }

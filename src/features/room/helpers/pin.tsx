@@ -1,4 +1,5 @@
 import Id from '$/components/Id'
+import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import { selectDelegatedAccount } from '$/features/delegation/selectors'
@@ -7,14 +8,13 @@ import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
+import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { Address, OptionalAddress } from '$/types'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
-import { error, loading } from '$/utils/toaster'
-import { Id as ToastId, toast } from 'react-toastify'
 import { call, put, select } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
@@ -25,18 +25,21 @@ export default function pin({
     provider,
 }: ReturnType<typeof RoomAction.pin>['payload']) {
     return call(function* () {
-        let toastId: ToastId | undefined
-
         let retrievedAccess = false
+
+        let tc: Controller | undefined
 
         try {
             yield put(FlagAction.set(Flag.isRoomBeingPinned()))
 
-            toastId = loading(
-                <>
-                    Pinning <Id>{roomId}</Id>…
-                </>
-            )
+            tc = yield toast({
+                title: (
+                    <>
+                        Pinning <Id>{roomId}</Id>…
+                    </>
+                ),
+                type: ToastType.Processing,
+            })
 
             const owner = requester.toLowerCase()
 
@@ -78,12 +81,20 @@ export default function pin({
                 yield getUserPermissions(owner, stream)
 
             if (permissions.length) {
-                error('Pinning is redundant. You should already have the room on your list.')
+                tc.update({
+                    title: 'You should already have the room on your list',
+                    type: ToastType.Error,
+                })
+
                 return
             }
 
             if (!isPublic && !isTokenGated) {
-                error("You can't pin private rooms.")
+                tc.update({
+                    title: "You can't pin private rooms",
+                    type: ToastType.Error,
+                })
+
                 return
             }
 
@@ -104,11 +115,12 @@ export default function pin({
         } catch (e) {
             handleError(e)
 
-            error('Pinning failed.')
+            tc?.update({
+                title: 'Pinning failed',
+                type: ToastType.Error,
+            })
         } finally {
-            if (toastId) {
-                toast.dismiss(toastId)
-            }
+            tc?.dismiss()
 
             if (retrievedAccess) {
                 yield put(FlagAction.unset(Flag.isAccessBeingDelegated(requester)))

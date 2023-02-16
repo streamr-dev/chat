@@ -1,7 +1,8 @@
+import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
+import toast from '$/features/toaster/helpers/toast'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { error, success } from '$/utils/toaster'
 import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
@@ -39,11 +40,17 @@ export default function acceptInvite({
                 }
             )
 
-            success('Invite accepted.')
+            yield toast({
+                title: 'Invite accepted',
+                type: ToastType.Success,
+            })
         } catch (e) {
             handleError(e)
 
-            error('Failed to accept an invite.')
+            yield toast({
+                title: 'Failed to accept an invite',
+                type: ToastType.Error,
+            })
         }
     })
 }

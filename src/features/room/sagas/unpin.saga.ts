@@ -1,9 +1,10 @@
+import { ToastType } from '$/components/Toast'
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
+import toast from '$/features/toaster/helpers/toast'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import { error } from '$/utils/toaster'
 import { put } from 'redux-saga/effects'
 
 function* onUnpinAction({
@@ -25,7 +26,10 @@ function* onUnpinAction({
     } catch (e) {
         handleError(e)
 
-        error('Unpinning failed.')
+        yield toast({
+            title: 'Unpinning failed',
+            type: ToastType.Error,
+        })
     }
 }
 

@@ -3,7 +3,6 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import preflight from '$/utils/preflight'
 import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
-import { error, info, success } from '$/utils/toaster'
 import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import RedundantRenameError from '$/errors/RedundantRenameError'
@@ -12,6 +11,8 @@ import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
 import { Stream, StreamMetadata } from 'streamr-client'
 import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
+import toast from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },
@@ -26,7 +27,10 @@ function* onRenameAction({
         const roomMetadata = getRoomMetadata(stream)
 
         if (roomMetadata.name === name) {
-            info('Room name is already up-to-date.')
+            yield toast({
+                title: 'Room name is already up-to-date',
+                type: ToastType.Info,
+            })
 
             try {
                 const room: undefined | IRoom = yield db.rooms.where('id').equals(roomId).first()
@@ -73,7 +77,10 @@ function* onRenameAction({
 
         yield put(FlagAction.unset(Flag.isRoomNameBeingEdited(roomId)))
 
-        success('Room renamed successfully.')
+        yield toast({
+            title: 'Room renamed successfully',
+            type: ToastType.Success,
+        })
     } catch (e) {
         if (e instanceof RedundantRenameError) {
             return
@@ -81,7 +88,10 @@ function* onRenameAction({
 
         handleError(e)
 
-        error('Failed to rename the room.')
+        yield toast({
+            title: 'Failed to rename the room',
+            type: ToastType.Error,
+        })
     }
 }
 

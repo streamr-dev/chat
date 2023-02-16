@@ -6,7 +6,8 @@ import { PreferencesAction } from '$/features/preferences'
 import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
-import t, { Controller } from '$/features/toaster/helpers/toast'
+import retoast from '$/features/toaster/helpers/retoast'
+import { Controller } from '$/features/toaster/helpers/toast'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
@@ -29,6 +30,8 @@ export default function* preselect() {
 
             let tc: Controller | undefined
 
+            let dismissToast = false
+
             try {
                 let preferences: null | IPreference = null
 
@@ -48,13 +51,15 @@ export default function* preselect() {
                     return
                 }
 
-                tc = yield t({
-                    type: ToastType.Processing,
+                dismissToast = true
+
+                tc = yield retoast(tc, {
                     title: (
                         <>
                             Opening <Id>{roomId}</Id>…
                         </>
                     ),
+                    type: ToastType.Processing,
                 })
 
                 let selectedRoom: null | IRoom = null
@@ -67,7 +72,9 @@ export default function* preselect() {
                         })
                         .first()
                 } catch (e) {
-                    tc?.update({
+                    dismissToast = false
+
+                    tc = yield retoast(tc, {
                         type: ToastType.Error,
                         title: 'Failed to find the room',
                     })
@@ -83,7 +90,9 @@ export default function* preselect() {
                                 hidden: false,
                             })
                         } catch (e) {
-                            tc?.update({
+                            dismissToast = false
+
+                            tc = yield retoast(tc, {
                                 type: ToastType.Error,
                                 title: 'Failed to unhide the room',
                             })
@@ -107,12 +116,15 @@ export default function* preselect() {
                 // The requested room isn't on the list of rooms the app knows. In the next steps
                 // we're gonna make efforts to pin/bookmark it.
 
-                tc?.update({
+                dismissToast = true
+
+                tc = yield retoast(tc, {
                     title: (
                         <>
                             Pinning <Id>{roomId}</Id>…
                         </>
                     ),
+                    type: ToastType.Processing,
                 })
 
                 try {
@@ -130,7 +142,9 @@ export default function* preselect() {
                     )
 
                     if (!permissions.length && !isPublic) {
-                        tc?.update({
+                        dismissToast = false
+
+                        tc = yield retoast(tc, {
                             type: ToastType.Error,
                             title: "You don't have access to the room",
                         })
@@ -174,16 +188,17 @@ export default function* preselect() {
                         })
                     )
                 } catch (e) {
-                    tc?.update({
+                    dismissToast = false
+
+                    tc = yield retoast(tc, {
                         type: ToastType.Error,
                         title: 'Failed to open the room',
                     })
                 }
             } finally {
-                window.setTimeout(() => {
-                    // Let the toast stick around for halfa second for better UX.
+                if (dismissToast) {
                     tc?.dismiss()
-                }, 1000)
+                }
             }
         }
     )
