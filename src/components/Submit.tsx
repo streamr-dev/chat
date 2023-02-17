@@ -1,13 +1,18 @@
+import { ButtonHTMLAttributes } from 'react'
 import tw from 'twin.macro'
 import PrimaryButton from './PrimaryButton'
 import Text from './Text'
 
-type Props = {
+interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
     label?: string
-    disabled?: boolean
 }
 
-export default function Submit({ label = 'Submit', disabled = false }: Props) {
+export default function Submit({
+    label = 'Submit',
+    disabled = false,
+    type = 'submit',
+    ...props
+}: Props) {
     return (
         <div
             css={tw`
@@ -19,7 +24,8 @@ export default function Submit({ label = 'Submit', disabled = false }: Props) {
             <div css={tw`grow`} />
             <div>
                 <PrimaryButton
-                    type="submit"
+                    {...props}
+                    type={type}
                     css={tw`
                         h-12
                         rounded-[24px]

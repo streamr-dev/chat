@@ -23,6 +23,7 @@ import Label from '$/components/Label'
 import useCopy from '$/hooks/useCopy'
 import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
+import Submit from '$/components/Submit'
 
 type Props = {
     disabled?: boolean
@@ -125,7 +126,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
 
     const seed = (anonRoom ? anonAccount : account)?.toLowerCase()
 
-    const { open, modal } = useInfoModal()
+    const { open, close, modal } = useInfoModal()
 
     const { copy } = useCopy()
 
@@ -218,6 +219,11 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                 defaultValue={anonPKey}
                                                 readOnly
                                                 type="password"
+                                            />
+                                            <Submit
+                                                label="Ok"
+                                                type="button"
+                                                onClick={() => void close()}
                                             />
                                         </>
                                     )}
