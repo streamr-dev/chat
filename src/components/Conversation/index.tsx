@@ -88,10 +88,7 @@ export default function Conversation() {
                             <MessageFeed messages={messages} resends={resends} />
                         </div>
                     ) : (
-                        <EmptyMessageFeed
-                            canModifyMembers={canGrant}
-                            onAddMemberClick={() => void openAddMemberModal()}
-                        />
+                        <EmptyMessageFeed onAddMemberClick={() => void openAddMemberModal()} />
                     )}
                 </div>
             </div>
