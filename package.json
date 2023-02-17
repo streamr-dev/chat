@@ -13,6 +13,7 @@
         "@coinbase/wallet-sdk": "^3.6.3",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
+        "@ensdomains/ens-avatar": "^0.2.0",
         "@ethersproject/bignumber": "^5.7.0",
         "@ethersproject/experimental": "^5.7.0",
         "@ethersproject/providers": "^5.7.2",
@@ -58,7 +59,6 @@
     "devDependencies": {
         "@emotion/babel-plugin": "^11.10.5",
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
-        "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
         "@types/identicon.js": "^2.3.1",
         "@types/lodash": "^4.14.191",
         "@types/react": "^18.0.27",

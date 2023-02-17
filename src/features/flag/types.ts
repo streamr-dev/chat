@@ -144,4 +144,8 @@ export const Flag = {
     isDisplayingRooms() {
         return JSON.stringify(['isDisplayingRooms'])
     },
+
+    isRetrievingAvatar(ens: string) {
+        return JSON.stringify(['isRetrievingAvatar', ens])
+    },
 }

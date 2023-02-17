@@ -33,6 +33,7 @@ export default defineConfig({
             stream: 'rollup-plugin-node-polyfills/polyfills/stream',
             web3: `${__dirname}/node_modules/web3/dist/web3.min.js`,
             util: 'rollup-plugin-node-polyfills/polyfills/util',
+            assert: 'rollup-plugin-node-polyfills/polyfills/assert',
             process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
             $: `${__dirname}/src`,
         },

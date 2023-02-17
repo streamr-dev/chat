@@ -1,9 +1,13 @@
 import { AliasAction } from '$/features/alias'
 import setAlias from '$/features/alias/helpers/setAlias'
 import { AnonAction } from '$/features/anon'
+import { AvatarAction } from '$/features/avatar'
+import retrieveAvatar from '$/features/avatar/helpers/retrieveAvatar'
 import { DelegationAction } from '$/features/delegation'
 import lookup from '$/features/delegation/helpers/lookup'
 import retrieve from '$/features/delegation/helpers/retrieve'
+import { EnsAction } from '$/features/ens'
+import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import pin from '$/features/room/helpers/pin'
 import { ToasterAction } from '$/features/toaster'
@@ -52,6 +56,26 @@ export default function* lifecycle() {
                 yield takeEvery(AliasAction.set, function* ({ payload }) {
                     yield setAlias(payload)
                 })
+
+                yield takeEveryUnique(AvatarAction.retrieve, function* ({ payload }) {
+                    yield retrieveAvatar(payload)
+                })
+
+                yield takeEvery(
+                    EnsAction.store,
+                    function* ({
+                        payload: {
+                            record: { content: ens },
+                        },
+                    }) {
+                        yield put(
+                            AvatarAction.retrieve({
+                                ens,
+                                fingerprint: Flag.isRetrievingAvatar(ens),
+                            })
+                        )
+                    }
+                )
             }),
         ])
     }

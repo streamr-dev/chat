@@ -8,6 +8,8 @@ import {
 } from '$/features/identicons/hooks'
 import fallbackIdenticon from '$/utils/fallbackIdenticon'
 import Spinner from './Spinner'
+import useENSName from '$/hooks/useENSName'
+import useAvatar from '$/hooks/useAvatar'
 
 export enum AvatarStatus {
     Online = '#00C85D',
@@ -20,7 +22,11 @@ type Props = HTMLAttributes<HTMLDivElement> & {
     backgroundColor?: string
 }
 
-export function Wrap(props: HTMLAttributes<HTMLDivElement>) {
+interface WrapProps extends HTMLAttributes<HTMLDivElement> {
+    busy?: boolean
+}
+
+export function Wrap({ busy = false, children, ...props }: WrapProps) {
     return (
         <div
             {...props}
@@ -32,7 +38,10 @@ export function Wrap(props: HTMLAttributes<HTMLDivElement>) {
                     overflow-hidden
                 `,
             ]}
-        />
+        >
+            {busy && <Spinner strokeWidth={1.5} />}
+            {children}
+        </div>
     )
 }
 
@@ -43,7 +52,11 @@ export default function Avatar({ seed, backgroundColor = '#EFF4F9', status, ...p
 
     const isRetrievingIdenticon = useIsRetrievingIdenticon(seed)
 
-    const busy = !seed || isRetrievingIdenticon
+    const ens = useENSName(seed && /^0x[a-f\d]{40}$/i.test(seed) ? seed : undefined)
+
+    const avatar = useAvatar(ens)
+
+    const busy = !seed || isRetrievingIdenticon || (!!ens && typeof avatar === 'undefined')
 
     const retrieveIdenticon = useRetrieveIdenticon()
 
@@ -53,9 +66,18 @@ export default function Avatar({ seed, backgroundColor = '#EFF4F9', status, ...p
         }
     }, [identicon, seed])
 
+    let href = `data:image/png;base64,${fallbackIdenticon}`
+
+    if (!ens || avatar === null) {
+        href = `data:image/png;base64,${identicon || fallbackIdenticon}`
+    }
+
+    if (typeof avatar === 'string') {
+        href = avatar
+    }
+
     return (
-        <Wrap {...props}>
-            {busy && <Spinner strokeWidth={1.5} />}
+        <Wrap {...props} busy={busy}>
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <mask id={maskId}>
@@ -74,11 +96,12 @@ export default function Avatar({ seed, backgroundColor = '#EFF4F9', status, ...p
                 <g mask={`url(#${maskId})`}>
                     <rect width="100%" height="100%" fill={backgroundColor} />
                     <image
-                        href={`data:image/png;base64,${identicon || fallbackIdenticon}`}
+                        href={href}
                         width="40"
                         height="40"
                         x="0"
                         y="0"
+                        preserveAspectRatio="xMinYMin slice"
                     />
                 </g>
                 {!!status && <circle cx="35" cy="35" r="4" fill={status} />}

@@ -18,6 +18,7 @@ import ens, { ensSaga } from '$/features/ens'
 import lifecycle from '$/features/lifecycle.saga'
 import anon from '$/features/anon'
 import toaster from '$/features/toaster'
+import avatar from '$/features/avatar'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -39,6 +40,7 @@ const store = configureStore({
         misc,
         anon,
         toaster,
+        avatar,
     },
     middleware(getDefaultMiddleware) {
         return [
