@@ -1,5 +1,6 @@
 import Id from '$/components/Id'
-import { ToastType } from '$/components/Toast'
+import Toast, { ToastType } from '$/components/Toast'
+import { Controller as ToastController } from '$/components/Toaster'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import { selectDelegatedAccount } from '$/features/delegation/selectors'
@@ -10,6 +11,7 @@ import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller } from '$/features/toaster/helpers/toast'
+import toaster from '$/features/toaster/helpers/toaster'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { Address, OptionalAddress } from '$/types'
 import db from '$/utils/db'
@@ -29,6 +31,8 @@ export default function pin({
         let retrievedAccess = false
 
         let tc: Controller | undefined
+
+        let confirm: ToastController<typeof Toast> | undefined
 
         let dismissToast = false
 
@@ -62,6 +66,16 @@ export default function pin({
 
             if (tokenAddress) {
                 if (!delegatedAccount) {
+                    confirm = yield toaster({
+                        title: 'Hot wallet required',
+                        type: ToastType.Warning,
+                        desc: 'In order to pin this room the app will ask for your signature.',
+                        okLabel: 'Ok',
+                        cancelLabel: 'Cancel',
+                    })
+
+                    yield confirm?.open()
+
                     retrievedAccess = true
 
                     yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
@@ -134,6 +148,8 @@ export default function pin({
             if (dismissToast) {
                 tc?.dismiss()
             }
+
+            confirm?.dismiss()
 
             if (retrievedAccess) {
                 yield put(FlagAction.unset(Flag.isAccessBeingDelegated(requester)))
