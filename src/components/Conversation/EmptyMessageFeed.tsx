@@ -50,9 +50,7 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                 `,
             ]}
         >
-            {isPublic ? (
-                <Welcome />
-            ) : (
+            {isPublic ? null : (
                 <>
                     <div
                         css={tw`
@@ -125,24 +123,6 @@ function Credits() {
     }
 
     return null
-}
-
-function Welcome() {
-    const { name = 'Unnamed room' } = useSelectedRoom() || {}
-
-    return (
-        <>
-            <p>Welcome to</p>
-            <h2
-                css={tw`
-                    text-[24px]
-                    text-black
-                `}
-            >
-                {name}
-            </h2>
-        </>
-    )
 }
 
 function JoinButton() {
