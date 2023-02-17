@@ -13,7 +13,6 @@ import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
 import misc, { miscSaga } from '$/features/misc'
 import preferences, { preferencesSaga } from '$/features/preferences'
-import { aliasSaga } from '$/features/alias'
 import flag from '$/features/flag'
 import ens, { ensSaga } from '$/features/ens'
 import lifecycle from '$/features/lifecycle.saga'
@@ -73,7 +72,6 @@ const store = configureStore({
 
 sagaMiddleware.run(function* saga() {
     yield all([
-        aliasSaga(),
         draftsSaga(),
         ensSaga(),
         identiconsSaga(),

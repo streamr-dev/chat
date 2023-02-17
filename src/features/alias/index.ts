@@ -1,8 +1,5 @@
-import set from '$/features/alias/sagas/set.saga'
 import { Address } from '$/types'
-import { SEE_SAGA } from '$/utils/consts'
-import { createAction, createReducer } from '@reduxjs/toolkit'
-import { all } from 'redux-saga/effects'
+import { createAction } from '@reduxjs/toolkit'
 
 export const AliasAction = {
     set: createAction<{
@@ -11,13 +8,3 @@ export const AliasAction = {
         value: string
     }>('alias: create'),
 }
-
-const reducer = createReducer({}, (builder) => {
-    builder.addCase(AliasAction.set, SEE_SAGA)
-})
-
-export function* aliasSaga() {
-    yield all([set()])
-}
-
-export default reducer

@@ -56,3 +56,8 @@ export enum Fallback {
 }
 
 export type State = ReturnType<typeof store.getState>
+
+export interface IAlias extends IRecord {
+    address: string
+    alias: string
+}

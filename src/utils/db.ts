@@ -3,7 +3,7 @@ import { IDraft } from '$/features/drafts/types'
 import { IdenticonSeed, IIdenticon } from '$/features/identicons/types'
 import { IMessage, IResend } from '$/features/message/types'
 import { IRoom } from '$/features/room/types'
-import { IAlias } from '$/features/alias/types'
+import { IAlias } from '$/types'
 import { IPreference } from '$/features/preferences/types'
 import { IENSName } from '$/features/ens/types'
 

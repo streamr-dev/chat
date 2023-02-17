@@ -5,7 +5,7 @@ import { Address } from '$/types'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import isBlank from '$/utils/isBlank'
-import { takeEvery } from 'redux-saga/effects'
+import { call } from 'redux-saga/effects'
 
 async function create(owner: Address, address: Address, value: string) {
     const now = Date.now()
@@ -29,8 +29,12 @@ async function update(owner: Address, address: Address, value: string) {
         .modify({ alias: value, updatedAt: Date.now() })
 }
 
-export default function* set() {
-    yield takeEvery(AliasAction.set, function* ({ payload: { owner, address, value } }) {
+export default function setAlias({
+    owner,
+    address,
+    value,
+}: ReturnType<typeof AliasAction.set>['payload']) {
+    return call(function* () {
         try {
             if (isBlank(value)) {
                 try {

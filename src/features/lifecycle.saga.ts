@@ -1,3 +1,5 @@
+import { AliasAction } from '$/features/alias'
+import setAlias from '$/features/alias/helpers/setAlias'
 import { AnonAction } from '$/features/anon'
 import { DelegationAction } from '$/features/delegation'
 import lookup from '$/features/delegation/helpers/lookup'
@@ -45,6 +47,10 @@ export default function* lifecycle() {
 
                 yield takeEvery(ToasterAction.show, function* ({ payload }) {
                     yield toast(payload)
+                })
+
+                yield takeEvery(AliasAction.set, function* ({ payload }) {
+                    yield setAlias(payload)
                 })
             }),
         ])
