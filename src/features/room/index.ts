@@ -153,6 +153,14 @@ export const RoomAction = {
         provider: Provider
     }>('room: pin'),
 
+    pinSticky: createAction<
+        IFingerprinted & {
+            requester: Address
+            streamrClient: StreamrClient
+            provider: Provider
+        }
+    >('room: pin sticky'),
+
     unpin: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
     >('room: unpin'),

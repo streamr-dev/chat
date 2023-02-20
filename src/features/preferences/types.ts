@@ -5,4 +5,5 @@ export interface IPreference extends IRecord {
     showHiddenRooms?: boolean
     selectedRoomId?: RoomId
     retrieveHotWalletImmediately?: boolean
+    stickyRoomIds?: RoomId[]
 }

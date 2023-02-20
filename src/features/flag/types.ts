@@ -34,6 +34,10 @@ export const Flag = {
         return JSON.stringify(['isRoomBeingPinned'])
     },
 
+    isPinningStickyRooms(requester: Address) {
+        return JSON.stringify(['isPinningStickyRooms', requester.toLowerCase()])
+    },
+
     isRoomBeingUnpinned(roomId: RoomId, owner: Address): string {
         return JSON.stringify(['isRoomBeingUnpinned', roomId, owner.toLowerCase()])
     },

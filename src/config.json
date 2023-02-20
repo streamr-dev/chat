@@ -1,3 +1,4 @@
 {
-    "disableTokenGatedRoomCreation": false
+    "disableTokenGatedRoomCreation": false,
+    "stickyRoomIds": []
 }

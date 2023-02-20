@@ -10,6 +10,7 @@ import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import pin from '$/features/room/helpers/pin'
+import pinSticky from '$/features/room/helpers/pinSticky'
 import { ToasterAction } from '$/features/toaster'
 import toast from '$/features/toaster/helpers/toast'
 import { WalletAction } from '$/features/wallet'
@@ -75,7 +76,12 @@ export default function* lifecycle() {
             }
         )
 
-        // This needs to go last. It triggers some actions that have takers set up above.
+        yield takeEveryUnique(RoomAction.pinSticky, function* ({ payload }) {
+            yield pinSticky(payload)
+        })
+
+        // This needs to go last. It triggers some of the actions that have
+        // takers set up above.
         yield changeAccount(payload)
     })
 }

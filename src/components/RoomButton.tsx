@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
-import { IRoom } from '$/features/room/types'
+import { IRoom, RoomId } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useIntercept from '$/hooks/useIntercept'
 import useJustInvited from '$/hooks/useJustInvited'
@@ -20,7 +20,15 @@ import isSameAddress from '$/utils/isSameAddress'
 import { Link, LinkProps } from 'react-router-dom'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { FlagAction } from '$/features/flag'
+import config from '$/config.json'
 
+const stickyRoomSubtitle = config.stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
+    (memo, { id, subtitle }) => {
+        memo[id] = subtitle
+        return memo
+    },
+    {}
+)
 interface Props extends Omit<LinkProps, 'children' | 'to'> {
     active?: boolean
     room: IRoom
@@ -152,31 +160,45 @@ export default function RoomButton({ room, active, ...props }: Props) {
                 >
                     {name || 'Unnamed room'}
                 </div>
-                {typeof recentMessage?.content !== 'undefined' && (
+                {stickyRoomSubtitle[id] ? (
                     <div
                         css={tw`
                             text-[#59799C]
                             text-[14px]
                             font-plex
-                            flex
                         `}
                     >
-                        <div css={tw`min-w-0`}>
-                            <Text truncate css={!seen && tw`font-bold`}>
-                                {recentMessage.content}
-                            </Text>
-                        </div>
-                        {typeof ago !== 'undefined' && (
-                            <>
-                                <div css={tw`px-1`}>
-                                    <Text>·</Text>
-                                </div>
-                                <div>
-                                    <Text>{ago}</Text>
-                                </div>
-                            </>
-                        )}
+                        {stickyRoomSubtitle[id]}
                     </div>
+                ) : (
+                    <>
+                        {typeof recentMessage?.content !== 'undefined' && (
+                            <div
+                                css={tw`
+                                    text-[#59799C]
+                                    text-[14px]
+                                    font-plex
+                                    flex
+                                `}
+                            >
+                                <div css={tw`min-w-0`}>
+                                    <Text truncate css={!seen && tw`font-bold`}>
+                                        {recentMessage.content}
+                                    </Text>
+                                </div>
+                                {typeof ago !== 'undefined' && (
+                                    <>
+                                        <div css={tw`px-1`}>
+                                            <Text>·</Text>
+                                        </div>
+                                        <div>
+                                            <Text>{ago}</Text>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </SidebarButton>

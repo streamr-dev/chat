@@ -287,7 +287,8 @@ export default function Toast({
                         min-w-0
                         pt-0.5
                         [h4]:(text-[14px] font-medium text-[#42526E] leading-5 break-words)
-                        [p]:(text-[14px] text-[#59799C] leading-5 mt-1 break-words)
+                        [p, ul, ol]:(text-[14px] text-[#59799C] leading-5 mt-1 break-words)
+                        [ol]:list-inside
                     `}
                 >
                     <h4>{title}</h4>

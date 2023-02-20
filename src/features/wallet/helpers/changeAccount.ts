@@ -25,7 +25,16 @@ export default function changeAccount(
             return
         }
 
-        const { account, provider } = payload
+        const { account, provider, streamrClient } = payload
+
+        yield put(
+            RoomAction.pinSticky({
+                requester: account,
+                provider,
+                streamrClient,
+                fingerprint: Flag.isPinningStickyRooms(account),
+            })
+        )
 
         yield put(EnsAction.fetchNames([account]))
 
