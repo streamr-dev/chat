@@ -21,8 +21,9 @@ import { Flag } from '$/features/flag/types'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
-import { error } from '$/utils/toaster'
 import { getTokenType } from '$/features/tokenGatedRooms/utils/getTokenType'
+import { ToastType } from '../Toast'
+import toast from '$/features/toaster/helpers/toast'
 
 export interface Pin {
     roomId: RoomId
@@ -118,7 +119,10 @@ export default function AddRoomModal({
                 setCreateNew(false)
                 setIsTokenGatedRoom(true)
             } else {
-                error(`Token type ${tokenType.standard} not implemented`)
+                toast({
+                    title: `Token type ${tokenType.standard} not implemented`,
+                    type: ToastType.Error,
+                })
             }
         }
     }

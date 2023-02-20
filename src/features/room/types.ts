@@ -1,5 +1,5 @@
 import { TokenGatedRoomState } from '$/features/tokenGatedRooms/types'
-import { IRecord, PrivacySetting } from '$/types'
+import { Address, IRecord, PrivacySetting } from '$/types'
 
 export interface RoomState {
     selectedRoomId?: RoomId

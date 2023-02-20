@@ -7,9 +7,7 @@ import { StreamPermission } from 'streamr-client'
 import { Contract, providers, BigNumber } from 'ethers'
 import { Address } from '$/types'
 import { TokenGatedRoomAction } from '..'
-import { toast } from 'react-toastify'
 import handleError from '$/utils/handleError'
-import { error } from '$/utils/toaster'
 import { RoomId } from '$/features/room/types'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 
@@ -27,20 +25,8 @@ import {
     PermissionType,
 } from '$/features/tokenGatedRooms/utils/const'
 import { getPolicyRegistry } from '$/features/tokenGatedRooms/utils/getPolicyRegistry'
-
-function createInformationalToast(message: string, toastId?: string | number) {
-    if (toastId) {
-        toast.dismiss(toastId)
-    }
-
-    return toast.loading(message, {
-        position: 'bottom-left',
-        autoClose: false,
-        type: 'info',
-        closeOnClick: false,
-        hideProgressBar: true,
-    })
-}
+import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
 
 async function waitForPolicyToBeDeployed(
     registry: Contract,
@@ -80,9 +66,12 @@ function* onCreate({
         provider,
     },
 }: ReturnType<typeof TokenGatedRoomAction.create>) {
-    let toastId
+    let tc: Controller | undefined
     try {
-        toastId = createInformationalToast('Deploying Token Gate')
+        tc = yield toast({
+            title: 'Deploying Token Gate',
+            type: ToastType.Info,
+        })
 
         let policyFactoryAbi: any
         let policyFactoryAddress: Address
@@ -137,10 +126,10 @@ function* onCreate({
             stakingEnabled
         )
 
-        toastId = createInformationalToast(
-            `Assigning permissions to the Token Gate at ${policyAddress}`,
-            toastId
-        )
+        tc = yield toast({
+            title: `Assigning permissions to the Token Gate at ${policyAddress}`,
+            type: ToastType.Info,
+        })
 
         yield setMultiplePermissions(
             roomId,
@@ -161,15 +150,18 @@ function* onCreate({
             }
         )
 
-        toastId = createInformationalToast('Done!', toastId)
+        tc = yield toast({
+            title: 'Done!',
+            type: ToastType.Success,
+        })
     } catch (e) {
         handleError(e)
-
-        error('Failed to deploy Token Gate')
+        tc = yield toast({
+            title: 'Failed to deploy Token Gate',
+            type: ToastType.Error,
+        })
     } finally {
-        if (toastId) {
-            toast.dismiss(toastId)
-        }
+        tc?.dismiss()
     }
 }
 

@@ -70,7 +70,6 @@
         "@typescript-eslint/parser": "^5.52.0",
         "@vitejs/plugin-react": "^3.1.0",
         "babel-plugin-macros": "^3.1.0",
-        "ipfs-deploy": "github:ipfs-shipyard/ipfs-deploy",
         "eslint": "^8.34.0",
         "prettier": "^2.8.4",
         "rollup-plugin-node-polyfills": "^0.2.1",

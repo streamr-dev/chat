@@ -30,7 +30,7 @@ function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClie
 
             const { createdAt, createdBy, tokenAddress, name = '' } = getRoomMetadata(stream)
 
-            if (!!tokenAddress) {
+            if (tokenAddress) {
                 // Skip quiet-pinning token gated rooms (by design).
                 throw new Error('Cannot pin a token gated room')
             }

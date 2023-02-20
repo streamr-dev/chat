@@ -43,6 +43,7 @@ export default function tokenGatedPromoteDelegatedAccount({
                 })
             )
 
+            // for some reason this doesn't wait until the previous action is complete and fires immediately
             yield toast({
                 title: 'Delegated account has been promoted on the TokenGated room',
                 type: ToastType.Success,

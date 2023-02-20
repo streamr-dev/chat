@@ -134,7 +134,18 @@ export default function* preselect() {
                         throw new RoomNotFoundError(roomId)
                     }
 
-                    const { createdAt, createdBy, name = '' } = getRoomMetadata(stream)
+                    const {
+                        createdAt,
+                        createdBy,
+                        tokenAddress,
+                        name = '',
+                    } = getRoomMetadata(stream)
+
+                    if (tokenAddress) {
+                        // avoid pinning tokenGated rooms
+                        yield put(RoomAction.select(undefined))
+                        return
+                    }
 
                     const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
                         owner,

@@ -1,15 +1,18 @@
 import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import { usePrivacy } from '$/features/room/hooks'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useAbility from '$/hooks/useAbility'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import useAnonClient from '$/hooks/useAnonClient'
+import { PrivacySetting } from '$/types'
 import { StreamPermission } from 'streamr-client'
 
 export enum PublisherState {
     Unavailable,
     NeedsDelegation,
     NeedsPermission,
+    NeedsTokenGatedPermission,
 }
 
 export default function usePublisher(roomId: RoomId | undefined) {
@@ -30,6 +33,8 @@ export default function usePublisher(roomId: RoomId | undefined) {
     const canMainPublish = !!useAbility(roomId, mainAccount, StreamPermission.PUBLISH)
 
     const canMainGrant = !!useAbility(roomId, mainAccount, StreamPermission.GRANT)
+
+    const isTokenGated = usePrivacy(roomId) === PrivacySetting.TokenGated
 
     if (typeof canAnonPublish === 'undefined') {
         /**
@@ -64,6 +69,10 @@ export default function usePublisher(roomId: RoomId | undefined) {
 
         if (canMainGrant) {
             return PublisherState.NeedsPermission
+        }
+
+        if (isTokenGated) {
+            return PublisherState.NeedsTokenGatedPermission
         }
     }
 
