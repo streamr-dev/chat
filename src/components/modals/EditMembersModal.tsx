@@ -2,8 +2,9 @@ import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Address } from '$/types'
-import { MemberAction } from '$/features/member'
-import { useMembers, useMembersFetching } from '$/features/members/hooks'
+import { PermissionsAction } from '$/features/permissions'
+import useRoomMembers from '$/hooks/useRoomMembers'
+import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import { usePrivacyOption, useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
@@ -14,12 +15,12 @@ import getExplorerURL from '$/utils/getExplorerURL'
 import isSameAddress from '$/utils/isSameAddress'
 import Avatar, { AvatarStatus } from '../Avatar'
 import Menu, { MenuButtonItem, MenuLinkItem, MenuSeparatorItem } from '../Menu'
-import Modal, { ModalProps } from './Modal'
+import Modal, { Props } from './Modal'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
-import { useIsMemberBeingRemoved } from '$/features/member/hooks'
+import useIsMemberBeingRemoved from '$/hooks/useIsMemberBeingRemoved'
 import { success } from '$/utils/toaster'
 import MoreActionButton from '$/components/MoreActionButton'
 import { useAlias } from '$/features/alias/hooks'
@@ -34,17 +35,12 @@ import EditIcon from '$/icons/EditIcon'
 import useENSName from '$/hooks/useENSName'
 import trunc from '$/utils/trunc'
 import { AccountType } from '$/utils/getAccountType'
+import useCanGrant from '$/hooks/useCanGrant'
 
-type MenuOpens = {
-    [index: string]: boolean
-}
+export default function EditMembersModal({ title = 'Edit members', ...props }: Props) {
+    const menuOpenRef = useRef<Record<string, boolean>>({})
 
-type Props = ModalProps & {
-    canModifyMembers?: boolean
-}
-
-export default function EditMembersModal({ open, canModifyMembers = false, ...props }: Props) {
-    const menuOpenRef = useRef<MenuOpens>({})
+    const canGrant = useCanGrant()
 
     const [anyMenuOpen, setAnyMenuOpen] = useState<boolean>(false)
 
@@ -70,7 +66,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
             }
 
             dispatch(
-                MemberAction.remove({
+                PermissionsAction.removeMember({
                     roomId: selectedRoomId,
                     member,
                     provider,
@@ -83,9 +79,9 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
         [dispatch, selectedRoomId, provider, requester, streamrClient]
     )
 
-    const members = useMembers(selectedRoomId)
+    const members = useRoomMembers(selectedRoomId)
 
-    const isFetchingMembers = useMembersFetching(selectedRoomId)
+    const isDetectingRoomMembers = useIsDetectingRoomMembers(selectedRoomId)
 
     const account = useWalletAccount()
 
@@ -98,51 +94,42 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
     } = usePrivacyOption(selectedRoomId)
 
     return (
-        <Modal {...props} open={open} title="Edit members">
+        <Modal {...props} title={title}>
             <div
-                css={[
-                    tw`
-                        py-6
-                        pr-6
-                        bg-[#F7F9FC]
-                        text-[#59799C]
-                        flex
-                        items-center
-                        rounded-lg
-                        mb-3
-                    `,
-                ]}
+                css={tw`
+                    py-4
+                    md:py-6
+                    pr-6
+                    bg-[#F7F9FC]
+                    text-[#59799C]
+                    flex
+                    items-center
+                    rounded-lg
+                    mb-3
+                `}
             >
-                <div
-                    css={[
-                        tw`
-                            w-[72px]
-                        `,
-                    ]}
-                >
-                    <PrivacyIcon tw="mx-auto" />
+                <div css={tw`w-[72px]`}>
+                    <PrivacyIcon css={tw`mx-auto`} />
                 </div>
                 <div>
-                    <p tw="text-[0.75rem]">
+                    <p css={tw`text-[0.75rem]`}>
                         <strong>{privacyLabel} room</strong>
                         <br />
                         {privacyDesc}
                     </p>
                 </div>
             </div>
-            <div tw="relative">
+            <div css={tw`relative`}>
                 {anyMenuOpen && (
                     // If any item has its menu open we block list's scroll by covering it
                     // with a thin layer of unscrollable div.
                     <div
-                        css={[
-                            tw`
-                                absolute
-                                h-full
-                                w-full
-                                z-10
-                            `,
-                        ]}
+                        css={tw`
+                            absolute
+                            h-full
+                            w-full
+                            z-10
+                        `}
                     />
                 )}
                 <div
@@ -154,47 +141,38 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                             box-content
                             [> * + *]:mt-4
                         `,
-                        isFetchingMembers &&
-                            tw`
-                                bg-[#F7F9FC]
-                            `,
+                        isDetectingRoomMembers && tw`bg-[#F7F9FC]`,
                     ]}
                 >
-                    {isFetchingMembers ? (
+                    {isDetectingRoomMembers ? (
                         <div
-                            css={[
-                                tw`
-                                    flex
-                                    flex-col
-                                    h-full
-                                    justify-center
-                                `,
-                            ]}
+                            css={tw`
+                                flex
+                                flex-col
+                                h-full
+                                justify-center
+                            `}
                         >
                             <div>
                                 <div
-                                    css={[
-                                        tw`
-                                            w-6
-                                            h-6
-                                            relative
-                                            mx-auto
-                                            mb-1
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        w-6
+                                        h-6
+                                        relative
+                                        mx-auto
+                                        mb-1
+                                    `}
                                 >
                                     <Spinner />
                                 </div>
                                 <p
-                                    css={[
-                                        tw`
-                                            text-[#59799C]
-                                            uppercase
-                                            text-[0.625rem]
-                                            font-medium
-                                            text-center
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        text-[#59799C]
+                                        uppercase
+                                        text-[0.625rem]
+                                        font-medium
+                                        text-center
+                                    `}
                                 >
                                     Loading…
                                 </p>
@@ -207,7 +185,7 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
                                     key={address}
                                     onMenuToggle={onMenuToggle}
                                     address={address}
-                                    canBeDeleted={canModifyMembers}
+                                    canBeDeleted={canGrant}
                                     onDeleteClick={onDeleteClick}
                                     isCurrentAccount={isSameAddress(address, account)}
                                     isCurrentDelegatedAccount={isSameAddress(
@@ -225,6 +203,8 @@ export default function EditMembersModal({ open, canModifyMembers = false, ...pr
         </Modal>
     )
 }
+
+EditMembersModal.displayName = 'EditMembersModal'
 
 type ItemProps = HTMLAttributes<HTMLDivElement> & {
     address: string
@@ -310,51 +290,44 @@ function Item({
 
                 setIsAddingNickname(false)
             }}
-            css={[
-                tw`
-                    h-[96px]
-                    bg-[#F1F4F7]
-                    rounded-lg
-                    relative
-                `,
-            ]}
+            css={tw`
+                h-20
+                md:h-[96px]
+                bg-[#F1F4F7]
+                rounded-lg
+                relative
+            `}
         >
             <div
-                css={[
-                    tw`
-                        absolute
-                        top-0
-                        left-1/2
-                        -translate-y-1/4
-                        -translate-x-1/2
-                        flex
-                        [* + *]:ml-1
-                    `,
-                ]}
+                css={tw`
+                    absolute
+                    top-0
+                    left-1/2
+                    -translate-y-1/4
+                    -translate-x-1/2
+                    flex
+                    [* + *]:ml-1
+                `}
             >
                 {justInvited && <Tag>Invite pending</Tag>}
             </div>
             <div
                 {...props}
-                css={[
-                    tw`
+                css={tw`
+                    h-full
+                    flex
+                    items-center
+                `}
+            >
+                <div
+                    css={tw`
                         h-full
                         flex
                         items-center
-                    `,
-                ]}
-            >
-                <div
-                    css={[
-                        tw`
-                            h-full
-                            flex
-                            items-center
-                            flex-shrink-0
-                            justify-center
-                            w-[72px]
-                        `,
-                    ]}
+                        shrink-0
+                        justify-center
+                        w-[72px]
+                    `}
                 >
                     <Avatar
                         seed={address.toLowerCase()}
@@ -363,22 +336,18 @@ function Item({
                     />
                 </div>
                 <div
-                    css={[
-                        tw`
-                            flex-grow
-                            min-w-0
-                        `,
-                    ]}
+                    css={tw`
+                        grow
+                        min-w-0
+                    `}
                 >
                     <div
-                        css={[
-                            tw`
-                                flex
-                                items-center
-                                h-[28px]
-                                w-full
-                            `,
-                        ]}
+                        css={tw`
+                            flex
+                            items-center
+                            h-[28px]
+                            w-full
+                        `}
                     >
                         {isAddingNickname ? (
                             <input
@@ -393,45 +362,41 @@ function Item({
                                         e.stopPropagation()
                                     }
                                 }}
-                                css={[
-                                    tw`
-                                        text-[1.125rem]
-                                        placeholder:text-[#DEE6EE]
-                                        border
-                                        border-[#DEE6EE]
-                                        rounded-lg
-                                        w-[90%]
-                                        px-3
-                                        outline-none
-                                        focus:border-[#59799C]
-                                    `,
-                                ]}
+                                css={tw`
+                                    text-[1rem]
+                                    md:text-[1.125rem]
+                                    placeholder:text-[#DEE6EE]
+                                    border
+                                    border-[#DEE6EE]
+                                    rounded-lg
+                                    w-[90%]
+                                    px-3
+                                    outline-none
+                                    focus:border-[#59799C]
+                                `}
                             />
                         ) : (
                             <div
                                 onDoubleClick={editAlias}
-                                css={[
-                                    tw`
-                                        text-[1.125rem]
-                                        font-medium
-                                        truncate
-                                    `,
-                                ]}
+                                css={tw`
+                                    text-[1rem]
+                                    md:text-[1.125rem]
+                                    font-medium
+                                    truncate
+                                `}
                             >
                                 {alias || displayName}
                             </div>
                         )}
                     </div>
                     <div
-                        css={[
-                            tw`
-                                text-[#59799C]
-                                text-[0.875rem]
-                            `,
-                        ]}
+                        css={tw`
+                            text-[#59799C]
+                            text-[0.875rem]
+                        `}
                     >
                         {isAddingNickname ? (
-                            <div css={[tw``]}>
+                            <div>
                                 <Text>Nickname is only visible to you</Text>
                             </div>
                         ) : (
@@ -461,33 +426,29 @@ function Item({
                     </div>
                 </div>
                 <div
-                    css={[
-                        tw`
-                            h-full
-                            flex
-                            items-center
-                            flex-shrink-0
-                            justify-center
-                            w-[72px]
-                        `,
-                    ]}
+                    css={tw`
+                        h-full
+                        flex
+                        items-center
+                        shrink-0
+                        justify-center
+                        w-[72px]
+                    `}
                 >
                     {isAddingNickname ? (
                         <ActionButton type="submit" light>
-                            <CheckIcon tw="w-10" />
+                            <CheckIcon css={tw`w-10`} />
                         </ActionButton>
                     ) : (
                         <MoreActionButton
                             icon={
                                 <RemoveUserIcon
-                                    css={[
-                                        tw`
-                                            w-4
-                                            h-4
-                                            translate-x-[1px]
-                                            translate-y-[-1px]
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        w-4
+                                        h-4
+                                        translate-x-[1px]
+                                        translate-y-[-1px]
+                                    `}
                                 />
                             }
                             deleting={isBeingRemoved}
@@ -542,12 +503,10 @@ function Item({
                                     <MenuButtonItem
                                         icon={
                                             <RemoveUserIcon
-                                                css={[
-                                                    tw`
-                                                        w-4
-                                                        h-4
-                                                    `,
-                                                ]}
+                                                css={tw`
+                                                    w-4
+                                                    h-4
+                                                `}
                                             />
                                         }
                                         onClick={() => {

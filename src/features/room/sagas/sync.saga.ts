@@ -1,19 +1,18 @@
 import { put } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
-import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { RoomAction } from '..'
 import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import getStreamMetadata from '$/utils/getStreamMetadata'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 
 function* onSyncAction({
     payload: { roomId, requester, streamrClient },
 }: ReturnType<typeof RoomAction.sync>) {
     try {
-        const stream: undefined | Stream = yield getStream(streamrClient, roomId)
+        const stream: null | Stream = yield streamrClient.getStream(roomId)
 
         if (stream) {
             const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
@@ -32,11 +31,12 @@ function* onSyncAction({
             }
 
             if (permissions.length || pinned) {
-                const metadata: IRoom = yield getStreamMetadata(stream)
+                const { name = '' } = getRoomMetadata(stream)
+
                 yield put(
                     RoomAction.renameLocal({
                         roomId,
-                        name: metadata.name || '',
+                        name,
                     })
                 )
 

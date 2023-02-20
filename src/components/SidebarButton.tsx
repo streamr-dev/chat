@@ -1,30 +1,57 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 import tw from 'twin.macro'
+import { Link, LinkProps } from 'react-router-dom'
 
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
+interface CommonProps {
     icon?: ReactNode
     active?: boolean
     misc?: ReactNode
 }
 
-export default function SidebarButton({
+type Tag = undefined | 'a' | 'button' | typeof Link
+
+type IntristicProps<T> = T extends undefined
+    ? never
+    : T extends string
+    ? T extends 'a'
+        ? ComponentProps<'a'>
+        : T extends 'button'
+        ? Omit<ComponentProps<'button'>, 'type'>
+        : never
+    : T extends typeof Link
+    ? LinkProps
+    : never
+
+type Props<T> = { tag?: T } & IntristicProps<T> & CommonProps
+
+export default function SidebarButton<T extends Tag = 'button'>({
+    tag: Tag = 'button',
     icon = <FallbackIcon />,
     children,
     active = false,
     misc,
     ...props
-}: Props) {
+}: Props<T>) {
+    const rest =
+        Tag === 'button'
+            ? {
+                  ...props,
+                  type: 'button',
+              }
+            : props
+
     return (
-        <button
-            {...props}
-            type="button"
+        <Tag
+            {...(rest as any)}
             css={[
                 tw`
                     outline-none
                     appearance-none
-                    h-[92px]
+                    h-20
+                    lg:h-[92px]
                     rounded-[20px]
-                    p-6
+                    px-3
+                    lg:px-6
                     bg-[rgba(255, 255, 255, 0.3)]
                     text-left
                     w-full
@@ -35,10 +62,7 @@ export default function SidebarButton({
                     relative
                     hover:bg-[rgba(255, 255, 255, 0.85)]
                 `,
-                active &&
-                    tw`
-                        !bg-white
-                    `,
+                active && tw`!bg-white`,
             ]}
         >
             <div
@@ -46,8 +70,9 @@ export default function SidebarButton({
                     tw`
                         h-12
                         w-12
-                        mr-4
-                        flex-shrink-0
+                        mr-3
+                        lg:mr-4
+                        shrink-0
                     `,
                 ]}
             >
@@ -57,14 +82,14 @@ export default function SidebarButton({
                 css={[
                     tw`
                         min-w-0
-                        flex-grow
+                        grow
                     `,
                 ]}
             >
                 {children}
             </div>
             <div>{misc}</div>
-        </button>
+        </Tag>
     )
 }
 

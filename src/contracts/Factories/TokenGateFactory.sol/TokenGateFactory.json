@@ -21,9 +21,9 @@
           "type": "uint256"
         },
         {
-          "internalType": "uint256",
-          "name": "tokenId_",
-          "type": "uint256"
+          "internalType": "uint256[]",
+          "name": "tokenIds_",
+          "type": "uint256[]"
         },
         {
           "internalType": "bool",

@@ -1,24 +1,23 @@
 import { takeEvery } from 'redux-saga/effects'
 import { RoomAction } from '..'
-import { EnhancedStream } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import db from '$/utils/db'
-import getStream from '$/utils/getStream'
 import handleError from '$/utils/handleError'
 import { IRoom } from '../types'
-import getStreamMetadata from '$/utils/getStreamMetadata'
+import { Stream } from 'streamr-client'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 
 function* onFetchAction({
     payload: { roomId, requester, streamrClient },
 }: ReturnType<typeof RoomAction.fetch>) {
     try {
-        const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
+        const stream: null | Stream = yield streamrClient.getStream(roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)
         }
 
-        const metadata = getStreamMetadata(stream)
+        const { createdAt, createdBy, name = '' } = getRoomMetadata(stream)
 
         const owner = requester.toLowerCase()
 
@@ -29,10 +28,10 @@ function* onFetchAction({
         }
 
         return db.rooms.add({
-            createdAt: metadata.createdAt,
-            createdBy: metadata.createdBy,
+            createdAt,
+            createdBy,
             id: stream.id,
-            name: metadata.name || '',
+            name,
             owner,
         })
     } catch (e) {

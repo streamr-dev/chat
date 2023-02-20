@@ -1,9 +1,8 @@
 import { PreferencesAction } from '$/features/preferences'
-import { RoomAction } from '$/features/room'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import { error } from '$/utils/toaster'
-import { put, takeEvery } from 'redux-saga/effects'
+import { takeEvery } from 'redux-saga/effects'
 
 function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
     try {
@@ -19,10 +18,6 @@ function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
 
         if (numUpdated === 0) {
             yield db.preferences.add({ ...payload, owner })
-        }
-
-        if ('selectedRoomId' in payload) {
-            yield put(RoomAction.select(payload.selectedRoomId))
         }
     } catch (e) {
         handleError(e)

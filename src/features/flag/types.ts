@@ -30,16 +30,12 @@ export const Flag = {
         return JSON.stringify(['isRoomBeingDeleted', roomId])
     },
 
-    isRoomBeingPinned(roomId: RoomId, owner: Address): string {
-        return JSON.stringify(['isRoomBeingPinned', roomId, owner.toLowerCase()])
+    isRoomBeingPinned() {
+        return JSON.stringify(['isRoomBeingPinned'])
     },
 
     isRoomBeingUnpinned(roomId: RoomId, owner: Address): string {
         return JSON.stringify(['isRoomBeingUnpinned', roomId, owner.toLowerCase()])
-    },
-
-    isPrivacyBeingChanged(roomId: RoomId): string {
-        return JSON.stringify(['isPrivacyBeingChanged', roomId])
     },
 
     isRoomNameBeingEdited(roomId: RoomId): string {
@@ -108,10 +104,6 @@ export const Flag = {
         return JSON.stringify(['isIdenticonBeingRetrieved', seed])
     },
 
-    areMembersBeingFetched(roomId: RoomId): string {
-        return JSON.stringify(['areMembersBeingFetched', roomId])
-    },
-
     isENSNameBeingStored(name: string): string {
         return JSON.stringify(['isENSNameBeingStored', name.toLowerCase()])
     },
@@ -144,5 +136,17 @@ export const Flag = {
 
     isLookingUpDelegation(delegatedAddress: Address) {
         return JSON.stringify(['isLookingUpDelegation', delegatedAddress.toLowerCase()])
+    },
+
+    isFetchingKnownTokens() {
+        return JSON.stringify(['isFetchingKnownTokens'])
+    },
+
+    isFetchingTokenStandard(tokenAddress: Address) {
+        return JSON.stringify(['isFetchingTokenStandard', tokenAddress.toLowerCase()])
+    },
+
+    isDisplayingRooms() {
+        return JSON.stringify(['isDisplayingRooms'])
     },
 }

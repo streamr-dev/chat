@@ -1,7 +1,7 @@
-import { ButtonHTMLAttributes, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { PermissionAction } from '$/features/permission'
+import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
@@ -11,15 +11,17 @@ import useRecentMessage from '$/hooks/useRecentMessage'
 import Avatar from './Avatar'
 import SidebarButton from './SidebarButton'
 import Text from './Text'
-import { PreferencesAction } from '$/features/preferences'
 import useIsRoomVisible from '$/hooks/useIsRoomVisible'
 import useIsRoomPinned from '$/hooks/useIsRoomPinned'
 import { Flag } from '$/features/flag/types'
 import PinIcon from '$/icons/PinIcon'
 import useAgo from '$/hooks/useAgo'
 import isSameAddress from '$/utils/isSameAddress'
+import { Link, LinkProps } from 'react-router-dom'
+import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
+import { FlagAction } from '$/features/flag'
 
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'children'> & {
+type Props = Omit<LinkProps, 'children' | 'to'> & {
     active?: boolean
     room: IRoom
 }
@@ -60,7 +62,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
         }
 
         dispatch(
-            PermissionAction.fetchAll({
+            PermissionsAction.fetchPermissions({
                 roomId: id,
                 address,
                 streamrClient,
@@ -79,23 +81,19 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const seen = isSameAddress(recentMessage?.createdBy, address) || Boolean(recentMessage?.seenAt)
 
+    const partials = pathnameToRoomIdPartials(id)
+
+    const url =
+        typeof partials === 'string' ? `/${partials}` : `/${partials.account}~${partials.uuid}`
+
     return (
         <SidebarButton
             {...props}
+            tag={Link}
             active={active}
             icon={<Icon id={id} />}
-            onClick={() => {
-                if (!address) {
-                    return
-                }
-
-                dispatch(
-                    PreferencesAction.set({
-                        owner: address,
-                        selectedRoomId: id,
-                    })
-                )
-            }}
+            to={url}
+            onClick={() => void dispatch(FlagAction.unset(Flag.isDisplayingRooms()))}
             misc={
                 <>
                     <div

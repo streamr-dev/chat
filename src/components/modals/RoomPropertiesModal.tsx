@@ -2,13 +2,9 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
 import tw from 'twin.macro'
-import { PrivacySetting } from '$/types'
 import { RoomAction } from '$/features/room'
 import {
-    useChangingPrivacy,
-    useGettingPrivacy,
     useGettingStorageNodes,
-    usePrivacyOption,
     useSelectedRoomId,
     useStorageNodeState,
     useStorageNodeToggling,
@@ -20,15 +16,20 @@ import Label from '../Label'
 import Submit from '../Submit'
 import Text from '../Text'
 import Toggle from '../Toggle'
-import Modal, { ModalProps } from './Modal'
+import Modal, { Props as ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
-import PrivacySelectField from '$/components/PrivacySelectField'
 import { useGetTokenMetadata } from '$/features/tokenGatedRooms/hooks'
-import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { BigNumber } from 'ethers'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import TextField from '$/components/TextField'
 
-export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalProps) {
+export default function RoomPropertiesModal({
+    title = 'Room properties',
+    subtitle = 'Unnamed room',
+    onAbort,
+    ...props
+}: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
     const {
@@ -36,7 +37,7 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
         tokenAddress,
         minRequiredBalance,
         tokenType,
-        tokenId,
+        tokenIds,
         stakingEnabled,
     } = useSelectedRoom() || {}
 
@@ -92,22 +93,12 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                 fingerprint: Flag.isGettingStorageNodes(selectedRoomId),
             })
         )
-
-        dispatch(
-            RoomAction.getPrivacy({
-                roomId: selectedRoomId,
-                streamrClient,
-                fingerprint: Flag.isGettingPrivacy(selectedRoomId),
-            })
-        )
     }, [open, selectedRoomId])
-
-    const privacyOption = usePrivacyOption(selectedRoomId)
 
     const tokenMetadata = useGetTokenMetadata()
 
     useEffect(() => {
-        if (!tokenAddress || !tokenType || !provider) {
+        if (!tokenAddress || !tokenType || !provider || !tokenIds) {
             return
         }
 
@@ -116,32 +107,17 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                 tokenAddress,
                 tokenType,
                 provider,
-                tokenId: tokenId ? tokenId.toString() : BigNumber.from(0).toString(),
+                tokenIds:
+                    tokenIds.length > 0
+                        ? tokenIds.map((tokenId) => BigNumber.from(tokenId).toString())
+                        : [],
             })
         )
-    }, [tokenAddress, tokenType, provider, tokenId, tokenMetadata])
-
-    const isChangingPrivacy = useChangingPrivacy(selectedRoomId)
-
-    const isGettingPrivacy = useGettingPrivacy(selectedRoomId)
-
-    const isPrivacyBusy = isChangingPrivacy || isGettingPrivacy
-
-    function onSubmit() {
-        if (typeof setOpen === 'function') {
-            setOpen(false)
-        }
-    }
+    }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
 
     return (
-        <Modal
-            {...props}
-            open={open}
-            setOpen={setOpen}
-            title="Room properties"
-            subtitle={roomName || 'Unnamed room'}
-        >
-            {tokenMetadata && (
+        <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
+            {tokenMetadata ? (
                 <>
                     {tokenType && (
                         <Label>
@@ -234,80 +210,30 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                                 `,
                             ]}
                         >
-                            <Toggle value={stakingEnabled} />
+                            <Toggle value={stakingEnabled || false} />
                         </div>
                     </div>
                 </>
-            )}
-
-            <Form onSubmit={onSubmit}>
-                <>
-                    <Label>Privacy</Label>
-                    <PrivacySelectField
-                        isDisabled={
-                            isPrivacyBusy || privacyOption.value === PrivacySetting.TokenGated
-                        }
-                        value={privacyOption}
-                        onChange={(option: any) => {
-                            if (
-                                !selectedRoomId ||
-                                !provider ||
-                                !requester ||
-                                !streamrClient ||
-                                option.value === PrivacySetting.TokenGated
-                            ) {
-                                return
-                            }
-
-                            dispatch(
-                                RoomAction.changePrivacy({
-                                    roomId: selectedRoomId,
-                                    privacy: option.value,
-                                    provider,
-                                    requester,
-                                    streamrClient,
-                                    fingerprint: Flag.isPrivacyBeingChanged(selectedRoomId),
-                                })
-                            )
-                        }}
-                    />
-                </>
+            ) : null}
+            <Form onSubmit={() => void onAbort?.()}>
+                {!!selectedRoomId && (
+                    <>
+                        <Label>Room id</Label>
+                        <TextField defaultValue={selectedRoomId} readOnly />
+                    </>
+                )}
                 <>
                     <Label>Message storage</Label>
-                    <div
-                        css={[
-                            tw`
-                                flex
-                            `,
-                        ]}
-                    >
-                        <div
-                            css={[
-                                tw`
-                                    flex-grow
-                                `,
-                            ]}
-                        >
-                            <Hint
-                                css={[
-                                    tw`
-                                        pr-16
-                                    `,
-                                ]}
-                            >
+                    <div css={tw`flex`}>
+                        <div css={tw`grow`}>
+                            <Hint css={tw`pr-16`}>
                                 <Text>
                                     When message storage is disabled, participants will only see
                                     messages sent while they are online.
                                 </Text>
                             </Hint>
                         </div>
-                        <div
-                            css={[
-                                tw`
-                                    mt-2
-                                `,
-                            ]}
-                        >
+                        <div css={tw`mt-2`}>
                             <Toggle
                                 value={isStorageBusy ? undefined : isStorageEnabled}
                                 onClick={onStorageToggleClick}
@@ -317,9 +243,11 @@ export default function RoomPropertiesModal({ open, setOpen, ...props }: ModalPr
                     </div>
                 </>
                 <>
-                    <Submit label="Ok" />
+                    <Submit label="Close" />
                 </>
             </Form>
         </Modal>
     )
 }
+
+RoomPropertiesModal.displayName = 'RoomPropertiesModal'

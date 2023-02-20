@@ -1,23 +1,20 @@
 import { Fragment, HTMLAttributes, useEffect, useLayoutEffect, useRef } from 'react'
 import tw from 'twin.macro'
 import { IMessage, IResend } from '$/features/message/types'
-import { useWalletAccount } from '$/features/wallet/hooks'
-import isSameAddress from '$/utils/isSameAddress'
 import Message from './Message'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import MessageGroupLabel from '$/components/Conversation/MessageGroupLabel'
 import Text from '$/components/Text'
 import useMessageGroups from '$/hooks/useMessageGroups'
-import { useDelegatedAccount } from '$/features/delegation/hooks'
 
-type Props = {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     messages?: IMessage[]
     resends?: IResend[]
 }
 
 const AutoScrollTolerance = 5
 
-export default function MessageFeed({ messages = [], resends = [] }: Props) {
+export default function MessageFeed({ messages = [], resends = [], ...props }: Props) {
     const rootRef = useRef<HTMLDivElement>(null)
 
     const stickyRef = useRef<boolean>(true)
@@ -60,22 +57,19 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
         }
     }, [groups])
 
-    const account = useWalletAccount()
-
-    const delegatedAccount = useDelegatedAccount()
-
     return (
         <div
+            {...props}
             ref={rootRef}
-            css={[
-                tw`
-                    max-h-full
-                    overflow-auto
-                    px-6
-                    pt-6
-                    [> *]:mt-[0.625rem]
-                `,
-            ]}
+            css={tw`
+                max-h-full
+                overflow-auto
+                px-4
+                lg:px-6
+                py-4
+                lg:py-6
+                [> *]:mt-[0.625rem]
+            `}
         >
             {groups.map(({ timestamp, newDay, messages }, index) => {
                 let previousCreatedBy: undefined | IMessage['createdBy']
@@ -102,10 +96,6 @@ export default function MessageFeed({ messages = [], resends = [] }: Props) {
                                 <Message
                                     key={message.id}
                                     payload={message}
-                                    incoming={
-                                        !isSameAddress(account, message.createdBy) &&
-                                        !isSameAddress(delegatedAccount, message.createdBy)
-                                    }
                                     previousCreatedBy={pcb}
                                 />
                             )
@@ -121,14 +111,12 @@ function NoMessages(props: HTMLAttributes<HTMLParagraphElement>) {
     return (
         <p
             {...props}
-            css={[
-                tw`
-                    text-[#59799C]
-                    text-[12px]
-                    m-0
-                    text-center
-                `,
-            ]}
+            css={tw`
+                text-[#59799C]
+                text-[12px]
+                m-0
+                text-center
+            `}
         />
     )
 }

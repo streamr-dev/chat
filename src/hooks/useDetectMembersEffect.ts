@@ -1,5 +1,5 @@
 import { Flag } from '$/features/flag/types'
-import { MembersAction } from '$/features/members'
+import { PermissionsAction } from '$/features/permissions'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { useEffect } from 'react'
@@ -20,7 +20,7 @@ export default function useDetectMembersEffect() {
         }
 
         dispatch(
-            MembersAction.detect({
+            PermissionsAction.detectRoomMembers({
                 roomId: selectedRoomId,
                 streamrClient,
                 fingerprint: Flag.isDetectingMembers(selectedRoomId),

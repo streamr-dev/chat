@@ -38,13 +38,19 @@ async function getERC20TokenMetadata(tokenAddress: Address, provider: Provider) 
     }
 }
 
-async function getERC721TokenMetadata(tokenAddress: Address, provider: Provider, tokenId: string) {
+async function getERC721TokenMetadata(
+    tokenAddress: Address,
+    provider: Provider,
+    tokenIds: string[]
+) {
     const instance = getERC721(tokenAddress, provider)
 
     return {
         name: await instance.name(),
         symbol: await instance.symbol(),
-        uri: await instance.tokenURI(BigNumber.from(tokenId)),
+        uris: await Promise.all(
+            tokenIds.map((tokenId) => instance.tokenURI(BigNumber.from(tokenId)))
+        ),
     }
 }
 
@@ -58,16 +64,22 @@ async function getERC777TokenMetadata(tokenAddress: Address, provider: Provider)
     }
 }
 
-async function getERC1155TokenMetadata(tokenAddress: Address, provider: Provider, tokenId: string) {
+async function getERC1155TokenMetadata(
+    tokenAddress: Address,
+    provider: Provider,
+    tokenIds: string[]
+) {
     const instance = getERC1155(tokenAddress, provider)
 
     return {
-        uri: await instance.uri(BigNumber.from(tokenId)),
+        uris: await Promise.all(
+            tokenIds.map((tokenId) => instance.tokenURI(BigNumber.from(tokenId)))
+        ),
     }
 }
 
 function* onGetTokenMetadata({
-    payload: { tokenAddress, tokenId, tokenType, provider },
+    payload: { tokenAddress, tokenIds, tokenType, provider },
 }: ReturnType<typeof TokenGatedRoomAction.getTokenMetadata>) {
     try {
         let metadata: TokenMetadata
@@ -77,19 +89,19 @@ function* onGetTokenMetadata({
                 metadata = yield getERC20TokenMetadata(tokenAddress, provider)
                 break
             case TokenTypes.ERC721.standard:
-                if (!tokenId) {
+                if (tokenIds.length === 0) {
                     throw new Error('Token ID is required for ERC721 tokens')
                 }
-                metadata = yield getERC721TokenMetadata(tokenAddress, provider, tokenId)
+                metadata = yield getERC721TokenMetadata(tokenAddress, provider, tokenIds)
                 break
             case TokenTypes.ERC777.standard:
                 metadata = yield getERC777TokenMetadata(tokenAddress, provider)
                 break
             case TokenTypes.ERC1155.standard:
-                if (!tokenId) {
+                if (tokenIds.length === 0) {
                     throw new Error('Token ID is required for ERC1155 tokens')
                 }
-                metadata = yield getERC1155TokenMetadata(tokenAddress, provider, tokenId)
+                metadata = yield getERC1155TokenMetadata(tokenAddress, provider, tokenIds)
                 break
             default:
                 throw new Error(`Unsupported token type: ${tokenType.standard}`)

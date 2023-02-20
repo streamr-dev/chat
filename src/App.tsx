@@ -1,6 +1,6 @@
 import tw, { styled, GlobalStyles } from 'twin.macro'
 import { css, Global } from '@emotion/react'
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { ToastContainer as PrestyledToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import store from '$/store'
@@ -49,6 +49,17 @@ const customGlobalStyles = css`
                 transform: translateX(100%) translateZ(0);
             }
         }
+
+        @keyframes bringIn {
+            from {
+                opacity: 0;
+                transform: translateZ(0) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateZ(0) scale(1);
+            }
+        }
     }
 `
 
@@ -61,9 +72,7 @@ export default function App() {
             <div>
                 <ToastContainer position="bottom-left" closeOnClick={false} />
                 <HashRouter>
-                    <Routes>
-                        <Route element={<IndexPage />} path="/*" />
-                    </Routes>
+                    <IndexPage />
                 </HashRouter>
             </div>
         </Provider>

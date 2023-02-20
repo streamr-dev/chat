@@ -10,30 +10,21 @@ type Props = {
 export default function Submit({ label = 'Submit', disabled = false }: Props) {
     return (
         <div
-            css={[
-                tw`
-                    flex
-                    mt-12
-                `,
-            ]}
+            css={tw`
+                flex
+                mt-8
+                md:mt-12
+            `}
         >
-            <div
-                css={[
-                    tw`
-                        flex-grow
-                    `,
-                ]}
-            />
+            <div css={tw`grow`} />
             <div>
                 <PrimaryButton
                     type="submit"
-                    css={[
-                        tw`
-                            h-12
-                            rounded-[24px]
-                            px-8
-                        `,
-                    ]}
+                    css={tw`
+                        h-12
+                        rounded-[24px]
+                        px-8
+                    `}
                     disabled={disabled}
                 >
                     <Text>{label}</Text>

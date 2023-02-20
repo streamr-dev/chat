@@ -1,6 +1,5 @@
 import { Flag } from '$/features/flag/types'
-import { MembersAction } from '$/features/members'
-import { PermissionAction } from '$/features/permission'
+import { PermissionsAction } from '$/features/permissions'
 import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
 import waitForPermissions, { Validator } from '$/utils/waitForPermissions'
@@ -37,7 +36,7 @@ export default function setMultiplePermissions(
         })
 
         for (let i = 0; i < assignments.length; i++) {
-            yield put(PermissionAction.invalidateAll({ roomId, address: assignments[i].user }))
+            yield put(PermissionsAction.invalidateAll({ roomId, address: assignments[i].user }))
         }
 
         if (validate === true) {
@@ -101,7 +100,7 @@ export default function setMultiplePermissions(
         }
 
         yield put(
-            MembersAction.detect({
+            PermissionsAction.detectRoomMembers({
                 roomId,
                 streamrClient,
                 provider,

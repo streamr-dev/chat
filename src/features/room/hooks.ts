@@ -6,8 +6,6 @@ import {
     selectIsBeingDeleted,
     selectPersistingRoomName,
     selectPrivacy,
-    selectPrivacyChanging,
-    selectPrivacyGetting,
     selectSelectedRoomId,
     selectStorageNodeState,
     selectStorageNodeToggling,
@@ -52,14 +50,6 @@ export function usePrivacyOption(roomId: undefined | RoomId) {
         default:
             return PrivateRoomOption
     }
-}
-
-export function useGettingPrivacy(roomId: undefined | RoomId) {
-    return useSelector(selectPrivacyGetting(roomId))
-}
-
-export function useChangingPrivacy(roomId: undefined | RoomId) {
-    return useSelector(selectPrivacyChanging(roomId))
 }
 
 export function useEditingRoomName(roomId: undefined | RoomId) {

@@ -14,7 +14,7 @@ import { BigNumber } from 'ethers'
 const initialState: TokenGatedRoomState = {
     tokenType: TokenTypes.unknown,
     tokenAddress: undefined,
-    tokenId: undefined,
+    tokenIds: undefined,
     minRequiredBalance: undefined,
     tokenMetadata: {},
 }
@@ -26,7 +26,7 @@ export const TokenGatedRoomAction = {
         tokenType: TokenType
         roomId: RoomId
         minRequiredBalance?: string
-        tokenId?: string
+        tokenIds: string[]
         stakingEnabled: boolean
         provider: Provider
         streamrClient: StreamrClient
@@ -36,14 +36,19 @@ export const TokenGatedRoomAction = {
         tokenAddress: string
         tokenType: TokenType
         roomId: RoomId
-        tokenId: string
         stakingEnabled: boolean
         provider: Provider
     }>('tokenGatedRooms: join'),
 
+    promoteDelegatedAccount: createAction<{
+        roomId: RoomId
+        provider: Provider
+        streamrClient: StreamrClient
+    }>('tokenGatedRooms: promoteDelegatedAccount'),
+
     getTokenMetadata: createAction<{
         tokenAddress: Address
-        tokenId?: string
+        tokenIds: string[]
         tokenType: TokenType
         provider: Provider
     }>('tokenGatedRooms: getTokenMetadata'),

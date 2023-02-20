@@ -2,8 +2,6 @@ import GatedIcon from '$/icons/GatedIcon'
 import store from '$/store'
 import { Provider } from '@web3-react/types'
 import { ReactNode } from 'react'
-import { Stream } from 'streamr-client'
-import { IRoom } from '../src/features/room/types'
 import PrivateIcon from '../src/icons/PrivateIcon'
 import PublicIcon from '../src/icons/PublicIcon'
 
@@ -38,20 +36,6 @@ export enum PrivacySetting {
     Private = 'private',
     Public = 'public',
     TokenGated = 'tokenGated',
-}
-
-export type RoomMetadata = Omit<IRoom, 'id' | 'name' | 'owner'>
-
-export type UnsafeStream = Stream & {
-    extensions?: {
-        'thechat.eth'?: RoomMetadata
-    }
-}
-
-export type EnhancedStream = Stream & {
-    extensions: {
-        'thechat.eth': RoomMetadata
-    }
 }
 
 export interface PreflightParams {

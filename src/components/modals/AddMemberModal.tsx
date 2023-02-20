@@ -2,61 +2,37 @@ import { useState } from 'react'
 import isBlank from '$/utils/isBlank'
 import Form from '../Form'
 import Label from '../Label'
-import Modal, { ModalProps } from './Modal'
 import Submit from '../Submit'
 import TextField from '../TextField'
 import { Address } from '$/types'
-import { useDispatch } from 'react-redux'
-import { useSelectedRoomId } from '$/features/room/hooks'
-import { MemberAction } from '$/features/member'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
-import { Flag } from '$/features/flag/types'
+import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
+import useCanGrant from '$/hooks/useCanGrant'
 
-type Props = ModalProps & {
-    canModifyMembers?: boolean
+interface Props extends ModalProps {
+    onProceed?: (address: Address) => void
 }
 
-export default function AddMemberModal({ canModifyMembers = false, setOpen, ...props }: Props) {
+export default function AddMemberModal({ title = 'Add member', onProceed, ...props }: Props) {
     const [address, setAddress] = useState<Address>('')
 
-    const canSubmit = !isBlank(address) && canModifyMembers
+    const canGrant = useCanGrant()
 
-    const dispatch = useDispatch()
-
-    function onClose() {
-        setAddress('')
-    }
-
-    const roomId = useSelectedRoomId()
-
-    const provider = useWalletProvider()
-
-    const streamrClient = useWalletClient()
-
-    const requester = useWalletAccount()
+    const canSubmit = !isBlank(address) && canGrant
 
     return (
-        <Modal {...props} setOpen={setOpen} onClose={onClose} title="Add member">
+        <Modal
+            {...props}
+            title={title}
+            onBeforeAbort={(reason) => {
+                if (reason === AbortReason.Backdrop) {
+                    return isBlank(address)
+                }
+            }}
+        >
             <Form
                 onSubmit={() => {
-                    if (!canSubmit || !roomId || !provider || !streamrClient || !requester) {
-                        return
-                    }
-
-                    dispatch(
-                        MemberAction.add({
-                            roomId,
-                            member: address,
-                            provider,
-                            requester,
-                            streamrClient,
-                            fingerprint: Flag.isMemberBeingAdded(roomId, address),
-                        })
-                    )
-
-                    if (typeof setOpen === 'function') {
-                        setOpen(false)
-                        onClose()
+                    if (canSubmit) {
+                        onProceed?.(address)
                     }
                 }}
             >
@@ -72,3 +48,5 @@ export default function AddMemberModal({ canModifyMembers = false, setOpen, ...p
         </Modal>
     )
 }
+
+AddMemberModal.displayName = 'AddMemberModal'

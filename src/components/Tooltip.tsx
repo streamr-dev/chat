@@ -6,6 +6,7 @@ export enum Placement {
     Right = 'right',
     Top = 'top',
     Left = 'left',
+    Bottom = 'bottom',
 }
 
 type Props = HTMLAttributes<HTMLDivElement> & {
@@ -35,6 +36,7 @@ export default function Tooltip({ children, placement = Placement.Top, ...props 
                     select-none
                     invisible
                     whitespace-nowrap
+                    z-10
                 `,
                 placement === Placement.Top &&
                     tw`
@@ -56,6 +58,13 @@ export default function Tooltip({ children, placement = Placement.Top, ...props 
                         -translate-y-1/2
                         right-full
                         mr-2
+                    `,
+                placement === Placement.Bottom &&
+                    tw`
+                        top-full
+                        left-1/2
+                        mt-1
+                        -translate-x-1/2
                     `,
             ]}
         >

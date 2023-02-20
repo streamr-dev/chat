@@ -1,7 +1,5 @@
 import { put } from 'redux-saga/effects'
-import { EnhancedStream } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import getStream from '$/utils/getStream'
 import preflight from '$/utils/preflight'
 import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
@@ -12,21 +10,22 @@ import RedundantRenameError from '$/errors/RedundantRenameError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
-import getStreamMetadata from '$/utils/getStreamMetadata'
+import { Stream, StreamMetadata } from 'streamr-client'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },
 }: ReturnType<typeof RoomAction.rename>) {
     try {
-        const stream: undefined | EnhancedStream = yield getStream(streamrClient, roomId)
+        const stream: null | Stream = yield streamrClient.getStream(roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)
         }
 
-        const { name: oldName } = getStreamMetadata(stream)
+        const roomMetadata = getRoomMetadata(stream)
 
-        if (oldName === name) {
+        if (roomMetadata.name === name) {
             info('Room name is already up-to-date.')
 
             try {
@@ -55,18 +54,15 @@ function* onRenameAction({
             requester,
         })
 
-        const originalMetadata = stream.getMetadata() as any
-
         yield stream.update({
-            ...originalMetadata,
             description: name,
             extensions: {
-                thechat: {
-                    ...originalMetadata.extensions.thechat,
+                'thechat.eth': {
+                    ...roomMetadata,
                     updatedAt: Date.now(),
                 },
             },
-        } as any)
+        } as Partial<StreamMetadata> & Record<'extensions', Partial<Record<'thechat.eth', RoomMetadata>>>)
 
         yield put(
             RoomAction.renameLocal({

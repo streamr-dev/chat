@@ -1,0 +1,52 @@
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import { PermissionsAction } from '$/features/permissions'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import getRoomMetadata from '$/utils/getRoomMetadata'
+import handleError from '$/utils/handleError'
+import { error, success } from '$/utils/toaster'
+import { call, put } from 'redux-saga/effects'
+import { Stream } from 'streamr-client'
+
+export default function tokenGatedPromoteDelegatedAccount({
+    roomId,
+    provider,
+    streamrClient,
+}: ReturnType<typeof PermissionsAction.tokenGatedPromoteDelegatedAccount>['payload']) {
+    return call(function* () {
+        try {
+            const stream: null | Stream = yield streamrClient.getStream(roomId)
+
+            if (!stream) {
+                throw new RoomNotFoundError(roomId)
+            }
+
+            const { tokenAddress, tokenIds, tokenType, stakingEnabled } = getRoomMetadata(stream)
+
+            if (!tokenAddress || tokenIds === undefined || !tokenType) {
+                throw new Error(
+                    `Missing token info on stream metadata: ${JSON.stringify({
+                        tokenAddress,
+                        tokenIds,
+                        tokenType,
+                    })}`
+                )
+            }
+
+            yield put(
+                TokenGatedRoomAction.join({
+                    roomId,
+                    tokenAddress,
+                    provider,
+                    tokenType,
+                    stakingEnabled: stakingEnabled as boolean,
+                })
+            )
+
+            success('Delegated account has been promoted on the TokenGated room.')
+        } catch (e) {
+            handleError(e)
+
+            error('Failed to promote the delegated account.')
+        }
+    })
+}

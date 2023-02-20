@@ -16,6 +16,7 @@ export default defineConfig({
     ],
     optimizeDeps: {
         esbuildOptions: {
+            target: 'es2020',
             define: {
                 global: 'globalThis',
             },

@@ -5,11 +5,12 @@ import {
     HTMLAttributes,
     ReactNode,
     useEffect,
+    useReducer,
     useState,
 } from 'react'
 import tw, { css } from 'twin.macro'
 import { IMessage } from '$/features/message/types'
-import Avatar, { AvatarStatus, Wrap } from '../Avatar'
+import Avatar, { Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
 import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
@@ -18,20 +19,18 @@ import useMainAccount from '$/hooks/useMainAccount'
 import isSameAddress from '$/utils/isSameAddress'
 import { OptionalAddress } from '$/types'
 import { useDispatch } from 'react-redux'
-import { MembersAction } from '$/features/members'
 import { Flag } from '$/features/flag/types'
 import trunc from '$/utils/trunc'
 import { useAlias } from '$/features/alias/hooks'
 import useENSName from '$/hooks/useENSName'
-import Tooltip, { Placement } from '$/components/Tooltip'
 import { RoomId } from '$/features/room/types'
 import { MessageAction } from '$/features/message'
-import { useDelegatedClient } from '$/features/delegation/hooks'
+import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
 import useFlag from '$/hooks/useFlag'
+import { DelegationAction } from '$/features/delegation'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     payload: IMessage
-    incoming?: boolean
     previousCreatedBy?: OptionalAddress
 }
 
@@ -52,7 +51,7 @@ function formatMessage(message: string): ReactNode {
     )
 }
 
-export default function Message({ payload, incoming = false, previousCreatedBy, ...props }: Props) {
+export default function Message({ payload, previousCreatedBy, ...props }: Props) {
     const { createdBy, createdAt, content, seenAt, roomId, id } = payload
 
     const isEncrypted = typeof content === 'undefined'
@@ -77,11 +76,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
 
     const skipAvatar = !!previousCreatedBy && isSameAddress(sender, previousSender)
 
-    const avatar = skipAvatar ? (
-        <Wrap />
-    ) : (
-        <Avatar status={AvatarStatus.Offline} seed={sender?.toLowerCase()} />
-    )
+    const avatar = skipAvatar ? <Wrap /> : <Avatar seed={sender?.toLowerCase()} />
 
     const dispatch = useDispatch()
 
@@ -91,13 +86,20 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
         }
 
         dispatch(
-            MembersAction.lookupDelegation({
+            DelegationAction.lookup({
                 delegated: createdBy,
                 provider,
                 fingerprint: Flag.isLookingUpDelegation(createdBy),
             })
         )
     }, [sender, provider, createdBy, dispatch])
+
+    const delegatedAccount = useDelegatedAccount()
+
+    const incoming =
+        !isSameAddress(requester, createdBy) &&
+        !isSameAddress(delegatedAccount, createdBy) &&
+        !isSameAddress(sender, requester)
 
     return (
         <>
@@ -110,34 +112,11 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                             text-[12px]
                             pl-16
                         `,
-                        !incoming &&
-                            tw`
-                                text-right
-                                pr-16
-                                pl-0
-                            `,
                     ]}
                 >
-                    <span
-                        css={[
-                            css`
-                                :hover div:first-of-type {
-                                    opacity: 1;
-                                    visibility: visible;
-                                    transition-delay: 0.25s;
-                                }
-                            `,
-
-                            tw`
-                                relative
-                            `,
-                        ]}
-                    >
-                        <Tooltip placement={incoming ? Placement.Right : Placement.Left}>
-                            {sender}
-                        </Tooltip>
-                        {ens || alias || trunc(sender)}
-                    </span>
+                    <div css={tw`relative`}>
+                        <Sender short={ens || alias || trunc(sender)} full={sender} />
+                    </div>
                 </div>
             )}
             <div
@@ -150,16 +129,11 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                                 display: block;
                             }
                         `,
-                    tw`
-                        flex
-                    `,
-                    !incoming &&
-                        tw`
-                            justify-end
-                        `,
+                    tw`flex`,
+                    !incoming && tw`justify-end`,
                 ]}
             >
-                {incoming && <div tw="mr-4 flex-shrink-0">{avatar}</div>}
+                {incoming && <div tw="mr-4 shrink-0">{avatar}</div>}
                 {!incoming && isEncrypted && typeof createdAt === 'number' && (
                     <ResendOneButton requester={requester} roomId={roomId} timestamp={createdAt} />
                 )}
@@ -213,7 +187,8 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                                     top-1/2
                                     translate-x-full
                                     -translate-y-1/2
-                                    -right-2.5
+                                    right-[-5px]
+                                    lg:-right-2.5
                                 `,
                             ]}
                         >
@@ -240,7 +215,7 @@ export default function Message({ payload, incoming = false, previousCreatedBy, 
                     )}
                     {isEncrypted ? <EncryptedMessage /> : <Text>{formatMessage(content)}</Text>}
                 </div>
-                {!incoming && <div tw="ml-4 flex-shrink-0">{avatar}</div>}
+                {!incoming && <div tw="ml-4 shrink-0">{avatar}</div>}
                 {incoming && isEncrypted && typeof createdAt === 'number' && (
                     <ResendOneButton
                         left
@@ -333,16 +308,73 @@ function EncryptedMessage() {
 }
 
 function Link(props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'rel'>) {
+    return <a {...props} target="_blank" rel="noreferrer noopener" css={tw`underline`} />
+}
+
+interface SenderProps
+    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'type' | 'onClick'> {
+    short: string
+    full: string
+}
+
+function Sender({ short, full, ...props }: SenderProps) {
+    const [showFull, toggle] = useReducer((x) => !x, false)
+
     return (
-        <a
+        <button
             {...props}
-            target="_blank"
-            rel="noreferrer noopener"
+            type="button"
+            onClick={() => void toggle()}
             css={[
+                css`
+                    div {
+                        transition: 200ms ease-in-out;
+                        transition-property: visibility, opacity;
+                        transition-delay: 0s;
+                    }
+                `,
                 tw`
-                    underline
+                    appearance-none
+                    [div]:(
+                        absolute
+                        top-0
+                        left-0
+                        truncate
+                        w-min
+                        max-w-full
+                    )
                 `,
             ]}
-        />
+        >
+            &zwnj;
+            <div
+                css={
+                    showFull &&
+                    tw`
+                        invisible
+                        opacity-0
+                        delay-200
+                    `
+                }
+            >
+                {short}
+            </div>
+            <div
+                css={[
+                    tw`
+                        invisible
+                        opacity-0
+                        delay-200
+                    `,
+                    showFull &&
+                        tw`
+                            visible
+                            opacity-100
+                        `,
+                ]}
+            >
+                {full}
+            </div>
+        </button>
     )
 }

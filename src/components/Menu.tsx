@@ -10,6 +10,7 @@ import {
 import { createPortal } from 'react-dom'
 import tw, { css } from 'twin.macro'
 import Text from './Text'
+import useOnMouseDownOutsideEffect from 'streamr-ui/hooks/useOnMouseDownOutsideEffect'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     anchorEl?: HTMLButtonElement | null
@@ -33,7 +34,19 @@ export default function Menu({ anchorEl, onMouseDownOutside, ...props }: Props) 
         }
     }, [])
 
-    const rootRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        function onResize() {
+            setRect(getRect(anchorEl))
+        }
+
+        window.addEventListener('resize', onResize)
+
+        onResize()
+
+        return () => {
+            window.removeEventListener('resize', onResize)
+        }
+    }, [anchorEl])
 
     const anchorElRef = useRef(anchorEl)
 
@@ -41,49 +54,16 @@ export default function Menu({ anchorEl, onMouseDownOutside, ...props }: Props) 
         anchorElRef.current = anchorEl
     }, [anchorEl])
 
-    const onMouseDownOutsideRef = useRef(onMouseDownOutside)
-
-    useEffect(() => {
-        onMouseDownOutsideRef.current = onMouseDownOutside
-    }, [onMouseDownOutside])
-
-    useEffect(() => {
-        function onResize() {
-            setRect(getRect(anchorElRef.current))
+    const rootRef = useOnMouseDownOutsideEffect<HTMLDivElement>(
+        () => void onMouseDownOutside?.(),
+        undefined,
+        {
+            isInside(_, el) {
+                // Let's make isInside in `streamr-ui` use a ref, eh?
+                return !!anchorElRef.current?.contains(el)
+            },
         }
-
-        window.addEventListener('resize', onResize)
-
-        return () => {
-            window.removeEventListener('resize', onResize)
-        }
-    }, [])
-
-    useEffect(() => {
-        function handleClickOutside(e: any) {
-            const { current: root } = rootRef
-
-            const { current: anchor } = anchorElRef
-
-            if (!root || root.contains(e.target)) {
-                return
-            }
-
-            if (!anchor || anchor.contains(e.target)) {
-                return
-            }
-
-            if (typeof onMouseDownOutsideRef.current === 'function') {
-                onMouseDownOutsideRef.current()
-            }
-        }
-
-        document.addEventListener('mousedown', handleClickOutside)
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [])
+    )
 
     return createPortal(
         <div

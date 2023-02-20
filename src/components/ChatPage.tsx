@@ -1,10 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import tw from 'twin.macro'
 import Page from '$/components/Page'
-import WalletModal from '$/components/modals/WalletModal'
-import AccountModal from '$/components/modals/AccountModal'
 import AddRoomButton from '$/components/AddRoomButton'
-import AddRoomModal from '$/components/modals/AddRoomModal'
 import Conversation from '$/components/Conversation'
 import Nav from '$/components/Nav'
 import RoomButton from '$/components/RoomButton'
@@ -20,21 +17,18 @@ import useListenForInvitesEffect from '$/hooks/useListenForInvitesEffect'
 import { RoomAction } from '$/features/room'
 import { Flag } from '$/features/flag/types'
 import useDetectMembersEffect from '$/hooks/useDetectMembersEffect'
+import useAccountModal from '$/hooks/useAccountModal'
+import useAddRoomModal from '$/hooks/useAddRoomModal'
+import usePreselectRoomEffect from '$/hooks/usePreselectRoomEffect'
+import useFlag from '$/hooks/useFlag'
+import ArrowIcon from '$/icons/ArrowIcon'
+import { FlagAction } from '$/features/flag'
+import ActionButton from '$/components/ActionButton'
 
 export default function ChatPage() {
-    const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false)
+    const { open: openAccountModal, modal: accountModal } = useAccountModal()
 
-    const [walletModalOpen, setWalletModalOpen] = useState<boolean>(false)
-
-    const [roomModalOpen, setRoomModalOpen] = useState<boolean>(false)
-
-    function toggleWalletModal(state: boolean) {
-        setWalletModalOpen(state)
-
-        if (state === false) {
-            setAccountModalOpen(true)
-        }
-    }
+    const { open: openAddRoomModal, modal: addRoomModal } = useAddRoomModal()
 
     const selectedRoom = useSelectedRoom()
 
@@ -78,17 +72,24 @@ export default function ChatPage() {
 
     useDetectMembersEffect()
 
+    usePreselectRoomEffect()
+
+    const isDisplayingRooms = useFlag(Flag.isDisplayingRooms())
+
     return (
         <>
+            {accountModal}
+            {addRoomModal}
             <Page title="Let's chat!">
-                <Nav onAccountClick={() => void setAccountModalOpen(true)} />
+                <Nav onAccountClick={() => void openAccountModal()} />
                 <main
                     css={[
                         tw`
                             w-screen
                             h-screen
-                            p-10
-                            pt-[91px]
+                            md:p-10
+                            pt-20
+                            md:pt-24
                         `,
                     ]}
                 >
@@ -104,14 +105,21 @@ export default function ChatPage() {
                         <aside
                             css={[
                                 tw`
+                                    hidden
+                                    md:block
                                     h-full
-                                    w-[22rem]
+                                    w-full
+                                    md:w-[18rem]
+                                    lg:w-[22rem]
+                                    p-4
+                                    md:p-0
                                     overflow-auto
-                                    [button + button]:mt-4
+                                    [> * + *]:mt-4
                                 `,
+                                isDisplayingRooms && tw`block`,
                             ]}
                         >
-                            <AddRoomButton onClick={() => void setRoomModalOpen(true)} />
+                            <AddRoomButton onClick={() => void openAddRoomModal()} />
                             {(rooms || []).map((room) => (
                                 <RoomButton
                                     key={room.id}
@@ -123,14 +131,19 @@ export default function ChatPage() {
                         <div
                             css={[
                                 tw`
+                                    md:block
                                     bg-white
-                                    rounded-[20px]
+                                    rounded-t-[10px]
+                                    md:rounded-[20px]
                                     absolute
                                     bottom-0
-                                    left-[24rem]
+                                    left-0
+                                    md:left-[19rem]
+                                    lg:left-[24rem]
                                     right-0
                                     top-0
                                 `,
+                                isDisplayingRooms && tw`hidden`,
                             ]}
                         >
                             {selectedRoom ? (
@@ -148,25 +161,33 @@ export default function ChatPage() {
                                         `,
                                     ]}
                                 >
-                                    <UtilityButton onClick={() => void setRoomModalOpen(true)}>
-                                        <Text>Add new room</Text>
-                                    </UtilityButton>
+                                    <div css={tw`flex`}>
+                                        <ActionButton
+                                            css={tw`
+                                                block
+                                                md:hidden
+                                                h-14
+                                                w-14
+                                                mr-4
+                                            `}
+                                            onClick={() =>
+                                                void dispatch(
+                                                    FlagAction.set(Flag.isDisplayingRooms())
+                                                )
+                                            }
+                                        >
+                                            <ArrowIcon />
+                                        </ActionButton>
+                                        <UtilityButton onClick={() => void openAddRoomModal()}>
+                                            <Text>Add new room</Text>
+                                        </UtilityButton>
+                                    </div>
                                 </div>
                             )}
                         </div>
                     </div>
                 </main>
             </Page>
-            <AccountModal
-                open={accountModalOpen}
-                setOpen={setAccountModalOpen}
-                onChangeClick={() => {
-                    setAccountModalOpen(false)
-                    setWalletModalOpen(true)
-                }}
-            />
-            <WalletModal open={walletModalOpen} setOpen={toggleWalletModal} />
-            <AddRoomModal open={roomModalOpen} setOpen={setRoomModalOpen} />
         </>
     )
 }

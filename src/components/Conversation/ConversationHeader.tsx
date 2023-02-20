@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
-import tw, { css } from 'twin.macro'
-import { useCurrentAbility, useLoadCurrentAbilityEffect } from '$/features/permission/hooks'
+import tw from 'twin.macro'
+import useAbility from '$/hooks/useAbility'
 import { RoomAction } from '$/features/room'
 import {
     useEditingRoomName,
@@ -36,12 +36,26 @@ import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
 import EditIcon from '$/icons/EditIcon'
 import useIsResending from '$/hooks/useIsResending'
+import Dot from '$/components/Dot'
+import useRoomMembers from '$/hooks/useRoomMembers'
+import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
+import ArrowIcon from '$/icons/ArrowIcon'
+import useJustInvited from '$/hooks/useJustInvited'
 
 type Props = {
     canModifyMembers?: boolean
     onAddMemberClick?: () => void
     onEditMembersClick?: () => void
     onRoomPropertiesClick?: () => void
+    onGoBackClick?: () => void
+}
+
+function formatMembersCount(value: number) {
+    if (value !== 1) {
+        return `${value} members`
+    }
+
+    return '1 member'
 }
 
 export default function ConversationHeader({
@@ -49,20 +63,19 @@ export default function ConversationHeader({
     onAddMemberClick,
     onEditMembersClick,
     onRoomPropertiesClick,
+    onGoBackClick,
 }: Props) {
     const dispatch = useDispatch()
 
-    const canEdit = useCurrentAbility(StreamPermission.EDIT)
-
-    useLoadCurrentAbilityEffect(StreamPermission.EDIT)
-
-    const canDelete = useCurrentAbility(StreamPermission.DELETE)
-
-    useLoadCurrentAbilityEffect(StreamPermission.DELETE)
-
-    const { name = '' } = useSelectedRoom() || {}
+    const account = useWalletAccount()
 
     const selectedRoomId = useSelectedRoomId()
+
+    const canEdit = useAbility(selectedRoomId, account, StreamPermission.EDIT)
+
+    const canDelete = useAbility(selectedRoomId, account, StreamPermission.DELETE)
+
+    const { name = '' } = useSelectedRoom() || {}
 
     const isRoomNameEditable = useEditingRoomName(selectedRoomId)
 
@@ -71,6 +84,8 @@ export default function ConversationHeader({
     const transientRoomName = useTransientRoomName(selectedRoomId)
 
     const isRoomBeingDeleted = useIsBeingDeleted(selectedRoomId)
+
+    const invitePending = useJustInvited(selectedRoomId, account)
 
     function edit() {
         if (canEdit && selectedRoomId && !isRoomBeingDeleted) {
@@ -100,8 +115,6 @@ export default function ConversationHeader({
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(null)
 
     const { copy } = useCopy()
-
-    const account = useWalletAccount()
 
     const streamrClient = useWalletClient()
 
@@ -148,6 +161,10 @@ export default function ConversationHeader({
 
     const provider = useWalletProvider()
 
+    const membersCount = useRoomMembers(selectedRoomId).length
+
+    const isDetectingMembers = useIsDetectingRoomMembers(selectedRoomId)
+
     return (
         <div
             css={[
@@ -155,13 +172,19 @@ export default function ConversationHeader({
                     absolute
                     left-0
                     top-0
-                    h-[92px]
+                    h-[72px]
+                    lg:h-[92px]
                     w-full
                 `,
             ]}
         >
             <LoadingIndicator
-                tw="absolute bottom-0 left-0 w-full"
+                css={tw`
+                    absolute
+                    bottom-0
+                    left-0
+                    w-full
+                `}
                 state={showProgress ? LoadingState.Busy : undefined}
             />
             <Form
@@ -169,7 +192,8 @@ export default function ConversationHeader({
                     tw`
                         flex
                         items-center
-                        px-6
+                        px-4
+                        lg:px-6
                         shadow-[inset 0 -1px 0 #dee6ee]
                         w-full
                         h-full
@@ -177,20 +201,38 @@ export default function ConversationHeader({
                 ]}
                 onSubmit={onRenameSubmit}
             >
-                <div tw="flex-grow">
+                <ActionButton
+                    css={tw`
+                        shrink-0
+                        block
+                        lg:hidden
+                        mr-4
+                    `}
+                    onClick={onGoBackClick}
+                >
+                    <ArrowIcon />
+                </ActionButton>
+                <div
+                    css={tw`
+                        min-w-0
+                        grow
+                    `}
+                >
                     {isRoomNameEditable ? (
                         <div>
                             <input
                                 css={[
                                     tw`
+                                        leading-normal
                                         text-black
+                                        font-medium
                                         appearance-none
                                         border-0
                                         outline-none
                                         p-0
                                         w-full
-                                        h-9
-                                        text-[1.375rem]
+                                        text-[20px]
+                                        lg:text-[26px]
                                         placeholder:text-[#59799C]
                                         disabled:bg-transparent
                                     `,
@@ -217,12 +259,13 @@ export default function ConversationHeader({
                             <div
                                 css={[
                                     tw`
-                                        text-[0.875rem]
+                                        text-[12px]
+                                        lg:text-[14px]
                                         text-[#59799C]
                                     `,
                                 ]}
                             >
-                                <Text>
+                                <Text truncate>
                                     {isPersistingRoomName ? (
                                         <>
                                             Renaming "{name}" to "{transientRoomName}"…
@@ -237,18 +280,16 @@ export default function ConversationHeader({
                         <div onDoubleClick={edit}>
                             <div
                                 css={[
-                                    css`
-                                        line-height: normal;
-                                    `,
                                     tw`
-                                        h-9
-                                        text-[1.625rem]
+                                        text-[20px]
+                                        lg:text-[26px]
                                         font-medium
                                         select-none
+                                        leading-normal
                                     `,
                                 ]}
                             >
-                                <Text tw="truncate">{name || 'Unnamed room'}&zwnj;</Text>
+                                <div css={tw`truncate`}>{name || 'Unnamed room'}&zwnj;</div>
                             </div>
                             <div
                                 css={[
@@ -256,12 +297,50 @@ export default function ConversationHeader({
                                         flex
                                         items-center
                                         text-[#59799C]
-                                        text-[0.875rem]
+                                        text-[12px]
+                                        lg:text-[14px]
                                     `,
                                 ]}
                             >
-                                <PrivacyIcon tw="w-3 mr-1.5 ml-0.5" />
+                                <PrivacyIcon
+                                    css={tw`
+                                        w-3
+                                        mr-1.5
+                                        ml-0.5
+                                    `}
+                                />
                                 <Text>{privacyLabel} room</Text>
+                                <Dot css={tw`mx-2`} />
+                                {canModifyMembers ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => void onEditMembersClick?.()}
+                                    >
+                                        <Text
+                                            css={
+                                                isDetectingMembers &&
+                                                tw`
+                                                    animate-pulse
+                                                    [animation-duration: 0.5s]
+                                                `
+                                            }
+                                        >
+                                            {formatMembersCount(membersCount)}
+                                        </Text>
+                                    </button>
+                                ) : (
+                                    <Text
+                                        css={
+                                            isDetectingMembers &&
+                                            tw`
+                                                animate-pulse
+                                                [animation-duration: 0.5s]
+                                            `
+                                        }
+                                    >
+                                        {formatMembersCount(membersCount)}
+                                    </Text>
+                                )}
                             </div>
                         </div>
                     )}
@@ -296,8 +375,25 @@ export default function ConversationHeader({
                     </div>
                 ) : (
                     <>
+                        {invitePending && (
+                            <ActionTextButton
+                                css={tw`
+                                    bg-[#FFF2EE]
+                                    text-[#FF5924]
+                                `}
+                            >
+                                <Text>Join</Text>
+                            </ActionTextButton>
+                        )}
                         {canEdit && !isRoomBeingDeleted && (
-                            <ActionButton onClick={edit}>
+                            <ActionButton
+                                onClick={edit}
+                                css={tw`
+                                    hidden
+                                    lg:block
+                                    ml-3
+                                `}
+                            >
                                 <EditIcon />
                             </ActionButton>
                         )}
@@ -347,6 +443,18 @@ export default function ConversationHeader({
                                         <MenuSeparatorItem />
                                     </>
                                 )}
+                                {canEdit && !isRoomBeingDeleted && (
+                                    <MenuButtonItem
+                                        icon={<EditIcon />}
+                                        onClick={() => {
+                                            edit()
+                                            setRoomMenuOpen(false)
+                                        }}
+                                        css={tw`lg:hidden`}
+                                    >
+                                        Rename room
+                                    </MenuButtonItem>
+                                )}
                                 <MenuButtonItem
                                     icon={<CopyIcon />}
                                     onClick={() => {
@@ -361,16 +469,7 @@ export default function ConversationHeader({
                                     Copy room id
                                 </MenuButtonItem>
                                 <MenuButtonItem
-                                    icon={
-                                        <EyeIcon
-                                            open={!isVisible}
-                                            css={[
-                                                tw`
-                                                    w-4
-                                                `,
-                                            ]}
-                                        />
-                                    }
+                                    icon={<EyeIcon open={!isVisible} css={tw`w-4`} />}
                                     onClick={() => {
                                         if (selectedRoomId && account) {
                                             dispatch(

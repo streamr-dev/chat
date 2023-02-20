@@ -1,8 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import { Address, IFingerprinted, PreflightParams, PrivacySetting } from '$/types'
+import { Address, IFingerprinted, OptionalAddress, PreflightParams, PrivacySetting } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
-import changePrivacy from './sagas/changePrivacy.saga'
 import create from './sagas/create.saga'
 import del from './sagas/del.saga'
 import delLocal from './sagas/delLocal.saga'
@@ -16,10 +15,10 @@ import sync from './sagas/sync.saga'
 import toggleStorageNode from './sagas/toggleStorageNode.saga'
 import { IRoom, RoomId, RoomState } from './types'
 import setVisibility from '$/features/room/sagas/setVisibility.saga'
-import pin from '$/features/room/sagas/pin.saga'
 import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
 import { Provider } from '@web3-react/types'
+import preselect from '$/features/room/sagas/preselect.saga'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -69,6 +68,12 @@ export const RoomAction = {
 
     select: createAction<RoomState['selectedRoomId']>('room: select'),
 
+    preselect: createAction<{
+        roomId: RoomId
+        account: OptionalAddress
+        streamrClient: StreamrClient
+    }>('room: preselect'),
+
     sync: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
     >('room: sync'),
@@ -102,15 +107,6 @@ export const RoomAction = {
     setTogglingStorageNode: createAction<{ roomId: RoomId; address: string; state: boolean }>(
         'room: set toggling storage node'
     ),
-
-    changePrivacy: createAction<
-        IFingerprinted &
-            PreflightParams & {
-                roomId: RoomId
-                privacy: PrivacySetting
-                streamrClient: StreamrClient
-            }
-    >('room: change privacy'),
 
     setLocalPrivacy: createAction<{ roomId: RoomId; privacy: PrivacySetting }>(
         'room: set local privacy'
@@ -146,15 +142,12 @@ export const RoomAction = {
         'room: set visibility'
     ),
 
-    pin: createAction<
-        IFingerprinted & {
-            roomId: RoomId
-            requester: Address
-            streamrClient: StreamrClient
-            provider: Provider
-            delegatedAccount: Address
-        }
-    >('room: pin'),
+    pin: createAction<{
+        roomId: RoomId
+        requester: Address
+        streamrClient: StreamrClient
+        provider: Provider
+    }>('room: pin'),
 
     unpin: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
@@ -208,8 +201,6 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RoomAction.toggleStorageNode, SEE_SAGA)
 
-    builder.addCase(RoomAction.changePrivacy, SEE_SAGA)
-
     builder.addCase(RoomAction.setLocalPrivacy, (state, { payload: { roomId, privacy } }) => {
         roomCache(state, roomId).privacy = privacy
     })
@@ -229,18 +220,18 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(RoomAction.pin, SEE_SAGA)
 
     builder.addCase(RoomAction.unpin, SEE_SAGA) // See `pin` saga.
+
+    builder.addCase(RoomAction.preselect, SEE_SAGA)
 })
 
 export function* roomSaga() {
     yield all([
-        changePrivacy(),
         create(),
         del(),
         delLocal(),
         fetch(),
         getPrivacy(),
         getStorageNodes(),
-        pin(),
         registerInvite(),
         rename(),
         renameLocal(),
@@ -248,6 +239,7 @@ export function* roomSaga() {
         sync(),
         toggleStorageNode(),
         unpin(),
+        preselect(),
     ])
 }
 

@@ -75,7 +75,7 @@ function* onCreate({
         roomId,
         streamrClient,
         minRequiredBalance,
-        tokenId,
+        tokenIds,
         stakingEnabled,
         provider,
     },
@@ -86,6 +86,11 @@ function* onCreate({
 
         let policyFactoryAbi: any
         let policyFactoryAddress: Address
+
+        if (tokenType.standard !== TokenTypes.ERC20.standard) {
+            throw new Error(`Unsupported token type: ${tokenType.standard}`)
+        }
+
         switch (tokenType.standard) {
             case TokenTypes.ERC20.standard:
                 policyFactoryAbi = ERC20PolicyFactory.abi
@@ -117,7 +122,7 @@ function* onCreate({
             tokenAddress,
             roomId,
             minRequiredBalance,
-            tokenId,
+            tokenIds,
             stakingEnabled,
             [PermissionType.Publish, PermissionType.Subscribe]
         )
@@ -127,7 +132,7 @@ function* onCreate({
         const policyAddress: Address = yield waitForPolicyToBeDeployed(
             getPolicyRegistry(provider),
             tokenAddress,
-            BigNumber.from(tokenId),
+            BigNumber.from(tokenIds[0] || 0),
             roomId,
             stakingEnabled
         )

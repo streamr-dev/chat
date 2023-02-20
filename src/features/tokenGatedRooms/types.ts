@@ -1,7 +1,7 @@
 import { Address } from '$/types'
 import { BigNumber } from 'streamr-client'
 
-export enum ErcToInterfaceIds {
+export enum InterfaceId {
     ERC20 = '0x36372b07',
     ERC20Name = '0x06fdde03',
     ERC20Symbol = '0x95d89b41',
@@ -10,34 +10,45 @@ export enum ErcToInterfaceIds {
     ERC1155 = '0xd9b67a26',
 }
 
+export enum TokenStandard {
+    ERC20 = 'ERC20',
+    ERC721 = 'ERC721',
+    ERC777 = 'ERC777',
+    ERC1155 = 'ERC1155',
+    Unknown = 'unknown',
+}
+
+export { InterfaceId as ErcToInterfaceIds }
+
 export type TokenType = {
-    standard: 'ERC20' | 'ERC721' | 'ERC777' | 'ERC1155' | 'unknown'
+    standard: TokenStandard
     isCountable: boolean
     hasIds: boolean
 }
-export const TokenTypes: { [key: string]: TokenType } = {
-    ERC20: {
-        standard: 'ERC20',
+
+export const TokenTypes: Record<TokenStandard, TokenType> = {
+    [TokenStandard.ERC20]: {
+        standard: TokenStandard.ERC20,
         isCountable: true,
         hasIds: false,
     },
-    ERC721: {
-        standard: 'ERC721',
+    [TokenStandard.ERC721]: {
+        standard: TokenStandard.ERC721,
         isCountable: false,
         hasIds: true,
     },
-    ERC777: {
-        standard: 'ERC777',
+    [TokenStandard.ERC777]: {
+        standard: TokenStandard.ERC777,
         isCountable: true,
         hasIds: false,
     },
-    ERC1155: {
-        standard: 'ERC1155',
+    [TokenStandard.ERC1155]: {
+        standard: TokenStandard.ERC1155,
         isCountable: true,
         hasIds: true,
     },
-    unknown: {
-        standard: 'unknown',
+    [TokenStandard.Unknown]: {
+        standard: TokenStandard.Unknown,
         isCountable: false,
         hasIds: false,
     },
@@ -60,7 +71,7 @@ export type TokenMetadata = {
 export interface TokenGatedRoomState {
     tokenType?: TokenType
     tokenAddress?: Address
-    tokenId?: BigNumber | string
+    tokenIds?: BigNumber[] | string[]
     minRequiredBalance?: BigNumber | string
     stakingEnabled?: boolean
     tokenMetadata?: TokenMetadata

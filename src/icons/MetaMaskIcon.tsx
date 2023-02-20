@@ -1,6 +1,9 @@
-export default function MetaMaskIcon() {
+import { SVGAttributes } from 'react'
+
+export default function MetaMaskIcon(props: SVGAttributes<SVGElement>) {
     return (
         <svg
+            {...props}
             width="150"
             height="150"
             viewBox="0 0 150 150"

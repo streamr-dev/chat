@@ -18,10 +18,7 @@ export default function ActionTextButton({ secondary = false, ...props }: Props)
                     px-5
                     text-[0.875rem]
                 `,
-                secondary &&
-                    tw`
-                        bg-[transparent]
-                    `,
+                secondary && tw`bg-transparent`,
             ]}
         />
     )

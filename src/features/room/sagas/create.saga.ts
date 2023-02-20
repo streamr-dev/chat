@@ -1,18 +1,23 @@
 import db from '$/utils/db'
 import { put, takeEvery } from 'redux-saga/effects'
-import { Stream, StreamPermission, STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
+import {
+    Stream,
+    StreamMetadata,
+    StreamPermission,
+    STREAMR_STORAGE_NODE_GERMANY,
+} from 'streamr-client'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { PrivacySetting } from '$/types'
-import { error, success } from '$/utils/toaster'
+import { error, loading, success } from '$/utils/toaster'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
 import { toast } from 'react-toastify'
-import { PreferencesAction } from '$/features/preferences'
 import { Flag } from '$/features/flag/types'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
-import createRoomStream from '$/utils/createRoomStream'
+import { MiscAction } from '$/features/misc'
+import { RoomMetadata } from '$/utils/getRoomMetadata'
 import { BigNumber } from 'ethers'
 
 function* onCreateAction({
@@ -28,13 +33,7 @@ function* onCreateAction({
     let toastId
 
     try {
-        toastId = toast.loading(`Creating "${params.name}"…`, {
-            position: 'bottom-left',
-            autoClose: false,
-            type: 'info',
-            closeOnClick: false,
-            hideProgressBar: true,
-        })
+        toastId = loading(`Creating "${params.name}"…`)
 
         yield preflight({
             provider,
@@ -57,7 +56,7 @@ function* onCreateAction({
             }
 
             if (
-                !metadata.tokenId &&
+                !(metadata.tokenIds || metadata.tokenIds!.length === 0) &&
                 (metadata.tokenType.standard === TokenTypes.ERC721.standard ||
                     metadata.tokenType.standard === TokenTypes.ERC1155.standard)
             ) {
@@ -74,11 +73,13 @@ function* onCreateAction({
             }
         }
 
-        const stream: Stream = yield createRoomStream(streamrClient, {
+        const stream: Stream = yield streamrClient.createStream({
             id,
-            name: description,
-            ...metadata,
-        })
+            description,
+            extensions: {
+                'thechat.eth': metadata,
+            },
+        } as Partial<StreamMetadata> & { id: string } & Record<'extensions', Record<'thechat.eth', RoomMetadata>>)
 
         if (
             privacy === PrivacySetting.TokenGated &&
@@ -91,7 +92,7 @@ function* onCreateAction({
                     owner,
                     tokenAddress: metadata.tokenAddress,
                     roomId: stream.id,
-                    tokenId: metadata.tokenId?.toString(),
+                    tokenIds: metadata.tokenIds ? metadata.tokenIds.map((id) => id.toString()) : [],
                     minRequiredBalance: metadata.minRequiredBalance?.toString(),
                     provider,
                     streamrClient,
@@ -123,13 +124,7 @@ function* onCreateAction({
 
         success(`Room "${params.name}" created.`)
 
-        // Select the newly created room.
-        yield put(
-            PreferencesAction.set({
-                owner,
-                selectedRoomId: stream.id,
-            })
-        )
+        yield put(MiscAction.goto(stream.id))
 
         if (storage) {
             yield put(
