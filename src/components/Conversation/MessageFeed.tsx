@@ -62,8 +62,6 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
             {...props}
             ref={rootRef}
             css={tw`
-                max-h-full
-                overflow-auto
                 px-4
                 lg:px-6
                 py-4
