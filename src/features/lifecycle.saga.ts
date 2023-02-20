@@ -60,21 +60,16 @@ export default function* lifecycle() {
             yield retrieveAvatar(payload)
         })
 
-        yield takeEvery(
-            EnsAction.store,
-            function* ({
-                payload: {
-                    record: { content: ens },
-                },
-            }) {
-                yield put(
-                    AvatarAction.retrieve({
-                        ens,
-                        fingerprint: Flag.isRetrievingAvatar(ens),
-                    })
-                )
-            }
-        )
+        yield takeEvery(EnsAction.store, function* ({ payload }) {
+            const ens = payload.record.content
+
+            yield put(
+                AvatarAction.retrieve({
+                    ens,
+                    fingerprint: Flag.isRetrievingAvatar(ens),
+                })
+            )
+        })
 
         yield takeEveryUnique(RoomAction.pinSticky, function* ({ payload }) {
             yield pinSticky(payload)
