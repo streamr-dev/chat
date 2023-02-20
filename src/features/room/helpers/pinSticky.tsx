@@ -11,9 +11,10 @@ import getRoomMetadata from '$/utils/getRoomMetadata'
 import { Address } from '$/types'
 import getUserPermissions from '$/utils/getUserPermissions'
 import { PreferencesAction } from '$/features/preferences'
-import { ToasterAction } from '$/features/toaster'
-import { ToastType } from '$/components/Toast'
+import Toast, { ToastType } from '$/components/Toast'
 import tw from 'twin.macro'
+import { Controller } from '$/components/Toaster'
+import toaster from '$/features/toaster/helpers/toaster'
 
 const { stickyRoomIds } = config
 
@@ -81,68 +82,80 @@ export default function pinSticky({
     streamrClient,
 }: ReturnType<typeof RoomAction.pinSticky>['payload']) {
     return call(function* () {
-        if (!stickyRoomIds.length) {
-            // Nothing to pin.
-            return
-        }
-
-        const owner = requester.toLowerCase()
-
-        let preferences: IPreference | null
+        let t: Controller<typeof Toast> | undefined
 
         try {
-            preferences = yield db.preferences.where({ owner }).first()
-        } catch (e) {
-            // Let's not bother the user if we failed to load their preferences. Skip.
-            return
-        }
+            if (!stickyRoomIds.length) {
+                // Nothing to pin.
+                return
+            }
 
-        const { stickyRoomIds: ids = [] } = preferences || {}
+            const owner = requester.toLowerCase()
 
-        const newPins: [RoomId, string][] = []
+            let preferences: IPreference | null
 
-        const newIds: RoomId[] = []
+            try {
+                preferences = yield db.preferences.where({ owner }).first()
+            } catch (e) {
+                // Let's not bother the user if we failed to load their preferences. Skip.
+                return
+            }
 
-        for (let i = 0; i < stickyRoomIds.length; i++) {
-            const { id } = stickyRoomIds[i]
+            const { stickyRoomIds: ids = [] } = preferences || {}
 
-            if (!ids.includes(id)) {
-                const pinName: undefined | string = yield quietPin(id, requester, streamrClient)
+            const newPins: [RoomId, string][] = []
 
-                newIds.push(id)
+            const newIds: RoomId[] = []
 
-                if (typeof pinName === 'string') {
-                    newPins.push([id, pinName])
+            for (let i = 0; i < stickyRoomIds.length; i++) {
+                const { id } = stickyRoomIds[i]
+
+                if (!ids.includes(id)) {
+                    const pinName: undefined | string = yield quietPin(id, requester, streamrClient)
+
+                    newIds.push(id)
+
+                    if (typeof pinName === 'string') {
+                        newPins.push([id, pinName])
+                    }
                 }
             }
+
+            yield put(
+                PreferencesAction.set({
+                    owner,
+                    stickyRoomIds: [...ids, ...newIds],
+                })
+            )
+
+            const n = newPins.length
+
+            if (!n) {
+                return
+            }
+
+            try {
+                t = yield toaster({
+                    title: `Pinned ${n} new sticky room${n === 1 ? '' : 's'}`,
+                    type: ToastType.Info,
+                    desc: (
+                        <ol css={tw`text-[14px] list-decimal`}>
+                            {newPins.map(([id, name]) => (
+                                <li key={id}>{name}</li>
+                            ))}
+                        </ol>
+                    ),
+                    okLabel: 'Dismiss',
+                })
+
+                yield t?.open()
+            } catch (e) {
+                t = undefined
+            }
+        } catch (e) {
+            handleError(e)
+        } finally {
+            t?.dismiss()
         }
-
-        yield put(
-            PreferencesAction.set({
-                owner,
-                stickyRoomIds: [...ids, ...newIds],
-            })
-        )
-
-        const n = newPins.length
-
-        if (!n) {
-            return
-        }
-
-        yield put(
-            ToasterAction.show({
-                title: `Pinned ${n} new sticky room${n === 1 ? '' : 's'}`,
-                type: ToastType.Info,
-                desc: (
-                    <ol css={tw`text-[14px] list-decimal`}>
-                        {newPins.map(([id, name]) => (
-                            <li key={id}>{name}</li>
-                        ))}
-                    </ol>
-                ),
-                okLabel: 'Dismiss',
-            })
-        )
     })
 }
