@@ -12,16 +12,16 @@ export enum WalletIntegrationId {
     CoinbaseWallet = 'coinbaseWallet',
 }
 
-export type WalletState = {
+export interface WalletState {
     account: string | undefined | null
     integrationId: WalletIntegrationId | undefined
     provider: Provider | undefined
     client: undefined | StreamrClient
 }
 
-export type ConnectorMap = {
-    [index: string]: ReturnType<typeof initializeConnector>
-}
+export type ConnectorMap = Partial<
+    Record<WalletIntegrationId, ReturnType<typeof initializeConnector>>
+>
 
 export interface Integration {
     id: WalletIntegrationId
@@ -31,13 +31,13 @@ export interface Integration {
     allowedChainIds?: number[]
 }
 
-type Currency = {
+interface Currency {
     decimals: number
     name: string
     symbol: string
 }
 
-type Network = {
+interface Network {
     chainId: string
     chainName: string
     blockExplorerUrls?: string[]

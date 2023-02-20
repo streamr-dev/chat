@@ -207,7 +207,7 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
 
 EditMembersModal.displayName = 'EditMembersModal'
 
-type ItemProps = HTMLAttributes<HTMLDivElement> & {
+interface ItemProps extends HTMLAttributes<HTMLDivElement> {
     address: string
     onMenuToggle?: (address: Address, state: boolean) => void
     canBeDeleted?: boolean

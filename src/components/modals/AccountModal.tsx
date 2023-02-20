@@ -12,6 +12,7 @@ import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
 import integrations from '$/utils/integrations'
 import trunc from '$/utils/trunc'
+import { AnchorHTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import Modal, { Props as ModalProps } from './Modal'
@@ -175,9 +176,7 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
 
 AccountModal.displayName = 'AccountModal'
 
-type ExternalLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement>
-
-function ExternalLink(props: ExternalLinkProps) {
+function ExternalLink(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
     return (
         <a
             {...props}

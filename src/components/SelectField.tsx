@@ -1,4 +1,12 @@
-import Select, { components, OptionProps, ValueContainerProps } from 'react-select'
+import Select, {
+    components,
+    ControlProps,
+    DropdownIndicatorProps,
+    MenuProps,
+    OptionProps,
+    SingleValueProps,
+    ValueContainerProps,
+} from 'react-select'
 import { StateManagerProps } from 'react-select/dist/declarations/src/useStateManager'
 import tw from 'twin.macro'
 import CheckIcon from '$/icons/CheckIcon'
@@ -28,22 +36,12 @@ export function Option({ children, isSelected, isDisabled, ...props }: OptionPro
             ]}
         >
             <div
-                css={[
-                    tw`
-                        flex
-                        items-center
-                    `,
-                ]}
+                css={tw`
+                    flex
+                    items-center
+                `}
             >
-                <div
-                    css={[
-                        tw`
-                            flex-grow
-                        `,
-                    ]}
-                >
-                    {children}
-                </div>
+                <div css={tw`grow`}>{children}</div>
                 {!!isSelected && (
                     <div>
                         <CheckIcon />
@@ -54,52 +52,41 @@ export function Option({ children, isSelected, isDisabled, ...props }: OptionPro
     )
 }
 
-function Menu(props: any) {
+function Menu(props: MenuProps) {
     return (
         <components.Menu
             {...props}
-            css={[
-                tw`
-                    rounded-lg
-                    border-0
-                    shadow-lg
-                    px-0
-                    py-1
-                    mt-2
-                `,
-            ]}
+            css={tw`
+                rounded-lg
+                border-0
+                shadow-lg
+                px-0
+                py-1
+                mt-2
+            `}
         />
     )
 }
 
-function Control(props: any) {
+function Control(props: ControlProps) {
     return (
         <components.Control
             {...props}
-            css={[
-                tw`
-                    h-14
-                    bg-[#DEE6EE]
-                    border-0
-                    outline-none
-                    rounded-lg
-                    shadow-none
-                `,
-            ]}
+            css={tw`
+                h-14
+                bg-[#DEE6EE]
+                border-0
+                outline-none
+                rounded-lg
+                shadow-none
+            `}
         />
     )
 }
 
-function DropdownIndicator(props: any) {
+function DropdownIndicator(props: DropdownIndicatorProps) {
     return (
-        <components.DropdownIndicator
-            {...props}
-            css={[
-                tw`
-                    px-4
-                `,
-            ]}
-        >
+        <components.DropdownIndicator {...props} css={tw`px-4`}>
             <svg
                 css={[
                     tw`
@@ -131,17 +118,15 @@ function ValueContainer(props: ValueContainerProps) {
     return (
         <components.ValueContainer
             {...props}
-            css={[
-                tw`
-                    p-0
-                    font-medium
-                `,
-            ]}
+            css={tw`
+                p-0
+                font-medium
+            `}
         />
     )
 }
 
-export function SingleValue(props: any) {
+export function SingleValue(props: SingleValueProps) {
     return <components.SingleValue {...props} />
 }
 
@@ -149,7 +134,7 @@ function IndicatorSeparator() {
     return null
 }
 
-type Props = Omit<StateManagerProps, 'components'> & {
+interface Props extends Omit<StateManagerProps, 'components'> {
     optionComponent?: any
     singleValueComponent?: any
 }

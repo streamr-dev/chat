@@ -9,7 +9,7 @@ export enum Placement {
     Bottom = 'bottom',
 }
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     placement?: Placement
 }
 
@@ -102,15 +102,13 @@ export default function Tooltip({ children, placement = Placement.Top, ...props 
                 ]}
             />
             <div
-                css={[
-                    tw`
-                        bg-white
-                        rounded-lg
-                        px-2
-                        py-1.5
-                        relative
-                    `,
-                ]}
+                css={tw`
+                    bg-white
+                    rounded-lg
+                    px-2
+                    py-1.5
+                    relative
+                `}
             >
                 <Text>{children}</Text>
             </div>

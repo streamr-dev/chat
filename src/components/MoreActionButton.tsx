@@ -4,7 +4,7 @@ import MoreIcon from '$/icons/MoreIcon'
 import { forwardRef, ReactNode, Ref } from 'react'
 import tw from 'twin.macro'
 
-type Props = ActionButtonProps & {
+interface Props extends ActionButtonProps {
     deleting?: boolean
     icon?: ReactNode
 }

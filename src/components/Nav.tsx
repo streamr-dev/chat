@@ -4,7 +4,7 @@ import Navbar, { NavButton } from './Navbar'
 import Text from './Text'
 import useDisplayUsername from '$/hooks/useDisplayUsername'
 
-type Props = {
+interface Props {
     onAccountClick?: () => void
 }
 

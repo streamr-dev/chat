@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, forwardRef, Ref } from 'react'
 import tw from 'twin.macro'
 import SecondaryButton from './SecondaryButton'
 
-export type ActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     active?: boolean
     light?: boolean
 }

@@ -12,7 +12,7 @@ import tw, { css } from 'twin.macro'
 import Text from './Text'
 import useOnMouseDownOutsideEffect from 'streamr-ui/hooks/useOnMouseDownOutsideEffect'
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     anchorEl?: HTMLButtonElement | null
     onMouseDownOutside?: () => void
 }

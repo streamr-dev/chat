@@ -168,7 +168,7 @@ function DelegationBox() {
     )
 }
 
-type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+interface CtaProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     busy?: boolean
 }
 

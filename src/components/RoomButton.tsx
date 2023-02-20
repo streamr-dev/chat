@@ -21,7 +21,7 @@ import { Link, LinkProps } from 'react-router-dom'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { FlagAction } from '$/features/flag'
 
-type Props = Omit<LinkProps, 'children' | 'to'> & {
+interface Props extends Omit<LinkProps, 'children' | 'to'> {
     active?: boolean
     room: IRoom
 }
@@ -97,34 +97,29 @@ export default function RoomButton({ room, active, ...props }: Props) {
             misc={
                 <>
                     <div
-                        css={[
-                            tw`
-                                text-[#59799C]
-                                flex
-                                items-center
-                                ml-2
-
-                                empty:hidden
-                                [* + *]:ml-3
-                        `,
-                        ]}
+                        css={tw`
+                            text-[#59799C]
+                            flex
+                            items-center
+                            ml-2
+                            empty:hidden
+                            [* + *]:ml-3
+                        `}
                     >
                         {justInvited && (
                             <div
-                                css={[
-                                    tw`
-                                        bg-[#E0E7F2]
-                                        text-[#59799C]
-                                        text-[0.625rem]
-                                        font-medium
-                                        tracking-wider
-                                        uppercase
-                                        w-max
-                                        px-3
-                                        py-1
-                                        rounded-full
-                                    `,
-                                ]}
+                                css={tw`
+                                    bg-[#E0E7F2]
+                                    text-[#59799C]
+                                    text-[0.625rem]
+                                    font-medium
+                                    tracking-wider
+                                    uppercase
+                                    w-max
+                                    px-3
+                                    py-1
+                                    rounded-full
+                                `}
                             >
                                 <Text>Invite</Text>
                             </div>
@@ -150,54 +145,30 @@ export default function RoomButton({ room, active, ...props }: Props) {
         >
             <div>
                 <div
-                    css={[
-                        tw`
-                            text-black
-                            truncate
-                        `,
-                    ]}
+                    css={tw`
+                        text-black
+                        truncate
+                    `}
                 >
                     {name || 'Unnamed room'}
                 </div>
                 {typeof recentMessage?.content !== 'undefined' && (
                     <div
-                        css={[
-                            tw`
-                                text-[#59799C]
-                                text-[14px]
-                                font-plex
-                                flex
-                            `,
-                        ]}
+                        css={tw`
+                            text-[#59799C]
+                            text-[14px]
+                            font-plex
+                            flex
+                        `}
                     >
-                        <div
-                            css={[
-                                tw`
-                                    min-w-0
-                                `,
-                            ]}
-                        >
-                            <Text
-                                truncate
-                                css={[
-                                    !seen &&
-                                        tw`
-                                            font-bold
-                                        `,
-                                ]}
-                            >
+                        <div css={tw`min-w-0`}>
+                            <Text truncate css={!seen && tw`font-bold`}>
                                 {recentMessage.content}
                             </Text>
                         </div>
                         {typeof ago !== 'undefined' && (
                             <>
-                                <div
-                                    css={[
-                                        tw`
-                                            px-1
-                                        `,
-                                    ]}
-                                >
+                                <div css={tw`px-1`}>
                                     <Text>·</Text>
                                 </div>
                                 <div>
@@ -214,7 +185,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
 function Icon({ id: roomId }: Pick<Props['room'], 'id'>) {
     return (
-        <div tw="p-1">
+        <div css={tw`p-1`}>
             <Avatar seed={roomId} backgroundColor="white" />
         </div>
     )

@@ -4,7 +4,7 @@ import tw, { css } from 'twin.macro'
 import Background from './background.png'
 import pkg from '$/../package-lock.json'
 
-type Props = {
+interface Props {
     children?: ReactNode
     title?: string
 }

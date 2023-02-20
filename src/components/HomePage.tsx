@@ -6,6 +6,7 @@ import Text from '$/components/Text'
 import useWalletModal from '$/hooks/useWalletModal'
 import useHowItWorksModal from '$/hooks/useHowItWorksModal'
 import TryMetaMask from '$/components/TryMetaMask'
+import { ButtonHTMLAttributes } from 'react'
 
 export default function HomePage() {
     const { open, modal } = useWalletModal()
@@ -67,9 +68,7 @@ export default function HomePage() {
     )
 }
 
-type CreateRoomButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'>
-
-function ConnectButton(props: CreateRoomButtonProps) {
+function ConnectButton(props: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'type'>) {
     return (
         <Button
             {...props}
@@ -116,7 +115,16 @@ function PoweredBy() {
             ]}
         >
             <div
-                css={tw`bg-white px-5 py-2.5 rounded-full text-plug shadow-sm text-center md:text-left`}
+                css={tw`
+                    bg-white
+                    px-5
+                    py-2.5
+                    rounded-full
+                    text-plug
+                    shadow-sm
+                    text-center
+                    md:text-left
+                `}
             >
                 <Text>
                     Decentralised, encrypted chat powered by&nbsp;

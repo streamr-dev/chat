@@ -5,6 +5,4 @@ export interface IIdenticon {
     content: string
 }
 
-export interface IdenticonsState {
-    [index: IdenticonSeed]: undefined | IIdenticon['content']
-}
+export type IdenticonsState = Partial<Record<IdenticonSeed, IIdenticon['content']>>

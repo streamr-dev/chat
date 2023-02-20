@@ -3,13 +3,13 @@ import { EMPTY } from '@web3-react/empty'
 import { ConnectorMap, WalletState } from '$/features/wallet/types'
 import integrations from './integrations'
 
-let fallbackConnector: any
+type Connector = ReturnType<typeof initializeConnector>
+
+let fallbackConnector: Connector
 
 const connectors: ConnectorMap = {}
 
-export default function getConnector(
-    integrationId: WalletState['integrationId']
-): ReturnType<typeof initializeConnector> {
+export default function getConnector(integrationId: WalletState['integrationId']): Connector {
     if (!integrationId) {
         if (!fallbackConnector) {
             fallbackConnector = initializeConnector<any>(() => EMPTY)
@@ -26,13 +26,17 @@ export default function getConnector(
         return getConnector(undefined)
     }
 
-    if (!connectors[integrationId]) {
-        // We do the caching dance so that connectors don't get initialized prematurely.
-        connectors[integrationId] = initializeConnector<ReturnType<typeof integration.initializer>>(
+    let connector = connectors[integrationId]
+
+    if (!connector) {
+        connector = initializeConnector<ReturnType<typeof integration.initializer>>(
             integration.initializer,
             integration.allowedChainIds
         )
+
+        // We do the lazy-load dance so that connectors don't get initialized prematurely.
+        connectors[integrationId] = connector
     }
 
-    return connectors[integrationId]
+    return connector
 }

@@ -16,7 +16,7 @@ export enum AvatarStatus {
     Offline = '#59799C',
 }
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     seed: undefined | string
     status?: AvatarStatus
     backgroundColor?: string

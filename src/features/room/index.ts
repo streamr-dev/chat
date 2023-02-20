@@ -26,13 +26,17 @@ const initialState: RoomState = {
 }
 
 function roomCache(state: RoomState, roomId: RoomId) {
-    if (!state.cache[roomId]) {
-        state.cache[roomId] = {
+    let cache = state.cache[roomId]
+
+    if (!cache) {
+        cache = {
             storageNodes: {},
         }
+
+        state.cache[roomId] = cache
     }
 
-    return state.cache[roomId]
+    return cache
 }
 
 export const RoomAction = {

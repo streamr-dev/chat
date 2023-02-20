@@ -50,7 +50,7 @@ export default function WalletModal({
     )
 }
 
-type WalletOptionProps<T> = {
+interface WalletOptionProps<T> {
     integrationId: T
     onClick?: (integrationId: T) => void
 }

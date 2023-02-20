@@ -16,7 +16,7 @@ import useAbility from '$/hooks/useAbility'
 import { StreamPermission } from 'streamr-client'
 import useAnonAccount from '$/hooks/useAnonAccount'
 
-type Props = {
+interface Props {
     onAddMemberClick?: () => void
 }
 

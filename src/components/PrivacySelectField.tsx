@@ -46,7 +46,7 @@ function isPrivacyOption(option: unknown): option is PrivacyOption {
     return !!option && typeof option === 'object'
 }
 
-export type Props = SelectProps & {
+export interface Props extends SelectProps {
     value: PrivacyOption
 }
 
@@ -67,24 +67,20 @@ function SingleValue({ data: { icon: Icon }, children, ...props }: any) {
     return (
         <RawSingleValue {...props}>
             <div
-                css={[
-                    tw`
-                        text-[14px]
-                        p-0
-                        flex
-                        items-center
-                    `,
-                ]}
+                css={tw`
+                    text-[14px]
+                    p-0
+                    flex
+                    items-center
+                `}
             >
                 <div
-                    css={[
-                        tw`
-                            text-[#59799C]
-                            flex
-                            justify-center
-                            w-10
-                        `,
-                    ]}
+                    css={tw`
+                        text-[#59799C]
+                        flex
+                        justify-center
+                        w-10
+                    `}
                 >
                     <Icon css={tw`block`} />
                 </div>
@@ -100,35 +96,25 @@ function Option({ data: { label, icon: Icon, desc }, isDisabled, ...props }: any
     return (
         <RawOption {...props} isDisabled={isDisabled}>
             <div
-                css={[
-                    tw`
-                        flex
-                        items-center
-                    `,
-                ]}
+                css={tw`
+                    flex
+                    items-center
+                `}
             >
                 <div
-                    css={[
-                        tw`
-                            bg-[#F1F4F7]
-                            rounded-full
-                            w-8
-                            h-8
-                            flex
-                            justify-center
-                            items-center
-                            mr-3
-                            flex-shrink-0
-                        `,
-                    ]}
+                    css={tw`
+                        bg-[#F1F4F7]
+                        rounded-full
+                        w-8
+                        h-8
+                        flex
+                        justify-center
+                        items-center
+                        mr-3
+                        shrink-0
+                    `}
                 >
-                    <Icon
-                        css={[
-                            tw`
-                                block
-                            `,
-                        ]}
-                    />
+                    <Icon css={tw`block`} />
                 </div>
                 <div>
                     <div
@@ -147,13 +133,11 @@ function Option({ data: { label, icon: Icon, desc }, isDisabled, ...props }: any
                         <Text>{label}</Text>
                     </div>
                     <Hint
-                        css={[
-                            tw`
-                                text-[0.75rem]
-                                mt-0
-                                pr-12
-                            `,
-                        ]}
+                        css={tw`
+                            text-[0.75rem]
+                            mt-0
+                            pr-12
+                        `}
                     >
                         <Text>{desc}</Text>
                     </Hint>

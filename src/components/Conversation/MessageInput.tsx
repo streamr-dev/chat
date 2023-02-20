@@ -25,7 +25,7 @@ import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
 import Submit from '$/components/Submit'
 
-type Props = {
+interface Props {
     disabled?: boolean
     streamrClient: StreamrClient
 }

@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
 
-type Props = HTMLAttributes<HTMLSpanElement> & {
+interface Props extends HTMLAttributes<HTMLSpanElement> {
     truncate?: boolean
 }
 
