@@ -3,15 +3,16 @@ import { IRecord, PrivacySetting } from '$/types'
 
 export interface RoomState {
     selectedRoomId?: RoomId
-    cache: {
-        [roomId: RoomId]: {
-            privacy?: PrivacySetting
-            storageNodes: {
-                [address: string]: boolean
+    cache: Partial<
+        Record<
+            RoomId,
+            {
+                privacy?: PrivacySetting
+                storageNodes: Record<Address, boolean>
+                temporaryName?: string
             }
-            temporaryName?: string
-        }
-    }
+        >
+    >
 }
 
 export interface IRoom extends IRecord, TokenGatedRoomState {

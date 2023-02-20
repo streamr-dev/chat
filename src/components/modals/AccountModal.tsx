@@ -2,15 +2,17 @@ import Hint from '$/components/Hint'
 import SecondaryButton from '$/components/SecondaryButton'
 import Text from '$/components/Text'
 import TextField from '$/components/TextField'
+import { ToastType } from '$/components/Toast'
 import Toggle from '$/components/Toggle'
 import { PreferencesAction } from '$/features/preferences'
 import { usePreferences } from '$/features/preferences/hooks'
+import { ToasterAction } from '$/features/toaster'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
 import integrations from '$/utils/integrations'
-import { success } from '$/utils/toaster'
 import trunc from '$/utils/trunc'
+import { AnchorHTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import Modal, { Props as ModalProps } from './Modal'
@@ -94,7 +96,13 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                         onClick={(e) => {
                             e.preventDefault()
                             copy(account!)
-                            success('Copied to clipboard.')
+
+                            dispatch(
+                                ToasterAction.show({
+                                    title: 'Copied to clipboard',
+                                    type: ToastType.Success,
+                                })
+                            )
                         }}
                     >
                         <svg
@@ -168,9 +176,7 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
 
 AccountModal.displayName = 'AccountModal'
 
-type ExternalLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement>
-
-function ExternalLink(props: ExternalLinkProps) {
+function ExternalLink(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
     return (
         <a
             {...props}

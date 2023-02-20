@@ -1,7 +1,7 @@
 import tw, { css } from 'twin.macro'
 import Spinner from './Spinner'
 
-type Props = {
+interface Props {
     value?: undefined | boolean
     onClick?: () => void
     busy?: boolean
@@ -25,19 +25,10 @@ export default function Toggle({ value: value, busy = false, onClick }: Props) {
                     rounded-full
                     transition-colors
                 `,
-                value &&
-                    tw`
-                        bg-[#00875A]
-                    `,
+                value && tw`bg-[#00875A]`,
             ]}
         >
-            <div
-                css={[
-                    tw`
-                        relative
-                    `,
-                ]}
-            >
+            <div css={tw`relative`}>
                 <div
                     css={[
                         ((value && !undetermined) || (!value && undetermined)) &&
@@ -87,14 +78,8 @@ export default function Toggle({ value: value, busy = false, onClick }: Props) {
                             rounded-full
                             ml-0
                         `,
-                        value &&
-                            tw`
-                                ml-5
-                            `,
-                        undetermined &&
-                            tw`
-                                ml-2.5
-                            `,
+                        value && tw`ml-5`,
+                        undetermined && tw`ml-2.5`,
                     ]}
                 >
                     {busy && <Spinner r={4} />}

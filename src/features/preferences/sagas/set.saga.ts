@@ -1,7 +1,8 @@
+import { ToastType } from '$/components/Toast'
 import { PreferencesAction } from '$/features/preferences'
+import toast from '$/features/toaster/helpers/toast'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
-import { error } from '$/utils/toaster'
 import { takeEvery } from 'redux-saga/effects'
 
 function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
@@ -22,7 +23,10 @@ function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
     } catch (e) {
         handleError(e)
 
-        error('Failed to update preferences.')
+        yield toast({
+            title: 'Failed to update preferences',
+            type: ToastType.Error,
+        })
     }
 }
 

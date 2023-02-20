@@ -20,7 +20,7 @@ export enum TokenStandard {
 
 export { InterfaceId as ErcToInterfaceIds }
 
-export type TokenType = {
+export interface TokenType {
     standard: TokenStandard
     isCountable: boolean
     hasIds: boolean

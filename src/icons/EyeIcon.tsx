@@ -1,6 +1,6 @@
 import { SVGAttributes } from 'react'
 
-type Props = SVGAttributes<SVGElement> & {
+interface Props extends SVGAttributes<SVGElement> {
     open?: boolean
 }
 

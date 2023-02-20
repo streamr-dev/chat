@@ -2,8 +2,9 @@ import { put } from 'redux-saga/effects'
 import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
-import { error, success } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import toast from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
 
 function* onToggleStorageNodeAction({
     payload: { roomId, address, state, provider, requester, streamrClient },
@@ -25,11 +26,17 @@ function* onToggleStorageNodeAction({
         if (state) {
             yield streamrClient.addStreamToStorageNode(roomId, address)
 
-            success('Storage enabled.')
+            yield toast({
+                title: 'Storage enabled',
+                type: ToastType.Success,
+            })
         } else {
             yield streamrClient.removeStreamFromStorageNode(roomId, address)
 
-            success('Storage disabled.')
+            yield toast({
+                title: 'Storage disabled',
+                type: ToastType.Success,
+            })
         }
 
         yield put(
@@ -42,11 +49,10 @@ function* onToggleStorageNodeAction({
     } catch (e) {
         handleError(e)
 
-        if (state) {
-            error('Failed to enable storage.')
-        } else {
-            error('Failed to disable storage.')
-        }
+        yield toast({
+            title: state ? 'Failed to enable storage' : 'Failed to disable storage',
+            type: ToastType.Error,
+        })
     }
 }
 

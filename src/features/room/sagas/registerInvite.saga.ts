@@ -2,10 +2,10 @@ import { put } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
-import { info } from '$/utils/toaster'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
+import toast from '$/features/toaster/helpers/toast'
 
 function* onRegisterInviteAction({
     payload: { roomId, invitee, streamrClient },
@@ -30,7 +30,10 @@ function* onRegisterInviteAction({
             return false
         })
 
-        info("You've got an invite. Room list will reflect it shortly.")
+        yield toast({
+            title: "You've got an invite",
+            desc: 'Room list will reflect it shortly',
+        })
 
         yield put(
             RoomAction.fetch({

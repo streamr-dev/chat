@@ -20,7 +20,6 @@ import CopyIcon from '$/icons/CopyIcon'
 import DeleteIcon from '$/icons/DeleteIcon'
 import EditMembersIcon from '$/icons/EditMembersIcon'
 import GearIcon from '$/icons/GearIcon'
-import { success } from '$/utils/toaster'
 import ActionButton from '../ActionButton'
 import Form from '../Form'
 import Menu, { MenuButtonItem, MenuSeparatorItem } from '../Menu'
@@ -41,8 +40,14 @@ import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import ArrowIcon from '$/icons/ArrowIcon'
 import useJustInvited from '$/hooks/useJustInvited'
+import { RoomId } from '$/features/room/types'
+import useAnonAccount from '$/hooks/useAnonAccount'
+import { ToasterAction } from '$/features/toaster'
+import { ToastType } from '$/components/Toast'
+import useAcceptInvite from '$/hooks/useAcceptInvite'
+import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 
-type Props = {
+interface Props {
     canModifyMembers?: boolean
     onAddMemberClick?: () => void
     onEditMembersClick?: () => void
@@ -71,9 +76,9 @@ export default function ConversationHeader({
 
     const selectedRoomId = useSelectedRoomId()
 
-    const canEdit = useAbility(selectedRoomId, account, StreamPermission.EDIT)
+    const canEdit = !!useAbility(selectedRoomId, account, StreamPermission.EDIT)
 
-    const canDelete = useAbility(selectedRoomId, account, StreamPermission.DELETE)
+    const canDelete = !!useAbility(selectedRoomId, account, StreamPermission.DELETE)
 
     const { name = '' } = useSelectedRoom() || {}
 
@@ -161,9 +166,9 @@ export default function ConversationHeader({
 
     const provider = useWalletProvider()
 
-    const membersCount = useRoomMembers(selectedRoomId).length
+    const acceptInvite = useAcceptInvite()
 
-    const isDetectingMembers = useIsDetectingRoomMembers(selectedRoomId)
+    const accepting = useIsInviteBeingAccepted()
 
     return (
         <div
@@ -310,37 +315,11 @@ export default function ConversationHeader({
                                     `}
                                 />
                                 <Text>{privacyLabel} room</Text>
-                                <Dot css={tw`mx-2`} />
-                                {canModifyMembers ? (
-                                    <button
-                                        type="button"
-                                        onClick={() => void onEditMembersClick?.()}
-                                    >
-                                        <Text
-                                            css={
-                                                isDetectingMembers &&
-                                                tw`
-                                                    animate-pulse
-                                                    [animation-duration: 0.5s]
-                                                `
-                                            }
-                                        >
-                                            {formatMembersCount(membersCount)}
-                                        </Text>
-                                    </button>
-                                ) : (
-                                    <Text
-                                        css={
-                                            isDetectingMembers &&
-                                            tw`
-                                                animate-pulse
-                                                [animation-duration: 0.5s]
-                                            `
-                                        }
-                                    >
-                                        {formatMembersCount(membersCount)}
-                                    </Text>
-                                )}
+                                <MemberCount
+                                    roomId={selectedRoomId}
+                                    canModifyMembers={canModifyMembers}
+                                    onClick={() => void onEditMembersClick?.()}
+                                />
                             </div>
                         </div>
                     )}
@@ -377,12 +356,14 @@ export default function ConversationHeader({
                     <>
                         {invitePending && (
                             <ActionTextButton
+                                disabled={accepting}
+                                onClick={() => void acceptInvite()}
                                 css={tw`
                                     bg-[#FFF2EE]
                                     text-[#FF5924]
                                 `}
                             >
-                                <Text>Join</Text>
+                                <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
                             </ActionTextButton>
                         )}
                         {canEdit && !isRoomBeingDeleted && (
@@ -461,7 +442,12 @@ export default function ConversationHeader({
                                         if (selectedRoomId) {
                                             copy(selectedRoomId)
 
-                                            success('Copied to clipboard.')
+                                            dispatch(
+                                                ToasterAction.show({
+                                                    title: 'Copied to clipboard',
+                                                    type: ToastType.Success,
+                                                })
+                                            )
                                         }
                                         setRoomMenuOpen(false)
                                     }}
@@ -567,5 +553,56 @@ export default function ConversationHeader({
                 )}
             </Form>
         </div>
+    )
+}
+
+interface MemberCountProps {
+    onClick: () => void
+    canModifyMembers: boolean
+    roomId: RoomId | undefined
+}
+
+function MemberCount({ roomId, onClick, canModifyMembers = false }: MemberCountProps) {
+    const membersCount = useRoomMembers(roomId).length
+
+    const isDetectingMembers = useIsDetectingRoomMembers(roomId)
+
+    const canAnonSubscribe = useAbility(roomId, useAnonAccount(roomId), StreamPermission.SUBSCRIBE)
+
+    if (canAnonSubscribe !== false) {
+        return null
+    }
+
+    return (
+        <>
+            <Dot css={tw`mx-2`} />
+            {canModifyMembers ? (
+                <button type="button" onClick={() => void onClick?.()}>
+                    <Text
+                        css={
+                            isDetectingMembers &&
+                            tw`
+                                animate-pulse
+                                [animation-duration: 0.5s]
+                            `
+                        }
+                    >
+                        {formatMembersCount(membersCount)}
+                    </Text>
+                </button>
+            ) : (
+                <Text
+                    css={
+                        isDetectingMembers &&
+                        tw`
+                            animate-pulse
+                            [animation-duration: 0.5s]
+                        `
+                    }
+                >
+                    {formatMembersCount(membersCount)}
+                </Text>
+            )}
+        </>
     )
 }

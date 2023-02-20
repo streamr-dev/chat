@@ -6,16 +6,14 @@ export default function PrimaryButton(props: ButtonHTMLAttributes<HTMLButtonElem
     return (
         <Button
             {...props}
-            css={[
-                tw`
-                    text-[white]
-                    font-medium
-                    bg-[#FF5924]
-                    h-[30px]
-                    px-3
-                    rounded-full
-                `,
-            ]}
+            css={tw`
+                text-[white]
+                font-medium
+                bg-[#FF5924]
+                h-[30px]
+                px-3
+                rounded-full
+            `}
         />
     )
 }

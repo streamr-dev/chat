@@ -6,7 +6,7 @@ export enum LoadingState {
     Busy = 'busy',
 }
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     state?: LoadingState
 }
 
@@ -35,10 +35,7 @@ export default function LoadingIndicator({ state = LoadingState.Idle, ...props }
                     after:animate-[2000ms infinite loadingIndicator]
                     after:w-full
                 `,
-                state === LoadingState.Busy &&
-                    tw`
-                        opacity-100
-                    `,
+                state === LoadingState.Busy && tw`opacity-100`,
             ]}
         />
     )

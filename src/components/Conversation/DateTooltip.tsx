@@ -1,13 +1,12 @@
 import formatDate from '$/utils/formatDate'
 import Tooltip from '$/components/Tooltip'
 
-type Props = {
-    className?: string
-    timestamp: number | undefined
+interface Props {
+    timestamp?: number
 }
 
 export default function DateTooltip({ timestamp }: Props) {
-    if (!timestamp) {
+    if (typeof timestamp === 'undefined') {
         return <div />
     }
 

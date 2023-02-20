@@ -1,9 +1,10 @@
+import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
+import toast from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
-import { error, success } from '$/utils/toaster'
 import { call, put } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
@@ -42,11 +43,17 @@ export default function tokenGatedPromoteDelegatedAccount({
                 })
             )
 
-            success('Delegated account has been promoted on the TokenGated room.')
+            yield toast({
+                title: 'Delegated account has been promoted on the TokenGated room',
+                type: ToastType.Success,
+            })
         } catch (e) {
             handleError(e)
 
-            error('Failed to promote the delegated account.')
+            yield toast({
+                title: 'Failed to promote the delegated account',
+                type: ToastType.Error,
+            })
         }
     })
 }

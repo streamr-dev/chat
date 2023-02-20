@@ -21,15 +21,16 @@ import { OptionalAddress } from '$/types'
 import { useDispatch } from 'react-redux'
 import { Flag } from '$/features/flag/types'
 import trunc from '$/utils/trunc'
-import { useAlias } from '$/features/alias/hooks'
+import useAlias from '$/hooks/useAlias'
 import useENSName from '$/hooks/useENSName'
 import { RoomId } from '$/features/room/types'
 import { MessageAction } from '$/features/message'
 import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
 import useFlag from '$/hooks/useFlag'
 import { DelegationAction } from '$/features/delegation'
+import useAnonAccount from '$/hooks/useAnonAccount'
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     payload: IMessage
     previousCreatedBy?: OptionalAddress
 }
@@ -96,10 +97,13 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
 
     const delegatedAccount = useDelegatedAccount()
 
+    const anonAccount = useAnonAccount(roomId)
+
     const incoming =
         !isSameAddress(requester, createdBy) &&
         !isSameAddress(delegatedAccount, createdBy) &&
-        !isSameAddress(sender, requester)
+        !isSameAddress(sender, requester) &&
+        !isSameAddress(anonAccount, createdBy)
 
     return (
         <>

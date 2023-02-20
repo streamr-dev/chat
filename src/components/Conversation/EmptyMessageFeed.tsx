@@ -12,18 +12,28 @@ import { useWalletAccount } from '$/features/wallet/hooks'
 import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 import Spinner from '$/components/Spinner'
+import useAbility from '$/hooks/useAbility'
+import { StreamPermission } from 'streamr-client'
+import useAnonAccount from '$/hooks/useAnonAccount'
 
-type Props = {
+interface Props {
     onAddMemberClick?: () => void
-    canModifyMembers?: boolean
 }
 
-export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = false }: Props) {
-    const invited = useJustInvited(useSelectedRoomId(), useWalletAccount())
+export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
+    const roomId = useSelectedRoomId()
 
-    const acceptInvite = useAcceptInvite()
+    const walletAccount = useWalletAccount()
 
-    const accepting = useIsInviteBeingAccepted()
+    const isPublic = useAbility(roomId, useAnonAccount(roomId), StreamPermission.SUBSCRIBE)
+
+    const canGrant = !!useAbility(roomId, walletAccount, StreamPermission.GRANT)
+
+    const invited = useJustInvited(useSelectedRoomId(), walletAccount)
+
+    if (typeof isPublic === 'undefined') {
+        return null
+    }
 
     return (
         <div
@@ -40,58 +50,39 @@ export default function EmptyMessageFeed({ onAddMemberClick, canModifyMembers = 
                 `,
             ]}
         >
-            <div
-                css={[
-                    tw`
-                        block
-                        tracking-[0.02em]
-                        mb-8
-                        empty:hidden
-                        px-16
-                    `,
-                ]}
-            >
-                <Credits />
-            </div>
-            {invited ? (
-                <UtilityButton
-                    disabled={accepting}
-                    onClick={() => void acceptInvite()}
-                    css={tw`
-                        flex
-                        items-center
-                    `}
-                >
-                    <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
-                    {accepting && (
-                        <div
+            {isPublic ? null : (
+                <>
+                    <div
+                        css={tw`
+                            block
+                            tracking-[0.02em]
+                            mb-8
+                            empty:hidden
+                            px-16
+                        `}
+                    >
+                        <Credits />
+                    </div>
+                    {invited ? (
+                        <JoinButton />
+                    ) : (
+                        <UtilityButton
+                            disabled={!canGrant}
+                            onClick={onAddMemberClick}
                             css={tw`
-                                relative
-                                w-4
-                                h-4
-                                ml-3
+                                flex
+                                items-center
                             `}
                         >
-                            <Spinner strokeColor="currentColor" />
-                        </div>
+                            <div tw="mr-2">
+                                <AddMemberIcon />
+                            </div>
+                            <div tw="grow">
+                                <Text>Add member</Text>
+                            </div>
+                        </UtilityButton>
                     )}
-                </UtilityButton>
-            ) : (
-                <UtilityButton
-                    disabled={!canModifyMembers}
-                    onClick={onAddMemberClick}
-                    css={tw`
-                        flex
-                        items-center
-                    `}
-                >
-                    <div tw="mr-2">
-                        <AddMemberIcon />
-                    </div>
-                    <div tw="grow">
-                        <Text>Add member</Text>
-                    </div>
-                </UtilityButton>
+                </>
             )}
         </div>
     )
@@ -132,4 +123,35 @@ function Credits() {
     }
 
     return null
+}
+
+function JoinButton() {
+    const acceptInvite = useAcceptInvite()
+
+    const accepting = useIsInviteBeingAccepted()
+
+    return (
+        <UtilityButton
+            disabled={accepting}
+            onClick={() => void acceptInvite()}
+            css={tw`
+                flex
+                items-center
+            `}
+        >
+            <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
+            {accepting && (
+                <div
+                    css={tw`
+                        relative
+                        w-4
+                        h-4
+                        ml-3
+                    `}
+                >
+                    <Spinner strokeColor="currentColor" />
+                </div>
+            )}
+        </UtilityButton>
+    )
 }

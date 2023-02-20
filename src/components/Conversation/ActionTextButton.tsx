@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes } from 'react'
 import tw from 'twin.macro'
 import SecondaryButton from '../SecondaryButton'
 
-type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
     secondary?: boolean
 }
 

@@ -1,4 +1,6 @@
 import Id from '$/components/Id'
+import Toast, { ToastType } from '$/components/Toast'
+import { Controller as ToastController } from '$/components/Toaster'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import { selectDelegatedAccount } from '$/features/delegation/selectors'
@@ -7,14 +9,15 @@ import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
+import retoast from '$/features/toaster/helpers/retoast'
+import { Controller } from '$/features/toaster/helpers/toast'
+import toaster from '$/features/toaster/helpers/toaster'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { Address, OptionalAddress } from '$/types'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
-import { error, loading } from '$/utils/toaster'
-import { Id as ToastId, toast } from 'react-toastify'
 import { call, put, select } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
@@ -25,18 +28,27 @@ export default function pin({
     provider,
 }: ReturnType<typeof RoomAction.pin>['payload']) {
     return call(function* () {
-        let toastId: ToastId | undefined
-
         let retrievedAccess = false
+
+        let tc: Controller | undefined
+
+        let confirm: ToastController<typeof Toast> | undefined
+
+        let dismissToast = false
 
         try {
             yield put(FlagAction.set(Flag.isRoomBeingPinned()))
 
-            toastId = loading(
-                <>
-                    Pinning <Id>{roomId}</Id>…
-                </>
-            )
+            tc = yield retoast(tc, {
+                title: (
+                    <>
+                        Pinning <Id>{roomId}</Id>…
+                    </>
+                ),
+                type: ToastType.Processing,
+            })
+
+            dismissToast = true
 
             const owner = requester.toLowerCase()
 
@@ -61,6 +73,16 @@ export default function pin({
 
             if (tokenAddress && tokenType) {
                 if (!delegatedAccount) {
+                    confirm = yield toaster({
+                        title: 'Hot wallet required',
+                        type: ToastType.Warning,
+                        desc: 'In order to pin this room the app will ask for your signature.',
+                        okLabel: 'Ok',
+                        cancelLabel: 'Cancel',
+                    })
+
+                    yield confirm?.open()
+
                     retrievedAccess = true
 
                     yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
@@ -85,37 +107,62 @@ export default function pin({
                 yield getUserPermissions(owner, stream)
 
             if (permissions.length) {
-                error('Pinning is redundant. You should already have the room on your list.')
+                dismissToast = false
+
+                tc = yield retoast(tc, {
+                    title: <>You should already have the room on your&nbsp;list</>,
+                    type: ToastType.Error,
+                })
+
                 return
             }
 
             if (!isPublic && !isTokenGated) {
-                error("You can't pin private rooms.")
+                dismissToast = false
+
+                tc = yield retoast(tc, {
+                    title: "You can't pin private rooms",
+                    type: ToastType.Error,
+                })
+
                 return
             }
 
             if (room) {
                 yield db.rooms.where({ owner, id: roomId }).modify({ pinned: true, hidden: false })
             } else {
-                yield db.rooms.add({
-                    createdAt,
-                    createdBy,
-                    id: stream.id,
-                    name,
-                    owner,
-                    pinned: true,
-                })
+                try {
+                    yield db.rooms.add({
+                        createdAt,
+                        createdBy,
+                        id: stream.id,
+                        name,
+                        owner,
+                        pinned: true,
+                    })
+                } catch (e: any) {
+                    if (!/uniqueness/.test(e?.message || '')) {
+                        throw e
+                    }
+                }
             }
 
             yield put(MiscAction.goto(roomId))
         } catch (e) {
             handleError(e)
 
-            error('Pinning failed.')
+            dismissToast = false
+
+            tc = yield retoast(tc, {
+                title: 'Pinning failed',
+                type: ToastType.Error,
+            })
         } finally {
-            if (toastId) {
-                toast.dismiss(toastId)
+            if (dismissToast) {
+                tc?.dismiss()
             }
+
+            confirm?.dismiss()
 
             if (retrievedAccess) {
                 yield put(FlagAction.unset(Flag.isAccessBeingDelegated(requester)))

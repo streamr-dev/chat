@@ -1,19 +1,22 @@
 import { DelegationAction } from '$/features/delegation'
 import networkPreflight from '$/utils/networkPreflight'
-import { error, loading, success } from '$/utils/toaster'
 import { providers, utils, Wallet } from 'ethers'
-import { Id, toast } from 'react-toastify'
 import { call, put } from 'redux-saga/effects'
 import jschkdf from 'js-crypto-hkdf'
 import isAuthorizedDelegatedAccount from '$/utils/isAuthorizedDelegatedAccount'
 import authorizeDelegatedAccount from '$/utils/authorizeDelegatedAccount'
+import { Controller } from '$/features/toaster/helpers/toast'
+import { ToastType } from '$/components/Toast'
+import retoast from '$/features/toaster/helpers/retoast'
 
 export default function retrieve({
     provider,
     owner,
 }: Pick<ReturnType<typeof DelegationAction.requestPrivateKey>['payload'], 'owner' | 'provider'>) {
     return call(function* () {
-        let toastId: Id | undefined = undefined
+        let tc: Controller | undefined
+
+        let dismissToast = false
 
         try {
             yield networkPreflight(provider)
@@ -45,23 +48,38 @@ export default function retrieve({
             )
 
             if (!isDelegationAuthorized) {
-                toastId = loading('Authorizing your delegated wallet…')
+                dismissToast = true
+
+                tc = yield retoast(tc, {
+                    title: 'Authorizing your delegated wallet…',
+                    type: ToastType.Processing,
+                })
 
                 yield authorizeDelegatedAccount(owner, privateKey, provider)
             }
 
             yield put(DelegationAction.setPrivateKey(privateKey))
 
-            success('Access delegated successfully.')
+            dismissToast = false
+
+            tc = yield retoast(tc, {
+                title: 'Access delegated successfully',
+                type: ToastType.Success,
+            })
 
             return address
         } catch (e) {
-            error('Failed to delegate access.')
+            dismissToast = false
+
+            tc = yield retoast(tc, {
+                title: 'Failed to delegate access',
+                type: ToastType.Error,
+            })
 
             throw e
         } finally {
-            if (toastId) {
-                toast.dismiss(toastId)
+            if (dismissToast) {
+                tc?.dismiss()
             }
         }
     })

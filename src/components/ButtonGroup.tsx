@@ -25,7 +25,7 @@ export default function ButtonGroup(props: HTMLAttributes<HTMLDivElement>) {
     )
 }
 
-type GroupedButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+interface GroupedButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     active?: boolean
 }
 
@@ -52,10 +52,7 @@ export function GroupedButton({
                     text-[0.75rem]
                     text-center
                 `,
-                active &&
-                    tw`
-                        bg-white
-                    `,
+                active && tw`bg-white`,
             ]}
         >
             <Text>{children}</Text>

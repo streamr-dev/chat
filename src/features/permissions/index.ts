@@ -41,7 +41,6 @@ export const PermissionsAction = {
             PreflightParams & {
                 roomId: RoomId
                 member: Address
-                delegatedAddress: Address
                 streamrClient: StreamrClient
             }
     >('permissions: accept invite'),

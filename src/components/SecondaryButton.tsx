@@ -8,15 +8,13 @@ const SecondaryButton = forwardRef(
             <Button
                 {...props}
                 ref={ref}
-                css={[
-                    tw`
-                        text-[#59799C]
-                        bg-[#EFF4F9]
-                        h-[30px]
-                        px-3
-                        rounded-full
-                    `,
-                ]}
+                css={tw`
+                    text-[#59799C]
+                    bg-[#EFF4F9]
+                    h-[30px]
+                    px-3
+                    rounded-full
+                `}
             />
         )
     }

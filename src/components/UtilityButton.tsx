@@ -6,16 +6,14 @@ export default function UtilityButton(props: ButtonHTMLAttributes<HTMLButtonElem
     return (
         <Button
             {...props}
-            css={[
-                tw`
-                    bg-[#FFF2EE]
-                    text-[#FF5924]
-                    h-14
-                    px-8
-                    rounded-full
-                    font-medium
-                `,
-            ]}
+            css={tw`
+                bg-[#FFF2EE]
+                text-[#FF5924]
+                h-14
+                px-8
+                rounded-full
+                font-medium
+            `}
         />
     )
 }

@@ -34,6 +34,10 @@ export const Flag = {
         return JSON.stringify(['isRoomBeingPinned'])
     },
 
+    isPinningStickyRooms(requester: Address) {
+        return JSON.stringify(['isPinningStickyRooms', requester.toLowerCase()])
+    },
+
     isRoomBeingUnpinned(roomId: RoomId, owner: Address): string {
         return JSON.stringify(['isRoomBeingUnpinned', roomId, owner.toLowerCase()])
     },
@@ -58,13 +62,8 @@ export const Flag = {
         return JSON.stringify(['isMemberBeingRemoved', roomId, member.toLowerCase()])
     },
 
-    isInviteBeingAccepted(roomId: RoomId, member: Address, delegatedAddress: Address): string {
-        return JSON.stringify([
-            'isInviteBeingAccepted',
-            roomId,
-            member.toLowerCase(),
-            delegatedAddress.toLowerCase(),
-        ])
+    isInviteBeingAccepted(roomId: RoomId, member: Address): string {
+        return JSON.stringify(['isInviteBeingAccepted', roomId, member.toLowerCase()])
     },
 
     isDelegatedAccountBeingPromoted(roomId: RoomId, delegatedAddress: Address): string {
@@ -148,5 +147,9 @@ export const Flag = {
 
     isDisplayingRooms() {
         return JSON.stringify(['isDisplayingRooms'])
+    },
+
+    isRetrievingAvatar(ens: string) {
+        return JSON.stringify(['isRetrievingAvatar', ens])
     },
 }

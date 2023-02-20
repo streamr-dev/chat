@@ -1,7 +1,7 @@
 import React, { FormEvent, FormHTMLAttributes } from 'react'
 import tw from 'twin.macro'
 
-type Props = Omit<FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> & {
+interface Props extends Omit<FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> {
     onSubmit?: () => void
 }
 

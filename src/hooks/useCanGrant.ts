@@ -9,7 +9,7 @@ export default function useCanGrant() {
 
     const selectedRoomId = useSelectedRoomId()
 
-    const canGrant = useAbility(selectedRoomId, address, StreamPermission.GRANT)
+    const canGrant = !!useAbility(selectedRoomId, address, StreamPermission.GRANT)
 
     const justInvited = useJustInvited(selectedRoomId, address)
 

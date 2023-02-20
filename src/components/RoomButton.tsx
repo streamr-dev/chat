@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
-import { IRoom } from '$/features/room/types'
+import { IRoom, RoomId } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useIntercept from '$/hooks/useIntercept'
 import useJustInvited from '$/hooks/useJustInvited'
@@ -20,8 +20,16 @@ import isSameAddress from '$/utils/isSameAddress'
 import { Link, LinkProps } from 'react-router-dom'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { FlagAction } from '$/features/flag'
+import config from '$/config.json'
 
-type Props = Omit<LinkProps, 'children' | 'to'> & {
+const stickyRoomSubtitle = config.stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
+    (memo, { id, subtitle }) => {
+        memo[id] = subtitle
+        return memo
+    },
+    {}
+)
+interface Props extends Omit<LinkProps, 'children' | 'to'> {
     active?: boolean
     room: IRoom
 }
@@ -97,34 +105,29 @@ export default function RoomButton({ room, active, ...props }: Props) {
             misc={
                 <>
                     <div
-                        css={[
-                            tw`
-                                text-[#59799C]
-                                flex
-                                items-center
-                                ml-2
-
-                                empty:hidden
-                                [* + *]:ml-3
-                        `,
-                        ]}
+                        css={tw`
+                            text-[#59799C]
+                            flex
+                            items-center
+                            ml-2
+                            empty:hidden
+                            [* + *]:ml-3
+                        `}
                     >
                         {justInvited && (
                             <div
-                                css={[
-                                    tw`
-                                        bg-[#E0E7F2]
-                                        text-[#59799C]
-                                        text-[0.625rem]
-                                        font-medium
-                                        tracking-wider
-                                        uppercase
-                                        w-max
-                                        px-3
-                                        py-1
-                                        rounded-full
-                                    `,
-                                ]}
+                                css={tw`
+                                    bg-[#E0E7F2]
+                                    text-[#59799C]
+                                    text-[0.625rem]
+                                    font-medium
+                                    tracking-wider
+                                    uppercase
+                                    w-max
+                                    px-3
+                                    py-1
+                                    rounded-full
+                                `}
                             >
                                 <Text>Invite</Text>
                             </div>
@@ -150,62 +153,52 @@ export default function RoomButton({ room, active, ...props }: Props) {
         >
             <div>
                 <div
-                    css={[
-                        tw`
-                            text-black
-                            truncate
-                        `,
-                    ]}
+                    css={tw`
+                        text-black
+                        truncate
+                    `}
                 >
                     {name || 'Unnamed room'}
                 </div>
-                {typeof recentMessage?.content !== 'undefined' && (
+                {stickyRoomSubtitle[id] ? (
                     <div
-                        css={[
-                            tw`
-                                text-[#59799C]
-                                text-[14px]
-                                font-plex
-                                flex
-                            `,
-                        ]}
+                        css={tw`
+                            text-[#59799C]
+                            text-[14px]
+                            font-plex
+                        `}
                     >
-                        <div
-                            css={[
-                                tw`
-                                    min-w-0
-                                `,
-                            ]}
-                        >
-                            <Text
-                                truncate
-                                css={[
-                                    !seen &&
-                                        tw`
-                                            font-bold
-                                        `,
-                                ]}
-                            >
-                                {recentMessage.content}
-                            </Text>
-                        </div>
-                        {typeof ago !== 'undefined' && (
-                            <>
-                                <div
-                                    css={[
-                                        tw`
-                                            px-1
-                                        `,
-                                    ]}
-                                >
-                                    <Text>·</Text>
-                                </div>
-                                <div>
-                                    <Text>{ago}</Text>
-                                </div>
-                            </>
-                        )}
+                        {stickyRoomSubtitle[id]}
                     </div>
+                ) : (
+                    <>
+                        {typeof recentMessage?.content !== 'undefined' && (
+                            <div
+                                css={tw`
+                                    text-[#59799C]
+                                    text-[14px]
+                                    font-plex
+                                    flex
+                                `}
+                            >
+                                <div css={tw`min-w-0`}>
+                                    <Text truncate css={!seen && tw`font-bold`}>
+                                        {recentMessage.content}
+                                    </Text>
+                                </div>
+                                {typeof ago !== 'undefined' && (
+                                    <>
+                                        <div css={tw`px-1`}>
+                                            <Text>·</Text>
+                                        </div>
+                                        <div>
+                                            <Text>{ago}</Text>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </SidebarButton>
@@ -214,7 +207,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
 function Icon({ id: roomId }: Pick<Props['room'], 'id'>) {
     return (
-        <div tw="p-1">
+        <div css={tw`p-1`}>
             <Avatar seed={roomId} backgroundColor="white" />
         </div>
     )

@@ -1,3 +1,4 @@
+import { AnonAction } from '$/features/anon'
 import { DelegationAction } from '$/features/delegation'
 import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
@@ -5,24 +6,37 @@ import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { WalletAction } from '$/features/wallet'
 import db from '$/utils/db'
-import { put, takeEvery } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 
-export default function* changeAccount() {
-    yield takeEvery(WalletAction.changeAccount, function* ({ payload: { account, provider } }) {
+export default function changeAccount(
+    payload: ReturnType<typeof WalletAction.changeAccount>['payload']
+) {
+    return call(function* () {
         // Reset previous private key (different account = different private key).
         yield put(DelegationAction.setPrivateKey(undefined))
 
-        if (!account) {
+        // Reset all anon wallets and clients.
+        yield put(AnonAction.reset())
+
+        if (!payload?.account) {
             // Deselect current room.
             yield put(RoomAction.select(undefined))
+
             return
         }
 
-        yield put(EnsAction.fetchNames([account]))
+        const { account, provider, streamrClient } = payload
 
-        if (!provider) {
-            throw new Error('Provider is missing')
-        }
+        yield put(
+            RoomAction.pinSticky({
+                requester: account,
+                provider,
+                streamrClient,
+                fingerprint: Flag.isPinningStickyRooms(account),
+            })
+        )
+
+        yield put(EnsAction.fetchNames([account]))
 
         try {
             const preferences: null | IPreference = yield db.preferences

@@ -3,18 +3,18 @@ import tw, { css } from 'twin.macro'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     color?: string
-    r?: number
+    size?: number
 }
 
-export default function Dot({ color = '#59799c', r = 2, ...props }: Props) {
+export default function Dot({ color = '#59799c', size = 4, ...props }: Props) {
     return (
         <div
             {...props}
             css={[
                 css`
                     background-color: ${color};
-                    width: ${r * 2}px;
-                    height: ${r * 2}px;
+                    width: ${size}px;
+                    height: ${size}px;
                 `,
                 tw`
                     rounded-full

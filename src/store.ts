@@ -13,10 +13,12 @@ import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
 import misc, { miscSaga } from '$/features/misc'
 import preferences, { preferencesSaga } from '$/features/preferences'
-import { aliasSaga } from '$/features/alias'
 import flag from '$/features/flag'
 import ens, { ensSaga } from '$/features/ens'
 import lifecycle from '$/features/lifecycle.saga'
+import anon from '$/features/anon'
+import toaster from '$/features/toaster'
+import avatar from '$/features/avatar'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -36,6 +38,9 @@ const store = configureStore({
         wallet,
         tokenGatedRooms,
         misc,
+        anon,
+        toaster,
+        avatar,
     },
     middleware(getDefaultMiddleware) {
         return [
@@ -45,6 +50,10 @@ const store = configureStore({
                         'payload.provider',
                         'payload.streamrClient',
                         'payload.navigate',
+                        'payload.instance',
+                        'payload.wallet',
+                        'payload.title',
+                        'payload.desc',
                     ],
                     ignoredActions: [],
                     ignoredPaths: [
@@ -52,6 +61,9 @@ const store = configureStore({
                         'wallet.client',
                         'delegation.client',
                         'misc.navigate',
+                        'anon.rooms',
+                        'anon.rooms',
+                        'toaster.instance',
                     ],
                 },
             }),
@@ -62,7 +74,6 @@ const store = configureStore({
 
 sagaMiddleware.run(function* saga() {
     yield all([
-        aliasSaga(),
         draftsSaga(),
         ensSaga(),
         identiconsSaga(),

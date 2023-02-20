@@ -4,7 +4,7 @@ import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-export function useAlias(address: OptionalAddress) {
+export default function useAlias(address: OptionalAddress) {
     const owner = useWalletAccount()?.toLowerCase()
 
     const aliasee = address?.toLowerCase()

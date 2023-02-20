@@ -1,6 +1,5 @@
-import { StreamPermission } from 'streamr-client'
+import StreamrClient from 'streamr-client'
 import tw from 'twin.macro'
-import useAbility from '$/hooks/useAbility'
 import useMessages from '$/hooks/useMessages'
 import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
@@ -16,22 +15,17 @@ import useRoomPropertiesModal from '$/hooks/useRoomPropertiesModal'
 import { Flag } from '$/features/flag/types'
 import { useDispatch } from 'react-redux'
 import { FlagAction } from '$/features/flag'
-import {
-    useDelegatedAccount,
-    useDelegatedClient,
-    useIsDelegatingAccess,
-    useRequestPrivateKey,
-} from '$/features/delegation/hooks'
+import { useIsDelegatingAccess, useRequestPrivateKey } from '$/features/delegation/hooks'
 import MessageInputPlaceholder from '$/components/Conversation/MessageInputPlaceholder'
 import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
 import SecondaryButton from '$/components/SecondaryButton'
 import Text from '$/components/Text'
 import Spinner from '$/components/Spinner'
-import { useWalletAccount } from '$/features/wallet/hooks'
 import { PrivacySetting } from '$/types'
 import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
 import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 import useTokenGatedPromoteDelegatedAccount from '$/hooks/useTokenGatedPromoteDelegatedAccount'
+import usePublisher, { PublisherState } from '$/hooks/usePublisher'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -50,21 +44,9 @@ export default function Conversation() {
 
     useResendEffect(selectedRoomId)
 
-    const account = useDelegatedAccount()
+    const publisher = usePublisher(selectedRoomId)
 
-    const client = useDelegatedClient()
-
-    const mainAccount = useWalletAccount()
-
-    const canMainPublish = useAbility(selectedRoomId, mainAccount, StreamPermission.PUBLISH)
-
-    const canMainGrant = useAbility(selectedRoomId, mainAccount, StreamPermission.GRANT)
-
-    const canPublish = useAbility(selectedRoomId, account, StreamPermission.PUBLISH)
-
-    const isTokenGated = usePrivacy(selectedRoomId) === PrivacySetting.TokenGated
-
-    const canAct = !client ? canMainPublish : canPublish || canMainGrant
+    const canAct = publisher !== PublisherState.Unavailable
 
     const dispatch = useDispatch()
 
@@ -107,25 +89,18 @@ export default function Conversation() {
                             <MessageFeed messages={messages} resends={resends} />
                         </div>
                     ) : (
-                        <EmptyMessageFeed
-                            canModifyMembers={canGrant}
-                            onAddMemberClick={() => void openAddMemberModal()}
-                        />
+                        <EmptyMessageFeed onAddMemberClick={() => void openAddMemberModal()} />
                     )}
                 </div>
             </div>
-
-            {!client ? (
-                (canMainPublish || isTokenGated) && <DelegationBox />
-            ) : canPublish ? (
+            {publisher instanceof StreamrClient && (
                 <Wrap>
-                    <MessageInput streamrClient={client} />
+                    <MessageInput streamrClient={publisher} />
                 </Wrap>
-            ) : canMainGrant ? (
-                <PermitBox />
-            ) : (
-                isTokenGated && <TokenGatedBox />
             )}
+            {publisher === PublisherState.NeedsDelegation && <DelegationBox />}
+            {publisher === PublisherState.NeedsPermission && <PermitBox />}
+            {publisher === PublisherState.NeedsTokenGatedPermission && <TokenGatedBox />}
         </>
     )
 }
@@ -220,7 +195,7 @@ function DelegationBox() {
     )
 }
 
-type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+interface CtaProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     busy?: boolean
 }
 

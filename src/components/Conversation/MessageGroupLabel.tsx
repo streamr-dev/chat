@@ -11,7 +11,7 @@ import { HTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
 import tw, { css } from 'twin.macro'
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     timestamp: number
     includeDate: boolean
     showLoadPreviousDay?: boolean

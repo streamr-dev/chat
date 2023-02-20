@@ -24,7 +24,7 @@ export default function HowItWorksModal({ title = 'How it works?', ...props }: P
     )
 }
 
-function P(props: HTMLAttributes<HTMLParagraphElement>) {
+export function P(props: HTMLAttributes<HTMLParagraphElement>) {
     return (
         <p
             {...props}

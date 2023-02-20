@@ -66,25 +66,21 @@ export default function SidebarButton<T extends Tag = 'button'>({
             ]}
         >
             <div
-                css={[
-                    tw`
-                        h-12
-                        w-12
-                        mr-3
-                        lg:mr-4
-                        shrink-0
-                    `,
-                ]}
+                css={tw`
+                    h-12
+                    w-12
+                    mr-3
+                    lg:mr-4
+                    shrink-0
+                `}
             >
                 {icon}
             </div>
             <div
-                css={[
-                    tw`
-                        min-w-0
-                        grow
-                    `,
-                ]}
+                css={tw`
+                    min-w-0
+                    grow
+                `}
             >
                 {children}
             </div>

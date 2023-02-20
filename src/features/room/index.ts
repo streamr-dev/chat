@@ -26,13 +26,17 @@ const initialState: RoomState = {
 }
 
 function roomCache(state: RoomState, roomId: RoomId) {
-    if (!state.cache[roomId]) {
-        state.cache[roomId] = {
+    let cache = state.cache[roomId]
+
+    if (!cache) {
+        cache = {
             storageNodes: {},
         }
+
+        state.cache[roomId] = cache
     }
 
-    return state.cache[roomId]
+    return cache
 }
 
 export const RoomAction = {
@@ -148,6 +152,14 @@ export const RoomAction = {
         streamrClient: StreamrClient
         provider: Provider
     }>('room: pin'),
+
+    pinSticky: createAction<
+        IFingerprinted & {
+            requester: Address
+            streamrClient: StreamrClient
+            provider: Provider
+        }
+    >('room: pin sticky'),
 
     unpin: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }

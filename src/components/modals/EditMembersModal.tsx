@@ -21,9 +21,8 @@ import Tag from '$/components/Tag'
 import { StreamPermission } from 'streamr-client'
 import Spinner from '$/components/Spinner'
 import useIsMemberBeingRemoved from '$/hooks/useIsMemberBeingRemoved'
-import { success } from '$/utils/toaster'
 import MoreActionButton from '$/components/MoreActionButton'
-import { useAlias } from '$/features/alias/hooks'
+import useAlias from '$/hooks/useAlias'
 import ActionButton from '$/components/ActionButton'
 import Text from '$/components/Text'
 import CheckIcon from '$/icons/CheckIcon'
@@ -36,6 +35,8 @@ import useENSName from '$/hooks/useENSName'
 import trunc from '$/utils/trunc'
 import { AccountType } from '$/utils/getAccountType'
 import useCanGrant from '$/hooks/useCanGrant'
+import { ToasterAction } from '$/features/toaster'
+import { ToastType } from '$/components/Toast'
 
 export default function EditMembersModal({ title = 'Edit members', ...props }: Props) {
     const menuOpenRef = useRef<Record<string, boolean>>({})
@@ -206,7 +207,7 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
 
 EditMembersModal.displayName = 'EditMembersModal'
 
-type ItemProps = HTMLAttributes<HTMLDivElement> & {
+interface ItemProps extends HTMLAttributes<HTMLDivElement> {
     address: string
     onMenuToggle?: (address: Address, state: boolean) => void
     canBeDeleted?: boolean
@@ -480,8 +481,15 @@ function Item({
                                 icon={<CopyIcon />}
                                 onClick={() => {
                                     copy(address)
+
                                     setMemberMenuOpen(false)
-                                    success('Copied to clipboard.')
+
+                                    dispatch(
+                                        ToasterAction.show({
+                                            title: 'Copied to clipboard',
+                                            type: ToastType.Success,
+                                        })
+                                    )
                                 }}
                             >
                                 Copy address
