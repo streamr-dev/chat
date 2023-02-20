@@ -174,7 +174,7 @@ export default function* preselect() {
                         })
                     } catch (e: any) {
                         // Account for race conditions…
-                        if (!/uniqueness/.test(e.message)) {
+                        if (!/uniqueness/.test(e?.message || '')) {
                             throw e
                         }
                     }
