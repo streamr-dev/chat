@@ -193,12 +193,16 @@ export default function Toast({
             }
         }
 
-        const timeoutId = setTimeout(hide, autoCloseAfter * 1000)
+        const timeoutId = setTimeout(() => {
+            onAbort?.()
+
+            hide()
+        }, autoCloseAfter * 1000)
 
         return () => {
             clearTimeout(timeoutId)
         }
-    }, [autoCloseAfter])
+    }, [autoCloseAfter, onAbort])
 
     useLayoutEffect(() => {
         const { current: root } = innerRef
