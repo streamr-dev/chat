@@ -23,8 +23,10 @@ import { FlagAction } from '$/features/flag'
 import config from '$/config.json'
 
 const stickyRoomSubtitle = config.stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
-    (memo, { id, subtitle }) => {
-        memo[id] = subtitle
+    (memo, { id, ...rest }) => {
+        if ('subtitle' in rest && typeof rest.subtitle === 'string') {
+            memo[id] = rest.subtitle
+        }
         return memo
     },
     {}
