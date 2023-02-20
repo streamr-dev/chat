@@ -13,7 +13,7 @@ function* onConnectAction({
         )
 
         if (!connection) {
-            yield put(WalletAction.setAccount({ account: null }))
+            yield put(WalletAction.setAccount())
             return
         }
 

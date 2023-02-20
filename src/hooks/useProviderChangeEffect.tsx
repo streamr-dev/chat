@@ -19,7 +19,7 @@ export default function useProviderChangeEffect() {
             const account = accounts[0]
 
             if (!provider || !account) {
-                dispatch(WalletAction.setAccount({ account: null }))
+                dispatch(WalletAction.setAccount())
                 return
             }
 

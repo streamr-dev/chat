@@ -6,28 +6,28 @@ import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { WalletAction } from '$/features/wallet'
 import db from '$/utils/db'
-import { put, takeLatest } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 
-export default function* changeAccount() {
-    yield takeLatest(WalletAction.changeAccount, function* ({ payload: { account, provider } }) {
+export default function changeAccount(
+    payload: ReturnType<typeof WalletAction.changeAccount>['payload']
+) {
+    return call(function* () {
         // Reset previous private key (different account = different private key).
         yield put(DelegationAction.setPrivateKey(undefined))
 
         // Reset all anon wallets and clients.
         yield put(AnonAction.reset())
 
-        if (!account) {
+        if (!payload?.account) {
             // Deselect current room.
             yield put(RoomAction.select(undefined))
 
             return
         }
 
-        yield put(EnsAction.fetchNames([account]))
+        const { account, provider } = payload
 
-        if (!provider) {
-            throw new Error('Provider is missing')
-        }
+        yield put(EnsAction.fetchNames([account]))
 
         try {
             const preferences: null | IPreference = yield db.preferences
