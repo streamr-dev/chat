@@ -21,8 +21,6 @@ import { put, takeEvery, takeLatest } from 'redux-saga/effects'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
-        yield changeAccount(payload)
-
         yield takeEveryUnique(DelegationAction.requestPrivateKey, function* ({ payload }) {
             try {
                 // `retrieve` returns the retrieved account address thus can also
@@ -76,5 +74,8 @@ export default function* lifecycle() {
                 )
             }
         )
+
+        // This needs to go last. It triggers some actions that have takers set up above.
+        yield changeAccount(payload)
     })
 }
