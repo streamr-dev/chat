@@ -124,14 +124,20 @@ export default function pin({
             if (room) {
                 yield db.rooms.where({ owner, id: roomId }).modify({ pinned: true, hidden: false })
             } else {
-                yield db.rooms.add({
-                    createdAt,
-                    createdBy,
-                    id: stream.id,
-                    name,
-                    owner,
-                    pinned: true,
-                })
+                try {
+                    yield db.rooms.add({
+                        createdAt,
+                        createdBy,
+                        id: stream.id,
+                        name,
+                        owner,
+                        pinned: true,
+                    })
+                } catch (e: any) {
+                    if (!/uniqueness/.test(e?.message || '')) {
+                        throw e
+                    }
+                }
             }
 
             yield put(MiscAction.goto(roomId))
