@@ -1,5 +1,5 @@
 import { ComponentProps, ReactNode } from 'react'
-import tw from 'twin.macro'
+import tw, { css } from 'twin.macro'
 import { Link, LinkProps } from 'react-router-dom'
 
 interface CommonProps {
@@ -44,6 +44,9 @@ export default function SidebarButton<T extends Tag = 'button'>({
         <Tag
             {...(rest as any)}
             css={[
+                css`
+                    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.01);
+                `,
                 tw`
                     outline-none
                     appearance-none
