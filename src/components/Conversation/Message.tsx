@@ -213,7 +213,11 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
                             />
                         </div>
                     )}
-                    {isEncrypted ? <EncryptedMessage /> : <Text>{formatMessage(content)}</Text>}
+                    {isEncrypted ? (
+                        <EncryptedMessage />
+                    ) : (
+                        <Text css={tw`whitespace-pre-wrap`}>{formatMessage(content)}</Text>
+                    )}
                 </div>
                 {!incoming && <div tw="ml-4 shrink-0">{avatar}</div>}
                 {incoming && isEncrypted && typeof createdAt === 'number' && (
