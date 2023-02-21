@@ -47,8 +47,6 @@ export default function SidebarButton<T extends Tag = 'button'>({
                 tw`
                     outline-none
                     appearance-none
-                    h-20
-                    lg:h-[92px]
                     rounded-[20px]
                     px-3
                     lg:px-6

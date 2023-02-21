@@ -106,6 +106,10 @@ export default function RoomButton({ room, active, ...props }: Props) {
             icon={<Icon id={id} />}
             to={url}
             onClick={() => void dispatch(FlagAction.unset(Flag.isDisplayingRooms()))}
+            css={tw`
+                h-20
+                lg:h-[92px]
+            `}
             misc={
                 <>
                     <div
