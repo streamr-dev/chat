@@ -1,13 +1,11 @@
-import { HTMLAttributes, useEffect } from 'react'
+import { useEffect } from 'react'
 import tw from 'twin.macro'
 import Page from '$/components/Page'
 import Conversation from '$/components/Conversation'
 import Nav from '$/components/Nav'
-import RoomButton from '$/components/RoomButton'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import UtilityButton from '$/components/UtilityButton'
 import Text from '$/components/Text'
-import useRooms from '$/hooks/useRooms'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import { useDispatch } from 'react-redux'
 import useProviderChangeEffect from '$/hooks/useProviderChangeEffect'
@@ -23,7 +21,7 @@ import useFlag from '$/hooks/useFlag'
 import ArrowIcon from '$/icons/ArrowIcon'
 import { FlagAction } from '$/features/flag'
 import ActionButton from '$/components/ActionButton'
-import SidebarUtilityButton, { SidebarUtilityButtonType } from '$/components/SidebarUtilityButton'
+import Sidebar from '$/components/Sidebar'
 
 export default function ChatPage() {
     const { open: openAccountModal, modal: accountModal } = useAccountModal()
@@ -165,62 +163,5 @@ export default function ChatPage() {
                 </main>
             </Page>
         </>
-    )
-}
-
-interface SidebarProps extends HTMLAttributes<HTMLElement> {
-    onAddRoomButtonClick?: () => void
-}
-
-function Sidebar({ onAddRoomButtonClick, ...props }: SidebarProps) {
-    const rooms = useRooms()
-
-    const selectedRoom = useSelectedRoom()
-
-    return (
-        <aside
-            {...props}
-            css={tw`
-                hidden
-                md:block
-                h-full
-                w-full
-                md:w-[18rem]
-                lg:w-[22rem]
-                p-4
-                md:p-0
-                overflow-auto
-            `}
-        >
-            <div css={tw`[> * + *]:mt-2`}>
-                <SidebarUtilityButton
-                    onClick={() => void onAddRoomButtonClick?.()}
-                    label="Add new room"
-                    type={SidebarUtilityButtonType.Add}
-                />
-            </div>
-            <div css={tw``}>
-                <h4
-                    css={tw`
-                        mt-6
-                        text-[12px]
-                        text-[#59799C]
-                        font-medium
-                        uppercase
-                        tracking-wider
-                    `}
-                >
-                    Rooms
-                </h4>
-                {(rooms || []).map((room) => (
-                    <RoomButton
-                        key={room.id}
-                        active={selectedRoom ? selectedRoom.id === room.id : false}
-                        room={room}
-                        css={tw`mt-4`}
-                    />
-                ))}
-            </div>
-        </aside>
     )
 }
