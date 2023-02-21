@@ -223,3 +223,5 @@ export default function AddRoomModal({
         </Modal>
     )
 }
+
+AddRoomModal.displayName = 'AddRoomModal'
