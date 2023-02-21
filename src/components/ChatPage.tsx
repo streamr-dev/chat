@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { HTMLAttributes, useEffect } from 'react'
 import tw from 'twin.macro'
 import Page from '$/components/Page'
 import Conversation from '$/components/Conversation'
@@ -31,8 +31,6 @@ export default function ChatPage() {
     const { open: openAddRoomModal, modal: addRoomModal } = useAddRoomModal()
 
     const selectedRoom = useSelectedRoom()
-
-    const rooms = useRooms()
 
     const dispatch = useDispatch()
 
@@ -102,52 +100,10 @@ export default function ChatPage() {
                             `,
                         ]}
                     >
-                        <aside
-                            css={[
-                                tw`
-                                    hidden
-                                    md:block
-                                    h-full
-                                    w-full
-                                    md:w-[18rem]
-                                    lg:w-[22rem]
-                                    p-4
-                                    md:p-0
-                                    overflow-auto
-                                `,
-                                isDisplayingRooms && tw`block`,
-                            ]}
-                        >
-                            <div css={tw`[> * + *]:mt-2`}>
-                                <SidebarUtilityButton
-                                    onClick={() => void openAddRoomModal()}
-                                    label="Add new room"
-                                    type={SidebarUtilityButtonType.Add}
-                                />
-                            </div>
-                            <div css={tw``}>
-                                <h4
-                                    css={tw`
-                                        mt-6
-                                        text-[12px]
-                                        text-[#59799C]
-                                        font-medium
-                                        uppercase
-                                        tracking-wider
-                                    `}
-                                >
-                                    Rooms
-                                </h4>
-                                {(rooms || []).map((room) => (
-                                    <RoomButton
-                                        key={room.id}
-                                        active={selectedRoom ? selectedRoom.id === room.id : false}
-                                        room={room}
-                                        css={tw`mt-4`}
-                                    />
-                                ))}
-                            </div>
-                        </aside>
+                        <Sidebar
+                            css={isDisplayingRooms && tw`block`}
+                            onAddRoomButtonClick={openAddRoomModal}
+                        />
                         <div
                             css={[
                                 tw`
@@ -209,5 +165,62 @@ export default function ChatPage() {
                 </main>
             </Page>
         </>
+    )
+}
+
+interface SidebarProps extends HTMLAttributes<HTMLElement> {
+    onAddRoomButtonClick?: () => void
+}
+
+function Sidebar({ onAddRoomButtonClick, ...props }: SidebarProps) {
+    const rooms = useRooms()
+
+    const selectedRoom = useSelectedRoom()
+
+    return (
+        <aside
+            {...props}
+            css={tw`
+                hidden
+                md:block
+                h-full
+                w-full
+                md:w-[18rem]
+                lg:w-[22rem]
+                p-4
+                md:p-0
+                overflow-auto
+            `}
+        >
+            <div css={tw`[> * + *]:mt-2`}>
+                <SidebarUtilityButton
+                    onClick={() => void onAddRoomButtonClick?.()}
+                    label="Add new room"
+                    type={SidebarUtilityButtonType.Add}
+                />
+            </div>
+            <div css={tw``}>
+                <h4
+                    css={tw`
+                        mt-6
+                        text-[12px]
+                        text-[#59799C]
+                        font-medium
+                        uppercase
+                        tracking-wider
+                    `}
+                >
+                    Rooms
+                </h4>
+                {(rooms || []).map((room) => (
+                    <RoomButton
+                        key={room.id}
+                        active={selectedRoom ? selectedRoom.id === room.id : false}
+                        room={room}
+                        css={tw`mt-4`}
+                    />
+                ))}
+            </div>
+        </aside>
     )
 }
