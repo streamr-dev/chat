@@ -27,10 +27,12 @@ const stickyRoomSubtitle = config.stickyRoomIds.reduce<Partial<Record<RoomId, st
         if ('subtitle' in rest && typeof rest.subtitle === 'string') {
             memo[id] = rest.subtitle
         }
+
         return memo
     },
     {}
 )
+
 interface Props extends Omit<LinkProps, 'children' | 'to'> {
     active?: boolean
     room: IRoom
