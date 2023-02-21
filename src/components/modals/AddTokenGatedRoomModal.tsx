@@ -252,15 +252,13 @@ export default function AddTokenGatedRoomModal({
                 <PrimaryButton
                     disabled={!allSet}
                     type="submit"
-                    css={[
-                        tw`
-                            w-full
-                            h-12
-                            rounded-[24px]
-                            px-8
-                            mt-10
-                        `,
-                    ]}
+                    css={tw`
+                        w-full
+                        h-12
+                        rounded-[24px]
+                        px-8
+                        mt-10
+                    `}
                 >
                     <Text>Create</Text>
                 </PrimaryButton>
@@ -285,20 +283,18 @@ function Token({ info, onChangeClick }: TokenProps) {
 
     return (
         <div
-            css={[
-                tw`
-                    [img]:mr-3
-                    border
-                    border-[#F1F4F7]
-                    flex
-                    h-[64px]
-                    items-center
-                    px-4
-                    rounded-lg
-                    text-[#36404E]
-                    text-[14px]
-                `,
-            ]}
+            css={tw`
+                [img]:mr-3
+                border
+                border-[#F1F4F7]
+                flex
+                h-[64px]
+                items-center
+                px-4
+                rounded-lg
+                text-[#36404E]
+                text-[14px]
+            `}
         >
             {'symbol' in info ? (
                 <>
@@ -309,22 +305,10 @@ function Token({ info, onChangeClick }: TokenProps) {
                         height="32"
                     />
                     <div>
-                        <div
-                            css={[
-                                tw`
-                                    font-semibold
-                                `,
-                            ]}
-                        >
+                        <div css={tw`font-semibold`}>
                             <Text>{info.symbol}</Text>
                         </div>
-                        <div
-                            css={[
-                                tw`
-                                    text-[#59799C]
-                                `,
-                            ]}
-                        >
+                        <div css={tw`text-[#59799C]`}>
                             <Text>{info.name}</Text>
                         </div>
                     </div>
@@ -333,13 +317,11 @@ function Token({ info, onChangeClick }: TokenProps) {
                 <>
                     <Avatar
                         seed={info.address.toLowerCase()}
-                        css={[
-                            tw`
-                                w-8
-                                h-8
-                                mr-3
-                            `,
-                        ]}
+                        css={tw`
+                            w-8
+                            h-8
+                            mr-3
+                        `}
                     />
                     <div>{trunc(info.address)}</div>
                 </>
@@ -349,18 +331,16 @@ function Token({ info, onChangeClick }: TokenProps) {
                     {standard === TokenStandard.Unknown ? (
                         <button
                             type="button"
-                            css={[
-                                tw`
-                                    bg-[#59799C]
-                                    ml-6
-                                    px-1
-                                    rounded-sm
-                                    select-none
-                                    text-[10px]
-                                    text-white
-                                    appearance-none
-                                `,
-                            ]}
+                            css={tw`
+                                bg-[#59799C]
+                                ml-6
+                                px-1
+                                rounded-sm
+                                select-none
+                                text-[10px]
+                                text-white
+                                appearance-none
+                            `}
                             onClick={() => {
                                 dispatch(
                                     MiscAction.setTokenStandard({
@@ -385,38 +365,28 @@ function Token({ info, onChangeClick }: TokenProps) {
                         </button>
                     ) : (
                         <div
-                            css={[
-                                tw`
-                                    bg-[#59799C]
-                                    ml-6
-                                    px-1
-                                    rounded-sm
-                                    select-none
-                                    text-[10px]
-                                    text-white
-                                `,
-                            ]}
+                            css={tw`
+                                bg-[#59799C]
+                                ml-6
+                                px-1
+                                rounded-sm
+                                select-none
+                                text-[10px]
+                                text-white
+                            `}
                         >
                             <Text>{standard}</Text>
                         </div>
                     )}
                 </>
             )}
-            <div
-                css={[
-                    tw`
-                        flex-grow
-                    `,
-                ]}
-            />
+            <div css={tw`grow`} />
             {isFetchingTokenStandard ? (
                 <div
-                    css={[
-                        tw`
-                            relative
-                            w-4
-                        `,
-                    ]}
+                    css={tw`
+                        relative
+                        w-4
+                    `}
                 >
                     <Spinner strokeWidth={1} />
                 </div>
@@ -424,13 +394,11 @@ function Token({ info, onChangeClick }: TokenProps) {
                 <div>
                     <SecondaryButton
                         onClick={onChangeClick}
-                        css={[
-                            tw`
-                                text-[0.875rem]
-                                h-8
-                                px-4
-                            `,
-                        ]}
+                        css={tw`
+                            text-[0.875rem]
+                            h-8
+                            px-4
+                        `}
                     >
                         <Text>Change</Text>
                     </SecondaryButton>
@@ -439,6 +407,8 @@ function Token({ info, onChangeClick }: TokenProps) {
         </div>
     )
 }
+
+AddTokenGatedRoomModal.displayName = 'AddTokenGatedRoomModal'
 
 interface SearchProps {
     info?: Info
@@ -472,24 +442,20 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
 
     return (
         <div
-            css={[
-                tw`
-                    border
-                    border-[#F1F4F7]
-                    rounded-lg
-                `,
-            ]}
+            css={tw`
+                border
+                border-[#F1F4F7]
+                rounded-lg
+            `}
         >
             <Form
-                css={[
-                    tw`
-                        border-[#F1F4F7]
-                        border-b
-                        h-[56px]
-                        flex
-                        items-center
-                    `,
-                ]}
+                css={tw`
+                    border-[#F1F4F7]
+                    border-b
+                    h-[56px]
+                    flex
+                    items-center
+                `}
                 onSubmit={() => {
                     if (!/0x[a-f\d]{40}/i.test(value)) {
                         return
@@ -506,13 +472,7 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                     )
                 }}
             >
-                <div
-                    css={[
-                        tw`
-                            px-4
-                        `,
-                    ]}
-                >
+                <div css={tw`px-4`}>
                     <svg
                         width="16"
                         height="16"
@@ -526,27 +486,19 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                         />
                     </svg>
                 </div>
-                <div
-                    css={[
-                        tw`
-                            flex-grow
-                        `,
-                    ]}
-                >
+                <div css={tw`grow`}>
                     <input
                         ref={inputRef}
                         type="text"
-                        css={[
-                            tw`
-                                appearance-none
-                                outline-none
-                                text-[#36404E]
-                                placeholder:text-[#59799C]
-                                text-[14px]
-                                w-full
-                                translate-y-[-0.06em]
-                            `,
-                        ]}
+                        css={tw`
+                            appearance-none
+                            outline-none
+                            text-[#36404E]
+                            placeholder:text-[#59799C]
+                            text-[14px]
+                            w-full
+                            translate-y-[-0.06em]
+                        `}
                         placeholder="Search or enter token address…"
                         value={value}
                         autoFocus
@@ -575,13 +527,11 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                 {!isBlank(value) && (
                     <button
                         type="button"
-                        css={[
-                            tw`
-                                appearance-none
-                                px-4
-                                h-full
-                            `,
-                        ]}
+                        css={tw`
+                            appearance-none
+                            px-4
+                            h-full
+                        `}
                         onClick={() => {
                             setValue('')
 
@@ -604,32 +554,26 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                 )}
             </Form>
             <div
-                css={[
-                    tw`
-                        flex
-                        items-center
-                        h-[326px]
-                    `,
-                ]}
+                css={tw`
+                    flex
+                    items-center
+                    h-[326px]
+                `}
             >
                 {knownTokens.length ? (
                     <div
-                        css={[
-                            tw`
-                                h-full
-                                overflow-auto
-                                w-full
-                            `,
-                        ]}
+                        css={tw`
+                            h-full
+                            overflow-auto
+                            w-full
+                        `}
                     >
                         <ul
                             ref={listRef}
-                            css={[
-                                tw`
-                                    text-[14px]
-                                    py-1.5
-                                `,
-                            ]}
+                            css={tw`
+                                text-[14px]
+                                py-1.5
+                            `}
                         >
                             {knownTokens.map((t) => (
                                 <li key={t.address}>
@@ -670,24 +614,21 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                                                 inputRef.current?.focus()
                                             }
                                         }}
-                                        css={[
-                                            tw`
-                                                appearance-none
-                                                flex
-                                                items-center
-                                                px-4
-                                                outline-none
-                                                hover:bg-[#F1F4F7]
-                                                focus:bg-[#F1F4F7]
-                                                transition-colors
-                                                w-full
-                                                text-left
-                                                h-[64px]
-                                                text-[#36404E]
-
-                                                [img]:mr-3
-                                            `,
-                                        ]}
+                                        css={tw`
+                                            appearance-none
+                                            flex
+                                            items-center
+                                            px-4
+                                            outline-none
+                                            hover:bg-[#F1F4F7]
+                                            focus:bg-[#F1F4F7]
+                                            transition-colors
+                                            w-full
+                                            text-left
+                                            h-[64px]
+                                            text-[#36404E]
+                                            [img]:mr-3
+                                        `}
                                         onClick={() => {
                                             onInfo?.(t)
                                         }}
@@ -698,29 +639,11 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                                             width="32"
                                             height="32"
                                         />
-                                        <div
-                                            css={[
-                                                tw`
-                                                    flex-grow
-                                                `,
-                                            ]}
-                                        >
-                                            <div
-                                                css={[
-                                                    tw`
-                                                        font-semibold
-                                                    `,
-                                                ]}
-                                            >
+                                        <div css={tw`grow`}>
+                                            <div css={tw`font-semibold`}>
                                                 <Text>{t.symbol}</Text>
                                             </div>
-                                            <div
-                                                css={[
-                                                    tw`
-                                                        text-[#59799C]
-                                                    `,
-                                                ]}
-                                            >
+                                            <div css={tw`text-[#59799C]`}>
                                                 <Text>{t.name}</Text>
                                             </div>
                                         </div>
@@ -731,15 +654,13 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                     </div>
                 ) : (
                     <div
-                        css={[
-                            tw`
-                                text-[14px]
-                                text-[#36404E]
-                                text-center
-                                w-full
-                                p-4
-                            `,
-                        ]}
+                        css={tw`
+                            text-[14px]
+                            text-[#36404E]
+                            text-center
+                            w-full
+                            p-4
+                        `}
                     >
                         {isFetchingKnownTokens ? (
                             <>
