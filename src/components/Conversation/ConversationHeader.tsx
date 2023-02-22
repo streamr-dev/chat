@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { HTMLAttributes, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { StreamPermission } from 'streamr-client'
 import tw from 'twin.macro'
@@ -47,7 +47,7 @@ import { ToastType } from '$/components/Toast'
 import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     canModifyMembers?: boolean
     onAddMemberClick?: () => void
     onEditMembersClick?: () => void
@@ -69,6 +69,7 @@ export default function ConversationHeader({
     onEditMembersClick,
     onRoomPropertiesClick,
     onGoBackClick,
+    ...props
 }: Props) {
     const dispatch = useDispatch()
 
@@ -172,11 +173,10 @@ export default function ConversationHeader({
 
     return (
         <div
+            {...props}
             css={[
                 tw`
-                    absolute
-                    left-0
-                    top-0
+                    relative
                     h-[72px]
                     lg:h-[92px]
                     w-full

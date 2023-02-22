@@ -109,14 +109,12 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
         <>
             {!skipAvatar && sender && incoming && (
                 <div
-                    css={[
-                        tw`
-                            font-medium
-                            text-[#59799C]
-                            text-[12px]
-                            pl-16
-                        `,
-                    ]}
+                    css={tw`
+                        font-medium
+                        text-[#59799C]
+                        text-[12px]
+                        pl-16
+                    `}
                 >
                     <div css={tw`relative`}>
                         <Sender short={ens || alias || trunc(sender)} full={sender} />
@@ -183,18 +181,16 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
                     <DateTooltip timestamp={createdAt} />
                     {incoming && (
                         <div
-                            css={[
-                                tw`
-                                    w-1.5
-                                    h-1.5
-                                    absolute
-                                    top-1/2
-                                    translate-x-full
-                                    -translate-y-1/2
-                                    right-[-5px]
-                                    lg:-right-2.5
-                                `,
-                            ]}
+                            css={tw`
+                                w-1.5
+                                h-1.5
+                                absolute
+                                top-1/2
+                                translate-x-full
+                                -translate-y-1/2
+                                right-[-5px]
+                                lg:-right-2.5
+                            `}
                         >
                             <div
                                 css={[
@@ -204,7 +200,7 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
                                         rounded-full
                                         bg-[#59799C]
                                     `,
-                                    Boolean(isSeen) &&
+                                    !!isSeen &&
                                         css`
                                             opacity: 0;
                                             transform: scale(0.1);
@@ -217,7 +213,11 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
                             />
                         </div>
                     )}
-                    {isEncrypted ? <EncryptedMessage /> : <Text>{formatMessage(content)}</Text>}
+                    {isEncrypted ? (
+                        <EncryptedMessage />
+                    ) : (
+                        <Text css={tw`whitespace-pre-wrap`}>{formatMessage(content)}</Text>
+                    )}
                 </div>
                 {!incoming && <div tw="ml-4 shrink-0">{avatar}</div>}
                 {incoming && isEncrypted && typeof createdAt === 'number' && (

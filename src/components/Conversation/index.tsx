@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux'
 import { FlagAction } from '$/features/flag'
 import { useIsDelegatingAccess, useRequestPrivateKey } from '$/features/delegation/hooks'
 import MessageInputPlaceholder from '$/components/Conversation/MessageInputPlaceholder'
-import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
+import { ButtonHTMLAttributes } from 'react'
 import SecondaryButton from '$/components/SecondaryButton'
 import Text from '$/components/Text'
 import Spinner from '$/components/Spinner'
@@ -55,70 +55,88 @@ export default function Conversation() {
             {addMemberModal}
             {editMembersModal}
             {roomPropertiesModal}
-            <ConversationHeader
-                canModifyMembers={canGrant}
-                onAddMemberClick={() => void openAddMemberModal()}
-                onEditMembersClick={() => void openEditMembersModal()}
-                onRoomPropertiesClick={() => void openRoomPropertiesModal()}
-                onGoBackClick={() => void dispatch(FlagAction.set(Flag.isDisplayingRooms()))}
-            />
             <div
-                css={[
-                    tw`
-                        h-full
-                        pt-[72px]
-                        lg:pt-[92px]
-                    `,
-                    canAct &&
-                        tw`
-                            pb-[80px]
-                            lg:pb-[96px]
-                        `,
-                ]}
+                css={tw`
+                    h-full
+                    flex
+                    flex-col
+                    w-full
+                `}
             >
-                <div css={tw`h-full`}>
-                    {(messages || []).length ? (
-                        <div
-                            css={tw`
-                                h-full
-                                flex
-                                flex-col
-                            `}
-                        >
-                            <div css={tw`grow`} />
-                            <MessageFeed messages={messages} resends={resends} />
+                <ConversationHeader
+                    canModifyMembers={canGrant}
+                    onAddMemberClick={() => void openAddMemberModal()}
+                    onEditMembersClick={() => void openEditMembersModal()}
+                    onRoomPropertiesClick={() => void openRoomPropertiesModal()}
+                    onGoBackClick={() => void dispatch(FlagAction.set(Flag.isDisplayingRooms()))}
+                    css={tw`shrink-0`}
+                />
+                <div
+                    css={tw`
+                        grow
+                        flex
+                        flex-col
+                        w-full
+                        relative
+                    `}
+                >
+                    <div
+                        css={tw`
+                            absolute
+                            top-0
+                            left-0
+                            w-full
+                            h-full
+                        `}
+                    >
+                        <div css={tw`h-full`}>
+                            {(messages || []).length ? (
+                                <div
+                                    css={tw`
+                                        h-full
+                                        flex
+                                        flex-col
+                                    `}
+                                >
+                                    <div css={tw`grow`} />
+                                    <MessageFeed
+                                        messages={messages}
+                                        resends={resends}
+                                        css={tw`
+                                            max-h-full
+                                            overflow-auto
+                                        `}
+                                    />
+                                </div>
+                            ) : (
+                                <EmptyMessageFeed
+                                    onAddMemberClick={() => void openAddMemberModal()}
+                                />
+                            )}
                         </div>
-                    ) : (
-                        <EmptyMessageFeed onAddMemberClick={() => void openAddMemberModal()} />
-                    )}
+                    </div>
                 </div>
+                {canAct && (
+                    <div
+                        css={tw`
+                            shrink-0
+                            shadow-[inset 0 1px 0 #dee6ee]
+                            p-4
+                            lg:p-6
+                        `}
+                    >
+                        {publisher instanceof StreamrClient && (
+                            <MessageInput streamrClient={publisher} />
+                        )}
+                        {publisher === PublisherState.NeedsDelegation && <DelegationBox />}
+                        {publisher === PublisherState.NeedsPermission && <PermitBox />}
+                        {publisher === PublisherState.NeedsTokenGatedPermission && (
+                            <TokenGatedBox />
+                        )}
+                    </div>
+                )}
             </div>
-            {publisher instanceof StreamrClient && (
-                <Wrap>
-                    <MessageInput streamrClient={publisher} />
-                </Wrap>
-            )}
-            {publisher === PublisherState.NeedsDelegation && <DelegationBox />}
-            {publisher === PublisherState.NeedsPermission && <PermitBox />}
-            {publisher === PublisherState.NeedsTokenGatedPermission && <TokenGatedBox />}
         </>
-    )
-}
-
-function Wrap(props: HTMLAttributes<HTMLDivElement>) {
-    return (
-        <div
-            {...props}
-            css={tw`
-                shadow-[inset 0 1px 0 #dee6ee]
-                absolute
-                p-4
-                lg:p-6
-                bottom-0
-                left-0
-                w-full
-            `}
-        />
     )
 }
 
@@ -133,17 +151,15 @@ function TokenGatedBox() {
     }
 
     return (
-        <Wrap>
-            <MessageInputPlaceholder
-                cta={
-                    <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
-                        {isPromoting ? <>Joining...</> : <>Join</>}
-                    </Cta>
-                }
-            >
-                This is a token-gated room. You need to join the room to be able to send messages.
-            </MessageInputPlaceholder>
-        </Wrap>
+        <MessageInputPlaceholder
+            cta={
+                <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
+                    {isPromoting ? <>Joining...</> : <>Join</>}
+                </Cta>
+            }
+        >
+            This is a token-gated room. You need to join the room to be able to send messages.
+        </MessageInputPlaceholder>
     )
 }
 
@@ -153,17 +169,15 @@ function PermitBox() {
     const promote = usePromoteDelegatedAccount()
 
     return (
-        <Wrap>
-            <MessageInputPlaceholder
-                cta={
-                    <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
-                        {isPromoting ? <>Enabling…</> : <>Enable</>}
-                    </Cta>
-                }
-            >
-                Use your hot wallet to sign messages in this room.
-            </MessageInputPlaceholder>
-        </Wrap>
+        <MessageInputPlaceholder
+            cta={
+                <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
+                    {isPromoting ? <>Enabling…</> : <>Enable</>}
+                </Cta>
+            }
+        >
+            Use your hot wallet to sign messages in this room.
+        </MessageInputPlaceholder>
     )
 }
 
@@ -177,21 +191,19 @@ function DelegationBox() {
     const actions = usePrivacy(roomId) === PrivacySetting.Public ? 'send' : 'send and receive'
 
     return (
-        <Wrap>
-            <MessageInputPlaceholder
-                cta={
-                    <Cta
-                        busy={isDelegatingAccess}
-                        disabled={isDelegatingAccess}
-                        onClick={requestPrivateKey}
-                    >
-                        {isDelegatingAccess ? <>Enabling…</> : <>Enable</>}
-                    </Cta>
-                }
-            >
-                Activate hot wallet signing to {actions} messages.
-            </MessageInputPlaceholder>
-        </Wrap>
+        <MessageInputPlaceholder
+            cta={
+                <Cta
+                    busy={isDelegatingAccess}
+                    disabled={isDelegatingAccess}
+                    onClick={requestPrivateKey}
+                >
+                    {isDelegatingAccess ? <>Enabling…</> : <>Enable</>}
+                </Cta>
+            }
+        >
+            Activate hot wallet signing to {actions} messages.
+        </MessageInputPlaceholder>
     )
 }
 

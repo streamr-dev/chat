@@ -46,7 +46,6 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                     h-full
                     justify-center
                     overflow-hidden
-                    pt-4
                 `,
             ]}
         >

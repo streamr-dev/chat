@@ -152,4 +152,8 @@ export const Flag = {
     isRetrievingAvatar(ens: string) {
         return JSON.stringify(['isRetrievingAvatar', ens])
     },
+
+    isAllowingAnonsPublish(roomId: RoomId) {
+        return JSON.stringify(['isAllowingAnonsPublish', roomId])
+    },
 }

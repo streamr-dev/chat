@@ -87,6 +87,14 @@ export const PermissionsAction = {
         roomId: RoomId
         address: Address
     }>('permissions: invalidate all'),
+
+    allowAnonsPublish: createAction<
+        IFingerprinted &
+            PreflightParams & {
+                roomId: RoomId
+                streamrClient: StreamrClient
+            }
+    >('permissions: allow anons publish'),
 }
 
 function permissionGroupPath(state: PermissionsState, roomId: RoomId, address: Address) {

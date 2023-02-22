@@ -8,6 +8,8 @@ import lookup from '$/features/delegation/helpers/lookup'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
+import { PermissionsAction } from '$/features/permissions'
+import allowAnonsPublish from '$/features/permissions/sagas/helpers/allowAnonsPublish'
 import { RoomAction } from '$/features/room'
 import pin from '$/features/room/helpers/pin'
 import pinSticky from '$/features/room/helpers/pinSticky'
@@ -73,6 +75,10 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(RoomAction.pinSticky, function* ({ payload }) {
             yield pinSticky(payload)
+        })
+
+        yield takeEveryUnique(PermissionsAction.allowAnonsPublish, function* ({ payload }) {
+            yield allowAnonsPublish(payload)
         })
 
         // This needs to go last. It triggers some of the actions that have
