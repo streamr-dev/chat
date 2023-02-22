@@ -13,7 +13,7 @@
         "@coinbase/wallet-sdk": "^3.6.3",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
-        "@ensdomains/ens-avatar": "^0.2.0",
+        "@ensdomains/ens-avatar": "^0.2.1",
         "@ethersproject/bignumber": "^5.7.0",
         "@ethersproject/experimental": "^5.7.0",
         "@ethersproject/providers": "^5.7.2",
