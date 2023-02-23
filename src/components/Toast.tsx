@@ -144,6 +144,14 @@ export default function Toast({
             hide()
         }
 
+        if (abortSignal.aborted) {
+            abort()
+
+            return () => {
+                // Do nothing
+            }
+        }
+
         abortSignal.addEventListener('abort', abort)
 
         return () => {
