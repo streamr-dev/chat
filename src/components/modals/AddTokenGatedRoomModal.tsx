@@ -96,8 +96,8 @@ export default function AddTokenGatedRoomModal({
             }
 
             if (isCountable) {
-                if (BigNumber.from(params.minRequiredBalance).lt(0)) {
-                    throw new Error('Nagative minRequiredBalance')
+                if (BigNumber.from(params.minRequiredBalance).lte(0)) {
+                    throw new Error('Non-positive minRequiredBalance')
                 }
             }
 
