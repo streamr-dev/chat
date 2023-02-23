@@ -5,7 +5,6 @@ import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useModalDialog from '$/hooks/useModalDialog'
 import { Prefix, PrivacySetting } from '$/types'
-import { BigNumber } from 'ethers'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid'
@@ -80,13 +79,13 @@ export default function useAddRoomModal() {
                 }
 
                 try {
-                    const tokenParams = await openTokenModal({
+                    const { standard, ...gate } = await openTokenModal({
                         subtitle: params.name,
                     })
 
                     const now = Date.now()
 
-                    const tokenType = TokenTypes[tokenParams.standard]
+                    const tokenType = TokenTypes[standard]
 
                     dispatch(
                         RoomAction.create({
@@ -97,14 +96,8 @@ export default function useAddRoomModal() {
                                 name: params.name,
                                 owner: account,
                                 updatedAt: now,
-                                tokenAddress: tokenParams.tokenAddress,
-                                minRequiredBalance: BigNumber.from(
-                                    tokenParams.tokenCount || 0
-                                ).toString(),
-                                tokenIds: tokenParams.tokenIds.map((id) =>
-                                    BigNumber.from(id).toString()
-                                ),
                                 tokenType,
+                                ...gate,
                             },
                             privacy: params.privacy,
                             storage: params.storage,

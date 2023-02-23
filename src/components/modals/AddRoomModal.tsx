@@ -8,7 +8,7 @@ import Submit from '../Submit'
 import Text from '../Text'
 import TextField from '../TextField'
 import Toggle from '../Toggle'
-import { Address, Prefix, PrivacyOption, PrivacySetting } from '$/types'
+import { Prefix, PrivacyOption, PrivacySetting } from '$/types'
 import ButtonGroup, { GroupedButton } from '$/components/ButtonGroup'
 import PrivacySelectField, {
     privacyOptions,
@@ -19,11 +19,6 @@ import { RoomId } from '$/features/room/types'
 import useFlag from '$/hooks/useFlag'
 import { Flag } from '$/features/flag/types'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
-import { TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
-import { useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
-import { getTokenType } from '$/features/tokenGatedRooms/utils/getTokenType'
-import { ToastType } from '../Toast'
-import toast from '$/features/toaster/helpers/toast'
 
 export interface Pin {
     roomId: RoomId
@@ -94,42 +89,6 @@ export default function AddRoomModal({
     const canPin = typeof partials !== 'string' && !isPinning
 
     const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
-
-    const [isTokenGatedRoom, setIsTokenGatedRoom] = useState<boolean>(false)
-    const [tokenAddress] = useState<Address>('')
-    const [tokenType, setTokenType] = useState<TokenType>(TokenTypes.unknown)
-    const [tokenId, setTokenId] = useState<string>('0')
-    const [minRequiredBalance, setMinRequiredBalance] = useState<string>('0')
-    const [stakingEnabled, setStakingEnabled] = useState<boolean>(false)
-
-    const provider = useWalletProvider()
-
-    const streamrClient = useWalletClient()
-
-    async function onSubmitCreate() {
-        if (!canCreate || !provider || !streamrClient) {
-            return
-        }
-
-        if (!isTokenGatedRoom && privacySetting.value === PrivacySetting.TokenGated) {
-            // display the next window for the token-gated creation
-            const tokenType = await getTokenType(tokenAddress, provider)
-            if (tokenType.standard !== TokenTypes.unknown.standard) {
-                setTokenType(tokenType)
-                setCreateNew(false)
-                setIsTokenGatedRoom(true)
-            } else {
-                toast({
-                    title: `Token type ${tokenType.standard} not implemented`,
-                    type: ToastType.Error,
-                })
-            }
-        }
-    }
-
-    function onStakingEnabledToggleClick() {
-        setStakingEnabled((current) => !current)
-    }
 
     return (
         <Modal
@@ -214,89 +173,6 @@ export default function AddRoomModal({
                     </>
                     <>
                         <Submit label={createSubmitLabel} disabled={!canCreate} />
-                    </>
-                </Form>
-            ) : isTokenGatedRoom ? (
-                <Form onSubmit={onSubmitCreate}>
-                    <>
-                        <Label htmlFor="roomName">Room Name</Label>
-
-                        <TextField id="roomName" value={roomName} readOnly />
-                        <Label htmlFor="tokenAddress">Token Address</Label>
-
-                        <TextField id="tokenAddress" value={tokenAddress} readOnly />
-
-                        <Label htmlFor="tokenStandard">Token Standard</Label>
-
-                        <TextField id="tokenStandard" value={tokenType.standard} readOnly />
-
-                        {tokenType.hasIds && (
-                            <>
-                                <Label htmlFor="tokenId">Token ID</Label>
-                                <TextField
-                                    id="tokenId"
-                                    value={tokenId}
-                                    onChange={(e) => void setTokenId(e.target.value)}
-                                />
-                            </>
-                        )}
-
-                        {tokenType.isCountable && (
-                            <>
-                                <Label htmlFor="minRequiredBalance">Minimum Token Amount</Label>
-                                <TextField
-                                    id="minRequiredBalance"
-                                    value={minRequiredBalance}
-                                    onChange={(e) => void setMinRequiredBalance(e.target.value)}
-                                />
-                            </>
-                        )}
-
-                        <>
-                            <Label>Enable Staking</Label>
-                            <div
-                                css={[
-                                    tw`
-                                    flex
-                                `,
-                                ]}
-                            >
-                                <div
-                                    css={[
-                                        tw`
-                                        flex-grow
-                                    `,
-                                    ]}
-                                >
-                                    <Hint
-                                        css={[
-                                            tw`
-                                            pr-16
-                                        `,
-                                        ]}
-                                    >
-                                        <Text>
-                                            When token staking is enabled, participants will need to
-                                            deposit the minimum amount in order to join the room.
-                                        </Text>
-                                    </Hint>
-                                </div>
-                                <div
-                                    css={[
-                                        tw`
-                                        mt-2
-                                    `,
-                                    ]}
-                                >
-                                    <Toggle
-                                        value={stakingEnabled}
-                                        onClick={onStakingEnabledToggleClick}
-                                    />
-                                </div>
-                            </div>
-                        </>
-
-                        <Submit label="Create" disabled={false} />
                     </>
                 </Form>
             ) : (
