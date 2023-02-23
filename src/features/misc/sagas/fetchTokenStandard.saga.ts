@@ -111,14 +111,6 @@ export default function* fetchTokenStandard() {
             if (!currentStandard) {
                 const standard: TokenStandard = yield getTokenStandard(address, provider)
 
-                if (standard !== TokenStandard.ERC20) {
-                    tc = yield toast({
-                        title: `Token standard ${standard} is not supported yet.`,
-                        type: ToastType.Warning,
-                    })
-                    return
-                }
-
                 yield put(
                     MiscAction.setTokenStandard({
                         address,
