@@ -25,6 +25,7 @@ import getPolicyRegistry from '$/features/tokenGatedRooms/utils/getPolicyRegistr
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { ZeroAddress } from '$/consts'
 import { Controller } from '$/features/toaster/helpers/toast'
+import isSameAddress from '$/utils/isSameAddress'
 
 const Factory: Record<
     TokenStandard,
@@ -140,7 +141,7 @@ export default function createTokenGatePolicy({
                             stakingEnabled
                         )
 
-                        if (policyAddress === ZeroAddress) {
+                        if (isSameAddress(policyAddress, ZeroAddress)) {
                             throw new Error('Invalid policy address')
                         }
                     })
