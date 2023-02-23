@@ -66,11 +66,13 @@ export type TokenMetadata = {
     granularity?: BigNumber | string
 }
 
-export interface TokenGatedRoomState {
+export interface TokenGate {
     tokenType?: TokenType
     tokenAddress?: Address
-    tokenIds?: BigNumber[] | string[]
-    minRequiredBalance?: BigNumber | string
+    tokenIds?: string[]
+    minRequiredBalance?: string
     stakingEnabled?: boolean
     tokenMetadata?: TokenMetadata
 }
+
+export type { TokenGate as TokenGatedRoomState }

@@ -12,14 +12,14 @@ import { PrivacySetting } from '$/types'
 import { IRoom } from '../types'
 import { RoomAction } from '..'
 import { Flag } from '$/features/flag/types'
-import { TokenTypes } from '$/features/tokenGatedRooms/types'
-import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { TokenStandard, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { MiscAction } from '$/features/misc'
 import { RoomMetadata } from '$/utils/getRoomMetadata'
 import { BigNumber } from 'ethers'
-import { Controller } from '$/features/toaster/helpers/toast'
+import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
+import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 
 function* onCreateAction({
     payload: {
@@ -36,13 +36,6 @@ function* onCreateAction({
     let dismissToast = false
 
     try {
-        tc = yield retoast(tc, {
-            title: `Creating "${params.name}"…`,
-            type: ToastType.Processing,
-        })
-
-        dismissToast = true
-
         yield preflight({
             provider,
             requester,
@@ -53,33 +46,48 @@ function* onCreateAction({
 
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
-        // validate the metadata for tokenGated rooms
+        const {
+            tokenAddress = '',
+            tokenType = TokenTypes[TokenStandard.Unknown],
+            tokenIds = [],
+            minRequiredBalance = '0',
+            stakingEnabled = false,
+        } = metadata
+
         if (privacy === PrivacySetting.TokenGated) {
-            if (!metadata.tokenAddress) {
-                throw new Error('Token address is required for tokenGated rooms')
+            if (!tokenAddress) {
+                throw new Error('No token address')
             }
 
-            if (!metadata.tokenType) {
-                throw new Error('TokenType is required for tokenGated rooms')
+            if (tokenType.standard === TokenStandard.Unknown) {
+                throw new Error('Unknown token type')
             }
 
-            if (
-                !(metadata.tokenIds || metadata.tokenIds!.length === 0) &&
-                (metadata.tokenType.standard === TokenTypes.ERC721.standard ||
-                    metadata.tokenType.standard === TokenTypes.ERC1155.standard)
-            ) {
-                throw new Error('Token id is required for NFT tokenGated rooms')
+            if (tokenType.hasIds && tokenIds.length === 0) {
+                throw new Error('Empty token ids')
             }
 
-            if (
-                (!metadata.minRequiredBalance ||
-                    BigNumber.from(metadata.minRequiredBalance).lte(0)) &&
-                (metadata.tokenType.standard === TokenTypes.ERC20.standard ||
-                    metadata.tokenType.standard === TokenTypes.ERC1155.standard)
-            ) {
-                throw new Error('Min token amount is required for tokenGated rooms')
+            if (tokenType.isCountable && BigNumber.from(minRequiredBalance).lte(0)) {
+                throw new Error('Invalid min required balance')
+            }
+
+            if (tokenType.standard !== TokenStandard.ERC20) {
+                yield toast({
+                    title: 'Only ERC-20s are supported',
+                    type: ToastType.Error,
+                    okLabel: 'Ok',
+                })
+
+                throw new Error('Unsupported standard')
             }
         }
+
+        tc = yield retoast(tc, {
+            title: `Creating "${params.name}"…`,
+            type: ToastType.Processing,
+        })
+
+        dismissToast = true
 
         const stream: Stream = yield streamrClient.createStream({
             id,
@@ -90,24 +98,27 @@ function* onCreateAction({
         } as Partial<StreamMetadata> & { id: string } & Record<'extensions', Record<'thechat.eth', RoomMetadata>>)
 
         if (privacy === PrivacySetting.TokenGated) {
-            yield put(
-                TokenGatedRoomAction.create({
-                    owner,
-                    tokenAddress: metadata.tokenAddress!,
-                    roomId: stream.id,
-                    tokenIds: metadata.tokenIds
-                        ? metadata.tokenIds.map((id) => BigNumber.from(id).toString())
-                        : [],
-                    minRequiredBalance: metadata.minRequiredBalance?.toString(),
-                    provider,
-                    streamrClient,
-                    tokenType: metadata.tokenType!,
-                    stakingEnabled: metadata.stakingEnabled!,
-                })
-            )
+            yield createTokenGatePolicy({
+                owner,
+                tokenAddress,
+                roomId: stream.id,
+                tokenIds,
+                minRequiredBalance,
+                provider,
+                streamrClient,
+                tokenType,
+                stakingEnabled,
+            })
         }
 
         if (privacy === PrivacySetting.Public) {
+            tc = yield retoast(tc, {
+                title: `Making "${params.name}" public…`,
+                type: ToastType.Processing,
+            })
+
+            dismissToast = true
+
             try {
                 yield stream.grantPermissions({
                     public: true,
@@ -163,7 +174,7 @@ function* onCreateAction({
         dismissToast = false
 
         tc = yield retoast(tc, {
-            title: `Failed to create "${params.name}". Reason:\n${e.message}`,
+            title: `Failed to create "${params.name}"`,
             type: ToastType.Error,
         })
     } finally {
