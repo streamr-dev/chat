@@ -125,91 +125,59 @@ export default function RoomPropertiesModal({
                             {tokenType.standard}
                         </Label>
                     )}
-
                     {tokenAddress && (
                         <Label>
                             <b>Address:</b>
                             {tokenAddress}
                         </Label>
                     )}
-
                     {tokenMetadata.name && (
                         <Label>
                             <b>Token Name:</b>
                             {tokenMetadata.name}
                         </Label>
                     )}
-
                     {tokenMetadata.symbol && (
                         <Label>
                             <b>Symbol:</b>
                             {tokenMetadata.symbol}
                         </Label>
                     )}
-
                     {tokenMetadata.decimals && (
                         <Label>
                             <b>Decimals:</b>
                             {tokenMetadata.decimals!.toString()}
                         </Label>
                     )}
-
                     {tokenMetadata.granularity && (
                         <Label>
                             <b>Granularity:</b>
                             {tokenMetadata.granularity!.toString()}
                         </Label>
                     )}
-
                     {tokenMetadata.uri && (
                         <Label>
                             <b>URI:</b>
                             {tokenMetadata.uri}
                         </Label>
                     )}
-
                     {minRequiredBalance !== undefined && (
                         <Label>
                             <b>Min Token Amount:</b>
                             {minRequiredBalance.toString()}
                         </Label>
                     )}
-
                     <Label>Staking</Label>
-                    <div
-                        css={[
-                            tw`
-                                flex
-                            `,
-                        ]}
-                    >
-                        <div
-                            css={[
-                                tw`
-                                    flex-grow
-                                `,
-                            ]}
-                        >
-                            <Hint
-                                css={[
-                                    tw`
-                                        pr-16
-                                    `,
-                                ]}
-                            >
+                    <div css={tw`flex`}>
+                        <div css={tw`grow`}>
+                            <Hint css={tw`pr-16`}>
                                 <Text>
                                     When token staking is enabled, participants will need to deposit
                                     the minimum amount in order to join the room.
                                 </Text>
                             </Hint>
                         </div>
-                        <div
-                            css={[
-                                tw`
-                                    mt-2
-                                `,
-                            ]}
-                        >
+                        <div css={tw`mt-2`}>
                             <Toggle value={stakingEnabled || false} />
                         </div>
                     </div>
