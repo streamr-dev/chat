@@ -204,30 +204,30 @@ export default function AddTokenGatedRoomModal({
                                 }))
                             }
                         />
-                        <Label>Enable Staking</Label>
-                        <div css={tw`flex`}>
-                            <div css={tw`grow`}>
-                                <Hint css={tw`pr-16`}>
-                                    <Text>
-                                        When token staking is enabled, participants will need to
-                                        deposit the minimum amount in order to join the room.
-                                    </Text>
-                                </Hint>
-                            </div>
-                            <div css={tw`mt-2`}>
-                                <Toggle
-                                    value={stakingEnabled}
-                                    onClick={() =>
-                                        void setTransientParams((t) => ({
-                                            ...t,
-                                            stakingEnabled: !t.stakingEnabled,
-                                        }))
-                                    }
-                                />
-                            </div>
-                        </div>
                     </>
                 )}
+                <Label>Enable Staking</Label>
+                <div css={tw`flex`}>
+                    <div css={tw`grow`}>
+                        <Hint css={tw`pr-16`}>
+                            <Text>
+                                When token staking is enabled, participants will need to deposit the
+                                minimum amount in order to join the room.
+                            </Text>
+                        </Hint>
+                    </div>
+                    <div css={tw`mt-2`}>
+                        <Toggle
+                            value={stakingEnabled}
+                            onClick={() =>
+                                void setTransientParams((t) => ({
+                                    ...t,
+                                    stakingEnabled: !t.stakingEnabled,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
                 <PrimaryButton
                     disabled={!allSet}
                     type="submit"

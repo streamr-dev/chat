@@ -76,10 +76,6 @@ function* onCreate({
         let policyFactoryAbi: any
         let policyFactoryAddress: Address
 
-        if (tokenType.standard !== TokenTypes.ERC20.standard) {
-            throw new Error(`Unsupported token type: ${tokenType.standard}`)
-        }
-
         switch (tokenType.standard) {
             case TokenTypes.ERC20.standard:
                 policyFactoryAbi = ERC20PolicyFactory.abi
@@ -110,8 +106,8 @@ function* onCreate({
         const tx: { [key: string]: any } = yield factoryContract.create(
             tokenAddress,
             roomId,
-            minRequiredBalance,
-            tokenIds,
+            minRequiredBalance ? BigNumber.from(minRequiredBalance) : BigNumber.from(0),
+            tokenIds.map((id) => BigNumber.from(id)),
             stakingEnabled,
             [PermissionType.Publish, PermissionType.Subscribe]
         )

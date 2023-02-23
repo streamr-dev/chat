@@ -89,18 +89,15 @@ function* onCreateAction({
             },
         } as Partial<StreamMetadata> & { id: string } & Record<'extensions', Record<'thechat.eth', RoomMetadata>>)
 
-        if (
-            privacy === PrivacySetting.TokenGated &&
-            metadata.tokenType!.standard === TokenTypes.ERC20.standard &&
-            metadata.tokenAddress &&
-            metadata.minRequiredBalance
-        ) {
+        if (privacy === PrivacySetting.TokenGated) {
             yield put(
                 TokenGatedRoomAction.create({
                     owner,
-                    tokenAddress: metadata.tokenAddress,
+                    tokenAddress: metadata.tokenAddress!,
                     roomId: stream.id,
-                    tokenIds: metadata.tokenIds ? metadata.tokenIds.map((id) => id.toString()) : [],
+                    tokenIds: metadata.tokenIds
+                        ? metadata.tokenIds.map((id) => BigNumber.from(id).toString())
+                        : [],
                     minRequiredBalance: metadata.minRequiredBalance?.toString(),
                     provider,
                     streamrClient,
