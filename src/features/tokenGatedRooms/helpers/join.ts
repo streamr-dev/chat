@@ -1,7 +1,7 @@
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
-import { Contract } from 'ethers'
+import { BigNumber, Contract } from 'ethers'
 import { call } from 'redux-saga/effects'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
@@ -33,6 +33,7 @@ export default function join({
     provider,
     stakingEnabled,
     tokenType,
+    tokenId,
 }: ReturnType<typeof TokenGatedRoomAction.join>['payload']) {
     return call(function* () {
         let tc: Controller | undefined
@@ -42,9 +43,17 @@ export default function join({
         try {
             const policyRegistry = getJoinPolicyRegistry(provider)
 
+            if (
+                (tokenType.standard === TokenStandard.ERC721 ||
+                    tokenType.standard === TokenStandard.ERC1155) &&
+                !tokenId
+            ) {
+                throw new Error(`Token ID is required for ${tokenType.standard} tokens`)
+            }
+
             const policyAddress: string = yield policyRegistry.getPolicy(
                 tokenAddress,
-                0, // tokenId = 0 for erc20
+                BigNumber.from(tokenId || 0),
                 roomId,
                 stakingEnabled
             )
@@ -64,7 +73,9 @@ export default function join({
 
             dismissToast = true
 
-            const tx: Record<string, any> = yield policy.requestDelegatedJoin()
+            const tx: Record<string, any> = yield policy.requestDelegatedJoin(
+                BigNumber.from(tokenId || 0)
+            )
 
             yield tx.wait()
 

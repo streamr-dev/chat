@@ -7,7 +7,7 @@ import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { Provider } from '@web3-react/types'
-import { Contract, providers } from 'ethers'
+import { Contract, providers, BigNumber } from 'ethers'
 import { call, race, retry, spawn, take } from 'redux-saga/effects'
 import StreamrClient, { StreamPermission } from 'streamr-client'
 import { abi as erc20abi } from '$/contracts/Factories/ERC20PolicyFactory.sol/ERC20PolicyFactory.json'
@@ -114,8 +114,8 @@ export default function createTokenGatePolicy({
                     const tx: Record<string, any> = yield factoryContract.create(
                         tokenAddress,
                         roomId,
-                        minRequiredBalance,
-                        tokenIds,
+                        BigNumber.from(minRequiredBalance || 0),
+                        tokenIds.map((id) => BigNumber.from(id)),
                         stakingEnabled,
                         [PermissionType.Publish, PermissionType.Subscribe]
                     )

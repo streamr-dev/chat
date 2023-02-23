@@ -148,6 +148,7 @@ export const RoomAction = {
 
     pin: createAction<{
         roomId: RoomId
+        tokenId?: string
         requester: Address
         streamrClient: StreamrClient
         provider: Provider

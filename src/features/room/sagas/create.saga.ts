@@ -71,9 +71,12 @@ function* onCreateAction({
                 throw new Error('Invalid min required balance')
             }
 
-            if (tokenType.standard !== TokenStandard.ERC20) {
+            if (
+                tokenType.standard !== TokenStandard.ERC20 &&
+                tokenType.standard !== TokenStandard.ERC721
+            ) {
                 yield toast({
-                    title: 'Only ERC-20s are supported',
+                    title: 'Only ERC-20s & ERC-721s are supported',
                     type: ToastType.Error,
                     okLabel: 'Ok',
                 })

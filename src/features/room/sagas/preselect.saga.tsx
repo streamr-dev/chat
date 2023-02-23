@@ -8,9 +8,12 @@ import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller } from '$/features/toaster/helpers/toast'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { useWalletProvider } from '$/features/wallet/hooks'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
+import { Provider } from '@web3-react/types'
 import { put, takeLatest } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
@@ -138,12 +141,34 @@ export default function* preselect() {
                         createdAt,
                         createdBy,
                         tokenAddress,
+                        tokenType,
+                        stakingEnabled,
                         name = '',
                     } = getRoomMetadata(stream)
 
-                    if (tokenAddress) {
-                        // avoid pinning tokenGated rooms
-                        yield put(RoomAction.select(undefined))
+                    if (tokenAddress && tokenType) {
+                        if (tokenType.hasIds) {
+                            tc = yield retoast(tc, {
+                                title: (
+                                    <>
+                                        To add NFT-Gated rooms use the "Pin" button on the room
+                                        addition page
+                                    </>
+                                ),
+                                type: ToastType.Warning,
+                            })
+                            return
+                        }
+                        const provider: Provider = yield useWalletProvider()
+                        yield put(
+                            TokenGatedRoomAction.join({
+                                tokenAddress,
+                                tokenType,
+                                roomId,
+                                stakingEnabled: stakingEnabled || false,
+                                provider,
+                            })
+                        )
                         return
                     }
 

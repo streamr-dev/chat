@@ -24,6 +24,7 @@ export const TokenGatedRoomAction = {
         roomId: RoomId
         stakingEnabled: boolean
         provider: Provider
+        tokenId?: string
     }>('tokenGatedRooms: join'),
 
     promoteDelegatedAccount: createAction<{

@@ -23,6 +23,7 @@ import { Stream } from 'streamr-client'
 
 export default function pin({
     roomId,
+    tokenId,
     requester,
     streamrClient,
     provider,
@@ -97,6 +98,7 @@ export default function pin({
                         provider,
                         stakingEnabled: stakingEnabled || false,
                         tokenType,
+                        tokenId,
                     })
                 )
             }
