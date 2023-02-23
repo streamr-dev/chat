@@ -72,18 +72,16 @@ function forge({
         return {
             dismiss() {
                 abortController?.abort()
-
-                abortController = undefined
             },
             async open(props) {
+                abortController = new AbortController()
+
                 const { onAbort, onProceed, ...rest } = {
                     ...(defaultProps || {}),
                     ...(props || {}),
                 }
 
                 const { resolve, reject, promise } = await defer<ResolveResult<T>>()
-
-                abortController = new AbortController()
 
                 const moddedProps: Props<T> = {
                     ...(rest as any),
