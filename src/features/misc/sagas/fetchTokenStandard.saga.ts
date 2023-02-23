@@ -97,11 +97,6 @@ export default function* fetchTokenStandard() {
         let tc: Controller | undefined
 
         try {
-            tc = yield toast({
-                title: 'Loading token info…',
-                type: ToastType.Processing,
-            })
-
             yield put(FlagAction.set(Flag.isFetchingTokenStandard(address)))
 
             const currentStandard: undefined | TokenStandard = yield select(
@@ -109,6 +104,11 @@ export default function* fetchTokenStandard() {
             )
 
             if (!currentStandard) {
+                tc = yield toast({
+                    title: 'Loading token info…',
+                    type: ToastType.Processing,
+                })
+
                 const standard: TokenStandard = yield getTokenStandard(address, provider)
 
                 yield put(
