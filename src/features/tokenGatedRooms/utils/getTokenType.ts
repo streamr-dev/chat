@@ -7,7 +7,7 @@ import * as ERC165 from '../../../contracts/tokens/ERC165.json' // supportsInter
 
 import { Provider } from '@web3-react/types'
 import { Address } from '$/types'
-import { ErcToInterfaceIds, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
+import { InterfaceId, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
 
 export const getTokenType = async (address: Address, rawProvider: Provider): Promise<TokenType> => {
     let detectedTokenType: TokenType = TokenTypes.unknown
@@ -19,9 +19,7 @@ export const getTokenType = async (address: Address, rawProvider: Provider): Pro
         )
 
         try {
-            const supportsERC1155Interface = await contract.supportsInterface(
-                ErcToInterfaceIds.ERC1155
-            )
+            const supportsERC1155Interface = await contract.supportsInterface(InterfaceId.ERC1155)
             if (supportsERC1155Interface) {
                 detectedTokenType = TokenTypes.ERC1155
                 return detectedTokenType
@@ -31,9 +29,7 @@ export const getTokenType = async (address: Address, rawProvider: Provider): Pro
         }
 
         try {
-            const supportsERC721Interface = await contract.supportsInterface(
-                ErcToInterfaceIds.ERC721
-            )
+            const supportsERC721Interface = await contract.supportsInterface(InterfaceId.ERC721)
             if (supportsERC721Interface) {
                 detectedTokenType = TokenTypes.ERC721
                 return detectedTokenType
@@ -43,15 +39,15 @@ export const getTokenType = async (address: Address, rawProvider: Provider): Pro
         }
 
         try {
-            const supportsERC20Interface = await contract.supportsInterface(ErcToInterfaceIds.ERC20)
+            const supportsERC20Interface = await contract.supportsInterface(InterfaceId.ERC20)
             const supportsERC20NameInterface = await contract.supportsInterface(
-                ErcToInterfaceIds.ERC20Name
+                InterfaceId.ERC20Name
             )
             const supportsERC20SymbolInterface = await contract.supportsInterface(
-                ErcToInterfaceIds.ERC20Symbol
+                InterfaceId.ERC20Symbol
             )
             const supportsERC20DecimalsInterface = await contract.supportsInterface(
-                ErcToInterfaceIds.ERC20Decimals
+                InterfaceId.ERC20Decimals
             )
 
             if (
