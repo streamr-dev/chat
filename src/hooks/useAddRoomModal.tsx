@@ -109,7 +109,6 @@ export default function useAddRoomModal() {
 
                     break
                 } catch (e) {
-                    console.warn('createTokenGatedRoom error', e)
                     // Do nothing. Let it loop back to the first modal.
                 }
             } catch (e) {
