@@ -24,7 +24,7 @@ import {
     ERC777PolicyFactoryAddress,
     PermissionType,
 } from '$/features/tokenGatedRooms/utils/const'
-import { getPolicyRegistry } from '$/features/tokenGatedRooms/utils/getPolicyRegistry'
+import getPolicyRegistry from '$/features/tokenGatedRooms/utils/getPolicyRegistry'
 import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 
