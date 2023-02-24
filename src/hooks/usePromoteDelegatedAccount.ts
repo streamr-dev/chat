@@ -23,16 +23,8 @@ export default function usePromoteDelegatedAccount() {
 
     const privacy = usePrivacy(roomId)
 
-    return useCallback(() => {
-        if (
-            !roomId ||
-            !delegatedAddress ||
-            !provider ||
-            !requester ||
-            !streamrClient ||
-            !privacy ||
-            privacy === PrivacySetting.TokenGated
-        ) {
+    const cb = useCallback(() => {
+        if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient) {
             return
         }
 
@@ -47,4 +39,8 @@ export default function usePromoteDelegatedAccount() {
             })
         )
     }, [roomId, delegatedAddress, provider, requester, streamrClient])
+
+    if (privacy === PrivacySetting.Private || privacy === PrivacySetting.Public) {
+        return cb
+    }
 }

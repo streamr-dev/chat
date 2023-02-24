@@ -23,17 +23,9 @@ export default function useTokenGatedPromoteDelegatedAccount() {
 
     const privacy = usePrivacy(roomId)
 
-    return useCallback(
+    const cb = useCallback(
         (tokenId?: string) => {
-            if (
-                !roomId ||
-                !delegatedAddress ||
-                !provider ||
-                !requester ||
-                !streamrClient ||
-                !privacy ||
-                privacy !== PrivacySetting.TokenGated
-            ) {
+            if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient) {
                 return
             }
 
@@ -51,4 +43,8 @@ export default function useTokenGatedPromoteDelegatedAccount() {
         },
         [roomId, delegatedAddress, provider, requester, streamrClient]
     )
+
+    if (privacy === PrivacySetting.TokenGated) {
+        return cb
+    }
 }

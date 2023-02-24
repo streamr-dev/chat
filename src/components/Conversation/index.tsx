@@ -144,22 +144,21 @@ export default function Conversation() {
 function TokenGatedBox() {
     const isPromoting = useIsDelegatedAccountBeingPromoted()
 
-    const usePromote = useTokenGatedPromoteDelegatedAccount()
-
-    const promote = () => {
-        // somehow, add the tokenId
-        usePromote()
-    }
+    const promote = useTokenGatedPromoteDelegatedAccount()
 
     return (
         <MessageInputPlaceholder
             cta={
-                <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
+                <Cta
+                    busy={isPromoting}
+                    disabled={isPromoting || !promote}
+                    onClick={() => void promote?.()}
+                >
                     {isPromoting ? <>Joining...</> : <>Join</>}
                 </Cta>
             }
         >
-            This is a token-gated room. You need to join the room to be able to send messages.
+            This is a token-gated room. Join it to send messages.
         </MessageInputPlaceholder>
     )
 }
@@ -172,7 +171,7 @@ function PermitBox() {
     return (
         <MessageInputPlaceholder
             cta={
-                <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
+                <Cta busy={isPromoting} disabled={isPromoting || !promote} onClick={promote}>
                     {isPromoting ? <>Enabling…</> : <>Enable</>}
                 </Cta>
             }
