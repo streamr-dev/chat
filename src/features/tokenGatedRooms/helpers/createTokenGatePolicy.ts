@@ -20,8 +20,8 @@ import {
     ERC721PolicyFactoryAddress,
     ERC777PolicyFactoryAddress,
     PermissionType,
-} from '$/features/tokenGatedRooms/utils/const'
-import getPolicyRegistry from '$/features/tokenGatedRooms/utils/getPolicyRegistry'
+} from '$/consts'
+import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { ZeroAddress } from '$/consts'
 import { Controller } from '$/features/toaster/helpers/toast'
@@ -122,7 +122,7 @@ export default function createTokenGatePolicy({
 
                     yield tx.wait(10)
 
-                    const policyRegistry = getPolicyRegistry(provider)
+                    const policyRegistry = getJoinPolicyRegistry(provider)
 
                     let policyAddress: Address = ZeroAddress
 

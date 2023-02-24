@@ -1,5 +1,5 @@
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
-import getPolicyRegistry from '$/features/tokenGatedRooms/utils/getPolicyRegistry'
+import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
 import { Contract } from 'ethers'
 import { call } from 'redux-saga/effects'
@@ -40,7 +40,7 @@ export default function join({
         let dismissToast = false
 
         try {
-            const policyRegistry = getPolicyRegistry(provider)
+            const policyRegistry = getJoinPolicyRegistry(provider)
 
             const policyAddress: string = yield policyRegistry.getPolicy(
                 tokenAddress,
