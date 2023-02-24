@@ -1,5 +1,5 @@
 import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
-import { usePrivacy } from '$/features/room/hooks'
+import usePrivacy from '$/hooks/usePrivacy'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useAbility from '$/hooks/useAbility'

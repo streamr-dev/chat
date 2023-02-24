@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { PrivacySetting, State } from '$/types'
+import { State } from '$/types'
 import { RoomId, RoomState } from './types'
 import { selectFlag } from '$/features/flag/selectors'
 import { Flag } from '$/features/flag/types'
@@ -35,13 +35,6 @@ export function selectGettingStorageNodes(roomId: undefined | RoomId) {
     }
 
     return selectFlag(Flag.isGettingStorageNodes(roomId))
-}
-
-export function selectPrivacy(roomId: undefined | RoomId) {
-    return createSelector(
-        selectCache,
-        (cache) => (roomId ? cache[roomId]?.privacy : undefined) || PrivacySetting.Private
-    )
 }
 
 export function selectEditingRoomName(roomId: undefined | RoomId) {
