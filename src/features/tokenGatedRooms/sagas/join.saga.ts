@@ -1,31 +1,19 @@
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { takeEvery } from 'redux-saga/effects'
 import handleError from '$/utils/handleError'
-import { JoinPolicyRegistryAddress } from '$/features/tokenGatedRooms/utils/const'
-
-import { Contract, providers } from 'ethers'
-
-import { abi as JoinPolicyRegistryAbi } from '$/contracts/JoinPolicyRegistry.sol/JoinPolicyRegistry.json'
-
+import { Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
-
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
+import getPolicyRegistry from '$/features/tokenGatedRooms/utils/getPolicyRegistry'
 
 function* onJoin({
     payload: { roomId, tokenAddress, provider, stakingEnabled, tokenType },
 }: ReturnType<typeof TokenGatedRoomAction.join>) {
     try {
-        // fetch policy address from registry
-        const signer = new providers.Web3Provider(provider).getSigner()
-
-        const policyRegistry = new Contract(
-            JoinPolicyRegistryAddress,
-            JoinPolicyRegistryAbi,
-            signer
-        )
+        const policyRegistry = getPolicyRegistry(provider)
 
         const policyAddress: string = yield policyRegistry.getPolicy(
             tokenAddress,
