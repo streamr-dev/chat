@@ -6,8 +6,23 @@ import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPol
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
-import { TokenTypes } from '$/features/tokenGatedRooms/types'
+import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import getPolicyRegistry from '$/features/tokenGatedRooms/utils/getPolicyRegistry'
+
+const Abi: Record<
+    TokenStandard,
+    | typeof ERC20JoinPolicyAbi
+    | typeof ERC721JoinPolicyAbi
+    | typeof ERC777JoinPolicyAbi
+    | typeof ERC1155JoinPolicyAbi
+    | null
+> = {
+    [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
+    [TokenStandard.ERC20]: ERC20JoinPolicyAbi,
+    [TokenStandard.ERC721]: ERC721JoinPolicyAbi,
+    [TokenStandard.ERC777]: ERC777JoinPolicyAbi,
+    [TokenStandard.Unknown]: null,
+}
 
 function* onJoin({
     payload: { roomId, tokenAddress, provider, stakingEnabled, tokenType },
@@ -22,29 +37,15 @@ function* onJoin({
             stakingEnabled
         )
 
-        // assemble policy contract
-        let policyAbi: any
-        switch (tokenType.standard) {
-            case TokenTypes.ERC20.standard:
-                policyAbi = ERC20JoinPolicyAbi
-                break
-            case TokenTypes.ERC721.standard:
-                policyAbi = ERC721JoinPolicyAbi
-                break
-            case TokenTypes.ERC777.standard:
-                policyAbi = ERC777JoinPolicyAbi
-                break
-            case TokenTypes.ERC1155.standard:
-                policyAbi = ERC1155JoinPolicyAbi
-                break
-            default:
-                throw new Error(`Unsupported token type: ${tokenType.standard}`)
+        const abi = Abi[tokenType.standard]
+
+        if (!abi) {
+            throw new Error(`Unsupported token type: ${tokenType.standard}`)
         }
 
-        const policy = new Contract(policyAddress, policyAbi, signer)
+        const policy = new Contract(policyAddress, abi, policyRegistry.signer)
 
-        // call requestDelegatedJoin on policy
-        const tx: { [key: string]: any } = yield policy.requestDelegatedJoin()
+        const tx: Record<string, any> = yield policy.requestDelegatedJoin()
 
         yield tx.wait()
     } catch (e) {
