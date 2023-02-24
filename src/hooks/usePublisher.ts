@@ -34,7 +34,17 @@ export default function usePublisher(roomId: RoomId | undefined) {
 
     const canMainGrant = !!useAbility(roomId, mainAccount, StreamPermission.GRANT)
 
-    const isTokenGated = usePrivacy(roomId) === PrivacySetting.TokenGated
+    const privacy = usePrivacy(roomId)
+
+    const isTokenGated = privacy === PrivacySetting.TokenGated
+
+    if (typeof privacy === 'undefined') {
+        /**
+         * We're figuring out room's privacy setting. Let's wait for this process to finish
+         * in order to present the user with accurate options.
+         */
+        return PublisherState.Unavailable
+    }
 
     if (typeof canAnonPublish === 'undefined') {
         /**
@@ -67,12 +77,12 @@ export default function usePublisher(roomId: RoomId | undefined) {
             return hotClient!
         }
 
-        if (canMainGrant) {
-            return PublisherState.NeedsPermission
-        }
-
         if (isTokenGated) {
             return PublisherState.NeedsTokenGatedPermission
+        }
+
+        if (canMainGrant) {
+            return PublisherState.NeedsPermission
         }
     }
 
