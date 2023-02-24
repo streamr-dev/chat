@@ -19,7 +19,7 @@ import Toggle from '../Toggle'
 import Modal, { Props as ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
-import { useGetTokenMetadata } from '$/features/tokenGatedRooms/hooks'
+import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { BigNumber } from 'ethers'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import TextField from '$/components/TextField'
@@ -95,7 +95,7 @@ export default function RoomPropertiesModal({
         )
     }, [open, selectedRoomId])
 
-    const tokenMetadata = useGetTokenMetadata()
+    const tokenMetadata = useTokenMetadata()
 
     useEffect(() => {
         if (!tokenAddress || !tokenType || !provider || !tokenIds) {
