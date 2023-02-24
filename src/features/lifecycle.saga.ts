@@ -16,7 +16,9 @@ import pinSticky from '$/features/room/helpers/pinSticky'
 import { ToasterAction } from '$/features/toaster'
 import toast from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import getTokenMetadata from '$/features/tokenGatedRooms/helpers/getTokenMetadata'
 import join from '$/features/tokenGatedRooms/helpers/join'
+import { Erc1155, Erc721, Erc777 } from '$/features/tokenGatedRooms/types'
 import { WalletAction } from '$/features/wallet'
 import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
@@ -85,6 +87,18 @@ export default function* lifecycle() {
 
         yield takeEvery(TokenGatedRoomAction.join, function* ({ payload }) {
             yield join(payload)
+        })
+
+        yield takeEveryUnique(TokenGatedRoomAction.getTokenMetadata, function* ({ payload }) {
+            try {
+                const metadata: Erc1155 | Erc1155 | Erc721 | Erc777 = yield getTokenMetadata(
+                    payload
+                )
+
+                yield put(TokenGatedRoomAction.setTokenMetadata(metadata))
+            } catch (e) {
+                handleError(e)
+            }
         })
 
         // This needs to go last. It triggers some of the actions that have

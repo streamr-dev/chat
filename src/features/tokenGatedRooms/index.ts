@@ -1,13 +1,9 @@
-import { TokenGate, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
-import { Address } from '$/types'
-import { SEE_SAGA } from '$/utils/consts'
+import { TokenGate, TokenStandard, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
+import { Address, IFingerprinted } from '$/types'
 import { Provider } from '@web3-react/types'
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { all } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 import { RoomId } from '$/features/room/types'
-import getTokenMetadata from '$/features/tokenGatedRooms/sagas/getTokenMetadata.saga'
-import { BigNumber } from 'ethers'
 
 const initialState: TokenGate = {
     tokenType: TokenTypes.unknown,
@@ -33,38 +29,28 @@ export const TokenGatedRoomAction = {
         streamrClient: StreamrClient
     }>('tokenGatedRooms: promoteDelegatedAccount'),
 
-    getTokenMetadata: createAction<{
-        tokenAddress: Address
-        tokenIds: string[]
-        tokenType: TokenType
-        provider: Provider
-    }>('tokenGatedRooms: getTokenMetadata'),
+    getTokenMetadata: createAction<
+        IFingerprinted & {
+            tokenAddress: Address
+            tokenIds: string[]
+            tokenStandard: TokenStandard
+            provider: Provider
+        }
+    >('tokenGatedRooms: getTokenMetadata'),
 
     setTokenMetadata: createAction<{
         name?: string
         symbol?: string
         decimals?: string
-        uri?: string
+        uris?: Record<string, string>
         granularity?: string
     }>('tokenGatedRooms: setTokenMetadata'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(TokenGatedRoomAction.getTokenMetadata, SEE_SAGA)
-
-    builder.addCase(TokenGatedRoomAction.setTokenMetadata, (state, action) => {
-        state.tokenMetadata = {
-            name: action.payload.name,
-            symbol: action.payload.symbol,
-            decimals: BigNumber.from(action.payload.decimals),
-            uri: action.payload.uri,
-            granularity: BigNumber.from(action.payload.granularity),
-        }
+    builder.addCase(TokenGatedRoomAction.setTokenMetadata, (state, { payload }) => {
+        state.tokenMetadata = payload
     })
 })
-
-export function* tokenGatedRoomSaga() {
-    yield all([getTokenMetadata()])
-}
 
 export default reducer

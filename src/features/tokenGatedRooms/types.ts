@@ -52,12 +52,35 @@ export const TokenTypes: Record<TokenStandard, TokenType> = {
     },
 }
 
+export interface Erc20 {
+    name: string
+    symbol: string
+    decimals: string
+}
+
+export interface Erc1155 {
+    uris: Record<string, string>
+}
+
+export interface Erc721 {
+    name: string
+    symbol: string
+    uris: Record<string, string>
+}
+
+export interface Erc777 {
+    name: string
+    symbol: string
+    granularity: string
+}
+
 /*
     ERC20: name, symbol, decimals
     ERC721: name, symbol, uri
     ERC777: name, symbol, granularity
     ERC1155: uri
 */
+
 export type TokenMetadata = {
     name?: string
     symbol?: string

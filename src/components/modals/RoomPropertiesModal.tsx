@@ -105,12 +105,13 @@ export default function RoomPropertiesModal({
         dispatch(
             TokenGatedRoomAction.getTokenMetadata({
                 tokenAddress,
-                tokenType,
+                tokenStandard: tokenType.standard,
                 provider,
                 tokenIds:
                     tokenIds.length > 0
                         ? tokenIds.map((tokenId) => BigNumber.from(tokenId).toString())
                         : [],
+                fingerprint: Flag.isGettingTokenMetadata(),
             })
         )
     }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
