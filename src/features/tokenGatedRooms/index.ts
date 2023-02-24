@@ -1,4 +1,4 @@
-import { TokenGatedRoomState, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
+import { TokenGate, TokenType, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { Address } from '$/types'
 import { SEE_SAGA } from '$/utils/consts'
 import { Provider } from '@web3-react/types'
@@ -9,7 +9,7 @@ import { RoomId } from '$/features/room/types'
 import getTokenMetadata from '$/features/tokenGatedRooms/sagas/getTokenMetadata.saga'
 import { BigNumber } from 'ethers'
 
-const initialState: TokenGatedRoomState = {
+const initialState: TokenGate = {
     tokenType: TokenTypes.unknown,
     tokenAddress: undefined,
     tokenIds: undefined,

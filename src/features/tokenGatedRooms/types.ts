@@ -74,5 +74,3 @@ export interface TokenGate {
     stakingEnabled?: boolean
     tokenMetadata?: TokenMetadata
 }
-
-export type { TokenGate as TokenGatedRoomState }

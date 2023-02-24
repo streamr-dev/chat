@@ -1,4 +1,4 @@
-import { TokenGatedRoomState } from '$/features/tokenGatedRooms/types'
+import { TokenGate } from '$/features/tokenGatedRooms/types'
 import { Address, IRecord, PrivacySetting } from '$/types'
 
 export interface RoomState {
@@ -15,7 +15,7 @@ export interface RoomState {
     >
 }
 
-export interface IRoom extends IRecord, TokenGatedRoomState {
+export interface IRoom extends IRecord, TokenGate {
     createdBy?: string
     id: string
     name: string
