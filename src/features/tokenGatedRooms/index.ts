@@ -6,7 +6,6 @@ import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
 import StreamrClient from 'streamr-client'
 import { RoomId } from '$/features/room/types'
-import join from '$/features/tokenGatedRooms/sagas/join.saga'
 import getTokenMetadata from '$/features/tokenGatedRooms/sagas/getTokenMetadata.saga'
 import { BigNumber } from 'ethers'
 
@@ -50,8 +49,6 @@ export const TokenGatedRoomAction = {
 }
 
 const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(TokenGatedRoomAction.join, SEE_SAGA)
-
     builder.addCase(TokenGatedRoomAction.getTokenMetadata, SEE_SAGA)
 
     builder.addCase(TokenGatedRoomAction.setTokenMetadata, (state, action) => {
@@ -66,7 +63,7 @@ const reducer = createReducer(initialState, (builder) => {
 })
 
 export function* tokenGatedRoomSaga() {
-    yield all([join(), getTokenMetadata()])
+    yield all([getTokenMetadata()])
 }
 
 export default reducer

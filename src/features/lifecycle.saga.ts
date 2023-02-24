@@ -15,6 +15,8 @@ import pin from '$/features/room/helpers/pin'
 import pinSticky from '$/features/room/helpers/pinSticky'
 import { ToasterAction } from '$/features/toaster'
 import toast from '$/features/toaster/helpers/toast'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import join from '$/features/tokenGatedRooms/helpers/join'
 import { WalletAction } from '$/features/wallet'
 import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
@@ -79,6 +81,10 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(PermissionsAction.allowAnonsPublish, function* ({ payload }) {
             yield allowAnonsPublish(payload)
+        })
+
+        yield takeEvery(TokenGatedRoomAction.join, function* ({ payload }) {
+            yield join(payload)
         })
 
         // This needs to go last. It triggers some of the actions that have
