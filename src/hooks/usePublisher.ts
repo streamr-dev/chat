@@ -54,7 +54,7 @@ export default function usePublisher(roomId: RoomId | undefined) {
     }
 
     if (!hotClient) {
-        if (canMainPublish) {
+        if (canMainPublish || isTokenGated) {
             return PublisherState.NeedsDelegation
         }
     } else {
