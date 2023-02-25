@@ -21,9 +21,14 @@ export default function tokenGatedPromoteDelegatedAccount({
                 throw new RoomNotFoundError(roomId)
             }
 
-            const { tokenAddress, tokenIds, tokenType, stakingEnabled } = getRoomMetadata(stream)
+            const {
+                tokenAddress,
+                tokenIds,
+                tokenType,
+                stakingEnabled = false,
+            } = getRoomMetadata(stream)
 
-            if (!tokenAddress || tokenIds === undefined || !tokenType) {
+            if (!tokenAddress || tokenIds == null || !tokenType) {
                 throw new Error(
                     `Missing token info on stream metadata: ${JSON.stringify({
                         tokenAddress,
@@ -39,7 +44,7 @@ export default function tokenGatedPromoteDelegatedAccount({
                     tokenAddress,
                     provider,
                     tokenType,
-                    stakingEnabled: stakingEnabled as boolean,
+                    stakingEnabled,
                 })
             )
 

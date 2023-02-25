@@ -64,7 +64,7 @@ export default function pin({
                 createdBy,
                 tokenAddress,
                 tokenType,
-                stakingEnabled,
+                stakingEnabled = false,
                 name = '',
             } = getRoomMetadata(stream)
 
@@ -96,11 +96,13 @@ export default function pin({
                         roomId,
                         tokenAddress,
                         provider,
-                        stakingEnabled: stakingEnabled || false,
+                        stakingEnabled,
                         tokenType,
                         tokenId,
                     })
                 )
+
+                return
             }
 
             const room: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()
