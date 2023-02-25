@@ -1,7 +1,5 @@
-import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
-import toast from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
@@ -47,19 +45,8 @@ export default function tokenGatedPromoteDelegatedAccount({
                     stakingEnabled,
                 })
             )
-
-            // for some reason this doesn't wait until the previous action is complete and fires immediately
-            yield toast({
-                title: 'Delegated account has been promoted on the TokenGated room',
-                type: ToastType.Success,
-            })
         } catch (e) {
             handleError(e)
-
-            yield toast({
-                title: 'Failed to promote the delegated account',
-                type: ToastType.Error,
-            })
         }
     })
 }
