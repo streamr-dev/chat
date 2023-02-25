@@ -5,6 +5,7 @@ import { PermissionsAction } from '$/features/permissions'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller } from '$/features/toaster/helpers/toast'
 import toaster from '$/features/toaster/helpers/toaster'
+import fetchStream from '$/utils/fetchStream'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { call } from 'redux-saga/effects'
@@ -59,7 +60,7 @@ export default function allowAnonsPublish({
                 requester,
             })
 
-            const stream: null | Stream = yield streamrClient.getStream(roomId)
+            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

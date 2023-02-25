@@ -8,6 +8,7 @@ import { Flag } from '$/features/flag/types'
 import { DelegationAction } from '$/features/delegation'
 import { PermissionsAction } from '$/features/permissions'
 import { IMember } from '$/features/permissions/types'
+import fetchStream from '$/utils/fetchStream'
 
 export default function detectRoomMembers({
     roomId,
@@ -18,7 +19,7 @@ export default function detectRoomMembers({
         try {
             const members: IMember[] = []
 
-            const stream: null | Stream = yield streamrClient.getStream(roomId)
+            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

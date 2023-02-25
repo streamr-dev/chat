@@ -3,6 +3,7 @@ import { Stream } from 'streamr-client'
 import handleError from '$/utils/handleError'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
+import fetchStream from '$/utils/fetchStream'
 
 export default function fetchPermission({
     roomId,
@@ -12,7 +13,7 @@ export default function fetchPermission({
 }: ReturnType<typeof PermissionsAction.fetchPermission>['payload']) {
     return call(function* () {
         try {
-            const stream: null | Stream = yield streamrClient.getStream(roomId)
+            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

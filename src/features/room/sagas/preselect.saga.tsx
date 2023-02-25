@@ -11,6 +11,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { selectWalletProvider } from '$/features/wallet/selectors'
 import db from '$/utils/db'
+import fetchStream from '$/utils/fetchStream'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import { Provider } from '@web3-react/types'
@@ -131,7 +132,7 @@ export default function* preselect() {
                 })
 
                 try {
-                    const stream: null | Stream = yield streamrClient.getStream(roomId)
+                    const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
                     if (!stream) {
                         throw new RoomNotFoundError(roomId)

@@ -15,6 +15,7 @@ import toaster from '$/features/toaster/helpers/toaster'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { Address, OptionalAddress } from '$/types'
 import db from '$/utils/db'
+import fetchStream from '$/utils/fetchStream'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions from '$/utils/getUserPermissions'
 import handleError from '$/utils/handleError'
@@ -53,7 +54,7 @@ export default function pin({
 
             const owner = requester.toLowerCase()
 
-            const stream: null | Stream = yield streamrClient.getStream(roomId)
+            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

@@ -6,12 +6,13 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import getRoomMetadata from '$/utils/getRoomMetadata'
+import fetchStream from '$/utils/fetchStream'
 
 function* onGetPrivacyAction({
     payload: { roomId, streamrClient },
 }: ReturnType<typeof RoomAction.getPrivacy>) {
     try {
-        const stream: undefined | Stream = yield streamrClient.getStream(roomId)
+        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

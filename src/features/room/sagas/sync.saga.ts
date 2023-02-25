@@ -7,12 +7,13 @@ import db from '$/utils/db'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import getRoomMetadata from '$/utils/getRoomMetadata'
+import fetchStream from '$/utils/fetchStream'
 
 function* onSyncAction({
     payload: { roomId, requester, streamrClient },
 }: ReturnType<typeof RoomAction.sync>) {
     try {
-        const stream: null | Stream = yield streamrClient.getStream(roomId)
+        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
         if (stream) {
             const [permissions, isPublic]: UserPermissions = yield getUserPermissions(

@@ -14,6 +14,7 @@ import { PermissionsAction } from '$/features/permissions'
 import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
+import fetchStream from '$/utils/fetchStream'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -88,7 +89,7 @@ export default function addMember({
                 throw new Error('Address could not be resolved')
             }
 
-            const stream: null | Stream = yield streamrClient.getStream(roomId)
+            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

@@ -13,12 +13,13 @@ import { Stream, StreamMetadata } from 'streamr-client'
 import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
+import fetchStream from '$/utils/fetchStream'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },
 }: ReturnType<typeof RoomAction.rename>) {
     try {
-        const stream: null | Stream = yield streamrClient.getStream(roomId)
+        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

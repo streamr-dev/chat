@@ -6,12 +6,13 @@ import handleError from '$/utils/handleError'
 import { IRoom } from '../types'
 import { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
+import fetchStream from '$/utils/fetchStream'
 
 function* onFetchAction({
     payload: { roomId, requester, streamrClient },
 }: ReturnType<typeof RoomAction.fetch>) {
     try {
-        const stream: null | Stream = yield streamrClient.getStream(roomId)
+        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

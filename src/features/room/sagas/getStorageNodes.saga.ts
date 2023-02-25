@@ -4,12 +4,13 @@ import { RoomAction } from '..'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
+import fetchStream from '$/utils/fetchStream'
 
 function* onGetStorageNodesAction({
     payload: { roomId, streamrClient },
 }: ReturnType<typeof RoomAction.getStorageNodes>) {
     try {
-        const stream: null | Stream = yield streamrClient.getStream(roomId)
+        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

@@ -15,6 +15,7 @@ import Toast, { ToastType } from '$/components/Toast'
 import tw from 'twin.macro'
 import { Controller } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
+import fetchStream from '$/utils/fetchStream'
 
 const { stickyRoomIds } = config
 
@@ -23,7 +24,7 @@ function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClie
         try {
             const owner = requester.toLowerCase()
 
-            const stream: null | Stream = yield streamrClient.getStream(roomId)
+            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)
