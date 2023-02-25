@@ -21,7 +21,7 @@ import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features
 import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { BigNumber } from 'ethers'
-import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
 
 export default function RoomPropertiesModal({
@@ -95,7 +95,7 @@ export default function RoomPropertiesModal({
         )
     }, [open, selectedRoomId])
 
-    const tokenMetadata = useTokenMetadata()
+    const tokenMetadata = useTokenMetadata(tokenAddress)
 
     useEffect(() => {
         if (!tokenAddress || !tokenType || !provider || !tokenIds) {
@@ -103,7 +103,7 @@ export default function RoomPropertiesModal({
         }
 
         dispatch(
-            TokenGatedRoomAction.getTokenMetadata({
+            MiscAction.fetchTokenMetadata({
                 tokenAddress,
                 tokenStandard: tokenType.standard,
                 provider,
@@ -111,7 +111,7 @@ export default function RoomPropertiesModal({
                     tokenIds.length > 0
                         ? tokenIds.map((tokenId) => BigNumber.from(tokenId).toString())
                         : [],
-                fingerprint: Flag.isGettingTokenMetadata(),
+                fingerprint: Flag.isGettingTokenMetadata(tokenAddress),
             })
         )
     }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
@@ -132,35 +132,39 @@ export default function RoomPropertiesModal({
                             {tokenAddress}
                         </Label>
                     )}
-                    {tokenMetadata.name && (
+                    {'name' in tokenMetadata && tokenMetadata.name && (
                         <Label>
                             <b>Token Name:</b>
                             {tokenMetadata.name}
                         </Label>
                     )}
-                    {tokenMetadata.symbol && (
+                    {'symbol' in tokenMetadata && tokenMetadata.symbol && (
                         <Label>
                             <b>Symbol:</b>
                             {tokenMetadata.symbol}
                         </Label>
                     )}
-                    {tokenMetadata.decimals && (
+                    {'decimals' in tokenMetadata && tokenMetadata.decimals && (
                         <Label>
                             <b>Decimals:</b>
-                            {tokenMetadata.decimals!.toString()}
+                            {tokenMetadata.decimals}
                         </Label>
                     )}
-                    {tokenMetadata.granularity && (
+                    {'granularity' in tokenMetadata && tokenMetadata.granularity && (
                         <Label>
                             <b>Granularity:</b>
-                            {tokenMetadata.granularity!.toString()}
+                            {tokenMetadata.granularity}
                         </Label>
                     )}
-                    {tokenMetadata.uri && (
-                        <Label>
-                            <b>URI:</b>
-                            {tokenMetadata.uri}
-                        </Label>
+                    {'uris' in tokenMetadata && tokenMetadata.uris && (
+                        <>
+                            {Object.entries(tokenMetadata.uris).map(([tokenId, uri]) => (
+                                <Label key={tokenId}>
+                                    <b>URI:</b>
+                                    {uri}
+                                </Label>
+                            ))}
+                        </>
                     )}
                     {minRequiredBalance !== undefined && (
                         <Label>

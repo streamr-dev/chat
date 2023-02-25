@@ -3,8 +3,7 @@ import fetchTokenStandard from '$/features/misc/sagas/fetchTokenStandard.saga'
 import goto from '$/features/misc/sagas/goto.saga'
 import { MiscState, TokenInfo } from '$/features/misc/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { Address } from '$/types'
-import { SEE_SAGA } from '$/utils/consts'
+import { Address, IFingerprinted, TokenMetadata } from '$/types'
 import isBlank from '$/utils/isBlank'
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { Provider } from '@web3-react/types'
@@ -29,6 +28,20 @@ export const MiscAction = {
     setTokenStandard: createAction<{ address: Address; standard: undefined | TokenStandard }>(
         'misc: set token standard'
     ),
+
+    fetchTokenMetadata: createAction<
+        IFingerprinted & {
+            tokenAddress: Address
+            tokenIds: string[]
+            tokenStandard: TokenStandard
+            provider: Provider
+        }
+    >('misc: fetch token metadata'),
+
+    cacheTokenMetadata: createAction<{
+        tokenAddress: Address
+        tokenMetadata: TokenMetadata
+    }>('misc: cache token metadata'),
 }
 
 const initialState: MiscState = {
@@ -37,6 +50,7 @@ const initialState: MiscState = {
     knownTokensFilter: '',
     navigate: undefined,
     tokenStandards: {},
+    tokenMetadatas: {},
 }
 
 function filterTokens(knownTokens: TokenInfo[], phrase: string) {
@@ -56,13 +70,9 @@ function filterTokens(knownTokens: TokenInfo[], phrase: string) {
 }
 
 const reducer = createReducer(initialState, (b) => {
-    b.addCase(MiscAction.goto, SEE_SAGA)
-
     b.addCase(MiscAction.setNavigate, (state, { payload: { navigate } }) => {
         state.navigate = navigate
     })
-
-    b.addCase(MiscAction.fetchKnownTokens, SEE_SAGA)
 
     b.addCase(MiscAction.setKnownTokens, (state, { payload }) => {
         state.knownTokens = payload
@@ -76,8 +86,6 @@ const reducer = createReducer(initialState, (b) => {
         state.filteredKnownTokens = filterTokens(state.knownTokens, payload)
     })
 
-    b.addCase(MiscAction.fetchTokenStandard, SEE_SAGA)
-
     b.addCase(MiscAction.setTokenStandard, (state, { payload: { address, standard } }) => {
         if (typeof standard === 'undefined') {
             delete state.tokenStandards[address.toLowerCase()]
@@ -87,6 +95,13 @@ const reducer = createReducer(initialState, (b) => {
 
         state.tokenStandards[address.toLowerCase()] = standard
     })
+
+    b.addCase(
+        MiscAction.cacheTokenMetadata,
+        (state, { payload: { tokenAddress, tokenMetadata } }) => {
+            state.tokenMetadatas[tokenAddress.toLowerCase()] = tokenMetadata
+        }
+    )
 })
 
 export function* miscSaga() {

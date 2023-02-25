@@ -7,7 +7,6 @@ import rooms, { roomsSaga } from '$/features/rooms'
 import permissions, { permissionsSaga } from '$/features/permissions'
 import drafts, { draftsSaga } from '$/features/drafts'
 import identicons, { identiconsSaga } from '$/features/identicons'
-import tokenGatedRooms from '$/features/tokenGatedRooms'
 import clock from '$/features/clock'
 import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
@@ -36,7 +35,6 @@ const store = configureStore({
         room,
         rooms,
         wallet,
-        tokenGatedRooms,
         misc,
         anon,
         toaster,

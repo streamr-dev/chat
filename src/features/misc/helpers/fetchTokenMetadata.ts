@@ -1,4 +1,3 @@
-import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import { abi as ERC20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
 import { abi as ERC721abi } from '$/contracts/tokens/ERC721Token.sol/ERC721.json'
 import { abi as ERC777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
@@ -6,7 +5,9 @@ import { abi as ERC1155abi } from '$/contracts/tokens/ERC1155Token.sol/ERC1155.j
 import { BigNumber, Contract, providers } from 'ethers'
 import { Address } from '$/types'
 import { Provider } from '@web3-react/types'
-import { Erc1155, Erc20, Erc721, Erc777, TokenStandard } from '$/features/tokenGatedRooms/types'
+import { Erc1155, Erc20, Erc721, Erc777 } from '$/types'
+import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import { MiscAction } from '$/features/misc'
 
 async function getURIs(tokenIds: string[], contract: Contract) {
     if (tokenIds.length === 0) {
@@ -24,7 +25,7 @@ async function getURIs(tokenIds: string[], contract: Contract) {
     return uris
 }
 
-async function getERC20TokenMetadata(tokenAddress: Address, provider: Provider): Promise<Erc20> {
+async function fetchERC20TokenMetadata(tokenAddress: Address, provider: Provider): Promise<Erc20> {
     const contract = new Contract(
         tokenAddress,
         ERC20abi,
@@ -38,7 +39,7 @@ async function getERC20TokenMetadata(tokenAddress: Address, provider: Provider):
     }
 }
 
-async function getERC721TokenMetadata(
+async function fetchERC721TokenMetadata(
     tokenAddress: Address,
     provider: Provider,
     tokenIds: string[]
@@ -56,7 +57,10 @@ async function getERC721TokenMetadata(
     }
 }
 
-async function getERC777TokenMetadata(tokenAddress: Address, provider: Provider): Promise<Erc777> {
+async function fetchERC777TokenMetadata(
+    tokenAddress: Address,
+    provider: Provider
+): Promise<Erc777> {
     const contract = new Contract(
         tokenAddress,
         ERC777abi,
@@ -70,7 +74,7 @@ async function getERC777TokenMetadata(tokenAddress: Address, provider: Provider)
     }
 }
 
-async function getERC1155TokenMetadata(
+async function fetchERC1155TokenMetadata(
     tokenAddress: Address,
     provider: Provider,
     tokenIds: string[]
@@ -86,21 +90,21 @@ async function getERC1155TokenMetadata(
     }
 }
 
-export default function getTokenMetadata({
+export default function fetchTokenMetadata({
     tokenAddress,
     tokenIds,
     tokenStandard,
     provider,
-}: ReturnType<typeof TokenGatedRoomAction.getTokenMetadata>['payload']) {
+}: ReturnType<typeof MiscAction.fetchTokenMetadata>['payload']) {
     switch (tokenStandard) {
         case TokenStandard.ERC1155:
-            return getERC1155TokenMetadata(tokenAddress, provider, tokenIds)
+            return fetchERC1155TokenMetadata(tokenAddress, provider, tokenIds)
         case TokenStandard.ERC20:
-            return getERC20TokenMetadata(tokenAddress, provider)
+            return fetchERC20TokenMetadata(tokenAddress, provider)
         case TokenStandard.ERC721:
-            return getERC721TokenMetadata(tokenAddress, provider, tokenIds)
+            return fetchERC721TokenMetadata(tokenAddress, provider, tokenIds)
         case TokenStandard.ERC777:
-            return getERC777TokenMetadata(tokenAddress, provider)
+            return fetchERC777TokenMetadata(tokenAddress, provider)
         default:
             throw new Error('Not implemented')
     }
