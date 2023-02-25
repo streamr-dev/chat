@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { PermissionsAction } from '$/features/permissions'
@@ -93,7 +93,68 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const seen = isSameAddress(recentMessage?.createdBy, address) || Boolean(recentMessage?.seenAt)
 
-    const partials = pathnameToRoomIdPartials(id)
+    return (
+        <PassiveRoomButton
+            {...props}
+            active={active}
+            pinned={isPinned}
+            roomId={id}
+            roomName={name}
+            tagLabel={justInvited ? 'Invite' : undefined}
+            visible={isVisible}
+            desc={
+                stickyRoomSubtitle[id] || (
+                    <>
+                        {typeof recentMessage?.content !== 'undefined' && (
+                            <>
+                                <div css={tw`min-w-0`}>
+                                    <Text truncate css={!seen && tw`font-bold`}>
+                                        {recentMessage?.content}
+                                    </Text>
+                                </div>
+                                {typeof ago !== 'undefined' && (
+                                    <>
+                                        <div css={tw`px-1`}>
+                                            <Text>·</Text>
+                                        </div>
+                                        <div>
+                                            <Text>{ago}</Text>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )}
+                    </>
+                )
+            }
+        />
+    )
+}
+
+interface PassiveRoomButtonProps extends Omit<LinkProps, 'children' | 'to'> {
+    active?: boolean
+    desc?: ReactNode
+    pinned?: boolean
+    roomId: RoomId
+    roomName: string
+    tagLabel?: string
+    visible?: boolean
+}
+
+export function PassiveRoomButton({
+    active = false,
+    desc,
+    onClick,
+    pinned = false,
+    roomId,
+    roomName,
+    tagLabel,
+    visible = false,
+    ...props
+}: PassiveRoomButtonProps) {
+    const dispatch = useDispatch()
+
+    const partials = pathnameToRoomIdPartials(roomId)
 
     const url =
         typeof partials === 'string' ? `/${partials}` : `/${partials.account}~${partials.uuid}`
@@ -103,9 +164,13 @@ export default function RoomButton({ room, active, ...props }: Props) {
             {...props}
             tag={Link}
             active={active}
-            icon={<Icon id={id} />}
+            icon={<Icon id={roomId} />}
             to={url}
-            onClick={() => void dispatch(FlagAction.unset(Flag.isDisplayingRooms()))}
+            onClick={(e) => {
+                dispatch(FlagAction.unset(Flag.isDisplayingRooms()))
+
+                onClick?.(e)
+            }}
             css={tw`
                 h-20
                 lg:h-[92px]
@@ -122,7 +187,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
                             [* + *]:ml-3
                         `}
                     >
-                        {justInvited && (
+                        {!!tagLabel && (
                             <div
                                 css={tw`
                                     bg-[#E0E7F2]
@@ -137,11 +202,11 @@ export default function RoomButton({ room, active, ...props }: Props) {
                                     rounded-full
                                 `}
                             >
-                                <Text>Invite</Text>
+                                <Text>{tagLabel}</Text>
                             </div>
                         )}
-                        {isPinned && <PinIcon />}
-                        {!isVisible && (
+                        {pinned && <PinIcon />}
+                        {!visible && (
                             <svg
                                 width="14"
                                 height="11"
@@ -166,48 +231,20 @@ export default function RoomButton({ room, active, ...props }: Props) {
                         truncate
                     `}
                 >
-                    {name || 'Unnamed room'}
+                    {roomName || 'Unnamed room'}
                 </div>
-                {stickyRoomSubtitle[id] ? (
-                    <div
-                        css={tw`
-                            text-[#59799C]
-                            text-[14px]
-                            font-plex
-                        `}
-                    >
-                        {stickyRoomSubtitle[id]}
-                    </div>
-                ) : (
-                    <>
-                        {typeof recentMessage?.content !== 'undefined' && (
-                            <div
-                                css={tw`
-                                    text-[#59799C]
-                                    text-[14px]
-                                    font-plex
-                                    flex
-                                `}
-                            >
-                                <div css={tw`min-w-0`}>
-                                    <Text truncate css={!seen && tw`font-bold`}>
-                                        {recentMessage.content}
-                                    </Text>
-                                </div>
-                                {typeof ago !== 'undefined' && (
-                                    <>
-                                        <div css={tw`px-1`}>
-                                            <Text>·</Text>
-                                        </div>
-                                        <div>
-                                            <Text>{ago}</Text>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        )}
-                    </>
-                )}
+                <div
+                    css={tw`
+                        text-[#59799C]
+                        text-[14px]
+                        font-plex
+                        flex
+                        items-center
+                        empty:hidden
+                    `}
+                >
+                    {desc}
+                </div>
             </div>
         </SidebarButton>
     )
