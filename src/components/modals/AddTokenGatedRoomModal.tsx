@@ -27,6 +27,7 @@ import Toggle from '$/components/Toggle'
 import { BigNumber } from 'ethers'
 import uniq from 'lodash/uniq'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
+import { parseUnits } from '@ethersproject/units'
 
 interface Gate {
     tokenAddress: Address
@@ -85,7 +86,17 @@ export default function AddTokenGatedRoomModal({
     }, [tokenInfo.address])
 
     const params = {
-        minRequiredBalance: minRequiredBalance.trim(),
+        minRequiredBalance: ((mrb: string) => {
+            try {
+                if (tokenMetadata && 'decimals' in tokenMetadata) {
+                    return parseUnits(mrb, tokenMetadata.decimals || 1).toString()
+                }
+            } catch (e) {
+                // Do nothing.
+            }
+
+            return mrb
+        })(minRequiredBalance.trim()),
         tokenIds: uniq(
             tokenIds
                 .replace(/\s*,+\s*/g, ',')
