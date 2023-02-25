@@ -10,6 +10,7 @@ export interface RoomState {
                 privacy?: PrivacySetting
                 storageNodes: Record<Address, boolean>
                 temporaryName?: string
+                tokenGate?: CachedTokenGate | null
             }
         >
     >
@@ -25,3 +26,7 @@ export interface IRoom extends IRecord, TokenGate {
 }
 
 export type RoomId = IRoom['id']
+
+export type CachedTokenGate = Required<
+    Pick<TokenGate, 'tokenAddress' | 'tokenIds' | 'minRequiredBalance'>
+>

@@ -48,6 +48,7 @@ export const MiscAction = {
 const initialState: MiscState = {
     filteredKnownTokens: [],
     knownTokens: [],
+    knownTokensByAddress: {},
     knownTokensFilter: '',
     navigate: undefined,
     tokenStandards: {},
@@ -77,6 +78,14 @@ const reducer = createReducer(initialState, (b) => {
 
     b.addCase(MiscAction.setKnownTokens, (state, { payload }) => {
         state.knownTokens = payload
+
+        const map: Record<Address, TokenInfo> = {}
+
+        payload.forEach((ti) => {
+            map[ti.address.toLowerCase()] = ti
+        })
+
+        state.knownTokensByAddress = map
 
         state.filteredKnownTokens = filterTokens(payload, state.knownTokensFilter)
     })

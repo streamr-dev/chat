@@ -18,6 +18,7 @@ import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
 import { Provider } from '@web3-react/types'
 import preselect from '$/features/room/sagas/preselect.saga'
+import { TokenGate } from '$/features/tokenGatedRooms/types'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -168,6 +169,13 @@ export const RoomAction = {
     setPinning: createAction<{ owner: Address; roomId: RoomId; state: boolean }>(
         'room: set pinning'
     ),
+
+    cacheTokenGate: createAction<{
+        roomId: RoomId
+        tokenGate: Required<
+            Pick<TokenGate, 'tokenAddress' | 'tokenIds' | 'minRequiredBalance'>
+        > | null
+    }>('room: cache token gate'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -203,6 +211,10 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RoomAction.setTransientName, (state, { payload: { roomId, name } }) => {
         roomCache(state, roomId).temporaryName = name
+    })
+
+    builder.addCase(RoomAction.cacheTokenGate, (state, { payload: { roomId, tokenGate } }) => {
+        roomCache(state, roomId).tokenGate = tokenGate
     })
 })
 

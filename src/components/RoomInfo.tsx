@@ -4,6 +4,8 @@ import { RoomId } from '$/features/room/types'
 import usePrivacyOption from '$/hooks/usePrivacyOption'
 import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
+import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
+import RoomEntryRequirements from '$/components/RoomEntryRequirements'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     roomId: RoomId | undefined
@@ -12,11 +14,13 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export default function RoomInfo({ roomId, children, ...props }: Props) {
     const privacyOption = usePrivacyOption(roomId)
 
-    if (typeof privacyOption === 'undefined') {
+    const requirements = useRoomEntryRequirements(roomId)
+
+    if (typeof privacyOption === 'undefined' || typeof requirements === 'undefined') {
         return <Pending>{children}</Pending>
     }
 
-    const { icon: PrivacyIcon, label: privacyLabel } = privacyOption
+    const { icon: PrivacyIcon, label: privacyLabel } = privacyOption || {}
 
     return (
         <Wrap {...props}>
@@ -28,6 +32,12 @@ export default function RoomInfo({ roomId, children, ...props }: Props) {
                 `}
             />
             <Text>{privacyLabel} room</Text>
+            {requirements && (
+                <>
+                    <Text css={tw`whitespace-pre-wrap`}> requiring </Text>
+                    <RoomEntryRequirements {...requirements} />
+                </>
+            )}
             {children}
         </Wrap>
     )
