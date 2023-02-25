@@ -13,6 +13,7 @@ import allowAnonsPublish from '$/features/permissions/sagas/helpers/allowAnonsPu
 import { RoomAction } from '$/features/room'
 import pin from '$/features/room/helpers/pin'
 import pinSticky from '$/features/room/helpers/pinSticky'
+import search from '$/features/room/helpers/search'
 import { ToasterAction } from '$/features/toaster'
 import toast from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
@@ -118,6 +119,10 @@ export default function* lifecycle() {
             } catch (e) {
                 handleError(e)
             }
+        })
+
+        yield takeEveryUnique(RoomAction.search, function* ({ payload }) {
+            yield search(payload)
         })
 
         // This needs to go last. It triggers some of the actions that have

@@ -23,6 +23,7 @@ import { TokenGate } from '$/features/tokenGatedRooms/types'
 const initialState: RoomState = {
     selectedRoomId: undefined,
     cache: {},
+    searchResults: {},
 }
 
 function roomCache(state: RoomState, roomId: RoomId) {
@@ -176,6 +177,15 @@ export const RoomAction = {
             Pick<TokenGate, 'tokenAddress' | 'tokenIds' | 'minRequiredBalance'>
         > | null
     }>('room: cache token gate'),
+
+    search: createAction<IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }>(
+        'room: search'
+    ),
+
+    cacheSearchResult: createAction<{
+        roomId: RoomId
+        metadata: { name: string; tokenAddress: OptionalAddress } | null
+    }>('room: cache search result'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -215,6 +225,10 @@ const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RoomAction.cacheTokenGate, (state, { payload: { roomId, tokenGate } }) => {
         roomCache(state, roomId).tokenGate = tokenGate
+    })
+
+    builder.addCase(RoomAction.cacheSearchResult, (state, { payload: { roomId, metadata } }) => {
+        state.searchResults[roomId] = metadata
     })
 })
 

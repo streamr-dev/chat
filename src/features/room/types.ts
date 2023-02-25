@@ -1,5 +1,5 @@
 import { TokenGate } from '$/features/tokenGatedRooms/types'
-import { Address, IRecord, PrivacySetting } from '$/types'
+import { Address, IRecord, OptionalAddress, PrivacySetting } from '$/types'
 
 export interface RoomState {
     selectedRoomId?: RoomId
@@ -11,6 +11,15 @@ export interface RoomState {
                 storageNodes: Record<Address, boolean>
                 temporaryName?: string
                 tokenGate?: CachedTokenGate | null
+            }
+        >
+    >
+    searchResults: Partial<
+        Record<
+            RoomId,
+            null | {
+                name: string
+                tokenAddress: OptionalAddress
             }
         >
     >
