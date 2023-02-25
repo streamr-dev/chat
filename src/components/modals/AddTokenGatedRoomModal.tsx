@@ -25,6 +25,7 @@ import TextField from '$/components/TextField'
 import Hint from '$/components/Hint'
 import Toggle from '$/components/Toggle'
 import { BigNumber } from 'ethers'
+import uniq from 'lodash/uniq'
 
 interface Gate {
     tokenAddress: Address
@@ -82,10 +83,12 @@ export default function AddTokenGatedRoomModal({
 
     const params = {
         minRequiredBalance: minRequiredBalance.trim(),
-        tokenIds: tokenIds
-            .replace(/\s*,+\s*/g, ',')
-            .split(',')
-            .filter(Boolean),
+        tokenIds: uniq(
+            tokenIds
+                .replace(/\s*,+\s*/g, ',')
+                .split(',')
+                .filter(Boolean)
+        ),
         stakingEnabled,
     }
 
