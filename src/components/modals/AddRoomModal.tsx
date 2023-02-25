@@ -202,22 +202,18 @@ export default function AddRoomModal({
                         />
 
                         <Label htmlFor="tokenId">Token ID</Label>
-                        <div css={tw`flex`}>
-                            <div css={tw`grow`}>
-                                <Hint css={tw`pr-16`}>
-                                    <Text>
-                                        If you are pinning a token-gated room with an NFT enter the
-                                        token ID here.
-                                    </Text>
-                                </Hint>
-                            </div>
-                        </div>
                         <TextField
                             id="tokenId"
                             value={tokenId}
                             onChange={(e) => void setTokenId(e.target.value)}
                             autoComplete="off"
                         />
+                        <Hint css={tw`pr-16`}>
+                            <Text>
+                                If you are pinning a token-gated room with an NFT enter the token ID
+                                here.
+                            </Text>
+                        </Hint>
                     </>
                     <>
                         <Submit label="Pin" disabled={!canPin} />
