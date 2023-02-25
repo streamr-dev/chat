@@ -24,8 +24,9 @@ import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Wallet } from 'ethers'
-import { put, takeEvery, takeLatest } from 'redux-saga/effects'
+import { put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
+import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -92,11 +93,20 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(MiscAction.fetchTokenMetadata, function* ({ payload }) {
             try {
+                const cachedTokenMetadata: TokenMetadata | undefined = yield select(
+                    selectTokenMetadata(payload.tokenAddress, payload.tokenIds)
+                )
+
+                if (cachedTokenMetadata) {
+                    return
+                }
+
                 const tokenMetadata: TokenMetadata = yield fetchTokenMetadata(payload)
 
                 yield put(
                     MiscAction.cacheTokenMetadata({
                         tokenAddress: payload.tokenAddress,
+                        tokenIds: payload.tokenIds,
                         tokenMetadata,
                     })
                 )

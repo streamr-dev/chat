@@ -39,8 +39,8 @@ export default function* fetchTokenStandard() {
                         tokenAddress: address,
                         tokenStandard: standard,
                         provider,
-                        tokenIds: ['0'],
-                        fingerprint: Flag.isGettingTokenMetadata(address),
+                        tokenIds: [],
+                        fingerprint: Flag.isFetchingTokenMetadata(address, []),
                     })
                 )
             }

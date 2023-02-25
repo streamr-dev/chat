@@ -72,7 +72,7 @@ export default function AddTokenGatedRoomModal({
 
     const standard = useTokenStandard(tokenInfo.address)
 
-    const tokenMetadata = useTokenMetadata(tokenInfo.address)
+    const tokenMetadata = useTokenMetadata(tokenInfo.address, [])
 
     const { isCountable, hasIds } = standard
         ? TokenTypes[standard]

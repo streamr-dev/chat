@@ -3,6 +3,7 @@ import fetchTokenStandard from '$/features/misc/sagas/fetchTokenStandard.saga'
 import goto from '$/features/misc/sagas/goto.saga'
 import { MiscState, TokenInfo } from '$/features/misc/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
 import { Address, IFingerprinted, TokenMetadata } from '$/types'
 import isBlank from '$/utils/isBlank'
 import { createAction, createReducer } from '@reduxjs/toolkit'
@@ -40,6 +41,7 @@ export const MiscAction = {
 
     cacheTokenMetadata: createAction<{
         tokenAddress: Address
+        tokenIds: string[]
         tokenMetadata: TokenMetadata
     }>('misc: cache token metadata'),
 }
@@ -98,8 +100,8 @@ const reducer = createReducer(initialState, (b) => {
 
     b.addCase(
         MiscAction.cacheTokenMetadata,
-        (state, { payload: { tokenAddress, tokenMetadata } }) => {
-            state.tokenMetadatas[tokenAddress.toLowerCase()] = tokenMetadata
+        (state, { payload: { tokenAddress, tokenIds, tokenMetadata } }) => {
+            state.tokenMetadatas[tokenMetadataCacheKey(tokenAddress, tokenIds)] = tokenMetadata
         }
     )
 })

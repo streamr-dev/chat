@@ -20,7 +20,6 @@ import Modal, { Props as ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
-import { BigNumber } from 'ethers'
 import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
 
@@ -37,8 +36,8 @@ export default function RoomPropertiesModal({
         tokenAddress,
         minRequiredBalance,
         tokenType,
-        tokenIds,
-        stakingEnabled,
+        tokenIds = [],
+        stakingEnabled = false,
     } = useSelectedRoom() || {}
 
     const isStorageEnabled = useStorageNodeState(selectedRoomId, STREAMR_STORAGE_NODE_GERMANY)
@@ -95,7 +94,7 @@ export default function RoomPropertiesModal({
         )
     }, [open, selectedRoomId])
 
-    const tokenMetadata = useTokenMetadata(tokenAddress)
+    const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds)
 
     useEffect(() => {
         if (!tokenAddress || !tokenType || !provider || !tokenIds) {
@@ -107,11 +106,8 @@ export default function RoomPropertiesModal({
                 tokenAddress,
                 tokenStandard: tokenType.standard,
                 provider,
-                tokenIds:
-                    tokenIds.length > 0
-                        ? tokenIds.map((tokenId) => BigNumber.from(tokenId).toString())
-                        : [],
-                fingerprint: Flag.isGettingTokenMetadata(tokenAddress),
+                tokenIds,
+                fingerprint: Flag.isFetchingTokenMetadata(tokenAddress, tokenIds),
             })
         )
     }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
@@ -183,7 +179,7 @@ export default function RoomPropertiesModal({
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
-                            <Toggle value={stakingEnabled || false} />
+                            <Toggle value={stakingEnabled} />
                         </div>
                     </div>
                 </>
