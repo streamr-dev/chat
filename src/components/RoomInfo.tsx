@@ -1,0 +1,69 @@
+import Spinner from '$/components/Spinner'
+import Text from '$/components/Text'
+import { RoomId } from '$/features/room/types'
+import usePrivacyOption from '$/hooks/usePrivacyOption'
+import { HTMLAttributes } from 'react'
+import tw from 'twin.macro'
+
+interface Props extends HTMLAttributes<HTMLDivElement> {
+    roomId: RoomId | undefined
+}
+
+export default function RoomInfo({ roomId, children, ...props }: Props) {
+    const privacyOption = usePrivacyOption(roomId)
+
+    if (typeof privacyOption === 'undefined') {
+        return <Pending>{children}</Pending>
+    }
+
+    const { icon: PrivacyIcon, label: privacyLabel } = privacyOption
+
+    return (
+        <Wrap {...props}>
+            <PrivacyIcon
+                css={tw`
+                    w-3
+                    mr-1.5
+                    ml-0.5
+                `}
+            />
+            <Text>{privacyLabel} room</Text>
+            {children}
+        </Wrap>
+    )
+}
+
+function Wrap(props: HTMLAttributes<HTMLDivElement>) {
+    return (
+        <div
+            {...props}
+            css={tw`
+                flex
+                items-center
+                text-[#59799C]
+                text-[12px]
+                lg:text-[14px]
+            `}
+        />
+    )
+}
+
+function Pending({ children, ...props }: HTMLAttributes<HTMLDivElement>) {
+    return (
+        <Wrap {...props}>
+            <div
+                css={tw`
+                    w-3
+                    h-3
+                    relative
+                    mr-1.5
+                    ml-0.5
+                `}
+            >
+                <Spinner r={4} strokeWidth={1.5} />
+            </div>
+            <Text>Loading…</Text>
+            {children}
+        </Wrap>
+    )
+}

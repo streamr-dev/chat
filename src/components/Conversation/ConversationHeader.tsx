@@ -11,7 +11,6 @@ import {
     useSelectedRoomId,
     useTransientRoomName,
 } from '$/features/room/hooks'
-import usePrivacyOption from '$/hooks/usePrivacyOption'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
@@ -46,7 +45,7 @@ import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
 import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
-import { PrivateRoomOption } from '$/components/PrivacySelectField'
+import RoomInfo from '$/components/RoomInfo'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     canModifyMembers?: boolean
@@ -141,11 +140,6 @@ export default function ConversationHeader({
             })
         )
     }
-
-    const { icon: PrivacyIcon, label: privacyLabel } = usePrivacyOption(
-        selectedRoomId,
-        PrivateRoomOption
-    )
 
     useEffect(() => {
         if (!selectedRoomId || !streamrClient) {
@@ -300,31 +294,13 @@ export default function ConversationHeader({
                             >
                                 <div css={tw`truncate`}>{name || 'Unnamed room'}&zwnj;</div>
                             </div>
-                            <div
-                                css={[
-                                    tw`
-                                        flex
-                                        items-center
-                                        text-[#59799C]
-                                        text-[12px]
-                                        lg:text-[14px]
-                                    `,
-                                ]}
-                            >
-                                <PrivacyIcon
-                                    css={tw`
-                                        w-3
-                                        mr-1.5
-                                        ml-0.5
-                                    `}
-                                />
-                                <Text>{privacyLabel} room</Text>
+                            <RoomInfo roomId={selectedRoomId}>
                                 <MemberCount
                                     roomId={selectedRoomId}
                                     canModifyMembers={canModifyMembers}
                                     onClick={() => void onEditMembersClick?.()}
                                 />
-                            </div>
+                            </RoomInfo>
                         </div>
                     )}
                 </div>
