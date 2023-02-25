@@ -26,6 +26,7 @@ import Hint from '$/components/Hint'
 import Toggle from '$/components/Toggle'
 import { BigNumber } from 'ethers'
 import uniq from 'lodash/uniq'
+import useTokenMetadata from '$/hooks/useTokenMetadata'
 
 interface Gate {
     tokenAddress: Address
@@ -70,6 +71,8 @@ export default function AddTokenGatedRoomModal({
 
     const standard = useTokenStandard(tokenInfo.address)
 
+    const tokenMetadata = useTokenMetadata(tokenInfo.address)
+
     const { isCountable, hasIds } = standard
         ? TokenTypes[standard]
         : TokenTypes[TokenStandard.Unknown]
@@ -96,6 +99,10 @@ export default function AddTokenGatedRoomModal({
         try {
             if (isBlank(tokenInfo.address)) {
                 throw new Error('Missing token address')
+            }
+
+            if (typeof tokenMetadata === 'undefined') {
+                throw new Error('Missing token metadata')
             }
 
             if (isCountable) {

@@ -33,6 +33,16 @@ export default function* fetchTokenStandard() {
                         standard,
                     })
                 )
+
+                yield put(
+                    MiscAction.fetchTokenMetadata({
+                        tokenAddress: address,
+                        tokenStandard: standard,
+                        provider,
+                        tokenIds: ['0'],
+                        fingerprint: Flag.isGettingTokenMetadata(address),
+                    })
+                )
             }
         } catch (e) {
             // Noop.
