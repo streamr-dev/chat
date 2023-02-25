@@ -27,6 +27,7 @@ import { Wallet } from 'ethers'
 import { put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
 import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
+import fetchTokenStandard from '$/features/misc/helpers/fetchTokenStandard'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -89,6 +90,10 @@ export default function* lifecycle() {
 
         yield takeEvery(TokenGatedRoomAction.join, function* ({ payload }) {
             yield join(payload)
+        })
+
+        yield takeEveryUnique(MiscAction.fetchTokenStandard, function* ({ payload }) {
+            yield fetchTokenStandard(payload)
         })
 
         yield takeEveryUnique(MiscAction.fetchTokenMetadata, function* ({ payload }) {

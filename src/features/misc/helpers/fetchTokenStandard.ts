@@ -1,20 +1,20 @@
-import { MiscAction } from '$/features/misc'
-import { put, select, takeLatest } from 'redux-saga/effects'
-import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { Flag } from '$/features/flag/types'
-import { FlagAction } from '$/features/flag'
-import { selectTokenStandard } from '$/hooks/useTokenStandard'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
+import { MiscAction } from '$/features/misc'
+import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import { selectTokenStandard } from '$/hooks/useTokenStandard'
+import { call, put, select } from 'redux-saga/effects'
 import fetchTokenStandardUtil from '$/utils/fetchTokenStandard'
+import { Flag } from '$/features/flag/types'
 
-export default function* fetchTokenStandard() {
-    yield takeLatest(MiscAction.fetchTokenStandard, function* ({ payload: { address, provider } }) {
+export default function fetchTokenStandard({
+    address,
+    provider,
+}: ReturnType<typeof MiscAction.fetchTokenStandard>['payload']) {
+    return call(function* () {
         let tc: Controller | undefined
 
         try {
-            yield put(FlagAction.set(Flag.isFetchingTokenStandard(address)))
-
             const currentStandard: undefined | TokenStandard = yield select(
                 selectTokenStandard(address)
             )
@@ -48,8 +48,6 @@ export default function* fetchTokenStandard() {
             // Noop.
         } finally {
             tc?.dismiss()
-
-            yield put(FlagAction.unset(Flag.isFetchingTokenStandard(address)))
         }
     })
 }

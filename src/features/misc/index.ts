@@ -1,5 +1,4 @@
 import fetchKnownTokens from '$/features/misc/sagas/fetchKnownTokens.saga'
-import fetchTokenStandard from '$/features/misc/sagas/fetchTokenStandard.saga'
 import goto from '$/features/misc/sagas/goto.saga'
 import { MiscState, TokenInfo } from '$/features/misc/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
@@ -22,7 +21,7 @@ export const MiscAction = {
 
     setKnownTokensFilter: createAction<string>('misc: set known tokens filter'),
 
-    fetchTokenStandard: createAction<{ address: Address; provider: Provider }>(
+    fetchTokenStandard: createAction<IFingerprinted & { address: Address; provider: Provider }>(
         'misc: fetch token standard'
     ),
 
@@ -107,7 +106,7 @@ const reducer = createReducer(initialState, (b) => {
 })
 
 export function* miscSaga() {
-    yield all([goto(), fetchKnownTokens(), fetchTokenStandard()])
+    yield all([goto(), fetchKnownTokens()])
 }
 
 export default reducer
