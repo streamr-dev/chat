@@ -1,5 +1,4 @@
 import { Address } from '$/types'
-import { BigNumber } from 'streamr-client'
 
 export enum InterfaceId {
     ERC20 = '0x36372b07',
@@ -13,11 +12,10 @@ export enum InterfaceId {
 export enum TokenStandard {
     ERC20 = 'ERC20',
     ERC721 = 'ERC721',
+    ERC777 = 'ERC777',
     ERC1155 = 'ERC1155',
     Unknown = 'unknown',
 }
-
-export { InterfaceId as ErcToInterfaceIds }
 
 export interface TokenType {
     standard: TokenStandard
@@ -36,6 +34,11 @@ export const TokenTypes: Record<TokenStandard, TokenType> = {
         isCountable: false,
         hasIds: true,
     },
+    [TokenStandard.ERC777]: {
+        standard: TokenStandard.ERC777,
+        isCountable: true,
+        hasIds: false,
+    },
     [TokenStandard.ERC1155]: {
         standard: TokenStandard.ERC1155,
         isCountable: true,
@@ -48,14 +51,10 @@ export const TokenTypes: Record<TokenStandard, TokenType> = {
     },
 }
 
-export interface TokenGatedRoomState {
-    tokenType: TokenType
+export interface TokenGate {
+    tokenType?: TokenType
     tokenAddress?: Address
-    tokenId?: number
-    minTokenAmount?: number
-    erc20Metadata?: {
-        name: string
-        symbol: string
-        decimals: BigNumber
-    }
+    tokenIds?: string[]
+    minRequiredBalance?: string
+    stakingEnabled?: boolean
 }

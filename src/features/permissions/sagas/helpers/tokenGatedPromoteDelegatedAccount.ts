@@ -3,7 +3,6 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
 import toast from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
-import { Address } from '$/types'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
 import { call, put } from 'redux-saga/effects'
@@ -11,45 +10,48 @@ import { Stream } from 'streamr-client'
 
 export default function tokenGatedPromoteDelegatedAccount({
     roomId,
-    delegatedAddress,
     provider,
     streamrClient,
-}: ReturnType<typeof PermissionsAction.promoteDelegatedAccount>['payload']) {
+}: ReturnType<typeof PermissionsAction.tokenGatedPromoteDelegatedAccount>['payload']) {
     return call(function* () {
         try {
-            const requester: Address = yield streamrClient.getAddress()
-
             const stream: null | Stream = yield streamrClient.getStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)
             }
 
-            const { tokenAddress } = getRoomMetadata(stream)
+            const {
+                tokenAddress,
+                tokenIds,
+                tokenType,
+                stakingEnabled = false,
+            } = getRoomMetadata(stream)
 
-            if (!tokenAddress) {
-                throw new Error('No token address found')
+            if (!tokenAddress || tokenIds == null || !tokenType) {
+                throw new Error(
+                    `Missing token info on stream metadata: ${JSON.stringify({
+                        tokenAddress,
+                        tokenIds,
+                        tokenType,
+                    })}`
+                )
             }
 
             yield put(
-                TokenGatedRoomAction.joinERC20({
+                TokenGatedRoomAction.join({
                     roomId,
-                    owner: requester,
-                    tokenAddress: tokenAddress,
+                    tokenAddress,
                     provider,
-                    delegatedAccount: delegatedAddress,
+                    tokenType,
+                    stakingEnabled,
                 })
             )
-
-            yield toast({
-                title: 'Delegated account has been promoted on the TokenGated room',
-                type: ToastType.Success,
-            })
         } catch (e) {
             handleError(e)
 
             yield toast({
-                title: 'Failed to promote the delegated account',
+                title: 'Failed to enable',
                 type: ToastType.Error,
             })
         }

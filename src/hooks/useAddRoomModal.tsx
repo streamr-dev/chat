@@ -48,6 +48,7 @@ export default function useAddRoomModal() {
                             requester: account,
                             streamrClient,
                             provider,
+                            tokenId: params.tokenId,
                         })
                     )
 
@@ -79,13 +80,13 @@ export default function useAddRoomModal() {
                 }
 
                 try {
-                    const tokenParams = await openTokenModal({
+                    const { standard, ...gate } = await openTokenModal({
                         subtitle: params.name,
                     })
 
                     const now = Date.now()
 
-                    const tokenType = TokenTypes[tokenParams.standard]
+                    const tokenType = TokenTypes[standard]
 
                     dispatch(
                         RoomAction.create({
@@ -96,10 +97,8 @@ export default function useAddRoomModal() {
                                 name: params.name,
                                 owner: account,
                                 updatedAt: now,
-                                tokenAddress: tokenParams.tokenAddress,
-                                tokenId: tokenParams.tokenId,
-                                minTokenAmount: tokenParams.tokenCount,
                                 tokenType,
+                                ...gate,
                             },
                             privacy: params.privacy,
                             storage: params.storage,

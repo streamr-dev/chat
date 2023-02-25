@@ -5,7 +5,8 @@ import ConversationHeader from './ConversationHeader'
 import EmptyMessageFeed from './EmptyMessageFeed'
 import MessageFeed from './MessageFeed'
 import MessageInput from './MessageInput'
-import { usePrivacy, useSelectedRoomId } from '$/features/room/hooks'
+import { useSelectedRoomId } from '$/features/room/hooks'
+import usePrivacy from '$/hooks/usePrivacy'
 import useCanGrant from '$/hooks/useCanGrant'
 import useResendEffect from '$/hooks/useResendEffect'
 import useResends from '$/hooks/useResends'
@@ -24,6 +25,7 @@ import Spinner from '$/components/Spinner'
 import { PrivacySetting } from '$/types'
 import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
 import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
+import useTokenGatedPromoteDelegatedAccount from '$/hooks/useTokenGatedPromoteDelegatedAccount'
 import usePublisher, { PublisherState } from '$/hooks/usePublisher'
 
 export default function Conversation() {
@@ -129,10 +131,35 @@ export default function Conversation() {
                         )}
                         {publisher === PublisherState.NeedsDelegation && <DelegationBox />}
                         {publisher === PublisherState.NeedsPermission && <PermitBox />}
+                        {publisher === PublisherState.NeedsTokenGatedPermission && (
+                            <TokenGatedBox />
+                        )}
                     </div>
                 )}
             </div>
         </>
+    )
+}
+
+function TokenGatedBox() {
+    const isPromoting = useIsDelegatedAccountBeingPromoted()
+
+    const promote = useTokenGatedPromoteDelegatedAccount()
+
+    return (
+        <MessageInputPlaceholder
+            cta={
+                <Cta
+                    busy={isPromoting}
+                    disabled={isPromoting || !promote}
+                    onClick={() => void promote?.()}
+                >
+                    {isPromoting ? <>Joining...</> : <>Join</>}
+                </Cta>
+            }
+        >
+            This is a token-gated room. Join it to send messages.
+        </MessageInputPlaceholder>
     )
 }
 
@@ -144,7 +171,7 @@ function PermitBox() {
     return (
         <MessageInputPlaceholder
             cta={
-                <Cta busy={isPromoting} disabled={isPromoting} onClick={promote}>
+                <Cta busy={isPromoting} disabled={isPromoting || !promote} onClick={promote}>
                     {isPromoting ? <>Enabling…</> : <>Enable</>}
                 </Cta>
             }

@@ -60,6 +60,7 @@ export const PermissionsAction = {
                 roomId: RoomId
                 delegatedAddress: Address
                 streamrClient: StreamrClient
+                tokenId?: string
             }
     >('permissions: token gated promote delegated account'),
 

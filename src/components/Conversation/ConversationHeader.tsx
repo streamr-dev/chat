@@ -8,10 +8,10 @@ import {
     useEditingRoomName,
     useIsBeingDeleted,
     usePersistingRoomName,
-    usePrivacyOption,
     useSelectedRoomId,
     useTransientRoomName,
 } from '$/features/room/hooks'
+import usePrivacyOption from '$/hooks/usePrivacyOption'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useSelectedRoom from '$/hooks/useSelectedRoom'

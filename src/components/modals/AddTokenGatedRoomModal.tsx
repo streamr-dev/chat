@@ -22,16 +22,23 @@ import { useWalletProvider } from '$/features/wallet/hooks'
 import useTokenStandard from '$/hooks/useTokenStandard'
 import { TokenStandard, TokenTypes } from '$/features/tokenGatedRooms/types'
 import TextField from '$/components/TextField'
+import Hint from '$/components/Hint'
+import Toggle from '$/components/Toggle'
+import { BigNumber } from 'ethers'
+import uniq from 'lodash/uniq'
+import useTokenMetadata from '$/hooks/useTokenMetadata'
+import { parseUnits } from '@ethersproject/units'
 
-interface TokenParams {
+interface Gate {
     tokenAddress: Address
     standard: TokenStandard
-    tokenCount?: number
-    tokenId?: number
+    minRequiredBalance?: string
+    tokenIds: string[]
+    stakingEnabled: boolean
 }
 
 interface Props extends ModalProps {
-    onProceed?: (params: TokenParams) => void
+    onProceed?: (gate: Gate) => void
 }
 
 interface BasicTokenInfo {
@@ -42,6 +49,12 @@ type Info = BasicTokenInfo | TokenInfo
 
 const defaultInfo = {
     address: '',
+}
+
+const defaultTransientParams = {
+    minRequiredBalance: '',
+    tokenIds: '',
+    stakingEnabled: false,
 }
 
 export default function AddTokenGatedRoomModal({
@@ -59,28 +72,73 @@ export default function AddTokenGatedRoomModal({
 
     const standard = useTokenStandard(tokenInfo.address)
 
+    const tokenMetadata = useTokenMetadata(tokenInfo.address)
+
     const { isCountable, hasIds } = standard
         ? TokenTypes[standard]
         : TokenTypes[TokenStandard.Unknown]
 
-    const [tokenCount, setTokenCount] = useState('')
-
-    const [tokenId, setTokenId] = useState('')
+    const [{ minRequiredBalance, tokenIds, stakingEnabled }, setTransientParams] =
+        useState(defaultTransientParams)
 
     useEffect(() => {
-        setTokenCount('')
-        setTokenId('')
+        setTransientParams(defaultTransientParams)
     }, [tokenInfo.address])
 
     const params = {
-        tokenId: Number.parseInt(tokenId),
-        tokenCount: Number.parseFloat(tokenCount),
+        minRequiredBalance: ((mrb: string) => {
+            try {
+                if (tokenMetadata && 'decimals' in tokenMetadata) {
+                    return parseUnits(mrb, tokenMetadata.decimals || 1).toString()
+                }
+            } catch (e) {
+                // Do nothing.
+            }
+
+            return mrb
+        })(minRequiredBalance.trim()),
+        tokenIds: uniq(
+            tokenIds
+                .replace(/\s*,+\s*/g, ',')
+                .split(',')
+                .filter(Boolean)
+        ),
+        stakingEnabled,
     }
 
-    const allSet =
-        !isBlank(tokenInfo.address) &&
-        (!isCountable || params.tokenCount > 0) &&
-        (!hasIds || params.tokenId >= 0)
+    const allSet = (function () {
+        try {
+            if (isBlank(tokenInfo.address)) {
+                throw new Error('Missing token address')
+            }
+
+            if (typeof tokenMetadata === 'undefined') {
+                throw new Error('Missing token metadata')
+            }
+
+            if (isCountable) {
+                if (BigNumber.from(params.minRequiredBalance).lte(0)) {
+                    throw new Error('Non-positive minRequiredBalance')
+                }
+            }
+
+            if (hasIds) {
+                if (!params.tokenIds.length) {
+                    throw new Error('No token ids')
+                }
+
+                for (let i = 0; i < params.tokenIds.length; i++) {
+                    if (BigNumber.from(params.tokenIds[i]).lt(0)) {
+                        throw new Error('Negative token id')
+                    }
+                }
+            }
+        } catch (e) {
+            return false
+        }
+
+        return true
+    })()
 
     return (
         <Modal
@@ -88,7 +146,7 @@ export default function AddTokenGatedRoomModal({
             title={title}
             onBeforeAbort={(reason) => {
                 if (reason === AbortReason.Backdrop) {
-                    return tokenInfo.address === '' && tokenId === '' && tokenCount === ''
+                    return tokenInfo.address === '' && tokenIds === '' && minRequiredBalance === ''
                 }
             }}
         >
@@ -123,15 +181,14 @@ export default function AddTokenGatedRoomModal({
             )}
             <Form
                 onSubmit={() => {
-                    if (!standard) {
+                    if (!standard || !allSet) {
                         return
                     }
 
-                    const result: TokenParams = {
+                    const result: Gate = {
                         standard,
                         tokenAddress: tokenInfo.address,
-                        tokenCount: Number.isNaN(params.tokenCount) ? undefined : params.tokenCount,
-                        tokenId: Number.isNaN(params.tokenId) ? undefined : params.tokenId,
+                        ...params,
                     }
 
                     onProceed?.(result)
@@ -139,26 +196,59 @@ export default function AddTokenGatedRoomModal({
             >
                 {!!isCountable && (
                     <>
-                        <Label htmlFor="tokenCount">Minimum balance needed to join the room</Label>
+                        <Label htmlFor="minRequiredBalance">
+                            Minimum balance needed to join the room
+                        </Label>
                         <TextField
-                            id="tokenCount"
-                            type="number"
+                            id="minRequiredBalance"
                             placeholder="e.g. 100"
-                            value={tokenCount}
-                            onChange={({ target }) => void setTokenCount(target.value)}
+                            value={minRequiredBalance}
+                            onChange={({ target }) =>
+                                void setTransientParams((t) => ({
+                                    ...t,
+                                    minRequiredBalance: target.value,
+                                }))
+                            }
                         />
                     </>
                 )}
                 {!!hasIds && (
                     <>
-                        <Label htmlFor="tokenId">Token ID</Label>
+                        <Label htmlFor="tokenIds">Token IDs (comma separated)</Label>
                         <TextField
-                            id="tokenId"
-                            value={tokenId}
-                            onChange={({ target }) => void setTokenId(target.value)}
+                            id="tokenIds"
+                            value={tokenIds}
+                            onChange={({ target }) =>
+                                void setTransientParams((t) => ({
+                                    ...t,
+                                    tokenIds: target.value,
+                                }))
+                            }
                         />
                     </>
                 )}
+                <Label>Enable Staking</Label>
+                <div css={tw`flex`}>
+                    <div css={tw`grow`}>
+                        <Hint css={tw`pr-16`}>
+                            <Text>
+                                When token staking is enabled, participants will need to deposit the
+                                minimum amount in order to join the room.
+                            </Text>
+                        </Hint>
+                    </div>
+                    <div css={tw`mt-2`}>
+                        <Toggle
+                            value={stakingEnabled}
+                            onClick={() =>
+                                void setTransientParams((t) => ({
+                                    ...t,
+                                    stakingEnabled: !t.stakingEnabled,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
                 <PrimaryButton
                     disabled={!allSet}
                     type="submit"
@@ -373,7 +463,6 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
     const listRef = useRef<HTMLUListElement>(null)
 
     useEffect(() => {
-        // `fetchKnownTokens` knows to run once per session. No need to optimize anything here.
         dispatch(MiscAction.fetchKnownTokens())
     }, [])
 

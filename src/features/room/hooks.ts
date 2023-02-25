@@ -1,22 +1,16 @@
 import { useSelector } from 'react-redux'
-import { PrivacySetting } from '$/types'
+
 import {
     selectEditingRoomName,
     selectGettingStorageNodes,
     selectIsBeingDeleted,
     selectPersistingRoomName,
-    selectPrivacy,
     selectSelectedRoomId,
     selectStorageNodeState,
     selectStorageNodeToggling,
     selectTransientRoomName,
 } from './selectors'
 import { RoomId } from './types'
-import {
-    PrivateRoomOption,
-    PublicRoomOption,
-    TokenGatedRoomOption,
-} from '$/components/PrivacySelectField'
 
 export function useSelectedRoomId() {
     return useSelector(selectSelectedRoomId)
@@ -32,24 +26,6 @@ export function useStorageNodeToggling(roomId: undefined | RoomId, address: stri
 
 export function useGettingStorageNodes(roomId: undefined | RoomId) {
     return useSelector(selectGettingStorageNodes(roomId))
-}
-
-export function usePrivacy(roomId: undefined | RoomId) {
-    return useSelector(selectPrivacy(roomId))
-}
-
-export function usePrivacyOption(roomId: undefined | RoomId) {
-    const privacy = usePrivacy(roomId)
-
-    switch (privacy) {
-        case PrivacySetting.Public:
-            return PublicRoomOption
-        case PrivacySetting.TokenGated:
-            return TokenGatedRoomOption
-        case PrivacySetting.Private:
-        default:
-            return PrivateRoomOption
-    }
 }
 
 export function useEditingRoomName(roomId: undefined | RoomId) {

@@ -8,10 +8,13 @@ import { RoomAction } from '$/features/room'
 import { IRoom } from '$/features/room/types'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller } from '$/features/toaster/helpers/toast'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import { selectWalletProvider } from '$/features/wallet/selectors'
 import db from '$/utils/db'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
-import { put, takeLatest } from 'redux-saga/effects'
+import { Provider } from '@web3-react/types'
+import { put, select, takeLatest } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
 export default function* preselect() {
@@ -134,7 +137,45 @@ export default function* preselect() {
                         throw new RoomNotFoundError(roomId)
                     }
 
-                    const { createdAt, createdBy, name = '' } = getRoomMetadata(stream)
+                    const {
+                        createdAt,
+                        createdBy,
+                        tokenAddress,
+                        tokenType,
+                        stakingEnabled = false,
+                        name = '',
+                    } = getRoomMetadata(stream)
+
+                    if (tokenAddress && tokenType) {
+                        if (tokenType.hasIds) {
+                            tc = yield retoast(tc, {
+                                title: 'To add NFT-Gated rooms use the "Pin" button on the room addition page',
+                                type: ToastType.Warning,
+                            })
+
+                            dismissToast = false
+
+                            return
+                        }
+
+                        const provider: Provider | undefined = yield select(selectWalletProvider)
+
+                        if (!provider) {
+                            throw new Error('No provider')
+                        }
+
+                        yield put(
+                            TokenGatedRoomAction.join({
+                                tokenAddress,
+                                tokenType,
+                                roomId,
+                                stakingEnabled,
+                                provider,
+                            })
+                        )
+
+                        return
+                    }
 
                     const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
                         owner,

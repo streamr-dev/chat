@@ -156,4 +156,8 @@ export const Flag = {
     isAllowingAnonsPublish(roomId: RoomId) {
         return JSON.stringify(['isAllowingAnonsPublish', roomId])
     },
+
+    isGettingTokenMetadata(tokenAddress: Address) {
+        return JSON.stringify(['isGettingTokenMetadata', tokenAddress.toLowerCase()])
+    },
 }

@@ -1,15 +1,18 @@
 import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import usePrivacy from '$/hooks/usePrivacy'
 import { RoomId } from '$/features/room/types'
 import { useWalletAccount } from '$/features/wallet/hooks'
 import useAbility from '$/hooks/useAbility'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import useAnonClient from '$/hooks/useAnonClient'
+import { PrivacySetting } from '$/types'
 import { StreamPermission } from 'streamr-client'
 
 export enum PublisherState {
     Unavailable,
     NeedsDelegation,
     NeedsPermission,
+    NeedsTokenGatedPermission,
 }
 
 export default function usePublisher(roomId: RoomId | undefined) {
@@ -31,6 +34,18 @@ export default function usePublisher(roomId: RoomId | undefined) {
 
     const canMainGrant = !!useAbility(roomId, mainAccount, StreamPermission.GRANT)
 
+    const privacy = usePrivacy(roomId)
+
+    const isTokenGated = privacy === PrivacySetting.TokenGated
+
+    if (typeof privacy === 'undefined') {
+        /**
+         * We're figuring out room's privacy setting. Let's wait for this process to finish
+         * in order to present the user with accurate options.
+         */
+        return PublisherState.Unavailable
+    }
+
     if (typeof canAnonPublish === 'undefined') {
         /**
          * We're still figuring out if anon can publish. We cannot let the delegated client
@@ -49,7 +64,7 @@ export default function usePublisher(roomId: RoomId | undefined) {
     }
 
     if (!hotClient) {
-        if (canMainPublish) {
+        if (canMainPublish || isTokenGated) {
             return PublisherState.NeedsDelegation
         }
     } else {
@@ -60,6 +75,10 @@ export default function usePublisher(roomId: RoomId | undefined) {
              * is present. Another bang!
              */
             return hotClient!
+        }
+
+        if (isTokenGated) {
+            return PublisherState.NeedsTokenGatedPermission
         }
 
         if (canMainGrant) {

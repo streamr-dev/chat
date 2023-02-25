@@ -61,3 +61,27 @@ export interface IAlias extends IRecord {
     address: string
     alias: string
 }
+
+export interface Erc20 {
+    name: string
+    symbol: string
+    decimals: string
+}
+
+export interface Erc1155 {
+    uris: Record<string, string>
+}
+
+export interface Erc721 {
+    name: string
+    symbol: string
+    uris: Record<string, string>
+}
+
+export interface Erc777 {
+    name: string
+    symbol: string
+    granularity: string
+}
+
+export type TokenMetadata = Erc1155 | Erc20 | Erc721 | Erc777

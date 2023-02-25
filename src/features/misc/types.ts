@@ -1,5 +1,5 @@
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { Address } from '$/types'
+import { Address, TokenMetadata } from '$/types'
 import { NavigateFunction } from 'react-router-dom'
 
 export interface MiscState {
@@ -8,6 +8,7 @@ export interface MiscState {
     knownTokensFilter: string
     navigate: undefined | NavigateFunction
     tokenStandards: Record<Address, TokenStandard>
+    tokenMetadatas: Record<Address, TokenMetadata>
 }
 
 export interface TokenInfo {

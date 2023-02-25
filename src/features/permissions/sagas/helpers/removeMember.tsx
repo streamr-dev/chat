@@ -1,9 +1,11 @@
 import { ToastType } from '$/components/Toast'
+import { ZeroAddress } from '$/consts'
 import { PermissionsAction } from '$/features/permissions'
 import toast from '$/features/toaster/helpers/toast'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getDisplayUsername from '$/utils/getDisplayUsername'
 import handleError from '$/utils/handleError'
+import isSameAddress from '$/utils/isSameAddress'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { call } from 'redux-saga/effects'
 import type { UserPermissionAssignment } from 'streamr-client'
@@ -32,7 +34,7 @@ export default function removeMember({
                 },
             ]
 
-            if (!/^0x0{40}$/i.test(delegatedWallet)) {
+            if (!isSameAddress(delegatedWallet, ZeroAddress)) {
                 assignments.push({
                     user: delegatedWallet,
                     permissions: [],

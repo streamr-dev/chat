@@ -23,6 +23,7 @@ import { Stream } from 'streamr-client'
 
 export default function pin({
     roomId,
+    tokenId,
     requester,
     streamrClient,
     provider,
@@ -58,13 +59,20 @@ export default function pin({
                 throw new RoomNotFoundError(roomId)
             }
 
-            const { createdAt, createdBy, tokenAddress, name = '' } = getRoomMetadata(stream)
+            const {
+                createdAt,
+                createdBy,
+                tokenAddress,
+                tokenType,
+                stakingEnabled = false,
+                name = '',
+            } = getRoomMetadata(stream)
 
             const isTokenGated = !!tokenAddress
 
             let delegatedAccount: OptionalAddress = yield select(selectDelegatedAccount)
 
-            if (tokenAddress) {
+            if (tokenAddress && tokenType) {
                 if (!delegatedAccount) {
                     confirm = yield toaster({
                         title: 'Hot wallet required',
@@ -84,14 +92,17 @@ export default function pin({
                 }
 
                 yield put(
-                    TokenGatedRoomAction.joinERC20({
+                    TokenGatedRoomAction.join({
                         roomId,
-                        owner,
                         tokenAddress,
                         provider,
-                        delegatedAccount,
+                        stakingEnabled,
+                        tokenType,
+                        tokenId,
                     })
                 )
+
+                return
             }
 
             const room: undefined | IRoom = yield db.rooms.where({ id: stream.id, owner }).first()

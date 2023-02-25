@@ -15,12 +15,17 @@ import pin from '$/features/room/helpers/pin'
 import pinSticky from '$/features/room/helpers/pinSticky'
 import { ToasterAction } from '$/features/toaster'
 import toast from '$/features/toaster/helpers/toast'
+import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import fetchTokenMetadata from '$/features/misc/helpers/fetchTokenMetadata'
+import join from '$/features/tokenGatedRooms/helpers/join'
+import { TokenMetadata } from '$/types'
 import { WalletAction } from '$/features/wallet'
 import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Wallet } from 'ethers'
 import { put, takeEvery, takeLatest } from 'redux-saga/effects'
+import { MiscAction } from '$/features/misc'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -79,6 +84,25 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(PermissionsAction.allowAnonsPublish, function* ({ payload }) {
             yield allowAnonsPublish(payload)
+        })
+
+        yield takeEvery(TokenGatedRoomAction.join, function* ({ payload }) {
+            yield join(payload)
+        })
+
+        yield takeEveryUnique(MiscAction.fetchTokenMetadata, function* ({ payload }) {
+            try {
+                const tokenMetadata: TokenMetadata = yield fetchTokenMetadata(payload)
+
+                yield put(
+                    MiscAction.cacheTokenMetadata({
+                        tokenAddress: payload.tokenAddress,
+                        tokenMetadata,
+                    })
+                )
+            } catch (e) {
+                handleError(e)
+            }
         })
 
         // This needs to go last. It triggers some of the actions that have

@@ -22,6 +22,7 @@ import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 
 export interface Pin {
     roomId: RoomId
+    tokenId: string
 }
 
 export interface NewRoom {
@@ -64,6 +65,8 @@ export default function AddRoomModal({
     )
 
     const [roomId, setRoomId] = useState<string>('roomId' in params ? params.roomId : '')
+
+    const [tokenId, setTokenId] = useState<string>('tokenId' in params ? params.tokenId : '0')
 
     useEffect(() => {
         if ('roomId' in params) {
@@ -184,6 +187,7 @@ export default function AddRoomModal({
 
                         onProceed?.({
                             roomId: `${partials.account}/${Prefix.Room}/${partials.uuid}`,
+                            tokenId,
                         })
                     }}
                 >
@@ -196,6 +200,20 @@ export default function AddRoomModal({
                             autoFocus
                             autoComplete="off"
                         />
+
+                        <Label htmlFor="tokenId">Token ID</Label>
+                        <TextField
+                            id="tokenId"
+                            value={tokenId}
+                            onChange={(e) => void setTokenId(e.target.value)}
+                            autoComplete="off"
+                        />
+                        <Hint css={tw`pr-16`}>
+                            <Text>
+                                If you are pinning a token-gated room with an NFT enter the token ID
+                                here.
+                            </Text>
+                        </Hint>
                     </>
                     <>
                         <Submit label="Pin" disabled={!canPin} />

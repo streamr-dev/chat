@@ -19,8 +19,9 @@ import Toggle from '../Toggle'
 import Modal, { Props as ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
-import { useGetERC20Metadata } from '$/features/tokenGatedRooms/hooks'
-import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
+import useTokenMetadata from '$/hooks/useTokenMetadata'
+import { BigNumber } from 'ethers'
+import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
 
 export default function RoomPropertiesModal({
@@ -31,7 +32,14 @@ export default function RoomPropertiesModal({
 }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
-    const { name: roomName = '', tokenAddress, minTokenAmount, tokenType } = useSelectedRoom() || {}
+    const {
+        name: roomName = '',
+        tokenAddress,
+        minRequiredBalance,
+        tokenType,
+        tokenIds,
+        stakingEnabled,
+    } = useSelectedRoom() || {}
 
     const isStorageEnabled = useStorageNodeState(selectedRoomId, STREAMR_STORAGE_NODE_GERMANY)
 
@@ -87,46 +95,97 @@ export default function RoomPropertiesModal({
         )
     }, [open, selectedRoomId])
 
+    const tokenMetadata = useTokenMetadata(tokenAddress)
+
     useEffect(() => {
-        if (!tokenAddress || !tokenType || !provider) {
+        if (!tokenAddress || !tokenType || !provider || !tokenIds) {
             return
         }
 
         dispatch(
-            TokenGatedRoomAction.getTokenMetadata({
+            MiscAction.fetchTokenMetadata({
                 tokenAddress,
-                tokenType,
+                tokenStandard: tokenType.standard,
                 provider,
+                tokenIds:
+                    tokenIds.length > 0
+                        ? tokenIds.map((tokenId) => BigNumber.from(tokenId).toString())
+                        : [],
+                fingerprint: Flag.isGettingTokenMetadata(tokenAddress),
             })
         )
-    }, [tokenAddress, tokenType, provider])
-
-    const tokenMetadata = useGetERC20Metadata()
+    }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
 
     return (
         <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
-            {tokenMetadata && minTokenAmount ? (
+            {tokenMetadata ? (
                 <>
-                    <Label>
-                        <b>Token Name:</b>
-                        {tokenMetadata.name}
-                    </Label>
-                    <Label>
-                        <b>Symbol:</b>
-                        {tokenMetadata.symbol}
-                    </Label>
-                    <Label>
-                        <b>Decimals:</b>
-                        {tokenMetadata.decimals.toString()}
-                    </Label>
-                    <Label>
-                        <b>Address:</b>
-                        {tokenAddress}
-                    </Label>
-                    <Label>
-                        <b>Minimum Required Balance:</b>
-                        {minTokenAmount / 10 ** Number(tokenMetadata.decimals)}
-                    </Label>
+                    {tokenType && (
+                        <Label>
+                            <b>Token Standard:</b>
+                            {tokenType.standard}
+                        </Label>
+                    )}
+                    {tokenAddress && (
+                        <Label>
+                            <b>Address:</b>
+                            {tokenAddress}
+                        </Label>
+                    )}
+                    {'name' in tokenMetadata && tokenMetadata.name && (
+                        <Label>
+                            <b>Token Name:</b>
+                            {tokenMetadata.name}
+                        </Label>
+                    )}
+                    {'symbol' in tokenMetadata && tokenMetadata.symbol && (
+                        <Label>
+                            <b>Symbol:</b>
+                            {tokenMetadata.symbol}
+                        </Label>
+                    )}
+                    {'decimals' in tokenMetadata && tokenMetadata.decimals && (
+                        <Label>
+                            <b>Decimals:</b>
+                            {tokenMetadata.decimals}
+                        </Label>
+                    )}
+                    {'granularity' in tokenMetadata && tokenMetadata.granularity && (
+                        <Label>
+                            <b>Granularity:</b>
+                            {tokenMetadata.granularity}
+                        </Label>
+                    )}
+                    {'uris' in tokenMetadata && tokenMetadata.uris && (
+                        <>
+                            {Object.entries(tokenMetadata.uris).map(([tokenId, uri]) => (
+                                <Label key={tokenId}>
+                                    <b>URI:</b>
+                                    {uri}
+                                </Label>
+                            ))}
+                        </>
+                    )}
+                    {minRequiredBalance !== undefined && (
+                        <Label>
+                            <b>Min Token Amount:</b>
+                            {minRequiredBalance.toString()}
+                        </Label>
+                    )}
+                    <Label>Staking</Label>
+                    <div css={tw`flex`}>
+                        <div css={tw`grow`}>
+                            <Hint css={tw`pr-16`}>
+                                <Text>
+                                    When token staking is enabled, participants will need to deposit
+                                    the minimum amount in order to join the room.
+                                </Text>
+                            </Hint>
+                        </div>
+                        <div css={tw`mt-2`}>
+                            <Toggle value={stakingEnabled || false} />
+                        </div>
+                    </div>
                 </>
             ) : null}
             <Form onSubmit={() => void onAbort?.()}>
