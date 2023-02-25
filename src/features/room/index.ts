@@ -1,7 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
 import { Address, IFingerprinted, OptionalAddress, PreflightParams, PrivacySetting } from '$/types'
-import { SEE_SAGA } from '$/utils/consts'
 import create from './sagas/create.saga'
 import del from './sagas/del.saga'
 import delLocal from './sagas/delLocal.saga'
@@ -172,23 +171,9 @@ export const RoomAction = {
 }
 
 const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(RoomAction.create, SEE_SAGA)
-
-    builder.addCase(RoomAction.rename, SEE_SAGA)
-
-    builder.addCase(RoomAction.renameLocal, SEE_SAGA)
-
     builder.addCase(RoomAction.select, (state, { payload: selectedRoomId }) => {
         state.selectedRoomId = selectedRoomId
     })
-
-    builder.addCase(RoomAction.delete, SEE_SAGA)
-
-    builder.addCase(RoomAction.deleteLocal, SEE_SAGA)
-
-    builder.addCase(RoomAction.sync, SEE_SAGA)
-
-    builder.addCase(RoomAction.getStorageNodes, SEE_SAGA)
 
     builder.addCase(
         RoomAction.setLocalStorageNodes,
@@ -212,29 +197,13 @@ const reducer = createReducer(initialState, (builder) => {
         }
     )
 
-    builder.addCase(RoomAction.toggleStorageNode, SEE_SAGA)
-
     builder.addCase(RoomAction.setLocalPrivacy, (state, { payload: { roomId, privacy } }) => {
         roomCache(state, roomId).privacy = privacy
     })
 
-    builder.addCase(RoomAction.getPrivacy, SEE_SAGA)
-
-    builder.addCase(RoomAction.registerInvite, SEE_SAGA)
-
-    builder.addCase(RoomAction.fetch, SEE_SAGA)
-
     builder.addCase(RoomAction.setTransientName, (state, { payload: { roomId, name } }) => {
         roomCache(state, roomId).temporaryName = name
     })
-
-    builder.addCase(RoomAction.setVisibility, SEE_SAGA)
-
-    builder.addCase(RoomAction.pin, SEE_SAGA)
-
-    builder.addCase(RoomAction.unpin, SEE_SAGA) // See `pin` saga.
-
-    builder.addCase(RoomAction.preselect, SEE_SAGA)
 })
 
 export function* roomSaga() {
