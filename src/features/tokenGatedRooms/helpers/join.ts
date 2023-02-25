@@ -8,7 +8,7 @@ import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPol
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
-import { Controller } from '$/features/toaster/helpers/toast'
+import toast, { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import { ToastType } from '$/components/Toast'
 
@@ -43,12 +43,13 @@ export default function join({
         try {
             const policyRegistry = getJoinPolicyRegistry(provider)
 
-            if (
-                (tokenType.standard === TokenStandard.ERC721 ||
-                    tokenType.standard === TokenStandard.ERC1155) &&
-                !tokenId
-            ) {
-                throw new Error(`Token ID is required for ${tokenType.standard} tokens`)
+            if (tokenType.hasIds && !tokenId) {
+                yield toast({
+                    title: `Token ID is required for ${tokenType.standard} tokens`,
+                    type: ToastType.Error,
+                })
+
+                throw new Error('No token id')
             }
 
             const policyAddress: string = yield policyRegistry.getPolicy(
