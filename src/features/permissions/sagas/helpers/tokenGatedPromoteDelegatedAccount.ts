@@ -1,5 +1,7 @@
+import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
+import toast from '$/features/toaster/helpers/toast'
 import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
@@ -47,6 +49,11 @@ export default function tokenGatedPromoteDelegatedAccount({
             )
         } catch (e) {
             handleError(e)
+
+            yield toast({
+                title: 'Failed to enable',
+                type: ToastType.Error,
+            })
         }
     })
 }
