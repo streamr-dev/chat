@@ -5,9 +5,14 @@ import {
 } from '$/components/PrivacySelectField'
 import { RoomId } from '$/features/room/types'
 import usePrivacy from '$/hooks/usePrivacy'
-import { PrivacySetting } from '$/types'
+import { PrivacyOption, PrivacySetting } from '$/types'
 
-export default function usePrivacyOption(roomId: undefined | RoomId) {
+type Result<T> = T extends PrivacyOption ? PrivacyOption : PrivacyOption | undefined
+
+export default function usePrivacyOption<T>(
+    roomId: undefined | RoomId,
+    fallbackPrivacyOption?: T
+): Result<T> {
     const privacy = usePrivacy(roomId)
 
     switch (privacy) {
@@ -16,7 +21,8 @@ export default function usePrivacyOption(roomId: undefined | RoomId) {
         case PrivacySetting.TokenGated:
             return TokenGatedRoomOption
         case PrivacySetting.Private:
-        default:
             return PrivateRoomOption
+        default:
+            return fallbackPrivacyOption as Result<T>
     }
 }

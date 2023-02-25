@@ -46,6 +46,7 @@ import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
 import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
+import { PrivateRoomOption } from '$/components/PrivacySelectField'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     canModifyMembers?: boolean
@@ -141,7 +142,10 @@ export default function ConversationHeader({
         )
     }
 
-    const { icon: PrivacyIcon, label: privacyLabel } = usePrivacyOption(selectedRoomId)
+    const { icon: PrivacyIcon, label: privacyLabel } = usePrivacyOption(
+        selectedRoomId,
+        PrivateRoomOption
+    )
 
     useEffect(() => {
         if (!selectedRoomId || !streamrClient) {

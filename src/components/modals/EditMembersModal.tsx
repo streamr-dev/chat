@@ -38,6 +38,7 @@ import { AccountType } from '$/utils/getAccountType'
 import useCanGrant from '$/hooks/useCanGrant'
 import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
+import { PrivateRoomOption } from '$/components/PrivacySelectField'
 
 export default function EditMembersModal({ title = 'Edit members', ...props }: Props) {
     const menuOpenRef = useRef<Record<string, boolean>>({})
@@ -93,7 +94,7 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
         icon: PrivacyIcon,
         desc: privacyDesc,
         label: privacyLabel,
-    } = usePrivacyOption(selectedRoomId)
+    } = usePrivacyOption(selectedRoomId, PrivateRoomOption)
 
     return (
         <Modal {...props} title={title}>
