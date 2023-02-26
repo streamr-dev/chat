@@ -2,7 +2,7 @@ import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
 import { BigNumber, Contract } from 'ethers'
-import { call } from 'redux-saga/effects'
+import { call, put, select } from 'redux-saga/effects'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
@@ -11,6 +11,9 @@ import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155Joi
 import toast, { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import { ToastType } from '$/components/Toast'
+import { PermissionsAction } from '$/features/permissions'
+import { OptionalAddress } from '$/types'
+import { selectDelegatedAccount } from '$/features/delegation/selectors'
 
 const Abi: Record<
     TokenStandard,
@@ -84,6 +87,15 @@ export default function join({
             })
 
             dismissToast = false
+
+            const delegatedAccount: OptionalAddress = yield select(selectDelegatedAccount)
+
+            if (!delegatedAccount) {
+                return
+            }
+
+            // Let's invalidate delegatee's permissions to the current room.
+            yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
         } catch (e) {
             handleError(e)
 
