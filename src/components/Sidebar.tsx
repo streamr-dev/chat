@@ -1,6 +1,6 @@
 import Form from '$/components/Form'
 import RoomButton, { PassiveRoomButton } from '$/components/RoomButton'
-import RoomEntryRequirements from '$/components/RoomEntryRequirements'
+import RoomInfo from '$/components/RoomInfo'
 import SidebarUtilityButton, { SidebarUtilityButtonType } from '$/components/SidebarUtilityButton'
 import Text from '$/components/Text'
 import { Flag } from '$/features/flag/types'
@@ -8,7 +8,6 @@ import { RoomAction } from '$/features/room'
 import { RoomId } from '$/features/room/types'
 import { useWalletClient } from '$/features/wallet/hooks'
 import useFlag from '$/hooks/useFlag'
-import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
 import useRooms from '$/hooks/useRooms'
 import useSearchResult from '$/hooks/useSearchResult'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
@@ -34,8 +33,6 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
     const searchResult = useSearchResult(roomId)
 
     const isSearching = useFlag(Flag.isSearching())
-
-    const requirements = useRoomEntryRequirements(roomId)
 
     return (
         <aside
@@ -92,11 +89,7 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
                         <PassiveRoomButton
                             roomId={roomId}
                             roomName={searchResult.name}
-                            desc={
-                                !!requirements && (
-                                    <RoomEntryRequirements {...requirements} css={tw`bg-white`} />
-                                )
-                            }
+                            desc={<RoomInfo mini roomId={roomId} />}
                             visible
                             css={tw`mt-4`}
                             onClick={() => void setShowSearch(false)}

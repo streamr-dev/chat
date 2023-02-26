@@ -38,7 +38,7 @@ export default function RoomEntryRequirements({ tokenAddress, unit, quantity, ..
                 css={tw`
                     w-4
                     h-4
-                    mr-0.5
+                    mr-1
                 `}
             >
                 {tokenInfo ? (
