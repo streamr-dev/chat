@@ -158,7 +158,7 @@ function TokenGatedBox() {
                 </Cta>
             }
         >
-            This is a token-gated room. Join it to send messages.
+            This is a token gated room. Join it to send messages.
         </MessageInputPlaceholder>
     )
 }
