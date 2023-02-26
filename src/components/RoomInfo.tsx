@@ -6,12 +6,14 @@ import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
 import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
 import RoomEntryRequirements from '$/components/RoomEntryRequirements'
+import { TokenGatedRoomOption } from '$/components/PrivacySelectField'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     roomId: RoomId | undefined
+    mini?: boolean
 }
 
-export default function RoomInfo({ roomId, children, ...props }: Props) {
+export default function RoomInfo({ roomId, mini = false, children, ...props }: Props) {
     const privacyOption = usePrivacyOption(roomId)
 
     const requirements = useRoomEntryRequirements(roomId)
@@ -24,17 +26,21 @@ export default function RoomInfo({ roomId, children, ...props }: Props) {
 
     return (
         <Wrap {...props}>
-            <PrivacyIcon
-                css={tw`
-                    w-3
-                    mr-1.5
-                    ml-0.5
-                `}
-            />
-            <Text>{privacyLabel} room</Text>
+            {(!mini || privacyOption !== TokenGatedRoomOption) && (
+                <>
+                    <PrivacyIcon
+                        css={tw`
+                            w-3
+                            mr-1.5
+                            ml-0.5
+                        `}
+                    />
+                    <Text>{privacyLabel} room</Text>
+                </>
+            )}
             {requirements && (
                 <>
-                    <Text css={tw`whitespace-pre-wrap`}> requiring </Text>
+                    {!mini && <Text css={tw`whitespace-pre-wrap`}> requiring </Text>}
                     <RoomEntryRequirements {...requirements} />
                 </>
             )}
@@ -48,6 +54,7 @@ function Wrap(props: HTMLAttributes<HTMLDivElement>) {
         <div
             {...props}
             css={tw`
+                h-6
                 flex
                 items-center
                 text-[#59799C]

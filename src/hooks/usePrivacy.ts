@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 
 type Result<T> = T extends PrivacySetting ? PrivacySetting : PrivacySetting | undefined
 
-function selectPrivacy<T>(roomId: undefined | RoomId, fallbackSetting?: T) {
+export function selectPrivacy<T>(roomId: undefined | RoomId, fallbackSetting?: T) {
     return (state: State) =>
         ((roomId ? state.room.cache[roomId]?.privacy : undefined) || fallbackSetting) as Result<T>
 }

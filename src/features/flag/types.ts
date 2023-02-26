@@ -164,4 +164,8 @@ export const Flag = {
             ...tokenMetadataCacheKey(tokenAddress, tokenIds),
         ])
     },
+
+    isSearching() {
+        return JSON.stringify(['isSearching'])
+    },
 }

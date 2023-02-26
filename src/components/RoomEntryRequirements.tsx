@@ -5,11 +5,13 @@ import { MiscAction } from '$/features/misc'
 import useFlag from '$/hooks/useFlag'
 import { EntryRequirements } from '$/hooks/useRoomEntryRequirements'
 import useTokenInfo from '$/hooks/useTokenInfo'
-import { useEffect } from 'react'
+import { HTMLAttributes, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 
-export default function RoomEntryRequirements({ tokenAddress, unit, quantity }: EntryRequirements) {
+type Props = EntryRequirements & Omit<HTMLAttributes<HTMLDivElement>, 'children'>
+
+export default function RoomEntryRequirements({ tokenAddress, unit, quantity, ...props }: Props) {
     const tokenInfo = useTokenInfo(tokenAddress)
 
     const dispatch = useDispatch()
@@ -22,20 +24,21 @@ export default function RoomEntryRequirements({ tokenAddress, unit, quantity }: 
 
     return (
         <div
+            {...props}
             css={tw`
-                inline-flex
                 rounded-[4px]
-                px-1
+                font-karelia
+                p-1
                 bg-[#F1F4F5]
+                flex
                 items-center
-                leading-normal
             `}
         >
             <div
                 css={tw`
-                    w-3
-                    h-3
-                    mr-0.5
+                    w-4
+                    h-4
+                    mr-1
                 `}
             >
                 {tokenInfo ? (
@@ -68,7 +71,7 @@ export default function RoomEntryRequirements({ tokenAddress, unit, quantity }: 
                     </div>
                 )}
             </div>
-            <Text>
+            <Text css={tw`leading-none`}>
                 {typeof quantity === 'string' && <>{quantity} </>}
                 {unit}
             </Text>

@@ -238,6 +238,7 @@ export default function ConversationHeader({
                                         lg:text-[26px]
                                         placeholder:text-[#59799C]
                                         disabled:bg-transparent
+                                        translate-y-[-0.06em]
                                     `,
                                 ]}
                                 autoFocus
@@ -262,6 +263,9 @@ export default function ConversationHeader({
                             <div
                                 css={[
                                     tw`
+                                        flex
+                                        items-center
+                                        h-6
                                         text-[12px]
                                         lg:text-[14px]
                                         text-[#59799C]
@@ -292,7 +296,7 @@ export default function ConversationHeader({
                                     `,
                                 ]}
                             >
-                                <div css={tw`truncate`}>{name || 'Unnamed room'}&zwnj;</div>
+                                <Text truncate>{name || 'Unnamed room'}&zwnj;</Text>
                             </div>
                             <RoomInfo roomId={selectedRoomId}>
                                 <MemberCount
