@@ -16,9 +16,7 @@ import pinSticky from '$/features/room/helpers/pinSticky'
 import search from '$/features/room/helpers/search'
 import { ToasterAction } from '$/features/toaster'
 import toast from '$/features/toaster/helpers/toast'
-import { TokenGatedRoomAction } from '$/features/tokenGatedRooms'
 import fetchTokenMetadata from '$/features/misc/helpers/fetchTokenMetadata'
-import join from '$/features/tokenGatedRooms/helpers/join'
 import { TokenMetadata } from '$/types'
 import { WalletAction } from '$/features/wallet'
 import changeAccount from '$/features/wallet/helpers/changeAccount'
@@ -87,10 +85,6 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(PermissionsAction.allowAnonsPublish, function* ({ payload }) {
             yield allowAnonsPublish(payload)
-        })
-
-        yield takeEvery(TokenGatedRoomAction.join, function* ({ payload }) {
-            yield join(payload)
         })
 
         yield takeEveryUnique(MiscAction.fetchTokenStandard, function* ({ payload }) {

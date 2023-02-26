@@ -25,7 +25,7 @@ import Spinner from '$/components/Spinner'
 import { PrivacySetting } from '$/types'
 import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBeingPromoted'
 import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
-import useTokenGatedPromoteDelegatedAccount from '$/hooks/useTokenGatedPromoteDelegatedAccount'
+import useJoin from '$/hooks/useJoin'
 import usePublisher, { PublisherState } from '$/hooks/usePublisher'
 
 export default function Conversation() {
@@ -142,19 +142,15 @@ export default function Conversation() {
 }
 
 function TokenGatedBox() {
-    const isPromoting = useIsDelegatedAccountBeingPromoted()
+    const isJoining = useIsDelegatedAccountBeingPromoted()
 
-    const promote = useTokenGatedPromoteDelegatedAccount()
+    const join = useJoin()
 
     return (
         <MessageInputPlaceholder
             cta={
-                <Cta
-                    busy={isPromoting}
-                    disabled={isPromoting || !promote}
-                    onClick={() => void promote?.()}
-                >
-                    {isPromoting ? <>Joining...</> : <>Join</>}
+                <Cta busy={isJoining} disabled={isJoining || !join} onClick={() => void join?.()}>
+                    {isJoining ? <>Joining...</> : <>Join</>}
                 </Cta>
             }
         >

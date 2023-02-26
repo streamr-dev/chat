@@ -54,13 +54,12 @@ export const PermissionsAction = {
             }
     >('permissions: promote delegated account'),
 
-    tokenGatedPromoteDelegatedAccount: createAction<
+    join: createAction<
         IFingerprinted &
             PreflightParams & {
                 roomId: RoomId
                 delegatedAddress: Address
                 streamrClient: StreamrClient
-                tokenId?: string
             }
     >('permissions: token gated promote delegated account'),
 

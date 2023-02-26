@@ -1,3 +1,4 @@
+import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
 import acceptInvite from '$/features/permissions/sagas/helpers/acceptInvite'
 import addMember from '$/features/permissions/sagas/helpers/addMember'
@@ -6,10 +7,13 @@ import fetchPermission from '$/features/permissions/sagas/helpers/fetchPermissio
 import fetchPermissions from '$/features/permissions/sagas/helpers/fetchPermissions'
 import promoteDelegatedAccount from '$/features/permissions/sagas/helpers/promoteDelegatedAccount'
 import removeMember from '$/features/permissions/sagas/helpers/removeMember'
-import tokenGatedPromoteDelegatedAccount from '$/features/permissions/sagas/helpers/tokenGatedPromoteDelegatedAccount'
+import join from '$/features/room/helpers/join'
 import { WalletAction } from '$/features/wallet'
+import fetchStream from '$/utils/fetchStream'
+import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { call, race, take } from 'redux-saga/effects'
+import { Stream } from 'streamr-client'
 
 export default function* lifecycle() {
     while (true) {
@@ -39,12 +43,21 @@ export default function* lifecycle() {
                     }
                 )
 
-                yield takeEveryUnique(
-                    PermissionsAction.tokenGatedPromoteDelegatedAccount,
-                    function* ({ payload }) {
-                        yield tokenGatedPromoteDelegatedAccount(payload)
+                yield takeEveryUnique(PermissionsAction.join, function* ({ payload }) {
+                    const { requester, roomId, streamrClient } = payload
+
+                    try {
+                        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+
+                        if (!stream) {
+                            throw new RoomNotFoundError(roomId)
+                        }
+
+                        yield join(stream, requester)
+                    } catch (e) {
+                        handleError(e)
                     }
-                )
+                })
 
                 yield takeEveryUnique(PermissionsAction.fetchPermission, function* ({ payload }) {
                     yield fetchPermission(payload)

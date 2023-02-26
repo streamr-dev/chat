@@ -48,7 +48,6 @@ export default function useAddRoomModal() {
                             requester: account,
                             streamrClient,
                             provider,
-                            tokenId: params.tokenId,
                         })
                     )
 

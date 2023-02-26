@@ -8,7 +8,7 @@ import { PrivacySetting } from '$/types'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
-export default function useTokenGatedPromoteDelegatedAccount() {
+export default function useJoin() {
     const dispatch = useDispatch()
 
     const roomId = useSelectedRoomId()
@@ -23,26 +23,22 @@ export default function useTokenGatedPromoteDelegatedAccount() {
 
     const privacy = usePrivacy(roomId)
 
-    const cb = useCallback(
-        (tokenId?: string) => {
-            if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient) {
-                return
-            }
+    const cb = useCallback(() => {
+        if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient) {
+            return
+        }
 
-            dispatch(
-                PermissionsAction.tokenGatedPromoteDelegatedAccount({
-                    roomId,
-                    delegatedAddress,
-                    provider,
-                    requester,
-                    streamrClient,
-                    fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
-                    tokenId,
-                })
-            )
-        },
-        [roomId, delegatedAddress, provider, requester, streamrClient]
-    )
+        dispatch(
+            PermissionsAction.join({
+                roomId,
+                delegatedAddress,
+                provider,
+                requester,
+                streamrClient,
+                fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
+            })
+        )
+    }, [roomId, delegatedAddress, provider, requester, streamrClient])
 
     if (privacy === PrivacySetting.TokenGated) {
         return cb
