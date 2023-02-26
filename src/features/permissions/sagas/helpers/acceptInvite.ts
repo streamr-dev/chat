@@ -1,18 +1,13 @@
-import Toast, { ToastType } from '$/components/Toast'
-import retrieve from '$/features/delegation/helpers/retrieve'
-import { selectDelegatedAccount } from '$/features/delegation/selectors'
-import { FlagAction } from '$/features/flag'
-import { Flag } from '$/features/flag/types'
+import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller } from '$/features/toaster/helpers/toast'
-import toaster from '$/features/toaster/helpers/toaster'
-import { Address, OptionalAddress } from '$/types'
+import { OptionalAddress } from '$/types'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { call, put, select } from 'redux-saga/effects'
+import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
-import { Controller as ToastController } from '$/components/Toaster'
+import delegationPreflight from '$/utils/delegationPreflight'
 
 export default function acceptInvite({
     roomId,
@@ -22,40 +17,18 @@ export default function acceptInvite({
     streamrClient,
 }: ReturnType<typeof PermissionsAction.acceptInvite>['payload']) {
     return call(function* () {
-        let retrievedAccess = false
-
         let tc: Controller | undefined
-
-        let confirm: ToastController<typeof Toast> | undefined
 
         let dismissToast = false
 
         try {
-            let delegatedAccount: OptionalAddress = yield select(selectDelegatedAccount)
+            const delegatedAccount: OptionalAddress = yield delegationPreflight({
+                requester,
+                provider,
+            })
 
             if (!delegatedAccount) {
-                dismissToast = true
-
-                tc = yield retoast(tc, {
-                    title: 'Joining room…',
-                    type: ToastType.Processing,
-                })
-
-                confirm = yield toaster({
-                    title: 'Hot wallet required',
-                    type: ToastType.Warning,
-                    desc: 'In order to join this room the app will ask for your signature.',
-                    okLabel: 'Ok',
-                    cancelLabel: 'Cancel',
-                })
-
-                yield confirm?.open()
-
-                retrievedAccess = true
-
-                yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
-
-                delegatedAccount = (yield retrieve({ provider, owner: requester })) as Address
+                throw new Error('No delegated account')
             }
 
             dismissToast = true
@@ -107,12 +80,6 @@ export default function acceptInvite({
         } finally {
             if (dismissToast) {
                 tc?.dismiss()
-            }
-
-            confirm?.dismiss()
-
-            if (retrievedAccess) {
-                yield put(FlagAction.unset(Flag.isAccessBeingDelegated(requester)))
             }
         }
     })
