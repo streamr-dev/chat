@@ -78,8 +78,8 @@ export default function SidebarUtilityButton({
                 </div>
             }
             css={tw`
-                h-12
-                lg:h-14
+                h-20
+                lg:h-[92px]
             `}
         >
             <Text css={tw`text-[16px]`}>{label}</Text>
