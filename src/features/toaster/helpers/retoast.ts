@@ -6,7 +6,10 @@ import { call } from 'redux-saga/effects'
 export default function retoast(tc: Controller | undefined, props: ComponentProps<typeof Toast>) {
     if (tc) {
         return call(function () {
-            tc.update(props)
+            tc.update({
+                autoCloseAfter: true,
+                ...props,
+            })
 
             return tc
         })

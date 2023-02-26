@@ -96,7 +96,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'c
     onProceed?: () => void
     onAbort?: () => void
     onDiscardable?: () => void
-    autoCloseAfter?: number | false
+    autoCloseAfter?: number | boolean
     title?: ReactNode
     desc?: ReactNode
     okLabel?: string
@@ -104,9 +104,11 @@ export interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'c
     abortSignal?: AbortSignal
 }
 
+const defaultAutoCloseAfter = 3
+
 export default function Toast({
     type = ToastType.None,
-    autoCloseAfter: autoCloseAfterProp = 3,
+    autoCloseAfter: autoCloseAfterProp = true,
     onAbort,
     onProceed,
     onDiscardable,
@@ -191,7 +193,9 @@ export default function Toast({
 
     const autoCloseAfter =
         type !== ToastType.Processing && okLabel == null && cancelLabel == null
-            ? autoCloseAfterProp
+            ? autoCloseAfterProp === true
+                ? defaultAutoCloseAfter
+                : autoCloseAfterProp
             : false
 
     useEffect(() => {
