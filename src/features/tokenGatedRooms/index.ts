@@ -13,10 +13,4 @@ export const TokenGatedRoomAction = {
         provider: Provider
         tokenId?: string
     }>('tokenGatedRooms: join'),
-
-    promoteDelegatedAccount: createAction<{
-        roomId: RoomId
-        provider: Provider
-        streamrClient: StreamrClient
-    }>('tokenGatedRooms: promoteDelegatedAccount'),
 }
