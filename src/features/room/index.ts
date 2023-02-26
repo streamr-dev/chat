@@ -1,7 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
 import { Address, IFingerprinted, OptionalAddress, PreflightParams, PrivacySetting } from '$/types'
-import { SEE_SAGA } from '$/utils/consts'
 import create from './sagas/create.saga'
 import del from './sagas/del.saga'
 import delLocal from './sagas/delLocal.saga'
@@ -19,6 +18,7 @@ import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
 import { Provider } from '@web3-react/types'
 import preselect from '$/features/room/sagas/preselect.saga'
+import { TokenGate } from '$/features/tokenGatedRooms/types'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -169,26 +169,19 @@ export const RoomAction = {
     setPinning: createAction<{ owner: Address; roomId: RoomId; state: boolean }>(
         'room: set pinning'
     ),
+
+    cacheTokenGate: createAction<{
+        roomId: RoomId
+        tokenGate: Required<
+            Pick<TokenGate, 'tokenAddress' | 'tokenIds' | 'minRequiredBalance'>
+        > | null
+    }>('room: cache token gate'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
-    builder.addCase(RoomAction.create, SEE_SAGA)
-
-    builder.addCase(RoomAction.rename, SEE_SAGA)
-
-    builder.addCase(RoomAction.renameLocal, SEE_SAGA)
-
     builder.addCase(RoomAction.select, (state, { payload: selectedRoomId }) => {
         state.selectedRoomId = selectedRoomId
     })
-
-    builder.addCase(RoomAction.delete, SEE_SAGA)
-
-    builder.addCase(RoomAction.deleteLocal, SEE_SAGA)
-
-    builder.addCase(RoomAction.sync, SEE_SAGA)
-
-    builder.addCase(RoomAction.getStorageNodes, SEE_SAGA)
 
     builder.addCase(
         RoomAction.setLocalStorageNodes,
@@ -212,29 +205,17 @@ const reducer = createReducer(initialState, (builder) => {
         }
     )
 
-    builder.addCase(RoomAction.toggleStorageNode, SEE_SAGA)
-
     builder.addCase(RoomAction.setLocalPrivacy, (state, { payload: { roomId, privacy } }) => {
         roomCache(state, roomId).privacy = privacy
     })
-
-    builder.addCase(RoomAction.getPrivacy, SEE_SAGA)
-
-    builder.addCase(RoomAction.registerInvite, SEE_SAGA)
-
-    builder.addCase(RoomAction.fetch, SEE_SAGA)
 
     builder.addCase(RoomAction.setTransientName, (state, { payload: { roomId, name } }) => {
         roomCache(state, roomId).temporaryName = name
     })
 
-    builder.addCase(RoomAction.setVisibility, SEE_SAGA)
-
-    builder.addCase(RoomAction.pin, SEE_SAGA)
-
-    builder.addCase(RoomAction.unpin, SEE_SAGA) // See `pin` saga.
-
-    builder.addCase(RoomAction.preselect, SEE_SAGA)
+    builder.addCase(RoomAction.cacheTokenGate, (state, { payload: { roomId, tokenGate } }) => {
+        roomCache(state, roomId).tokenGate = tokenGate
+    })
 })
 
 export function* roomSaga() {

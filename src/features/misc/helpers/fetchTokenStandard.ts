@@ -1,12 +1,63 @@
+import { ToastType } from '$/components/Toast'
+import { MiscAction } from '$/features/misc'
+import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { InterfaceId, TokenStandard } from '$/features/tokenGatedRooms/types'
+import { selectTokenStandard } from '$/hooks/useTokenStandard'
+import { call, put, select } from 'redux-saga/effects'
+import { Flag } from '$/features/flag/types'
 import { BigNumber, Contract, providers } from 'ethers'
 import { abi as erc20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
 import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
 import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
-import { InterfaceId, TokenStandard } from '$/features/tokenGatedRooms/types'
 import { Address } from '$/types'
 import { Provider } from '@web3-react/types'
 
-export default async function fetchTokenStandard(address: Address, provider: Provider) {
+export default function fetchTokenStandard({
+    address,
+    provider,
+}: ReturnType<typeof MiscAction.fetchTokenStandard>['payload']) {
+    return call(function* () {
+        let tc: Controller | undefined
+
+        try {
+            const currentStandard: undefined | TokenStandard = yield select(
+                selectTokenStandard(address)
+            )
+
+            if (!currentStandard) {
+                tc = yield toast({
+                    title: 'Loading token info…',
+                    type: ToastType.Processing,
+                })
+
+                const standard: TokenStandard = yield fetchUtil(address, provider)
+
+                yield put(
+                    MiscAction.setTokenStandard({
+                        address,
+                        standard,
+                    })
+                )
+
+                yield put(
+                    MiscAction.fetchTokenMetadata({
+                        tokenAddress: address,
+                        tokenStandard: standard,
+                        provider,
+                        tokenIds: [],
+                        fingerprint: Flag.isFetchingTokenMetadata(address, []),
+                    })
+                )
+            }
+        } catch (e) {
+            // Noop.
+        } finally {
+            tc?.dismiss()
+        }
+    })
+}
+
+async function fetchUtil(address: Address, provider: Provider) {
     const contract = new Contract(
         address,
         erc165abi,
@@ -64,7 +115,7 @@ export default async function fetchTokenStandard(address: Address, provider: Pro
         console.warn('Failed to detect ERC20 interface')
     }
 
-    // Still, erc20 is not compulsory erc165 so time for specific checks.
+    // Still, ERC20 is not compulsory ERC165 so time for specific checks.
     const erc20Contract = new Contract(
         address,
         erc20abi,

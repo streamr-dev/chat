@@ -1,6 +1,7 @@
 import { IdenticonSeed } from '$/features/identicons/types'
 import { IMessage } from '$/features/message/types'
 import { RoomId } from '$/features/room/types'
+import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
 import { Address } from '$/types'
 import getBeginningOfDay from '$/utils/getBeginningOfDay'
 import { StreamPermission } from 'streamr-client'
@@ -157,7 +158,10 @@ export const Flag = {
         return JSON.stringify(['isAllowingAnonsPublish', roomId])
     },
 
-    isGettingTokenMetadata(tokenAddress: Address) {
-        return JSON.stringify(['isGettingTokenMetadata', tokenAddress.toLowerCase()])
+    isFetchingTokenMetadata(tokenAddress: Address, tokenIds: string[]) {
+        return JSON.stringify([
+            'isFetchingTokenMetadata',
+            ...tokenMetadataCacheKey(tokenAddress, tokenIds),
+        ])
     },
 }

@@ -1,8 +1,8 @@
 import fetchKnownTokens from '$/features/misc/sagas/fetchKnownTokens.saga'
-import fetchTokenStandard from '$/features/misc/sagas/fetchTokenStandard.saga'
 import goto from '$/features/misc/sagas/goto.saga'
 import { MiscState, TokenInfo } from '$/features/misc/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
 import { Address, IFingerprinted, TokenMetadata } from '$/types'
 import isBlank from '$/utils/isBlank'
 import { createAction, createReducer } from '@reduxjs/toolkit'
@@ -21,7 +21,7 @@ export const MiscAction = {
 
     setKnownTokensFilter: createAction<string>('misc: set known tokens filter'),
 
-    fetchTokenStandard: createAction<{ address: Address; provider: Provider }>(
+    fetchTokenStandard: createAction<IFingerprinted & { address: Address; provider: Provider }>(
         'misc: fetch token standard'
     ),
 
@@ -40,6 +40,7 @@ export const MiscAction = {
 
     cacheTokenMetadata: createAction<{
         tokenAddress: Address
+        tokenIds: string[]
         tokenMetadata: TokenMetadata
     }>('misc: cache token metadata'),
 }
@@ -47,6 +48,7 @@ export const MiscAction = {
 const initialState: MiscState = {
     filteredKnownTokens: [],
     knownTokens: [],
+    knownTokensByAddress: {},
     knownTokensFilter: '',
     navigate: undefined,
     tokenStandards: {},
@@ -77,6 +79,14 @@ const reducer = createReducer(initialState, (b) => {
     b.addCase(MiscAction.setKnownTokens, (state, { payload }) => {
         state.knownTokens = payload
 
+        const map: Record<Address, TokenInfo> = {}
+
+        payload.forEach((ti) => {
+            map[ti.address.toLowerCase()] = ti
+        })
+
+        state.knownTokensByAddress = map
+
         state.filteredKnownTokens = filterTokens(payload, state.knownTokensFilter)
     })
 
@@ -98,14 +108,14 @@ const reducer = createReducer(initialState, (b) => {
 
     b.addCase(
         MiscAction.cacheTokenMetadata,
-        (state, { payload: { tokenAddress, tokenMetadata } }) => {
-            state.tokenMetadatas[tokenAddress.toLowerCase()] = tokenMetadata
+        (state, { payload: { tokenAddress, tokenIds, tokenMetadata } }) => {
+            state.tokenMetadatas[tokenMetadataCacheKey(tokenAddress, tokenIds)] = tokenMetadata
         }
     )
 })
 
 export function* miscSaga() {
-    yield all([goto(), fetchKnownTokens(), fetchTokenStandard()])
+    yield all([goto(), fetchKnownTokens()])
 }
 
 export default reducer

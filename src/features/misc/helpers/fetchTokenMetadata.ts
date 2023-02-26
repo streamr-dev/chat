@@ -10,10 +10,6 @@ import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { MiscAction } from '$/features/misc'
 
 async function getURIs(tokenIds: string[], contract: Contract) {
-    if (tokenIds.length === 0) {
-        throw new Error('Token id is required')
-    }
-
     const uris: Record<string, string> = {}
 
     for (let i = 0; i < tokenIds.length; i++) {

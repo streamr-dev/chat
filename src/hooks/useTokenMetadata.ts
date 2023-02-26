@@ -1,11 +1,18 @@
-import { OptionalAddress, State } from '$/types'
+import { Address, OptionalAddress, State } from '$/types'
 import { useSelector } from 'react-redux'
 
-function selectTokenMetadata(tokenAddress: OptionalAddress) {
-    return ({ misc }: State) =>
-        tokenAddress ? misc.tokenMetadatas[tokenAddress.toLowerCase()] : undefined
+export function tokenMetadataCacheKey(tokenAddress: Address, tokenIds: string[]) {
+    return JSON.stringify([tokenAddress.toLowerCase(), ...[...tokenIds].sort()])
 }
 
-export default function useTokenMetadata(tokenAddress: OptionalAddress) {
-    return useSelector(selectTokenMetadata(tokenAddress))
+export function selectTokenMetadata(tokenAddress: OptionalAddress, tokenIds: string[]) {
+    if (!tokenAddress) {
+        return () => undefined
+    }
+
+    return ({ misc }: State) => misc.tokenMetadatas[tokenMetadataCacheKey(tokenAddress, tokenIds)]
+}
+
+export default function useTokenMetadata(tokenAddress: OptionalAddress, tokenIds: string[]) {
+    return useSelector(selectTokenMetadata(tokenAddress, tokenIds))
 }
