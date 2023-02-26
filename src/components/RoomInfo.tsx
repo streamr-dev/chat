@@ -48,6 +48,7 @@ function Wrap(props: HTMLAttributes<HTMLDivElement>) {
         <div
             {...props}
             css={tw`
+                h-6
                 flex
                 items-center
                 text-[#59799C]

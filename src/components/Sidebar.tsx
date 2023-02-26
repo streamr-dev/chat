@@ -1,21 +1,20 @@
 import Form from '$/components/Form'
 import RoomButton, { PassiveRoomButton } from '$/components/RoomButton'
+import RoomEntryRequirements from '$/components/RoomEntryRequirements'
 import SidebarUtilityButton, { SidebarUtilityButtonType } from '$/components/SidebarUtilityButton'
 import Text from '$/components/Text'
 import { Flag } from '$/features/flag/types'
-import { MiscAction } from '$/features/misc'
 import { RoomAction } from '$/features/room'
 import { RoomId } from '$/features/room/types'
 import { useWalletClient } from '$/features/wallet/hooks'
 import useFlag from '$/hooks/useFlag'
-import useKnownTokens from '$/hooks/useKnownTokens'
+import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
 import useRooms from '$/hooks/useRooms'
 import useSearchResult from '$/hooks/useSearchResult'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import ArrowIcon from '$/icons/ArrowIcon'
 import isBlank from '$/utils/isBlank'
-import isSameAddress from '$/utils/isSameAddress'
-import { HTMLAttributes, useEffect, useMemo, useState } from 'react'
+import { HTMLAttributes, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 
@@ -30,35 +29,13 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
 
     const [showSearch, setShowSearch] = useState(false)
 
-    const [roomId, setRoomId] = useState<RoomId>(
-        '0x9ce0e18d6e7497a3c77e2d23ffa18241540a6667/streamr-chat/room/trollbox'
-    )
+    const [roomId, setRoomId] = useState<RoomId>('')
 
     const searchResult = useSearchResult(roomId)
 
     const isSearching = useFlag(Flag.isSearching())
 
-    const knownTokens = useKnownTokens()
-
-    const tokenAddress = searchResult?.tokenAddress
-
-    const gated = !!tokenAddress
-
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        if (gated) {
-            dispatch(MiscAction.fetchKnownTokens())
-        }
-    }, [gated])
-
-    const knownToken = useMemo(() => {
-        if (!tokenAddress || !knownTokens.length) {
-            return undefined
-        }
-
-        return knownTokens.find(({ address }) => isSameAddress(address, tokenAddress))
-    }, [knownTokens, tokenAddress])
+    const requirements = useRoomEntryRequirements(roomId)
 
     return (
         <aside
@@ -115,7 +92,11 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
                         <PassiveRoomButton
                             roomId={roomId}
                             roomName={searchResult.name}
-                            desc={knownToken?.symbol}
+                            desc={
+                                !!requirements && (
+                                    <RoomEntryRequirements {...requirements} css={tw`bg-white`} />
+                                )
+                            }
                             visible
                             css={tw`mt-4`}
                             onClick={() => void setShowSearch(false)}
