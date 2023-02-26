@@ -74,9 +74,7 @@ export default function join({
 
             dismissToast = true
 
-            const tx: Record<string, any> = yield policy.requestDelegatedJoin(
-                BigNumber.from(tokenId || 0)
-            )
+            const tx: Record<string, any> = yield policy.requestDelegatedJoin()
 
             yield tx.wait()
 
