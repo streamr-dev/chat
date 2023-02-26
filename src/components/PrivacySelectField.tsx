@@ -26,7 +26,7 @@ export const PublicRoomOption: PrivacyOption = {
 
 export const TokenGatedRoomOption: PrivacyOption = {
     value: PrivacySetting.TokenGated,
-    label: Config.disableTokenGatedRoomCreation ? 'Coming soon: Token gated' : 'Token-gated',
+    label: Config.disableTokenGatedRoomCreation ? 'Coming soon: Token gated' : 'Token gated',
     desc: (
         <>
             Access granted only if you <Hodl /> a particular NFT or&nbsp;ERC&#8209;20 token

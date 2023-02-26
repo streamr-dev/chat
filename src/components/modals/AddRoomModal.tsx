@@ -210,7 +210,7 @@ export default function AddRoomModal({
                         />
                         <Hint css={tw`pr-16`}>
                             <Text>
-                                If you are pinning a token-gated room with an NFT enter the token ID
+                                If you are pinning a token gated room with an NFT enter the token ID
                                 here.
                             </Text>
                         </Hint>

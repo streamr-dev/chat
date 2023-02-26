@@ -150,7 +150,7 @@ export default function* preselect() {
                     if (tokenAddress && tokenType) {
                         if (tokenType.hasIds) {
                             tc = yield retoast(tc, {
-                                title: 'To add NFT-Gated rooms use the "Pin" button on the room addition page',
+                                title: 'To add token gated rooms use the "Pin" button on the room addition page',
                                 type: ToastType.Warning,
                             })
 
