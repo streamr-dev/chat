@@ -48,13 +48,21 @@ export default function RoomEntryRequirements({ tokenAddress, unit, quantity }: 
                     />
                 ) : (
                     <div
-                        css={tw`
-                            rounded-full
-                            relative
-                            w-full
-                            h-full
-                            bg-white
-                        `}
+                        css={[
+                            tw`
+                                rounded-full
+                                relative
+                                w-full
+                                h-full
+                                bg-white
+                            `,
+                            !busy &&
+                                tw`
+                                    border
+                                    border-dashed
+                                    border-gray-600
+                                `,
+                        ]}
                     >
                         {!!busy && <Spinner r={2.5} strokeWidth={1} />}
                     </div>
