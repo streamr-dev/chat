@@ -159,6 +159,10 @@ export function PassiveRoomButton({
     const url =
         typeof partials === 'string' ? `/${partials}` : `/${partials.account}~${partials.uuid}`
 
+    const account = useWalletAccount()
+
+    const streamrClient = useWalletClient()
+
     return (
         <SidebarButton
             {...props}
@@ -170,6 +174,19 @@ export function PassiveRoomButton({
                 dispatch(FlagAction.unset(Flag.isDisplayingRooms()))
 
                 onClick?.(e)
+
+                if (!account || !streamrClient) {
+                    return
+                }
+
+                dispatch(
+                    RoomAction.preselect({
+                        roomId,
+                        account,
+                        fingerprint: Flag.isPreselectingRoom(roomId),
+                        streamrClient,
+                    })
+                )
             }}
             css={tw`
                 h-20

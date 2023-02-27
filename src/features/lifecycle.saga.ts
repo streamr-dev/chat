@@ -27,6 +27,7 @@ import { put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
 import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
 import fetchTokenStandard from '$/features/misc/helpers/fetchTokenStandard'
+import preselect from '$/features/room/helpers/preselect'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -117,6 +118,14 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(RoomAction.search, function* ({ payload }) {
             yield search(payload)
+        })
+
+        yield takeEvery(RoomAction.preselect, function* ({ payload }) {
+            yield put(RoomAction.cacheRecentRoomId(payload.roomId))
+        })
+
+        yield takeEveryUnique(RoomAction.preselect, function* ({ payload }) {
+            yield preselect(payload)
         })
 
         // This needs to go last. It triggers some of the actions that have

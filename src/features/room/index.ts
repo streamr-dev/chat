@@ -17,13 +17,13 @@ import setVisibility from '$/features/room/sagas/setVisibility.saga'
 import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
 import { Provider } from '@web3-react/types'
-import preselect from '$/features/room/sagas/preselect.saga'
 import { TokenGate } from '$/features/tokenGatedRooms/types'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
     cache: {},
     searchResults: {},
+    recentRoomId: undefined,
 }
 
 function roomCache(state: RoomState, roomId: RoomId) {
@@ -73,11 +73,13 @@ export const RoomAction = {
 
     select: createAction<RoomState['selectedRoomId']>('room: select'),
 
-    preselect: createAction<{
-        roomId: RoomId
-        account: OptionalAddress
-        streamrClient: StreamrClient
-    }>('room: preselect'),
+    preselect: createAction<
+        IFingerprinted & {
+            roomId: RoomId
+            account: OptionalAddress
+            streamrClient: StreamrClient
+        }
+    >('room: preselect'),
 
     sync: createAction<
         IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
@@ -185,6 +187,8 @@ export const RoomAction = {
         roomId: RoomId
         metadata: { name: string; tokenAddress: OptionalAddress } | null
     }>('room: cache search result'),
+
+    cacheRecentRoomId: createAction<RoomId | undefined>('room: cache recent room id'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -229,6 +233,10 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(RoomAction.cacheSearchResult, (state, { payload: { roomId, metadata } }) => {
         state.searchResults[roomId] = metadata
     })
+
+    builder.addCase(RoomAction.cacheRecentRoomId, (state, { payload }) => {
+        state.recentRoomId = payload
+    })
 })
 
 export function* roomSaga() {
@@ -246,7 +254,6 @@ export function* roomSaga() {
         sync(),
         toggleStorageNode(),
         unpin(),
-        preselect(),
     ])
 }
 

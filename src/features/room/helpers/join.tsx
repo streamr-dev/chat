@@ -41,7 +41,7 @@ export default function join(
 
         const tokenId = 0 // @FIXME!
 
-        const { tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
+        const { name, tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
 
         let tc: Controller | undefined
 
@@ -88,11 +88,7 @@ export default function join(
             }
 
             yield onToast({
-                title: (
-                    <>
-                        Joining <Id>{roomId}</Id>…
-                    </>
-                ),
+                title: <>Joining {name ? `"${name}"` : <Id>{roomId}</Id>}…</>,
                 type: ToastType.Processing,
             })
 

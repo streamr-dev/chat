@@ -23,6 +23,7 @@ export interface RoomState {
             }
         >
     >
+    recentRoomId: RoomId | undefined
 }
 
 export interface IRoom extends IRecord, TokenGate {

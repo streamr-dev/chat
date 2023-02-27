@@ -168,4 +168,8 @@ export const Flag = {
     isSearching() {
         return JSON.stringify(['isSearching'])
     },
+
+    isPreselectingRoom(roomId: RoomId) {
+        return JSON.stringify(['isPreselectingRoom', roomId])
+    },
 }
