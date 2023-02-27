@@ -39,6 +39,7 @@ export default function RoomEntryRequirements({ tokenAddress, unit, quantity, ..
                     w-4
                     h-4
                     mr-1
+                    shrink-0
                 `}
             >
                 {tokenInfo ? (
@@ -71,10 +72,12 @@ export default function RoomEntryRequirements({ tokenAddress, unit, quantity, ..
                     </div>
                 )}
             </div>
-            <Text css={tw`leading-none`}>
-                {typeof quantity === 'string' && <>{quantity} </>}
-                {unit}
-            </Text>
+            <div css={tw`min-w-0`}>
+                <Text truncate css={tw`leading-none`}>
+                    {typeof quantity === 'string' && <>{quantity} </>}
+                    {unit}
+                </Text>
+            </div>
         </div>
     )
 }

@@ -240,6 +240,7 @@ export function PassiveRoomButton({
                         font-plex
                         flex
                         items-center
+                        min-w-0
                         empty:hidden
                     `}
                 >
