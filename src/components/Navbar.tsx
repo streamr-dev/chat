@@ -39,7 +39,7 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
                                 tracking-widest
                             `}
                         >
-                            thechat.eth
+                            thechat.app
                         </span>
                         <div
                             css={tw`
