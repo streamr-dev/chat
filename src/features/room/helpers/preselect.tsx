@@ -55,12 +55,6 @@ export default function preselect({
             return
         }
 
-        const tokenId: string = yield call(function* () {
-            return 'TOKEN_ID'
-        })
-
-        console.log(tokenId)
-
         const owner = account.toLowerCase()
 
         let tc: Controller | undefined
