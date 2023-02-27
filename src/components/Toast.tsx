@@ -1,10 +1,11 @@
 import Dot from '$/components/Dot'
+import Form from '$/components/Form'
 import Spinner from '$/components/Spinner'
 import Text from '$/components/Text'
 import {
     ButtonHTMLAttributes,
     FC,
-    HTMLAttributes,
+    FormHTMLAttributes,
     ReactNode,
     useEffect,
     useLayoutEffect,
@@ -99,7 +100,7 @@ export interface ToastableProps {
 }
 
 export interface Props
-    extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'children' | 'onAbort'>,
+    extends Omit<FormHTMLAttributes<HTMLFormElement>, 'title' | 'children' | 'onAbort'>,
         ToastableProps {
     type?: ToastType
     autoCloseAfter?: number | boolean
@@ -107,6 +108,7 @@ export interface Props
     desc?: ReactNode
     okLabel?: string
     cancelLabel?: string
+    canSubmit?: boolean
 }
 
 const defaultAutoCloseAfter = 3
@@ -122,6 +124,7 @@ export default function Toast({
     okLabel,
     cancelLabel,
     abortSignal,
+    canSubmit = true,
     ...props
 }: Props) {
     const Icon = Shape[type] || (() => null)
@@ -297,7 +300,7 @@ export default function Toast({
                     <Icon />
                 </div>
                 {/* Body. */}
-                <div
+                <Form
                     {...props}
                     css={tw`
                         grow
@@ -307,6 +310,15 @@ export default function Toast({
                         [p, ul, ol]:(text-[14px] text-[#59799C] leading-5 mt-1 break-words)
                         [ol]:list-inside
                     `}
+                    onSubmit={() => {
+                        if (!canSubmit) {
+                            return
+                        }
+
+                        onProceed?.()
+
+                        hide()
+                    }}
                 >
                     <h4>{title}</h4>
                     {typeof desc === 'string' ? <p>{desc}</p> : desc}
@@ -319,13 +331,7 @@ export default function Toast({
                             `}
                         >
                             {okLabel != null && (
-                                <Button
-                                    onClick={() => {
-                                        onProceed?.()
-
-                                        hide()
-                                    }}
-                                >
+                                <Button type="submit" disabled={!canSubmit}>
                                     <Text>{okLabel}</Text>
                                 </Button>
                             )}
@@ -345,7 +351,7 @@ export default function Toast({
                             )}
                         </div>
                     )}
-                </div>
+                </Form>
                 {type !== ToastType.Processing && (
                     <>
                         {/* Close button */}
@@ -399,6 +405,7 @@ function Button({ type = 'button', ...props }: ButtonHTMLAttributes<HTMLButtonEl
                 font-semibold
                 text-[#59799C]
                 hover:text-[#42526E]
+                disabled:opacity-50
             `}
         />
     )

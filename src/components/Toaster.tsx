@@ -20,7 +20,7 @@ interface HandlerProps<T> {
 type Props<T extends FC> = { abortSignal?: AbortSignal } & HandlerProps<T> &
     Omit<ComponentProps<T>, keyof HandlerProps<any>>
 
-export interface Controller<T extends FC> {
+export interface Controller<T extends FC<any>> {
     dismiss: () => void
     open: (props?: Props<T>) => Promise<void>
     update: (props: Props<T>) => void

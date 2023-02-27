@@ -19,11 +19,11 @@ import { ComponentProps } from 'react'
 import { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller as ToastController } from '$/components/Toaster'
-import toaster from '$/features/toaster/helpers/toaster'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
 import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
+import tokenIdPreflight from '$/utils/tokenIdPreflight'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -43,8 +43,6 @@ export default function join(
 ) {
     return call(function* () {
         const roomId = stream.id
-
-        const tokenId = 0 // @FIXME!
 
         const { name, tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
 
@@ -99,23 +97,12 @@ export default function join(
                 type: ToastType.Processing,
             })
 
+            let tokenId = '0'
+
             if (tokenType.hasIds) {
-                try {
-                    tokenIdTc = yield toaster(Toast, {
-                        title: 'NFTs coming soon',
-                        desc: 'The team is working hard on ERC721, ERC1155, and ERC777 support, hang tight!',
-                        cancelLabel: 'Ok',
-                    })
-
-                    yield tokenIdTc?.open()
-                } catch (e) {
-                    yield onToast({
-                        title: 'Come back later! <3',
-                        type: ToastType.Error,
-                    })
-
-                    return
-                }
+                tokenId = yield* tokenIdPreflight({
+                    tokenStandard,
+                })
             }
 
             const delegatedAccount: OptionalAddress = yield delegationPreflight({
@@ -131,7 +118,7 @@ export default function join(
 
             const policyAddress: string = yield policyRegistry.getPolicy(
                 tokenAddress,
-                BigNumber.from(tokenId || 0),
+                BigNumber.from(tokenId),
                 roomId,
                 stakingEnabled
             )
