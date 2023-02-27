@@ -9,8 +9,9 @@ export default function waitForPermissions(
     roomId: RoomId,
     validator: Validator
 ) {
-    return retry(30, 1000, function* () {
+    return retry(30, 2000, function* () {
         const assignments: PermissionAssignment[] = yield streamrClient.getPermissions(roomId)
+
         if (!validator(assignments)) {
             throw new Error('Validation failed')
         }

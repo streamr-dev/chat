@@ -1,5 +1,5 @@
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { selectWalletProvider } from '$/features/wallet/selectors'
+import { selectWalletClient, selectWalletProvider } from '$/features/wallet/selectors'
 import { Address, OptionalAddress } from '$/types'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
@@ -12,8 +12,7 @@ import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinP
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
 import Toast, { ToastType } from '$/components/Toast'
-import waitForPermission from '$/utils/waitForPermission'
-import { Stream, StreamPermission } from 'streamr-client'
+import StreamrClient, { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import Id from '$/components/Id'
 import { ComponentProps } from 'react'
@@ -22,6 +21,9 @@ import retoast from '$/features/toaster/helpers/retoast'
 import { Controller as ToastController } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
 import { PermissionsAction } from '$/features/permissions'
+import { RoomAction } from '$/features/room'
+import waitForPermissions from '$/utils/waitForPermissions'
+import isSameAddress from '$/utils/isSameAddress'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -159,21 +161,40 @@ export default function join(
                 type: ToastType.Processing,
             })
 
-            yield waitForPermission({
-                stream,
-                account: requester,
-                permission: StreamPermission.PUBLISH,
-            })
+            const streamrClient: StreamrClient | undefined = yield select(selectWalletClient)
 
-            yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
+            if (streamrClient) {
+                yield waitForPermissions(streamrClient, roomId, (assignments) => {
+                    for (let i = 0; i < assignments.length; i++) {
+                        const assignment = assignments[i]
 
-            yield waitForPermission({
-                stream,
-                account: delegatedAccount,
-                permission: StreamPermission.PUBLISH,
-            })
+                        if ('public' in assignment) {
+                            continue
+                        }
 
-            yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
+                        if (
+                            isSameAddress(assignment.user, requester) &&
+                            assignment.permissions.length
+                        ) {
+                            return true
+                        }
+                    }
+
+                    return false
+                })
+
+                yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
+
+                yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
+
+                yield put(
+                    RoomAction.fetch({
+                        roomId,
+                        requester,
+                        streamrClient,
+                    })
+                )
+            }
 
             yield onToast({
                 title: 'Joined!',
