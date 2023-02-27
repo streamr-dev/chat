@@ -13,7 +13,7 @@ import db from '$/utils/db'
 import fetchStream from '$/utils/fetchStream'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
-import { delay, put, takeLatest } from 'redux-saga/effects'
+import { put, takeLatest } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
 export default function* preselect() {
@@ -149,8 +149,6 @@ export default function* preselect() {
                     } = getRoomMetadata(stream)
 
                     if (tokenAddress && !permissions.length) {
-                        yield delay(3000)
-
                         yield join(stream, account, {
                             onToast(props) {
                                 tc?.update(props)
