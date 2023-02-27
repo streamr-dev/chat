@@ -101,7 +101,7 @@ export default function join(
 
             if (tokenType.hasIds) {
                 try {
-                    tokenIdTc = yield toaster({
+                    tokenIdTc = yield toaster(Toast, {
                         title: 'NFTs coming soon',
                         desc: 'The team is working hard on ERC721, ERC1155, and ERC777 support, hang tight!',
                         cancelLabel: 'Ok',

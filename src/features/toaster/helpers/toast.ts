@@ -9,7 +9,7 @@ export type Controller = Pick<ToastController<typeof Toast>, 'dismiss' | 'update
 
 export default function toast(props: ComponentProps<typeof Toast>) {
     return call(function* () {
-        const { open, dismiss, update }: ToastController<typeof Toast> = yield toaster(props)
+        const { open, dismiss, update }: ToastController<typeof Toast> = yield toaster(Toast, props)
 
         yield spawn(function* () {
             try {

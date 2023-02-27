@@ -136,7 +136,7 @@ export default function pinSticky({
             }
 
             try {
-                t = yield toaster({
+                t = yield toaster(Toast, {
                     title: `Pinned ${n} new sticky room${n === 1 ? '' : 's'}`,
                     type: ToastType.Info,
                     desc: (

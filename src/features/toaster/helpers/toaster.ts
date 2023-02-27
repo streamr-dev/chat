@@ -1,10 +1,9 @@
-import Toast from '$/components/Toast'
 import { ToasterCallback } from '$/components/Toaster'
 import { State } from '$/types'
-import { ComponentProps } from 'react'
+import { ComponentProps, FC } from 'react'
 import { call, select } from 'redux-saga/effects'
 
-export default function toaster(props: ComponentProps<typeof Toast>) {
+export default function toaster<T extends FC>(component: T, props: ComponentProps<T>) {
     return call(function* () {
         let cb: ToasterCallback | undefined = yield select(
             ({ toaster: { instance } }: State) => instance
@@ -26,6 +25,6 @@ export default function toaster(props: ComponentProps<typeof Toast>) {
             })
         }
 
-        return cb(Toast, props)
+        return cb(component, props)
     })
 }

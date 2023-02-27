@@ -30,7 +30,7 @@ export default function delegationPreflight({
 
                 yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
 
-                confirm = yield toaster({
+                confirm = yield toaster(Toast, {
                     title: 'Hot wallet required',
                     type: ToastType.Warning,
                     desc: 'In order to proceed the app will ask for your signature.',

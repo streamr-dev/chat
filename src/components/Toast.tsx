@@ -91,17 +91,22 @@ const Shape: Partial<Record<ToastType, FC>> = {
     [ToastType.Processing]: () => <Spinner strokeColor="#4C9AFF" gap={0.25} />,
 }
 
-export interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'children'> {
-    type?: ToastType
+export interface ToastableProps {
     onProceed?: () => void
     onAbort?: () => void
     onDiscardable?: () => void
+    abortSignal?: AbortSignal
+}
+
+export interface Props
+    extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'children' | 'onAbort'>,
+        ToastableProps {
+    type?: ToastType
     autoCloseAfter?: number | boolean
     title?: ReactNode
     desc?: ReactNode
     okLabel?: string
     cancelLabel?: string
-    abortSignal?: AbortSignal
 }
 
 const defaultAutoCloseAfter = 3

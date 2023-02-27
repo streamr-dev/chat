@@ -33,7 +33,7 @@ export default function allowAnonsPublish({
             dismissToast = true
 
             try {
-                t = yield toaster({
+                t = yield toaster(Toast, {
                     title: 'Are you sure?',
                     type: ToastType.Warning,
                     desc: 'Anyone will be able to read and send messages in this room.',
