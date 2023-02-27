@@ -19,6 +19,8 @@ import Id from '$/components/Id'
 import { ComponentProps } from 'react'
 import { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
+import { Controller as ToastController } from '$/components/Toaster'
+import toaster from '$/features/toaster/helpers/toaster'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -44,6 +46,8 @@ export default function join(
         const { name, tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
 
         let tc: Controller | undefined
+
+        let tokenIdTc: ToastController<typeof Toast> | undefined
 
         let dismissToast = false
 
@@ -92,6 +96,25 @@ export default function join(
                 type: ToastType.Processing,
             })
 
+            if (tokenType.hasIds) {
+                try {
+                    tokenIdTc = yield toaster({
+                        title: 'NFTs coming soon',
+                        desc: 'The team is working hard on ERC721, ERC1155, and ERC777 support, hang tight!',
+                        cancelLabel: 'Ok',
+                    })
+
+                    yield tokenIdTc?.open()
+                } catch (e) {
+                    yield onToast({
+                        title: 'Come back later! <3',
+                        type: ToastType.Error,
+                    })
+
+                    return
+                }
+            }
+
             const delegatedAccount: OptionalAddress = yield delegationPreflight({
                 requester,
                 provider,
@@ -102,8 +125,6 @@ export default function join(
             }
 
             const policyRegistry = getJoinPolicyRegistry(provider)
-
-            // Get token id
 
             const policyAddress: string = yield policyRegistry.getPolicy(
                 tokenAddress,
@@ -164,6 +185,8 @@ export default function join(
             if (dismissToast) {
                 tc?.dismiss()
             }
+
+            tokenIdTc?.dismiss()
         }
     })
 }
