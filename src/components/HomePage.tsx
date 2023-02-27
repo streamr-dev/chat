@@ -127,7 +127,7 @@ function PoweredBy() {
                 `}
             >
                 <Text>
-                    Decentralised, encrypted chat powered by&nbsp;
+                    Decentralized by&nbsp;
                     <a
                         css={tw`!text-[#ff5924]`}
                         href="https://streamr.network"
