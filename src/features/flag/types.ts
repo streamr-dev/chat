@@ -31,10 +31,6 @@ export const Flag = {
         return JSON.stringify(['isRoomBeingDeleted', roomId])
     },
 
-    isRoomBeingPinned() {
-        return JSON.stringify(['isRoomBeingPinned'])
-    },
-
     isPinningStickyRooms(requester: Address) {
         return JSON.stringify(['isPinningStickyRooms', requester.toLowerCase()])
     },

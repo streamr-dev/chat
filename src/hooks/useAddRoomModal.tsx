@@ -1,4 +1,4 @@
-import AddRoomModal, { NewRoom, Pin } from '$/components/modals/AddRoomModal'
+import AddRoomModal, { NewRoom } from '$/components/modals/AddRoomModal'
 import AddTokenGatedRoomModal from '$/components/modals/AddTokenGatedRoomModal'
 import { RoomAction } from '$/features/room'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
@@ -27,7 +27,7 @@ export default function useAddRoomModal() {
             return
         }
 
-        let lastParams: Pin | NewRoom = {
+        let lastParams: NewRoom = {
             name: '',
             storage: true,
             privacy: PrivacySetting.Private,
@@ -35,24 +35,11 @@ export default function useAddRoomModal() {
 
         while (true) {
             try {
-                const params: Pin | NewRoom = await openNameModal({
+                const params: NewRoom = await openNameModal({
                     params: lastParams,
                 })
 
                 lastParams = params
-
-                if ('roomId' in params) {
-                    dispatch(
-                        RoomAction.pin({
-                            roomId: params.roomId,
-                            requester: account,
-                            streamrClient,
-                            provider,
-                        })
-                    )
-
-                    return
-                }
 
                 if (params.privacy !== PrivacySetting.TokenGated) {
                     const now = Date.now()

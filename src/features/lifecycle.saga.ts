@@ -11,7 +11,6 @@ import { Flag } from '$/features/flag/types'
 import { PermissionsAction } from '$/features/permissions'
 import allowAnonsPublish from '$/features/permissions/sagas/helpers/allowAnonsPublish'
 import { RoomAction } from '$/features/room'
-import pin from '$/features/room/helpers/pin'
 import pinSticky from '$/features/room/helpers/pinSticky'
 import search from '$/features/room/helpers/search'
 import { ToasterAction } from '$/features/toaster'
@@ -43,10 +42,6 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(DelegationAction.lookup, function* ({ payload }) {
             yield lookup(payload)
-        })
-
-        yield takeLatest(RoomAction.pin, function* ({ payload }) {
-            yield pin(payload)
         })
 
         yield takeEvery(RoomAction.select, function* ({ payload: roomId }) {

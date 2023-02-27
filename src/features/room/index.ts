@@ -149,13 +149,6 @@ export const RoomAction = {
         'room: set visibility'
     ),
 
-    pin: createAction<{
-        roomId: RoomId
-        requester: Address
-        streamrClient: StreamrClient
-        provider: Provider
-    }>('room: pin'),
-
     pinSticky: createAction<
         IFingerprinted & {
             requester: Address
