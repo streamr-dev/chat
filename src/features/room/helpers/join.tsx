@@ -5,7 +5,7 @@ import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
 import { Provider } from '@web3-react/types'
-import { call, select } from 'redux-saga/effects'
+import { call, put, select } from 'redux-saga/effects'
 import { BigNumber, Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
@@ -21,6 +21,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller as ToastController } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
+import { PermissionsAction } from '$/features/permissions'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -164,11 +165,15 @@ export default function join(
                 permission: StreamPermission.PUBLISH,
             })
 
+            yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
+
             yield waitForPermission({
                 stream,
                 account: delegatedAccount,
                 permission: StreamPermission.PUBLISH,
             })
+
+            yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
 
             yield onToast({
                 title: 'Joined!',
