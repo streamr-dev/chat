@@ -13,7 +13,7 @@ import db from '$/utils/db'
 import fetchStream from '$/utils/fetchStream'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
-import { put, takeLatest } from 'redux-saga/effects'
+import { delay, put, takeLatest } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
 export default function* preselect() {
@@ -136,6 +136,11 @@ export default function* preselect() {
                         throw new RoomNotFoundError(roomId)
                     }
 
+                    const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
+                        owner,
+                        stream
+                    )
+
                     const {
                         createdAt,
                         createdBy,
@@ -143,16 +148,19 @@ export default function* preselect() {
                         name = '',
                     } = getRoomMetadata(stream)
 
-                    if (tokenAddress) {
-                        yield join(stream, account)
+                    if (tokenAddress && !permissions.length) {
+                        yield delay(3000)
+
+                        yield join(stream, account, {
+                            onToast(props) {
+                                tc?.update(props)
+
+                                dismissToast = props.type === ToastType.Processing
+                            },
+                        })
 
                         return
                     }
-
-                    const [permissions, isPublic]: UserPermissions = yield getUserPermissions(
-                        owner,
-                        stream
-                    )
 
                     if (!permissions.length && !isPublic) {
                         dismissToast = false

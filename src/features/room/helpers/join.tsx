@@ -11,12 +11,14 @@ import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPol
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
-import { Controller } from '$/features/toaster/helpers/toast'
-import retoast from '$/features/toaster/helpers/retoast'
-import { ToastType } from '$/components/Toast'
+import Toast, { ToastType } from '$/components/Toast'
 import waitForPermission from '$/utils/waitForPermission'
 import { Stream, StreamPermission } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
+import Id from '$/components/Id'
+import { ComponentProps } from 'react'
+import { Controller } from '$/features/toaster/helpers/toast'
+import retoast from '$/features/toaster/helpers/retoast'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -25,26 +27,46 @@ const Abi = {
     [TokenStandard.ERC777]: ERC777JoinPolicyAbi,
 }
 
-export default function join(stream: Stream, requester: Address) {
+interface Options {
+    onToast?: (props: ComponentProps<typeof Toast>) => void
+}
+
+export default function join(
+    stream: Stream,
+    requester: Address,
+    { onToast: onToastProp }: Options = {}
+) {
     return call(function* () {
-        let tc: Controller | undefined
-
-        let dismissToast = false
-
         const roomId = stream.id
 
         const tokenId = 0 // @FIXME!
 
         const { tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
 
+        let tc: Controller | undefined
+
+        let dismissToast = false
+
+        function onToast(props: ComponentProps<typeof Toast>) {
+            return call(function* () {
+                if (!onToastProp) {
+                    tc = yield retoast(tc, props)
+
+                    dismissToast = props.type === ToastType.Processing
+
+                    return
+                }
+
+                onToastProp(props)
+            })
+        }
+
         try {
             if (!tokenAddress) {
-                tc = yield retoast(tc, {
+                yield onToast({
                     title: "It's not a token gated room",
                     type: ToastType.Error,
                 })
-
-                dismissToast = false
 
                 return
             }
@@ -65,12 +87,14 @@ export default function join(stream: Stream, requester: Address) {
                 throw new Error('No provider')
             }
 
-            tc = yield retoast(tc, {
-                title: 'Joining…',
+            yield onToast({
+                title: (
+                    <>
+                        Joining <Id>{roomId}</Id>…
+                    </>
+                ),
                 type: ToastType.Processing,
             })
-
-            dismissToast = true
 
             const delegatedAccount: OptionalAddress = yield delegationPreflight({
                 requester,
@@ -100,13 +124,11 @@ export default function join(stream: Stream, requester: Address) {
                 yield tx.wait()
             } catch (e: any) {
                 if (typeof e?.message === 'string' && /error_notEnoughTokens/.test(e.message)) {
-                    tc = yield retoast(tc, {
+                    yield onToast({
                         title: 'Not enough tokens',
                         type: ToastType.Error,
                         autoCloseAfter: 5,
                     })
-
-                    dismissToast = false
 
                     return
                 }
@@ -114,12 +136,10 @@ export default function join(stream: Stream, requester: Address) {
                 throw e
             }
 
-            tc = yield retoast(tc, {
+            yield onToast({
                 title: 'Checking permissions…',
                 type: ToastType.Processing,
             })
-
-            dismissToast = true
 
             yield waitForPermission({
                 stream,
@@ -133,21 +153,17 @@ export default function join(stream: Stream, requester: Address) {
                 permission: StreamPermission.PUBLISH,
             })
 
-            tc = yield retoast(tc, {
+            yield onToast({
                 title: 'Joined!',
                 type: ToastType.Success,
             })
-
-            dismissToast = false
         } catch (e) {
             handleError(e)
 
-            tc = yield retoast(tc, {
+            yield onToast({
                 title: 'Failed to join',
                 type: ToastType.Error,
             })
-
-            dismissToast = false
         } finally {
             if (dismissToast) {
                 tc?.dismiss()
