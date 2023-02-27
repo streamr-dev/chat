@@ -12,7 +12,9 @@ import useRooms from '$/hooks/useRooms'
 import useSearchResult from '$/hooks/useSearchResult'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import ArrowIcon from '$/icons/ArrowIcon'
+import { Prefix } from '$/types'
 import isBlank from '$/utils/isBlank'
+import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { HTMLAttributes, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
@@ -28,7 +30,14 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
 
     const [showSearch, setShowSearch] = useState(false)
 
-    const [roomId, setRoomId] = useState<RoomId>('')
+    const [rawRoomId, setRawRoomId] = useState<RoomId>('')
+
+    const partials = pathnameToRoomIdPartials(rawRoomId)
+
+    const roomId =
+        typeof partials === 'string'
+            ? partials
+            : `${partials.account}/${Prefix.Room}/${partials.uuid}`
 
     const searchResult = useSearchResult(roomId)
 
@@ -52,8 +61,8 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
             {showSearch && (
                 <>
                     <Search
-                        roomId={roomId}
-                        onRoomId={setRoomId}
+                        roomId={rawRoomId}
+                        onRoomId={setRawRoomId}
                         onGoBackButtonClick={() => void setShowSearch(false)}
                     />
                     <Header>Search results</Header>
