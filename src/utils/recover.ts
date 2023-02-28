@@ -27,7 +27,7 @@ export default function* recover<T extends (...args: any[]) => Generator<any, an
                     tc = yield toaster(Toast, {
                         title: 'Failed',
                         desc: 'Would you like to try again?',
-                        type: ToastType.Warning,
+                        type: ToastType.Error,
                         okLabel: 'Yes',
                         cancelLabel: 'No',
                         ...props,
