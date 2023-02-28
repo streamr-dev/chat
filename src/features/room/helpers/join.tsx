@@ -5,7 +5,7 @@ import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
 import { Provider } from '@web3-react/types'
-import { call, put, select } from 'redux-saga/effects'
+import { call, cancelled, delay, put, select } from 'redux-saga/effects'
 import { BigNumber, Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
@@ -24,6 +24,7 @@ import { RoomAction } from '$/features/room'
 import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import tokenIdPreflight from '$/utils/tokenIdPreflight'
+import recover from '$/utils/recover'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -125,22 +126,38 @@ export default function join(
 
             const policy = new Contract(policyAddress, Abi[tokenStandard], policyRegistry.signer)
 
-            try {
-                const tx: Record<string, any> = yield policy.requestDelegatedJoin()
+            const ok = yield* recover(
+                function* () {
+                    try {
+                        const tx: Record<string, any> = yield policy.requestDelegatedJoin()
 
-                yield tx.wait()
-            } catch (e: any) {
-                if (typeof e?.message === 'string' && /error_notEnoughTokens/.test(e.message)) {
-                    yield onToast({
-                        title: 'Not enough tokens',
-                        type: ToastType.Error,
-                        autoCloseAfter: 5,
-                    })
+                        yield tx.wait()
 
-                    return
+                        return true
+                    } catch (e: any) {
+                        if (
+                            typeof e?.message === 'string' &&
+                            /error_notEnoughTokens/.test(e.message)
+                        ) {
+                            yield onToast({
+                                title: 'Not enough tokens',
+                                type: ToastType.Error,
+                                autoCloseAfter: 5,
+                            })
+
+                            return false
+                        }
+
+                        throw e
+                    }
+                },
+                {
+                    title: 'Transaction failed',
                 }
+            )
 
-                throw e
+            if (!ok) {
+                return
             }
 
             yield onToast({
@@ -151,24 +168,31 @@ export default function join(
             const streamrClient: StreamrClient | undefined = yield select(selectWalletClient)
 
             if (streamrClient) {
-                yield waitForPermissions(streamrClient, roomId, (assignments) => {
-                    for (let i = 0; i < assignments.length; i++) {
-                        const assignment = assignments[i]
+                yield* recover(
+                    function* () {
+                        yield waitForPermissions(streamrClient, roomId, (assignments) => {
+                            for (let i = 0; i < assignments.length; i++) {
+                                const assignment = assignments[i]
 
-                        if ('public' in assignment) {
-                            continue
-                        }
+                                if ('public' in assignment) {
+                                    continue
+                                }
 
-                        if (
-                            isSameAddress(assignment.user, requester) &&
-                            assignment.permissions.length
-                        ) {
-                            return true
-                        }
+                                if (
+                                    isSameAddress(assignment.user, requester) &&
+                                    assignment.permissions.length
+                                ) {
+                                    return true
+                                }
+                            }
+
+                            return false
+                        })
+                    },
+                    {
+                        title: 'Failed to detect new permissions',
                     }
-
-                    return false
-                })
+                )
 
                 yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
 
