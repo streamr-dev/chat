@@ -66,7 +66,7 @@ export default function MessageFeed({ messages = [], resends = [], ...props }: P
                 lg:px-6
                 py-4
                 lg:py-6
-                [> *]:mt-[0.625rem]
+                [> *]:mt-1.5
             `}
         >
             {groups.map(({ timestamp, newDay, messages }, index) => {
