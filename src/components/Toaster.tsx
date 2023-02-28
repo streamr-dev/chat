@@ -1,3 +1,4 @@
+import Toast from '$/components/Toast'
 import { ToasterAction } from '$/features/toaster'
 import defer from '$/utils/defer'
 import uniqueId from 'lodash/uniqueId'
@@ -20,7 +21,7 @@ interface HandlerProps<T> {
 type Props<T extends FC> = { abortSignal?: AbortSignal } & HandlerProps<T> &
     Omit<ComponentProps<T>, keyof HandlerProps<any>>
 
-export interface Controller<T extends FC<any>> {
+export interface Controller<T extends FC<any> = typeof Toast> {
     dismiss: () => void
     open: (props?: Props<T>) => Promise<void>
     update: (props: Props<T>) => void
