@@ -20,6 +20,7 @@ import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
+import recover from '$/utils/recover'
 
 function* onCreateAction({
     payload: {
@@ -92,13 +93,17 @@ function* onCreateAction({
 
         dismissToast = true
 
-        const stream: Stream = yield streamrClient.createStream({
-            id,
-            description,
-            extensions: {
-                'thechat.eth': metadata,
-            },
-        } as Partial<StreamMetadata> & { id: string } & Record<'extensions', Record<'thechat.eth', RoomMetadata>>)
+        const stream = yield* recover(function* () {
+            const s: Stream = yield streamrClient.createStream({
+                id,
+                description,
+                extensions: {
+                    'thechat.eth': metadata,
+                },
+            } as Partial<StreamMetadata> & { id: string } & Record<'extensions', Record<'thechat.eth', RoomMetadata>>)
+
+            return s
+        }, {})
 
         if (privacy === PrivacySetting.TokenGated) {
             yield createTokenGatePolicy({
@@ -122,22 +127,18 @@ function* onCreateAction({
 
             dismissToast = true
 
-            try {
-                yield stream.grantPermissions({
-                    public: true,
-                    permissions: [StreamPermission.SUBSCRIBE],
-                })
-
-                // We don't bother the user with an extra "we made your room public"
-                // toast. That'd be too much.
-            } catch (e) {
-                dismissToast = false
-
-                tc = yield retoast(tc, {
+            yield* recover(
+                function* () {
+                    yield stream.grantPermissions({
+                        public: true,
+                        permissions: [StreamPermission.SUBSCRIBE],
+                    })
+                },
+                {
                     title: `Failed to make "${params.name}" public`,
-                    type: ToastType.Error,
-                })
-            }
+                    desc: 'Would you like to try again? If you click "No" the room will stay private.',
+                }
+            )
         }
 
         yield db.rooms.add({
