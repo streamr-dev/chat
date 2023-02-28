@@ -1,5 +1,5 @@
 import { put, takeLatest } from 'redux-saga/effects'
-import StreamrClient, { StreamPermission } from 'streamr-client'
+import StreamrClient from 'streamr-client'
 import { RoomsAction } from '..'
 import { Prefix } from '$/types'
 import handleError from '$/utils/handleError'
@@ -11,7 +11,6 @@ async function getRoomIds(client: StreamrClient, account: string) {
 
     const search = client.searchStreams(Prefix.Room, {
         user: account,
-        anyOf: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
         allowPublic: false,
     })
 
