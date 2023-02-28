@@ -3,6 +3,11 @@
     "stickyRoomIds": [
         {
             "id": "0x9ce0e18d6e7497a3c77e2d23ffa18241540a6667/streamr-chat/room/lobby"
+        },
+        {
+            "id": "0x9ce0e18d6e7497a3c77e2d23ffa18241540a6667/streamr-chat/room/announcements",
+            "subtitle": "Public announcements",
+            "iconSrc": "megaphone.png"
         }
     ]
 }
