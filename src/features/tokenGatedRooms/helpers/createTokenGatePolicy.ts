@@ -26,6 +26,7 @@ import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { ZeroAddress } from '$/consts'
 import { Controller } from '$/features/toaster/helpers/toast'
 import isSameAddress from '$/utils/isSameAddress'
+import recover from '$/utils/recover'
 
 const Factory: Record<
     TokenStandard,
@@ -111,16 +112,23 @@ export default function createTokenGatePolicy({
                         new providers.Web3Provider(provider).getSigner()
                     )
 
-                    const tx: Record<string, any> = yield factoryContract.create(
-                        tokenAddress,
-                        roomId,
-                        BigNumber.from(minRequiredBalance || 0),
-                        tokenIds.map((id) => BigNumber.from(id)),
-                        stakingEnabled,
-                        [PermissionType.Publish, PermissionType.Subscribe]
-                    )
+                    yield* recover(
+                        function* () {
+                            const tx: Record<string, any> = yield factoryContract.create(
+                                tokenAddress,
+                                roomId,
+                                BigNumber.from(minRequiredBalance || 0),
+                                tokenIds.map((id) => BigNumber.from(id)),
+                                stakingEnabled,
+                                [PermissionType.Publish, PermissionType.Subscribe]
+                            )
 
-                    yield tx.wait(10)
+                            yield tx.wait(10)
+                        },
+                        {
+                            title: 'Failed to deploy the policy',
+                        }
+                    )
 
                     const policyRegistry = getJoinPolicyRegistry(provider)
 
@@ -133,18 +141,25 @@ export default function createTokenGatePolicy({
 
                     dismissToast = true
 
-                    yield retry(30, 1000, async function () {
-                        policyAddress = await policyRegistry.getPolicy(
-                            tokenAddress,
-                            tokenIds[0] || 0,
-                            roomId,
-                            stakingEnabled
-                        )
+                    yield* recover(
+                        function* () {
+                            yield retry(30, 1000, async function () {
+                                policyAddress = await policyRegistry.getPolicy(
+                                    tokenAddress,
+                                    tokenIds[0] || 0,
+                                    roomId,
+                                    stakingEnabled
+                                )
 
-                        if (isSameAddress(policyAddress, ZeroAddress)) {
-                            throw new Error('Invalid policy address')
+                                if (isSameAddress(policyAddress, ZeroAddress)) {
+                                    throw new Error('Invalid policy address')
+                                }
+                            })
+                        },
+                        {
+                            title: 'Failed to determine policy address',
                         }
-                    })
+                    )
 
                     tc = yield retoast(tc, {
                         title: `Assigning permissions to the token gate at ${policyAddress}`,
@@ -153,22 +168,32 @@ export default function createTokenGatePolicy({
 
                     dismissToast = true
 
-                    yield setMultiplePermissions(
-                        roomId,
-                        [
-                            {
-                                user: requester,
-                                permissions: [StreamPermission.EDIT, StreamPermission.DELETE],
-                            },
-                            {
-                                user: policyAddress,
-                                permissions: [StreamPermission.GRANT],
-                            },
-                        ],
+                    yield* recover(
+                        function* () {
+                            yield setMultiplePermissions(
+                                roomId,
+                                [
+                                    {
+                                        user: requester,
+                                        permissions: [
+                                            StreamPermission.EDIT,
+                                            StreamPermission.DELETE,
+                                        ],
+                                    },
+                                    {
+                                        user: policyAddress,
+                                        permissions: [StreamPermission.GRANT],
+                                    },
+                                ],
+                                {
+                                    provider,
+                                    requester,
+                                    streamrClient,
+                                }
+                            )
+                        },
                         {
-                            provider,
-                            requester,
-                            streamrClient,
+                            title: 'Failed to assign new permissions',
                         }
                     )
 
