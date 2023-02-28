@@ -1,14 +1,14 @@
 export const ZeroAddress = '0x0000000000000000000000000000000000000000'
 
-export const ERC20PolicyFactoryAddress = '0x74A40cA38616FD84F9ee5576e28a42aDA7302607'
+export const ERC20PolicyFactoryAddress = '0x59a94c9F8B4cb0BA80cC1B15A60401c2E3b1333B'
 
-export const ERC721PolicyFactoryAddress = '0xE663C2A9C7305FA367099393fcd653ABF9a4336e'
+export const ERC721PolicyFactoryAddress = '0x27551780406f64cee61c2326742FC9Be8645c2DF'
 
-export const ERC777PolicyFactoryAddress = '0x75052450c36C084f9D29501e630d8Ca1dbF0464D'
+export const ERC777PolicyFactoryAddress = '0x273a15B99104a489afd86afB4d9692B78E21DeA7'
 
-export const ERC1155PolicyFactoryAddress = '0x0f31377cBd078C82b34Ab586A3f8d973fEea9385'
+export const ERC1155PolicyFactoryAddress = '0xb9BecfF7e522e2760903AB78DD88B76769D705c2'
 
-export const JoinPolicyRegistryAddress = '0x3eB2Ec4d2876d22EE103aBc1e0A7CCEefD117CD3'
+export const JoinPolicyRegistryAddress = '0x8b3D38Ad6568eb4146A93b2a0da40174B3841213'
 
 export enum PermissionType {
     Edit = 0,

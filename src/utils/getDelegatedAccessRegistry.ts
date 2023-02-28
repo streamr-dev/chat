@@ -4,7 +4,7 @@ import { Provider } from '@web3-react/types'
 
 const DelegatedAccessRegistryAbi = DelegatedAccessRegistry.abi
 
-const DelegatedAccessRegistryAddress = '0x0143825C65D59CD09F5c896d9DE8b7fe952bc5EB'
+const DelegatedAccessRegistryAddress = '0x7D7272C07705a5729b5D229c15192455Fa2b1eb4'
 
 let contract: Contract
 

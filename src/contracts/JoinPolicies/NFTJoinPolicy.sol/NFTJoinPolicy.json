@@ -49,6 +49,25 @@
           "type": "address"
         }
       ],
+      "name": "accepted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
       "name": "balances",
       "outputs": [
         {
@@ -137,6 +156,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "requestDelegatedLeave",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -145,6 +171,13 @@
         }
       ],
       "name": "requestJoin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "requestLeave",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
