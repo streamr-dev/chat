@@ -42,9 +42,6 @@ const reducer = createReducer(initialState, (b) => {
                     litProtocolEnabled: true,
                     litProtocolLogging: false,
                 },
-                decryption: {
-                    keyRequestTimeout: 2500,
-                },
             }),
             wallet,
         }

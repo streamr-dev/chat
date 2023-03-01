@@ -45,9 +45,6 @@ const reducer = createReducer(initialState, (builder) => {
                       litProtocolEnabled: true,
                       litProtocolLogging: false,
                   },
-                  decryption: {
-                      keyRequestTimeout: 2500,
-                  },
               })
             : undefined
     })
