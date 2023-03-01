@@ -36,18 +36,25 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 function formatMessage(message: string): ReactNode {
-    const chunks = message.split(' ')
+    const rexp = /https?:\/\/[-a-z0-9@:%_\+.~#?&/=]{2,256}/gi
+
+    if (!rexp.test(message)) {
+        return message
+    }
+
+    const [first, ...texts] = message.split(rexp)
+
+    const links = message.match(rexp) || []
 
     return (
         <>
-            {chunks.map((chunk, i) => {
-                return (
-                    <Fragment key={i}>
-                        {/^https?:\/\/\S+$/.test(chunk) ? <Link href={chunk}>{chunk}</Link> : chunk}
-                        {i !== chunks.length - 1 && ' '}
-                    </Fragment>
-                )
-            })}
+            {first}
+            {links.map((href, i) => (
+                <Fragment key={i}>
+                    <Link href={links[i]}>{links[i]}</Link>
+                    {texts[i]}
+                </Fragment>
+            ))}
         </>
     )
 }
