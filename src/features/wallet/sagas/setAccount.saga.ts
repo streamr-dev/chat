@@ -22,7 +22,7 @@ export default function* setAccount() {
         if (!payload) {
             yield put(WalletAction.changeAccount())
 
-            return
+            continue
         }
 
         const { account, provider } = payload
