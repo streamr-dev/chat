@@ -48,6 +48,7 @@ export default function fetchStream(roomId: RoomId, streamrClient: StreamrClient
                     MiscAction.fetchTokenStandard({
                         address: tokenAddress,
                         provider,
+                        showLoadingToast: false,
                         fingerprint: Flag.isFetchingTokenStandard(tokenAddress),
                     })
                 )

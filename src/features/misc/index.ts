@@ -21,9 +21,9 @@ export const MiscAction = {
 
     setKnownTokensFilter: createAction<string>('misc: set known tokens filter'),
 
-    fetchTokenStandard: createAction<IFingerprinted & { address: Address; provider: Provider }>(
-        'misc: fetch token standard'
-    ),
+    fetchTokenStandard: createAction<
+        IFingerprinted & { address: Address; provider: Provider; showLoadingToast: boolean }
+    >('misc: fetch token standard'),
 
     setTokenStandard: createAction<{ address: Address; standard: undefined | TokenStandard }>(
         'misc: set token standard'

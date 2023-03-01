@@ -165,6 +165,7 @@ export default function AddTokenGatedRoomModal({
                             MiscAction.fetchTokenStandard({
                                 address: info.address,
                                 provider,
+                                showLoadingToast: true,
                                 fingerprint: Flag.isFetchingTokenStandard(info.address),
                             })
                         )
@@ -358,6 +359,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                                     MiscAction.fetchTokenStandard({
                                         address: info.address,
                                         provider,
+                                        showLoadingToast: true,
                                         fingerprint: Flag.isFetchingTokenStandard(info.address),
                                     })
                                 )

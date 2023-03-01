@@ -15,6 +15,7 @@ import { Provider } from '@web3-react/types'
 export default function fetchTokenStandard({
     address,
     provider,
+    showLoadingToast,
 }: ReturnType<typeof MiscAction.fetchTokenStandard>['payload']) {
     return call(function* () {
         let tc: Controller | undefined
@@ -25,10 +26,12 @@ export default function fetchTokenStandard({
             )
 
             if (!currentStandard) {
-                tc = yield toast({
-                    title: 'Loading token info…',
-                    type: ToastType.Processing,
-                })
+                if (showLoadingToast) {
+                    tc = yield toast({
+                        title: 'Loading token info…',
+                        type: ToastType.Processing,
+                    })
+                }
 
                 const standard: TokenStandard = yield fetchUtil(address, provider)
 
