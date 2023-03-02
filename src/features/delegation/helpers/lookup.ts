@@ -5,7 +5,7 @@ import { Address, OptionalAddress } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import handleError from '$/utils/handleError'
 import isSameAddress from '$/utils/isSameAddress'
-import { call, put, select } from 'redux-saga/effects'
+import { call, delay, put, race, select } from 'redux-saga/effects'
 
 export default function lookup({
     delegated,
@@ -22,22 +22,38 @@ export default function lookup({
                 return
             }
 
-            let [main]: [Address] = yield contract.functions.getMainWalletFor(delegated)
+            yield race([
+                call(function* () {
+                    yield delay(5000)
 
-            if (isSameAddress(main, ZeroAddress)) {
-                // If a given delegatee does not map to any main account it'll return the "zero"
-                // address. Fall back to the given address.
-                main = delegated
-            }
+                    throw new Error('Timeout')
+                }),
+                call(function* () {
+                    let [main]: [Address] = yield contract.functions.getMainWalletFor(delegated)
+
+                    if (isSameAddress(main, ZeroAddress)) {
+                        // If a given delegatee does not map to any main account it'll return the "zero"
+                        // address. Fall back to the given address.
+                        main = delegated
+                    }
+
+                    yield put(
+                        DelegationAction.setDelegation({
+                            main,
+                            delegated,
+                        })
+                    )
+                }),
+            ])
+        } catch (e) {
+            handleError(e)
 
             yield put(
                 DelegationAction.setDelegation({
-                    main,
+                    main: null,
                     delegated,
                 })
             )
-        } catch (e) {
-            handleError(e)
         }
     })
 }

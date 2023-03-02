@@ -4,7 +4,7 @@ import { SEE_SAGA } from '$/utils/consts'
 import { DelegationState } from './types'
 import { createAction } from '@reduxjs/toolkit'
 import { Provider } from '@web3-react/types'
-import { Address, IFingerprinted, IOwnable } from '$/types'
+import { Address, IFingerprinted, IOwnable, OptionalAddress } from '$/types'
 
 const initialState: DelegationState = {
     privateKey: undefined,
@@ -26,7 +26,7 @@ export const DelegationAction = {
         }
     >('delegation: lookup'),
 
-    setDelegation: createAction<{ main: Address; delegated: Address }>(
+    setDelegation: createAction<{ main: OptionalAddress; delegated: Address }>(
         'delegation: set delegation'
     ),
 }
@@ -54,7 +54,13 @@ const reducer = createReducer(initialState, (builder) => {
     builder.addCase(DelegationAction.lookup, SEE_SAGA)
 
     builder.addCase(DelegationAction.setDelegation, (state, { payload: { main, delegated } }) => {
-        state.delegations[delegated.toLowerCase()] = main.toLowerCase()
+        if (typeof main === 'undefined') {
+            delete state.delegations[delegated.toLowerCase()]
+
+            return
+        }
+
+        state.delegations[delegated.toLowerCase()] = main ? main.toLowerCase() : null
     })
 })
 

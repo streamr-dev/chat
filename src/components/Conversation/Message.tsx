@@ -17,7 +17,7 @@ import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
 import useSeenMessageEffect from '$/hooks/useSeenMessageEffect'
 import useMainAccount from '$/hooks/useMainAccount'
 import isSameAddress from '$/utils/isSameAddress'
-import { OptionalAddress } from '$/types'
+import { Address, OptionalAddress } from '$/types'
 import { useDispatch } from 'react-redux'
 import { Flag } from '$/features/flag/types'
 import trunc from '$/utils/trunc'
@@ -29,6 +29,7 @@ import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/h
 import useFlag from '$/hooks/useFlag'
 import { DelegationAction } from '$/features/delegation'
 import useAnonAccount from '$/hooks/useAnonAccount'
+import { Provider } from '@web3-react/types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     payload: IMessage
@@ -36,7 +37,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 function formatMessage(message: string): ReactNode {
-    const rexp = /https?:\/\/[-a-z0-9@:%_\+.~#?&/=]{2,256}/gi
+    const rexp = /https?:\/\/[-a-z0-9@:%_+.~#?&/=]{2,256}/gi
 
     if (!rexp.test(message)) {
         return message
@@ -84,12 +85,23 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
 
     const skipAvatar = !!previousCreatedBy && isSameAddress(sender, previousSender)
 
-    const avatar = skipAvatar ? <Wrap /> : <Avatar seed={sender?.toLowerCase()} />
+    const avatar =
+        sender === null ? (
+            <Wrap>
+                {!!createdBy && !!provider && (
+                    <LookupAddressButton creator={createdBy} provider={provider} />
+                )}
+            </Wrap>
+        ) : skipAvatar ? (
+            <Wrap />
+        ) : (
+            <Avatar seed={sender?.toLowerCase()} />
+        )
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (sender || !provider) {
+        if (typeof sender !== 'undefined' || !provider) {
             return
         }
 
@@ -386,6 +398,59 @@ function Sender({ short, full, ...props }: SenderProps) {
             >
                 {full}
             </div>
+        </button>
+    )
+}
+
+function LookupAddressButton({ creator, provider }: { creator: Address; provider: Provider }) {
+    const dispatch = useDispatch()
+
+    return (
+        <button
+            type="button"
+            onClick={() => {
+                dispatch(
+                    DelegationAction.setDelegation({
+                        delegated: creator,
+                        main: undefined,
+                    })
+                )
+
+                dispatch(
+                    DelegationAction.lookup({
+                        delegated: creator,
+                        provider,
+                        fingerprint: Flag.isLookingUpDelegation(creator),
+                    })
+                )
+            }}
+            css={tw`
+                appearance-none
+                rounded-full
+                bg-gray-100
+                w-full
+                h-full
+                flex
+                items-center
+                justify-center
+                text-[#59799C]
+            `}
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                css={tw`
+                    w-1/3
+                    h-1/3
+                `}
+            >
+                {/* Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}
+                {/* NOTE: The reload icon is free. */}
+                <path
+                    d="M370.3 160H320c-17.7 0-32 14.3-32 32s14.3 32 32 32H448c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v51.2L398.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L370.3 160z"
+                    fill="currentColor"
+                />
+            </svg>
         </button>
     )
 }

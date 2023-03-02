@@ -6,6 +6,6 @@ export function selectMainAccount(delegatedAccount: OptionalAddress) {
         delegatedAccount ? state.delegation.delegations[delegatedAccount.toLowerCase()] : undefined
 }
 
-export default function useMainAccount(delegatedAccount: OptionalAddress): undefined | string {
+export default function useMainAccount(delegatedAccount: OptionalAddress): OptionalAddress {
     return useSelector(selectMainAccount(delegatedAccount))
 }
