@@ -30,18 +30,36 @@ export default function RoomInfo({ roomId, mini = false, children, ...props }: P
                 <>
                     <PrivacyIcon
                         css={tw`
+                            shrink-0
                             w-3
                             mr-1.5
                             ml-0.5
                         `}
                     />
-                    <Text>{privacyLabel} room</Text>
+                    <Text truncate>{privacyLabel} room</Text>
                 </>
             )}
             {requirements && (
                 <>
-                    {!mini && <Text css={tw`whitespace-pre-wrap`}> requiring </Text>}
-                    <RoomEntryRequirements {...requirements} />
+                    {!mini && (
+                        <Text
+                            css={tw`
+                                whitespace-pre-wrap
+                                hidden
+                                lg:block
+                            `}
+                        >
+                            {' '}
+                            requiring{' '}
+                        </Text>
+                    )}
+                    <RoomEntryRequirements
+                        {...requirements}
+                        css={tw`
+                            ml-1
+                            lg:ml-0
+                        `}
+                    />
                 </>
             )}
             {children}

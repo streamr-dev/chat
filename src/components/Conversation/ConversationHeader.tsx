@@ -46,6 +46,7 @@ import { ToastType } from '$/components/Toast'
 import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 import RoomInfo from '$/components/RoomInfo'
+import UserIcon from '$/icons/UserIcon'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     canModifyMembers?: boolean
@@ -53,14 +54,6 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
     onEditMembersClick?: () => void
     onRoomPropertiesClick?: () => void
     onGoBackClick?: () => void
-}
-
-function formatMembersCount(value: number) {
-    if (value !== 1) {
-        return `${value} members`
-    }
-
-    return '1 member'
 }
 
 export default function ConversationHeader({
@@ -557,35 +550,72 @@ function MemberCount({ roomId, onClick, canModifyMembers = false }: MemberCountP
         return null
     }
 
+    const count = (
+        <div
+            css={tw`
+                flex
+                items-center
+            `}
+        >
+            <UserIcon
+                width={12}
+                height={undefined}
+                css={tw`
+                    shrink-0
+                    md:hidden
+                    mr-1
+                `}
+            />
+            <Text css={tw`md:truncate`}>
+                <span>{membersCount}</span>{' '}
+                <span
+                    css={tw`
+                        hidden
+                        md:inline
+                    `}
+                >
+                    {membersCount === 1 ? <>member</> : <>members</>}
+                </span>
+            </Text>
+        </div>
+    )
+
     return (
         <>
-            <Dot css={tw`mx-2`} />
+            <Dot
+                css={tw`
+                    mx-2
+                    shrink-0
+                `}
+            />
             {canModifyMembers ? (
-                <button type="button" onClick={() => void onClick?.()}>
-                    <Text
-                        css={
-                            isDetectingMembers &&
+                <button
+                    type="button"
+                    onClick={() => void onClick?.()}
+                    css={[
+                        tw`min-w-0`,
+                        isDetectingMembers &&
                             tw`
                                 animate-pulse
                                 [animation-duration: 0.5s]
-                            `
-                        }
-                    >
-                        {formatMembersCount(membersCount)}
-                    </Text>
+                            `,
+                    ]}
+                >
+                    {count}
                 </button>
             ) : (
-                <Text
-                    css={
+                <div
+                    css={[
+                        tw`min-w-0`,
                         isDetectingMembers &&
-                        tw`
-                            animate-pulse
-                            [animation-duration: 0.5s]
-                        `
-                    }
+                            tw`
+                                animate-pulse
+                                [animation-duration: 0.5s]
+                            `,
+                    ]}
                 >
-                    {formatMembersCount(membersCount)}
-                </Text>
+                    {count}
+                </div>
             )}
         </>
     )
