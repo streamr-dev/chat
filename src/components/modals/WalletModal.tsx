@@ -31,7 +31,7 @@ export default function WalletModal({
             return
         }
 
-        dispatch(WalletAction.connect({ integrationId, eager: false }))
+        dispatch(WalletAction.connect(integrationId))
     }
 
     return (
