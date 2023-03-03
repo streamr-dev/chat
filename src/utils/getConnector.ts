@@ -30,8 +30,7 @@ export default function getConnector(integrationId: WalletState['integrationId']
 
     if (!connector) {
         connector = initializeConnector<ReturnType<typeof integration.initializer>>(
-            integration.initializer,
-            integration.allowedChainIds
+            integration.initializer
         )
 
         // We do the lazy-load dance so that connectors don't get initialized prematurely.

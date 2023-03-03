@@ -8,6 +8,7 @@ import authorizeDelegatedAccount from '$/utils/authorizeDelegatedAccount'
 import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
+import recover from '$/utils/recover'
 
 export default function retrieve({
     provider,
@@ -41,10 +42,19 @@ export default function retrieve({
 
             const { privateKey, address } = new Wallet(derivedKeyHexString)
 
-            const isDelegationAuthorized: boolean = yield isAuthorizedDelegatedAccount(
-                owner,
-                address,
-                provider
+            const isDelegationAuthorized = yield* recover(
+                function* () {
+                    const result: boolean = yield isAuthorizedDelegatedAccount(
+                        owner,
+                        address,
+                        provider
+                    )
+
+                    return result
+                },
+                {
+                    title: 'Authorization check failed',
+                }
             )
 
             if (!isDelegationAuthorized) {

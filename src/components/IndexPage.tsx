@@ -7,31 +7,28 @@ import getConnector from '$/utils/getConnector'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Provider } from '@web3-react/types'
 
 function useConnectEffect() {
     const integrationId = useWalletIntegrationId()
 
-    const [, { useAccount, useProvider }] = getConnector(integrationId)
+    const [{ provider }, { useAccount }] = getConnector(integrationId)
 
     const account = useAccount()
-
-    const web3provider = useProvider()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!account || !web3provider || !web3provider.provider) {
+        if (!account || !provider) {
             return void dispatch(WalletAction.setAccount())
         }
 
         dispatch(
             WalletAction.setAccount({
                 account,
-                provider: web3provider.provider as Provider,
+                provider,
             })
         )
-    }, [account, web3provider, dispatch])
+    }, [account, provider, dispatch])
 }
 
 export default function IndexPage() {
