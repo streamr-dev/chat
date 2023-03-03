@@ -6,16 +6,10 @@ const DelegatedAccessRegistryAbi = DelegatedAccessRegistry.abi
 
 const DelegatedAccessRegistryAddress = '0x0143825C65D59CD09F5c896d9DE8b7fe952bc5EB'
 
-let contract: Contract
-
 export default function getDelegatedAccessRegistry(rawProvider: Provider) {
-    if (!contract) {
-        contract = new Contract(
-            DelegatedAccessRegistryAddress,
-            DelegatedAccessRegistryAbi,
-            new providers.Web3Provider(rawProvider).getSigner()
-        )
-    }
-
-    return contract
+    return new Contract(
+        DelegatedAccessRegistryAddress,
+        DelegatedAccessRegistryAbi,
+        new providers.Web3Provider(rawProvider).getSigner()
+    )
 }
