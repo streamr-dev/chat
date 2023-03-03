@@ -8,7 +8,6 @@ import UtilityButton from '$/components/UtilityButton'
 import Text from '$/components/Text'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import { useDispatch } from 'react-redux'
-import useProviderChangeEffect from '$/hooks/useProviderChangeEffect'
 import { RoomsAction } from '$/features/rooms'
 import useListenForInvitesEffect from '$/hooks/useListenForInvitesEffect'
 import { RoomAction } from '$/features/room'
@@ -48,8 +47,6 @@ export default function ChatPage() {
             })
         )
     }, [dispatch, account, streamrClient])
-
-    useProviderChangeEffect()
 
     useListenForInvitesEffect(account, (roomId, invitee) => {
         if (!streamrClient) {

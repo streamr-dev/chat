@@ -5,7 +5,6 @@ import StreamrClient from 'streamr-client'
 import { all } from 'redux-saga/effects'
 import setAccount from './sagas/setAccount.saga'
 import setIntegrationId from './sagas/setIntegrationId.saga'
-import connect from '$/features/wallet/sagas/connect.saga'
 import { Provider } from '@web3-react/types'
 import { SEE_SAGA } from '$/utils/consts'
 
@@ -28,9 +27,9 @@ export const WalletAction = {
         { account: Address; provider: Provider; streamrClient: StreamrClient } | undefined
     >('wallet: change account'),
 
-    connect: createAction<{ integrationId: WalletIntegrationId; eager: boolean }>(
-        'wallet: connect'
-    ),
+    connect: createAction<WalletIntegrationId>('wallet: connect'),
+
+    connectEagerly: createAction('wallet: connect eagerly'),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -50,7 +49,7 @@ const reducer = createReducer(initialState, (builder) => {
 })
 
 export function* walletSaga() {
-    yield all([setAccount(), setIntegrationId(), connect()])
+    yield all([setAccount(), setIntegrationId()])
 }
 
 export default reducer

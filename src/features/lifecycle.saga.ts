@@ -22,11 +22,13 @@ import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Wallet } from 'ethers'
-import { put, select, takeEvery, takeLatest } from 'redux-saga/effects'
+import { put, select, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
 import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
 import fetchTokenStandard from '$/features/misc/helpers/fetchTokenStandard'
 import preselect from '$/features/room/helpers/preselect'
+import connectEagerly from '$/features/wallet/helpers/eagerConnect'
+import connect from '$/features/wallet/helpers/connect'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -126,5 +128,13 @@ export default function* lifecycle() {
         // This needs to go last. It triggers some of the actions that have
         // takers set up above.
         yield changeAccount(payload)
+    })
+
+    yield takeLeading(WalletAction.connectEagerly, function* () {
+        yield* connectEagerly()
+    })
+
+    yield takeLatest(WalletAction.connect, function* ({ payload }) {
+        yield* connect(payload)
     })
 }

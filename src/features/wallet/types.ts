@@ -28,7 +28,6 @@ export interface Integration {
     label: string
     icon: FC
     initializer: (actions: any) => MetaMask | CoinbaseWallet | WalletConnect
-    allowedChainIds?: number[]
 }
 
 interface Currency {

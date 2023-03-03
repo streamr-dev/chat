@@ -1,16 +1,40 @@
 import ChatPage from '$/components/ChatPage'
 import HomePage from '$/components/HomePage'
 import { MiscAction } from '$/features/misc'
-import { useWalletAccount } from '$/features/wallet/hooks'
-import useEagerConnectEffect from '$/hooks/useEagerConnectEffect'
+import { WalletAction } from '$/features/wallet'
+import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
+import getConnector from '$/utils/getConnector'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-export default function IndexPage() {
-    const account = useWalletAccount()
+function useConnectEffect() {
+    const integrationId = useWalletIntegrationId()
 
-    useEagerConnectEffect()
+    const [{ provider }, { useAccount }] = getConnector(integrationId)
+
+    const account = useAccount()
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (!account || !provider) {
+            return void dispatch(WalletAction.setAccount())
+        }
+
+        dispatch(
+            WalletAction.setAccount({
+                account,
+                provider,
+            })
+        )
+    }, [account, provider, dispatch])
+}
+
+export default function IndexPage() {
+    useConnectEffect()
+
+    const account = useWalletAccount()
 
     const navigate = useNavigate()
 
@@ -19,6 +43,10 @@ export default function IndexPage() {
     useEffect(() => {
         dispatch(MiscAction.setNavigate({ navigate }))
     }, [navigate, dispatch])
+
+    useEffect(() => {
+        dispatch(WalletAction.connectEagerly())
+    }, [dispatch])
 
     if (!account) {
         return <HomePage />
