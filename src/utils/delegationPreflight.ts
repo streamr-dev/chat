@@ -9,6 +9,7 @@ import { Flag } from '$/features/flag/types'
 import { Provider } from '@web3-react/types'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import handleError from '$/utils/handleError'
+import { I18n } from '$/utils/I18n'
 
 export default function delegationPreflight({
     requester,
@@ -31,11 +32,11 @@ export default function delegationPreflight({
                 yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
 
                 confirm = yield toaster(Toast, {
-                    title: 'Hot wallet required',
+                    title: I18n.delegationToast.title(),
                     type: ToastType.Warning,
-                    desc: 'In order to proceed the app will ask for your signature.',
-                    okLabel: 'Ok',
-                    cancelLabel: 'Cancel',
+                    desc: I18n.delegationToast.desc(),
+                    okLabel: I18n.delegationToast.okLabel(),
+                    cancelLabel: I18n.delegationToast.cancelLabel(),
                 })
 
                 yield confirm?.open()

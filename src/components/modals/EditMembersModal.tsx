@@ -1,12 +1,11 @@
 import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { Address } from '$/types'
+import { Address, PrivacySetting } from '$/types'
 import { PermissionsAction } from '$/features/permissions'
 import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import usePrivacyOption from '$/hooks/usePrivacyOption'
 import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import CopyIcon from '$/icons/CopyIcon'
@@ -38,9 +37,13 @@ import { AccountType } from '$/utils/getAccountType'
 import useCanGrant from '$/hooks/useCanGrant'
 import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
-import { PrivateRoomOption } from '$/components/PrivacySelectField'
+import { I18n } from '$/utils/I18n'
+import usePrivacy from '$/hooks/usePrivacy'
 
-export default function EditMembersModal({ title = 'Edit members', ...props }: Props) {
+export default function EditMembersModal({
+    title = I18n.editMembersModal.title(),
+    ...props
+}: Props) {
     const menuOpenRef = useRef<Record<string, boolean>>({})
 
     const canGrant = useCanGrant()
@@ -90,11 +93,9 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
 
     const delegatedAccount = useDelegatedAccount()
 
-    const {
-        icon: PrivacyIcon,
-        desc: privacyDesc,
-        label: privacyLabel,
-    } = usePrivacyOption(selectedRoomId, PrivateRoomOption)
+    const privacy = usePrivacy(selectedRoomId, PrivacySetting.Private)
+
+    const PrivacyIcon = I18n.common.roomPrivacyIcon(privacy)
 
     return (
         <Modal {...props} title={title}>
@@ -116,9 +117,9 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
                 </div>
                 <div>
                     <p css={tw`text-[0.75rem]`}>
-                        <strong>{privacyLabel} room</strong>
+                        <strong>{I18n.common.roomPrivacyLabel(privacy)} room</strong>
                         <br />
-                        {privacyDesc}
+                        {I18n.common.roomPrivacyDesc(privacy)}
                     </p>
                 </div>
             </div>
@@ -312,7 +313,7 @@ function Item({
                     [* + *]:ml-1
                 `}
             >
-                {justInvited && <Tag>Invite pending</Tag>}
+                {justInvited && <Tag>{I18n.common.invitePending()}</Tag>}
             </div>
             <div
                 {...props}
@@ -400,29 +401,16 @@ function Item({
                     >
                         {isAddingNickname ? (
                             <div>
-                                <Text>Nickname is only visible to you</Text>
+                                <Text>{I18n.editMembersModal.nicknameVisibilityNote()}</Text>
                             </div>
                         ) : (
                             <div>
                                 <Text>
-                                    {isCurrentAccount ? (
-                                        <>You</>
-                                    ) : (
-                                        <>
-                                            {isCurrentDelegatedAccount ? (
-                                                <>Your delegated account</>
-                                            ) : (
-                                                <>
-                                                    {accountType === AccountType.Main
-                                                        ? '[Main Account] '
-                                                        : accountType === AccountType.Unset
-                                                        ? '[Unset Account] '
-                                                        : null}
-                                                    Room member
-                                                </>
-                                            )}
-                                        </>
-                                    )}
+                                    {isCurrentAccount
+                                        ? I18n.editMembersModal.currentAccountLabel()
+                                        : isCurrentDelegatedAccount
+                                        ? I18n.editMembersModal.currentHotAccountLabel()
+                                        : I18n.editMembersModal.accountType(accountType)}
                                 </Text>
                             </div>
                         )}
@@ -477,7 +465,7 @@ function Item({
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                View on explorer
+                                {I18n.common.viewOnExplorer()}
                             </MenuLinkItem>
                             <MenuButtonItem
                                 icon={<CopyIcon />}
@@ -488,13 +476,13 @@ function Item({
 
                                     dispatch(
                                         ToasterAction.show({
-                                            title: 'Copied to clipboard',
+                                            title: I18n.common.copied(),
                                             type: ToastType.Success,
                                         })
                                     )
                                 }}
                             >
-                                Copy address
+                                {I18n.accountModal.copy()}
                             </MenuButtonItem>
                             <MenuSeparatorItem />
                             <MenuButtonItem
@@ -505,7 +493,9 @@ function Item({
                                     setMemberMenuOpen(false)
                                 }}
                             >
-                                {alias ? <>Edit nickname</> : <>Set nickname</>}
+                                {alias
+                                    ? I18n.editMembersModal.editNicknameLabel()
+                                    : I18n.editMembersModal.setNicknameLabel()}
                             </MenuButtonItem>
                             {canBeDeleted && !isCurrentAccount && (
                                 <>
@@ -527,7 +517,7 @@ function Item({
                                             setMemberMenuOpen(false)
                                         }}
                                     >
-                                        Delete member
+                                        {I18n.editMembersModal.deleteMemberLabel()}
                                     </MenuButtonItem>
                                 </>
                             )}

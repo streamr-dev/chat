@@ -1,38 +1,21 @@
 import SelectField, { Option as RawOption, SingleValue as RawSingleValue } from './SelectField'
-import GatedIcon from '$/icons/GatedIcon'
-import PrivateIcon from '$/icons/PrivateIcon'
-import PublicIcon from '$/icons/PublicIcon'
 import { PrivacyOption, PrivacySetting } from '$/types'
 import { Props as SelectProps } from 'react-select'
 import tw, { css } from 'twin.macro'
 import Hint from './Hint'
 import Text from './Text'
-import Hodl from '$/components/Hodl'
+import { I18n } from '$/utils/I18n'
 
 export const PrivateRoomOption: PrivacyOption = {
     value: PrivacySetting.Private,
-    label: 'Private',
-    desc: 'Only invited members can post and view messages',
-    icon: PrivateIcon,
 }
 
 export const PublicRoomOption: PrivacyOption = {
     value: PrivacySetting.Public,
-    label: 'Public',
-    desc: 'Anyone can view messages',
-    icon: PublicIcon,
 }
 
 export const TokenGatedRoomOption: PrivacyOption = {
     value: PrivacySetting.TokenGated,
-    label: 'Token gated',
-    desc: (
-        <>
-            Access granted only if you <Hodl /> a particular NFT or&nbsp;ERC&#8209;20 token
-        </>
-    ),
-    icon: GatedIcon,
-    disabled: false,
 }
 
 export const privacyOptions: PrivacyOption[] = [
@@ -40,10 +23,6 @@ export const privacyOptions: PrivacyOption[] = [
     PublicRoomOption,
     TokenGatedRoomOption,
 ]
-
-function isPrivacyOption(option: unknown): option is PrivacyOption {
-    return !!option && typeof option === 'object'
-}
 
 export interface Props extends SelectProps {
     value: PrivacyOption
@@ -57,12 +36,14 @@ export default function PrivacySelectField({ value, ...props }: Props) {
             value={value}
             optionComponent={Option}
             singleValueComponent={SingleValue}
-            isOptionDisabled={(option) => isPrivacyOption(option) && Boolean(option.disabled)}
+            getOptionLabel={({ value }: any) => I18n.common.roomPrivacyLabel(value)}
         />
     )
 }
 
-function SingleValue({ data: { icon: Icon }, children, ...props }: any) {
+function SingleValue({ data: { value }, children, ...props }: any) {
+    const Icon = I18n.common.roomPrivacyIcon(value)
+
     return (
         <RawSingleValue {...props}>
             <div
@@ -91,7 +72,9 @@ function SingleValue({ data: { icon: Icon }, children, ...props }: any) {
     )
 }
 
-function Option({ data: { label, icon: Icon, desc }, isDisabled, ...props }: any) {
+function Option({ data: { value }, isDisabled, ...props }: any) {
+    const Icon = I18n.common.roomPrivacyIcon(value)
+
     return (
         <RawOption {...props} isDisabled={isDisabled}>
             <div
@@ -129,7 +112,7 @@ function Option({ data: { label, icon: Icon, desc }, isDisabled, ...props }: any
                                 `,
                         ]}
                     >
-                        <Text>{label}</Text>
+                        <Text>{I18n.common.roomPrivacyLabel(value)}</Text>
                     </div>
                     <Hint
                         css={tw`
@@ -138,7 +121,7 @@ function Option({ data: { label, icon: Icon, desc }, isDisabled, ...props }: any
                             pr-12
                         `}
                     >
-                        <Text>{desc}</Text>
+                        <Text>{I18n.common.roomPrivacyDesc(value)}</Text>
                     </Hint>
                 </div>
             </div>

@@ -4,6 +4,7 @@ import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { useEffect, useRef, useState } from 'react'
 import tw from 'twin.macro'
 import { BigNumber } from 'ethers'
+import { I18n } from '$/utils/I18n'
 
 interface Props extends Omit<ToastableProps, 'onProceed'> {
     onProceed?: (tokenId: string) => void
@@ -61,21 +62,18 @@ export default function TokenIdToast({ onProceed, tokenStandard, abortSignal, ..
         <Toast
             {...props}
             onProceed={() => void onProceed?.(tokenId)}
-            title="Token ID required"
+            title={I18n.tokenIdToast.title()}
             type={ToastType.Warning}
             abortSignal={abortController.signal}
             canSubmit={canSubmit}
             desc={
                 <>
-                    <p>
-                        This room is gated by an {tokenStandard} token. Tell us your token ID to
-                        confirm&nbsp;ownership.
-                    </p>
+                    <p>{I18n.tokenIdToast.message(tokenStandard)}</p>
                     <TextField
                         type="text"
                         value={tokenId}
                         onChange={({ target }) => void setTokenId(target.value)}
-                        placeholder="Type here…"
+                        placeholder={I18n.tokenIdToast.tokenIdInputPlaceholder()}
                         css={tw`
                             h-12
                             mt-4
@@ -97,8 +95,8 @@ export default function TokenIdToast({ onProceed, tokenStandard, abortSignal, ..
                     />
                 </>
             }
-            okLabel="Done"
-            cancelLabel="Cancel"
+            okLabel={I18n.tokenIdToast.okLabel()}
+            cancelLabel={I18n.tokenIdToast.cancelLabel()}
         />
     )
 }

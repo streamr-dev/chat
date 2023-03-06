@@ -1,4 +1,14 @@
+import Hodl from '$/components/Hodl'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import { WalletIntegrationId } from '$/features/wallet/types'
+import CoinbaseWalletIcon from '$/icons/CoinbaseWalletIcon'
+import GatedIcon from '$/icons/GatedIcon'
+import MetaMaskIcon from '$/icons/MetaMaskIcon'
+import PrivateIcon from '$/icons/PrivateIcon'
+import PublicIcon from '$/icons/PublicIcon'
+import WalletConnectIcon from '$/icons/WalletConnectIcon'
+import { PrivacySetting } from '$/types'
+import { AccountType } from '$/utils/getAccountType'
 import { format } from 'date-fns'
 import { ReactNode } from 'react'
 
@@ -84,22 +94,212 @@ export const I18n = {
         loadingPreviousDay() {
             return 'Loading previous day…'
         },
+        roomPrivacyLabel(privacySetting: PrivacySetting) {
+            switch (privacySetting) {
+                case PrivacySetting.Private:
+                    return 'Private'
+                case PrivacySetting.Public:
+                    return 'Public'
+                case PrivacySetting.TokenGated:
+                    return 'Token gated'
+            }
+        },
+        roomPrivacyIcon(privacySetting: PrivacySetting) {
+            switch (privacySetting) {
+                case PrivacySetting.Private:
+                    return PrivateIcon
+                case PrivacySetting.Public:
+                    return PublicIcon
+                case PrivacySetting.TokenGated:
+                    return GatedIcon
+            }
+        },
+        roomPrivacyDesc(privacySetting: PrivacySetting) {
+            switch (privacySetting) {
+                case PrivacySetting.Private:
+                    return 'Only invited members can post and view messages'
+                case PrivacySetting.Public:
+                    return 'Anyone can view messages'
+                case PrivacySetting.TokenGated:
+                    return (
+                        <>
+                            Access granted only if you <Hodl /> a particular NFT
+                            or&nbsp;ERC&#8209;20 token
+                        </>
+                    )
+            }
+        },
+        tokenStandardLabel(tokenStandard: TokenStandard) {
+            switch (tokenStandard) {
+                case TokenStandard.ERC1155:
+                case TokenStandard.ERC20:
+                case TokenStandard.ERC721:
+                case TokenStandard.ERC777:
+                    return <>ERC&#8209;{tokenStandard.replace(/ERC/, '')}</>
+                case TokenStandard.Unknown:
+                    return 'Unknown'
+            }
+        },
+        load(ongoing = false) {
+            return ongoing ? 'Loading…' : 'Load'
+        },
+        invitePending() {
+            return 'Invite pending'
+        },
+        viewOnExplorer() {
+            return 'View on explorer'
+        },
+        integrationLabel(integrationId: WalletIntegrationId) {
+            switch (integrationId) {
+                case WalletIntegrationId.CoinbaseWallet:
+                    return 'Coinbase Wallet'
+                case WalletIntegrationId.MetaMask:
+                    return 'MetaMask'
+                case WalletIntegrationId.WalletConnect:
+                    return 'WalletConnect'
+            }
+        },
+        integrationIcon(integrationId: WalletIntegrationId) {
+            switch (integrationId) {
+                case WalletIntegrationId.CoinbaseWallet:
+                    return CoinbaseWalletIcon
+                case WalletIntegrationId.MetaMask:
+                    return MetaMaskIcon
+                case WalletIntegrationId.WalletConnect:
+                    return WalletConnectIcon
+            }
+        },
+        frontPageTitle() {
+            return 'Streamr Chat dApp'
+        },
+        chatPageTitle() {
+            return "Let's chat!"
+        },
+        addNewRoomLabel() {
+            return 'Add new room'
+        },
+        holdLabel(flip = false) {
+            return flip ? 'hodl' : 'hold'
+        },
+        greeting() {
+            const h = new Date().getHours()
+
+            if (h >= 3 && h <= 9 && Math.random() < 0.1) {
+                // Betten 3am & 9am there's a tiny chance to get a gm.
+                return 'gm'
+            }
+
+            return 'Hello world.'
+        },
+        connectWalletLabel() {
+            return 'Connect a wallet'
+        },
+        decentralizedBy() {
+            return 'Decentralized by'
+        },
+        inviteLabel() {
+            return 'Invite'
+        },
+        requiringLabel() {
+            return ' requiring '
+        },
+        defaultSubmitLabel() {
+            return 'Submit'
+        },
+        needWalletLabel() {
+            return 'Need a wallet? Try '
+        },
+        yesLabel() {
+            return 'Yes'
+        },
+        noLabel() {
+            return 'No'
+        },
     },
-    tokenStandard: {
-        [TokenStandard.ERC1155]() {
-            return 'ERC-1155'
+    toasts: {
+        defaultTitle() {
+            return 'Toast'
         },
-        [TokenStandard.ERC20]() {
-            return 'ERC-20'
+    },
+    tokenIdToast: {
+        title() {
+            return 'Token id required'
         },
-        [TokenStandard.ERC721]() {
-            return 'ERC-721'
+        message(tokenStandard: TokenStandard) {
+            return (
+                <>
+                    This room is gated by an {tokenStandard} token. Tell us your token ID to
+                    confirm&nbsp;ownership.
+                </>
+            )
         },
-        [TokenStandard.ERC777]() {
-            return 'ERC-777'
+        tokenIdInputPlaceholder() {
+            return 'Type here…'
         },
-        [TokenStandard.Unknown]() {
-            return 'Unknown'
+        okLabel() {
+            return 'Ok'
+        },
+        cancelLabel() {
+            return 'Cancel'
+        },
+    },
+    delegationToast: {
+        title() {
+            return 'Hot wallet required'
+        },
+        desc() {
+            return 'In order to proceed the app will ask for your signature.'
+        },
+        okLabel() {
+            return I18n.common.ok()
+        },
+        cancelLabel() {
+            return I18n.common.cancel()
+        },
+    },
+    recoverToast: {
+        title() {
+            return 'Failed'
+        },
+        desc() {
+            return 'Would you like to try again?'
+        },
+        okLabel() {
+            return I18n.common.yesLabel()
+        },
+        cancelLabel() {
+            return I18n.common.noLabel()
+        },
+    },
+    appName() {
+        return 'thechat.app'
+    },
+    appLabel() {
+        return 'beta'
+    },
+    search: {
+        resultLabel() {
+            return 'Search results'
+        },
+        waitLabel() {
+            return 'Please wait…'
+        },
+        notFoundLabel() {
+            return 'Not found'
+        },
+        noResultsLabel() {
+            return 'No results'
+        },
+        searchFieldPlaceholder() {
+            return 'Room id'
+        },
+    },
+    sidebar: {
+        findButtonLabel() {
+            return 'Find'
+        },
+        roomsLabel() {
+            return 'Rooms'
         },
     },
     messageInput: {
@@ -127,19 +327,20 @@ export const I18n = {
             return I18n.common.ok()
         },
     },
-    modal: {},
+    modal: {
+        defaultTitle() {
+            return 'Untitled dialog'
+        },
+    },
     accountModal: {
         title() {
             return 'Account'
         },
-        connectedWith(integrationName: string) {
-            return `Connected with ${integrationName}`
+        connectedWith(integrationId: WalletIntegrationId) {
+            return `Connected with ${I18n.common.integrationLabel(integrationId)}`
         },
         change() {
             return 'Change'
-        },
-        viewOnExplorer() {
-            return 'View on explorer'
         },
         copy(copied = false) {
             return copied ? 'Copied' : 'Copy address'
@@ -229,13 +430,91 @@ export const I18n = {
             return 'No tokens'
         },
     },
-    editMembersModal: {},
-    howItWorksModal: {},
-    infoModal: {
-        defaultTitle: 'Info',
+    editMembersModal: {
+        title() {
+            return 'Edit members'
+        },
+        nicknameVisibilityNote() {
+            return 'Nickname is only visible to you'
+        },
+        currentAccountLabel() {
+            return 'You'
+        },
+        currentHotAccountLabel() {
+            return 'Your delegated account'
+        },
+        accountType(accountType: AccountType) {
+            switch (accountType) {
+                case AccountType.Main:
+                    return '[Main account] Room member'
+                case AccountType.Unset:
+                    return '[Unset account] Room member'
+                default:
+                    return null
+            }
+        },
+        editNicknameLabel() {
+            return 'Edit nickname'
+        },
+        setNicknameLabel() {
+            return 'Set nickname'
+        },
+        deleteMemberLabel() {
+            return 'Delete member'
+        },
     },
-    roomPropertiesModal: {},
-    walletModal: {},
+    howItWorksModal: {
+        title() {
+            return 'How it works?'
+        },
+        content() {
+            return (
+                <>
+                    <p>
+                        Every chatroom is a stream on the Streamr Network and the chat room
+                        participants are registered on the on-chain stream registry. The fabric
+                        underpinning every chat room is a peer-to-peer WebRTC mesh network composed
+                        of the participants of the chat&nbsp;room.
+                    </p>
+                    <p>
+                        Streams, and chat rooms come in two main flavors - public and private.
+                        Public meaning publicly readable, whereas private is
+                        end-to-end&nbsp;encrypted.
+                    </p>
+                    <p>
+                        If you wish to make a private group to chat with your friends, or with a
+                        community - you can now do so without any intermediary and with full
+                        confidence you are chatting with exactly who you think you're
+                        chatting&nbsp;with!
+                    </p>
+                </>
+            )
+        },
+    },
+    infoModal: {
+        title() {
+            return 'Info'
+        },
+    },
+    roomPropertiesModal: {
+        title() {
+            return 'Room properties'
+        },
+        stakingLabel() {
+            return 'Staking'
+        },
+        roomIdLabel() {
+            return 'Room id'
+        },
+        dismissButtonLabel() {
+            return 'Close'
+        },
+    },
+    walletModal: {
+        title() {
+            return 'Select a wallet'
+        },
+    },
     conversationHeader: {
         roomNamePlaceholder() {
             return 'e.g. random-giggly-bear'

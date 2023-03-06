@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { ClockAction } from '$/features/clock'
 
+// @TODO: Move to a saga.
 export default function Clock() {
     const dispatch = useDispatch()
 

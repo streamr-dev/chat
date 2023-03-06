@@ -365,7 +365,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                                 )
                             }}
                         >
-                            <Text>{I18n.tokenStandard.unknown()}</Text>
+                            <Text>{I18n.common.tokenStandardLabel(TokenStandard.Unknown)}</Text>
                         </button>
                     ) : (
                         <div
@@ -379,7 +379,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                                 text-white
                             `}
                         >
-                            <Text>{I18n.tokenStandard[standard]()}</Text>
+                            <Text>{I18n.common.tokenStandardLabel(standard)}</Text>
                         </div>
                     )}
                 </>

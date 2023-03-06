@@ -3,7 +3,6 @@ import { initializeConnector } from '@web3-react/core'
 import { MetaMask } from '@web3-react/metamask'
 import { Provider } from '@web3-react/types'
 import { WalletConnect } from '@web3-react/walletconnect'
-import { FC } from 'react'
 import StreamrClient from 'streamr-client'
 
 export enum WalletIntegrationId {
@@ -25,8 +24,6 @@ export type ConnectorMap = Partial<
 
 export interface Integration {
     id: WalletIntegrationId
-    label: string
-    icon: FC
     initializer: (actions: any) => MetaMask | CoinbaseWallet | WalletConnect
 }
 

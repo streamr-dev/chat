@@ -1,3 +1,4 @@
+import { I18n } from '$/utils/I18n'
 import { css } from 'twin.macro'
 
 export default function Hodl() {
@@ -16,8 +17,8 @@ export default function Hodl() {
                 `,
             ]}
         >
-            <span>hold</span>
-            <span>hodl</span>
+            <span>{I18n.common.holdLabel()}</span>
+            <span>{I18n.common.holdLabel(true)}</span>
         </span>
     )
 }

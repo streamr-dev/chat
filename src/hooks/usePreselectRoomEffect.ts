@@ -1,6 +1,7 @@
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { Prefix } from '$/types'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
@@ -31,7 +32,7 @@ export default function usePreselectRoomEffect() {
         const roomId =
             typeof partials === 'string'
                 ? partials
-                : `${partials.account}/streamr-chat/room/${partials.uuid}`
+                : `${partials.account}/${Prefix.Room}/${partials.uuid}`
 
         dispatch(
             RoomAction.preselect({

@@ -7,6 +7,7 @@ import useWalletModal from '$/hooks/useWalletModal'
 import useHowItWorksModal from '$/hooks/useHowItWorksModal'
 import TryMetaMask from '$/components/TryMetaMask'
 import { ButtonHTMLAttributes } from 'react'
+import { I18n } from '$/utils/I18n'
 
 export default function HomePage() {
     const { open, modal } = useWalletModal()
@@ -20,7 +21,9 @@ export default function HomePage() {
             <Page>
                 <div css={tw`relative`}>
                     <Navbar>
-                        <NavButton onClick={() => void openHiwModal()}>How it works?</NavButton>
+                        <NavButton onClick={() => void openHiwModal()}>
+                            {I18n.howItWorksModal.title()}
+                        </NavButton>
                     </Navbar>
                     <div
                         css={[
@@ -50,7 +53,7 @@ export default function HomePage() {
                                     `,
                                 ]}
                             >
-                                <Text>Hello world.</Text>
+                                <Text>{I18n.common.greeting()}</Text>
                             </h1>
                             <ConnectButton onClick={() => void open()} />
                             <TryMetaMask
@@ -91,7 +94,7 @@ function ConnectButton(props: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'chi
             ]}
             type="button"
         >
-            <Text>Connect a wallet</Text>
+            <Text>{I18n.common.connectWalletLabel()}</Text>
         </Button>
     )
 }
@@ -127,11 +130,11 @@ function PoweredBy() {
                 `}
             >
                 <Text>
-                    Decentralized by&nbsp;
+                    {I18n.common.decentralizedBy()}&nbsp;
                     <a
                         css={tw`!text-[#ff5924]`}
                         href="https://streamr.network"
-                        rel="noreferrer"
+                        rel="noreferrer noopener"
                         target="_blank"
                     >
                         Streamr

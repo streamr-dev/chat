@@ -22,10 +22,11 @@ import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
+import { I18n } from '$/utils/I18n'
 
 export default function RoomPropertiesModal({
-    title = 'Room properties',
-    subtitle = 'Unnamed room',
+    title = I18n.roomPropertiesModal.title(),
+    subtitle = I18n.common.fallbackRoomName(),
     onAbort,
     ...props
 }: ModalProps) {
@@ -168,14 +169,11 @@ export default function RoomPropertiesModal({
                             {minRequiredBalance.toString()}
                         </Label>
                     )}
-                    <Label>Staking</Label>
+                    <Label>{I18n.roomPropertiesModal.stakingLabel()}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>
-                                    When token staking is enabled, participants will need to deposit
-                                    the minimum amount in order to join the room.
-                                </Text>
+                                <Text>{I18n.addTokenGatedRoomModal.stakingDesc()}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
@@ -187,19 +185,16 @@ export default function RoomPropertiesModal({
             <Form onSubmit={() => void onAbort?.()}>
                 {!!selectedRoomId && (
                     <>
-                        <Label>Room id</Label>
+                        <Label>{I18n.roomPropertiesModal.roomIdLabel()}</Label>
                         <TextField defaultValue={selectedRoomId} readOnly />
                     </>
                 )}
                 <>
-                    <Label>Message storage</Label>
+                    <Label>{I18n.addRoomModal.storageFieldLabel()}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>
-                                    When message storage is disabled, participants will only see
-                                    messages sent while they are online.
-                                </Text>
+                                <Text>{I18n.addRoomModal.storageFieldHint()}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
@@ -212,7 +207,7 @@ export default function RoomPropertiesModal({
                     </div>
                 </>
                 <>
-                    <Submit label="Close" />
+                    <Submit label={I18n.roomPropertiesModal.dismissButtonLabel()} />
                 </>
             </Form>
         </Modal>

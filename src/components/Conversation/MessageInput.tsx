@@ -15,7 +15,6 @@ import Avatar from '$/components/Avatar'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import useAnonClient from '$/hooks/useAnonClient'
 import useInfoModal from '$/hooks/useInfoModal'
-import { P } from '$/components/modals/HowItWorksModal'
 import TextField from '$/components/TextField'
 import Hint from '$/components/Hint'
 import useAnonPrivateKey from '$/hooks/useAnonPrivateKey'
@@ -210,7 +209,14 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                             onClick={() =>
                                 void open(
                                     <>
-                                        <P>{I18n.anonExplainer.desc()}</P>
+                                        <p
+                                            css={tw`
+                                                leading-6
+                                                text-[14px]
+                                            `}
+                                        >
+                                            {I18n.anonExplainer.desc()}
+                                        </p>
                                         <Label css={tw`mt-6`}>
                                             {I18n.anonExplainer.addressLabel()}
                                         </Label>

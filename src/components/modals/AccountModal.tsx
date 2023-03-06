@@ -11,7 +11,6 @@ import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hook
 import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
 import { I18n } from '$/utils/I18n'
-import integrations from '$/utils/integrations'
 import trunc from '$/utils/trunc'
 import { AnchorHTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
@@ -29,8 +28,6 @@ export default function AccountModal({
 }: Props) {
     const integrationId = useWalletIntegrationId()
 
-    const { label } = integrations.get(integrationId!)!
-
     const account = useWalletAccount() || ''
 
     const { copy, isCopied } = useCopy()
@@ -42,6 +39,10 @@ export default function AccountModal({
     const retrieveHotWalletImmediately = Boolean(preferences?.retrieveHotWalletImmediately)
 
     const dispatch = useDispatch()
+
+    if (!integrationId) {
+        return null
+    }
 
     return (
         <>
@@ -61,7 +62,7 @@ export default function AccountModal({
                             mr-4
                         `}
                     >
-                        {I18n.accountModal.connectedWith(label)}
+                        {I18n.accountModal.connectedWith(integrationId)}
                     </div>
                     <div>
                         <SecondaryButton onClick={() => void onProceed?.()}>
@@ -94,7 +95,7 @@ export default function AccountModal({
                                 fill="currentColor"
                             />
                         </svg>
-                        <Text>{I18n.accountModal.viewOnExplorer()}</Text>
+                        <Text>{I18n.common.viewOnExplorer()}</Text>
                     </ExternalLink>
                     <ExternalLink
                         href="#"

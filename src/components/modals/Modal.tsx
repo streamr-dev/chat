@@ -1,3 +1,4 @@
+import { I18n } from '$/utils/I18n'
 import gsap from 'gsap'
 import { ReactNode, useEffect, useRef } from 'react'
 import useGlobalKeyDownEffect from 'streamr-ui/hooks/useGlobalKeyDownEffect'
@@ -18,7 +19,7 @@ export interface Props {
 }
 
 export default function Modal({
-    title = 'Untitled dialog',
+    title = I18n.modal.defaultTitle(),
     subtitle,
     children,
     onAbort,

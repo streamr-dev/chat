@@ -2,6 +2,7 @@ import tw from 'twin.macro'
 import Text from './Text'
 import Button from './Button'
 import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
+import { I18n } from '$/utils/I18n'
 
 export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElement>) {
     return (
@@ -39,36 +40,38 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
                                 tracking-widest
                             `}
                         >
-                            thechat.app
+                            {I18n.appName()}
                         </span>
-                        <div
-                            css={tw`
-                                absolute
-                                bg-white
-                                inline-block
-                                px-2
-                                py-[2px]
-                                rounded-[10%]
-                                text-[12px]
-                                md:text-[14px]
-                                -top-5
-                                -right-8
-                            `}
-                        >
-                            <Text>Beta</Text>
+                        {!!I18n.appLabel() && (
                             <div
                                 css={tw`
-                                    bg-white
-                                    h-2
-                                    w-2
                                     absolute
-                                    rotate-[-38deg]
-                                    -bottom-1
-                                    right-7
-                                    rounded-[1px]
+                                    bg-white
+                                    inline-block
+                                    px-2
+                                    py-[2px]
+                                    rounded-[10%]
+                                    text-[12px]
+                                    md:text-[14px]
+                                    -top-5
+                                    -right-8
                                 `}
-                            />
-                        </div>
+                            >
+                                <Text>{I18n.appLabel()}</Text>
+                                <div
+                                    css={tw`
+                                        bg-white
+                                        h-2
+                                        w-2
+                                        absolute
+                                        rotate-[-38deg]
+                                        -bottom-1
+                                        right-7
+                                        rounded-[1px]
+                                    `}
+                                />
+                            </div>
+                        )}
                     </div>
                 </h4>
             </div>

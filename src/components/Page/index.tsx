@@ -3,13 +3,14 @@ import { Helmet } from 'react-helmet'
 import tw, { css } from 'twin.macro'
 import Background from './background.png'
 import pkg from '$/../package-lock.json'
+import { I18n } from '$/utils/I18n'
 
 interface Props {
     children?: ReactNode
     title?: string
 }
 
-export default function Page({ children, title = 'Streamr Chat dApp' }: Props) {
+export default function Page({ children, title = I18n.common.frontPageTitle() }: Props) {
     return (
         <>
             <Helmet title={title}>

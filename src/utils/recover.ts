@@ -2,6 +2,7 @@ import Toast, { ToastType } from '$/components/Toast'
 import { ComponentProps } from 'react'
 import { Controller as ToastController } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
+import { I18n } from '$/utils/I18n'
 
 type RecoverReturnType<T> = T extends () => Generator<any, infer U, any> ? U : never
 
@@ -25,11 +26,11 @@ export default function* recover<T extends (...args: any[]) => Generator<any, an
 
                 try {
                     tc = yield toaster(Toast, {
-                        title: 'Failed',
-                        desc: 'Would you like to try again?',
+                        title: I18n.recoverToast.title(),
+                        desc: I18n.recoverToast.desc(),
                         type: ToastType.Error,
-                        okLabel: 'Yes',
-                        cancelLabel: 'No',
+                        okLabel: I18n.recoverToast.okLabel(),
+                        cancelLabel: I18n.recoverToast.cancelLabel(),
                         ...props,
                     })
 
