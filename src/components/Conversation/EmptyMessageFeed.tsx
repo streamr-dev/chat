@@ -1,5 +1,4 @@
 import tw from 'twin.macro'
-import { format } from 'date-fns'
 import Text from '../Text'
 import AddMemberIcon from '$/icons/AddMemberIcon'
 import trunc from '$/utils/trunc'
@@ -15,6 +14,7 @@ import Spinner from '$/components/Spinner'
 import useAbility from '$/hooks/useAbility'
 import { StreamPermission } from 'streamr-client'
 import useAnonAccount from '$/hooks/useAnonAccount'
+import { I18n } from '$/utils/I18n'
 
 interface Props {
     onAddMemberClick?: () => void
@@ -77,7 +77,7 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                                 <AddMemberIcon />
                             </div>
                             <div tw="grow">
-                                <Text>Add member</Text>
+                                <Text>{I18n.common.addMember()}</Text>
                             </div>
                         </UtilityButton>
                     )}
@@ -91,7 +91,7 @@ function Credits() {
     const { createdAt, createdBy } = useSelectedRoom() || {}
 
     const displayName = useDisplayUsername(createdBy, {
-        fallback: 'Someone',
+        fallback: I18n.common.unknownCreator(),
     })
 
     if (createdAt) {
@@ -108,16 +108,14 @@ function Credits() {
                 >
                     {displayName}
                 </span>{' '}
-                created this room on {format(createdAt, 'iiii, LLL do yyyy')}.
+                {I18n.emptyMessageFeed.roomCreatedAt(createdAt)}
             </>
         )
     }
 
     if (createdBy) {
-        return (
-            <>
-                Room created by <span tw="font-medium">{trunc(createdBy)}</span>.
-            </>
+        return I18n.emptyMessageFeed.roomCreatedBy(
+            <span css={tw`font-medium`}>{trunc(createdBy)}</span>
         )
     }
 
@@ -138,7 +136,7 @@ function JoinButton() {
                 items-center
             `}
         >
-            <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
+            <Text>{I18n.common.join(accepting)}</Text>
             {accepting && (
                 <div
                     css={tw`

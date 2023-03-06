@@ -14,6 +14,7 @@ import PrivacySelectField, {
     PrivateRoomOption,
 } from '$/components/PrivacySelectField'
 import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
+import { I18n } from '$/utils/I18n'
 
 export interface NewRoom {
     name: string
@@ -37,7 +38,7 @@ function getPrivacyOptionForSetting(value: PrivacySetting): PrivacyOption {
 }
 
 export default function AddRoomModal({
-    title = 'Add new room',
+    title = I18n.addRoomModal.title(),
     params = defaultParams,
     onProceed,
     ...props
@@ -64,7 +65,10 @@ export default function AddRoomModal({
 
     const canCreate = !isBlank(roomName)
 
-    const createSubmitLabel = privacySetting.value === PrivacySetting.TokenGated ? 'Next' : 'Create'
+    const createSubmitLabel =
+        privacySetting.value === PrivacySetting.TokenGated
+            ? I18n.addRoomModal.nextButtonLabel()
+            : I18n.addRoomModal.createButtonLabel()
 
     return (
         <Modal
@@ -96,30 +100,27 @@ export default function AddRoomModal({
                 <>
                     <Label htmlFor="roomName">Name</Label>
                     <TextField
-                        placeholder="e.g. giggling-bear"
+                        placeholder={I18n.addRoomModal.roomFieldPlaceholder()}
                         id="roomName"
                         value={roomName}
                         onChange={(e) => void setRoomName(e.target.value)}
                         autoFocus
                     />
-                    <Hint>The room name will be publicly visible.</Hint>
+                    <Hint>{I18n.addRoomModal.roomFieldHint()}</Hint>
                 </>
                 <>
-                    <Label>Choose privacy</Label>
+                    <Label>{I18n.addRoomModal.privacyFieldLabel()}</Label>
                     <PrivacySelectField
                         value={privacySetting}
                         onChange={(option) => void setPrivacySetting(option as PrivacyOption)}
                     />
                 </>
                 <>
-                    <Label>Message storage</Label>
+                    <Label>{I18n.addRoomModal.storageFieldLabel()}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>
-                                    When message storage is disabled, participants will only see
-                                    messages sent while they are online.
-                                </Text>
+                                <Text>{I18n.addRoomModal.storageFieldHint()}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>

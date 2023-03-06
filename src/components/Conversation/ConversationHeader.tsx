@@ -47,6 +47,7 @@ import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 import RoomInfo from '$/components/RoomInfo'
 import UserIcon from '$/icons/UserIcon'
+import { I18n } from '$/utils/I18n'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     canModifyMembers?: boolean
@@ -248,7 +249,7 @@ export default function ConversationHeader({
                                     )
                                 }}
                                 onKeyDown={onKeyDown}
-                                placeholder="e.g. random-giggly-bear"
+                                placeholder={I18n.conversationHeader.roomNamePlaceholder()}
                                 type="text"
                                 value={transientRoomName}
                                 disabled={isPersistingRoomName}
@@ -266,13 +267,12 @@ export default function ConversationHeader({
                                 ]}
                             >
                                 <Text truncate>
-                                    {isPersistingRoomName ? (
-                                        <>
-                                            Renaming "{name}" to "{transientRoomName}"…
-                                        </>
-                                    ) : (
-                                        <>The room name will be publicly visible.</>
-                                    )}
+                                    {isPersistingRoomName
+                                        ? I18n.conversationHeader.renamingInProgress(
+                                              name,
+                                              transientRoomName
+                                          )
+                                        : I18n.conversationHeader.renamingIdle()}
                                 </Text>
                             </div>
                         </div>
@@ -289,7 +289,7 @@ export default function ConversationHeader({
                                     `,
                                 ]}
                             >
-                                <Text truncate>{name || 'Unnamed room'}&zwnj;</Text>
+                                <Text truncate>{name || I18n.common.fallbackRoomName()}&zwnj;</Text>
                             </div>
                             <RoomInfo roomId={selectedRoomId}>
                                 <MemberCount
@@ -323,10 +323,10 @@ export default function ConversationHeader({
                                 )
                             }}
                         >
-                            <Text>Cancel</Text>
+                            <Text>{I18n.common.cancel()}</Text>
                         </ActionTextButton>
                         <ActionTextButton disabled={isPersistingRoomName} type="submit">
-                            <Text>Save</Text>
+                            <Text>{I18n.common.save()}</Text>
                         </ActionTextButton>
                     </div>
                 ) : (
@@ -340,7 +340,7 @@ export default function ConversationHeader({
                                     text-[#FF5924]
                                 `}
                             >
-                                <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
+                                <Text>{I18n.common.join(accepting)}</Text>
                             </ActionTextButton>
                         )}
                         {canEdit && !isRoomBeingDeleted && (
@@ -384,7 +384,7 @@ export default function ConversationHeader({
                                                 setRoomMenuOpen(false)
                                             }}
                                         >
-                                            Add member
+                                            {I18n.common.addMember()}
                                         </MenuButtonItem>
                                         <MenuButtonItem
                                             icon={<EditMembersIcon />}
@@ -396,7 +396,7 @@ export default function ConversationHeader({
                                                 setRoomMenuOpen(false)
                                             }}
                                         >
-                                            Edit members
+                                            {I18n.common.editMembers()}
                                         </MenuButtonItem>
                                         <MenuSeparatorItem />
                                     </>
@@ -410,7 +410,7 @@ export default function ConversationHeader({
                                         }}
                                         css={tw`lg:hidden`}
                                     >
-                                        Rename room
+                                        {I18n.conversationHeader.renameRoom()}
                                     </MenuButtonItem>
                                 )}
                                 <MenuButtonItem
@@ -421,7 +421,7 @@ export default function ConversationHeader({
 
                                             dispatch(
                                                 ToasterAction.show({
-                                                    title: 'Copied to clipboard',
+                                                    title: I18n.common.copied(),
                                                     type: ToastType.Success,
                                                 })
                                             )
@@ -429,7 +429,7 @@ export default function ConversationHeader({
                                         setRoomMenuOpen(false)
                                     }}
                                 >
-                                    Copy room id
+                                    {I18n.common.copyRoomId()}
                                 </MenuButtonItem>
                                 <MenuButtonItem
                                     icon={<EyeIcon open={!isVisible} css={tw`w-4`} />}
@@ -447,19 +447,11 @@ export default function ConversationHeader({
                                         setRoomMenuOpen(false)
                                     }}
                                 >
-                                    {isVisible ? <>Hide room</> : <>Unhide room</>}
+                                    {isVisible ? I18n.common.hideRoom() : I18n.common.unhideRoom()}
                                 </MenuButtonItem>
                                 {isPinned && (
                                     <MenuButtonItem
-                                        icon={
-                                            <PinIcon
-                                                css={[
-                                                    tw`
-                                                        w-2.5
-                                                    `,
-                                                ]}
-                                            />
-                                        }
+                                        icon={<PinIcon css={tw`w-2.5`} />}
                                         onClick={() => {
                                             if (selectedRoomId && account && streamrClient) {
                                                 dispatch(
@@ -478,7 +470,7 @@ export default function ConversationHeader({
                                             setRoomMenuOpen(false)
                                         }}
                                     >
-                                        Unpin
+                                        {I18n.common.unpin()}
                                     </MenuButtonItem>
                                 )}
                                 {(canEdit || canDelete) && <MenuSeparatorItem />}
@@ -493,7 +485,7 @@ export default function ConversationHeader({
                                             setRoomMenuOpen(false)
                                         }}
                                     >
-                                        Properties
+                                        {I18n.common.roomProperties()}
                                     </MenuButtonItem>
                                 )}
                                 {canDelete && (
@@ -521,7 +513,7 @@ export default function ConversationHeader({
                                             setRoomMenuOpen(false)
                                         }}
                                     >
-                                        Delete room
+                                        {I18n.common.deleteRoom()}
                                     </MenuButtonItem>
                                 )}
                             </Menu>
@@ -574,7 +566,7 @@ function MemberCount({ roomId, onClick, canModifyMembers = false }: MemberCountP
                         md:inline
                     `}
                 >
-                    {membersCount === 1 ? <>member</> : <>members</>}
+                    {I18n.common.member(membersCount !== 1)}
                 </span>
             </Text>
         </div>

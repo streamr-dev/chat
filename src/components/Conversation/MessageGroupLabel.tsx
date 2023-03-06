@@ -6,6 +6,7 @@ import { useWalletAccount } from '$/features/wallet/hooks'
 import useFlag from '$/hooks/useFlag'
 import useSubscriber from '$/hooks/useSubscriber'
 import { DayInMillis } from '$/utils/getBeginningOfDay'
+import { I18n } from '$/utils/I18n'
 import { format } from 'date-fns'
 import { HTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
@@ -97,7 +98,7 @@ export default function MessageGroupLabel({
                         </button>
                     </>
                 )}
-                {isLoadingPreviousDay && <> &middot; Loading previous day…</>}
+                {isLoadingPreviousDay && <> &middot; {I18n.common.loadingPreviousDay()}</>}
             </Text>
         </div>
     )

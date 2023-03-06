@@ -27,6 +27,7 @@ import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBei
 import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 import useJoin from '$/hooks/useJoin'
 import usePublisher, { PublisherState } from '$/hooks/usePublisher'
+import { I18n } from '$/utils/I18n'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -150,11 +151,11 @@ function TokenGatedBox() {
         <MessageInputPlaceholder
             cta={
                 <Cta busy={isJoining} disabled={isJoining || !join} onClick={() => void join?.()}>
-                    {isJoining ? <>Joining...</> : <>Join</>}
+                    {I18n.common.join(isJoining)}
                 </Cta>
             }
         >
-            This is a token gated room. Join it to send messages.
+            {I18n.rooms.joinGatedPrompt()}
         </MessageInputPlaceholder>
     )
 }
@@ -168,11 +169,11 @@ function PermitBox() {
         <MessageInputPlaceholder
             cta={
                 <Cta busy={isPromoting} disabled={isPromoting || !promote} onClick={promote}>
-                    {isPromoting ? <>Enabling…</> : <>Enable</>}
+                    {I18n.common.enable(isPromoting)}
                 </Cta>
             }
         >
-            Use your hot wallet to sign messages in this room.
+            {I18n.rooms.promoteHotWalletPrompt()}
         </MessageInputPlaceholder>
     )
 }
@@ -184,7 +185,7 @@ function DelegationBox() {
 
     const roomId = useSelectedRoomId()
 
-    const actions = usePrivacy(roomId) === PrivacySetting.Public ? 'send' : 'send and receive'
+    const actions = usePrivacy(roomId) === PrivacySetting.Public ? ['send'] : ['send', 'receive']
 
     return (
         <MessageInputPlaceholder
@@ -194,11 +195,11 @@ function DelegationBox() {
                     disabled={isDelegatingAccess}
                     onClick={requestPrivateKey}
                 >
-                    {isDelegatingAccess ? <>Enabling…</> : <>Enable</>}
+                    {I18n.common.enable(isDelegatingAccess)}
                 </Cta>
             }
         >
-            Activate hot wallet signing to {actions} messages.
+            {I18n.rooms.delegatePrompt(actions)}
         </MessageInputPlaceholder>
     )
 }

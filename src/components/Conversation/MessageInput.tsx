@@ -25,6 +25,7 @@ import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
 import Submit from '$/components/Submit'
 import Textarea from '$/components/Conversation/Textarea'
+import { I18n } from '$/utils/I18n'
 
 interface Props {
     disabled?: boolean
@@ -170,7 +171,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                         setValue(e.currentTarget.value)
                         makeDraft(e.currentTarget.value)
                     }}
-                    placeholder="Type a message…"
+                    placeholder={I18n.messageInput.placeholder()}
                     onWidthOffsetChange={setRightOffset}
                     onKeyDown={(e) => {
                         setIsShiftDown(e.shiftKey)
@@ -209,16 +210,14 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                             onClick={() =>
                                 void open(
                                     <>
-                                        <P>
-                                            Your randomly generated wallet address used for sending
-                                            messages to others in this room:
-                                        </P>
-                                        <Label css={tw`mt-6`}>Address</Label>
+                                        <P>{I18n.anonExplainer.desc()}</P>
+                                        <Label css={tw`mt-6`}>
+                                            {I18n.anonExplainer.addressLabel()}
+                                        </Label>
                                         <TextField defaultValue={anonAccount} readOnly />
-                                        <Hint>
-                                            It'll change on refresh or when you switch to a
-                                            different account.
-                                        </Hint>
+                                        {!!I18n.anonExplainer.addressHint() && (
+                                            <Hint>{I18n.anonExplainer.addressHint()}</Hint>
+                                        )}
                                         {!!anonPKey && (
                                             <>
                                                 <Label css={tw`mt-6`}>
@@ -228,24 +227,24 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                             items-center
                                                         `}
                                                     >
-                                                        <div css={tw`grow`}>Private key</div>
+                                                        <div css={tw`grow`}>
+                                                            {I18n.anonExplainer.privateKeyLabel()}
+                                                        </div>
                                                         <button
                                                             type="button"
-                                                            css={tw`
-                                                                appearance-none
-                                                            `}
+                                                            css={tw`appearance-none`}
                                                             onClick={() => {
                                                                 copy(anonPKey)
 
                                                                 dispatch(
                                                                     ToasterAction.show({
-                                                                        title: 'Copied to clipboard',
+                                                                        title: I18n.common.copied(),
                                                                         type: ToastType.Success,
                                                                     })
                                                                 )
                                                             }}
                                                         >
-                                                            Copy
+                                                            {I18n.common.copy()}
                                                         </button>
                                                     </div>
                                                 </Label>
@@ -255,7 +254,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                     type="password"
                                                 />
                                                 <Submit
-                                                    label="Ok"
+                                                    label={I18n.anonExplainer.okLabel()}
                                                     type="button"
                                                     onClick={() => void close()}
                                                 />
@@ -263,7 +262,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                         )}
                                     </>,
                                     {
-                                        title: 'Anonymous mode',
+                                        title: I18n.anonExplainer.title(),
                                     }
                                 )
                             }
@@ -324,9 +323,9 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                             submittable &&
                                 !isShiftDown &&
                                 tw`
-                                opacity-100
-                                cursor-pointer
-                            `,
+                                    opacity-100
+                                    cursor-pointer
+                                `,
                         ]}
                     >
                         <svg
