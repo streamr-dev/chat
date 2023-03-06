@@ -7,6 +7,7 @@
         "lint": "eslint . --ext .ts,.tsx",
         "preview": "vite preview",
         "start": "vite",
+	"start:prod": "vite --host",
         "prettier": "prettier --write src"
     },
     "dependencies": {
