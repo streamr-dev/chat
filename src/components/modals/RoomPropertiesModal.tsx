@@ -22,11 +22,11 @@ import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export default function RoomPropertiesModal({
-    title = I18n.roomPropertiesModal.title(),
-    subtitle = I18n.common.fallbackRoomName(),
+    title = i18n('roomPropertiesModal.title'),
+    subtitle = i18n('common.fallbackRoomName'),
     onAbort,
     ...props
 }: ModalProps) {
@@ -169,11 +169,11 @@ export default function RoomPropertiesModal({
                             {minRequiredBalance.toString()}
                         </Label>
                     )}
-                    <Label>{I18n.roomPropertiesModal.stakingLabel()}</Label>
+                    <Label>{i18n('roomPropertiesModal.stakingLabel')}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>{I18n.addTokenGatedRoomModal.stakingDesc()}</Text>
+                                <Text>{i18n('addTokenGatedRoomModal.stakingDesc')}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
@@ -185,16 +185,16 @@ export default function RoomPropertiesModal({
             <Form onSubmit={() => void onAbort?.()}>
                 {!!selectedRoomId && (
                     <>
-                        <Label>{I18n.roomPropertiesModal.roomIdLabel()}</Label>
+                        <Label>{i18n('roomPropertiesModal.roomIdLabel')}</Label>
                         <TextField defaultValue={selectedRoomId} readOnly />
                     </>
                 )}
                 <>
-                    <Label>{I18n.addRoomModal.storageFieldLabel()}</Label>
+                    <Label>{i18n('addRoomModal.storageFieldLabel')}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>{I18n.addRoomModal.storageFieldHint()}</Text>
+                                <Text>{i18n('addRoomModal.storageFieldHint')}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
@@ -207,7 +207,7 @@ export default function RoomPropertiesModal({
                     </div>
                 </>
                 <>
-                    <Submit label={I18n.roomPropertiesModal.dismissButtonLabel()} />
+                    <Submit label={i18n('roomPropertiesModal.dismissButtonLabel')} />
                 </>
             </Form>
         </Modal>

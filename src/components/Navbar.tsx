@@ -2,7 +2,7 @@ import tw from 'twin.macro'
 import Text from './Text'
 import Button from './Button'
 import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElement>) {
     return (
@@ -40,9 +40,9 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
                                 tracking-widest
                             `}
                         >
-                            {I18n.appName()}
+                            {i18n('appName')}
                         </span>
-                        {!!I18n.appLabel() && (
+                        {!!i18n('appLabel') && (
                             <div
                                 css={tw`
                                     absolute
@@ -57,7 +57,7 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
                                     -right-8
                                 `}
                             >
-                                <Text>{I18n.appLabel()}</Text>
+                                <Text>{i18n('appLabel')}</Text>
                                 <div
                                     css={tw`
                                         bg-white

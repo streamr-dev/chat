@@ -37,11 +37,11 @@ import { AccountType } from '$/utils/getAccountType'
 import useCanGrant from '$/hooks/useCanGrant'
 import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import usePrivacy from '$/hooks/usePrivacy'
 
 export default function EditMembersModal({
-    title = I18n.editMembersModal.title(),
+    title = i18n('editMembersModal.title'),
     ...props
 }: Props) {
     const menuOpenRef = useRef<Record<string, boolean>>({})
@@ -95,7 +95,7 @@ export default function EditMembersModal({
 
     const privacy = usePrivacy(selectedRoomId, PrivacySetting.Private)
 
-    const PrivacyIcon = I18n.common.roomPrivacyIcon(privacy)
+    const PrivacyIcon = i18n('common.roomPrivacyIcon', privacy)
 
     return (
         <Modal {...props} title={title}>
@@ -117,9 +117,9 @@ export default function EditMembersModal({
                 </div>
                 <div>
                     <p css={tw`text-[0.75rem]`}>
-                        <strong>{I18n.common.roomPrivacyLabel(privacy)} room</strong>
+                        <strong>{i18n('common.roomPrivacyLabel', privacy)} room</strong>
                         <br />
-                        {I18n.common.roomPrivacyDesc(privacy)}
+                        {i18n('common.roomPrivacyDesc', privacy)}
                     </p>
                 </div>
             </div>
@@ -313,7 +313,7 @@ function Item({
                     [* + *]:ml-1
                 `}
             >
-                {justInvited && <Tag>{I18n.common.invitePending()}</Tag>}
+                {justInvited && <Tag>{i18n('common.invitePending')}</Tag>}
             </div>
             <div
                 {...props}
@@ -401,16 +401,16 @@ function Item({
                     >
                         {isAddingNickname ? (
                             <div>
-                                <Text>{I18n.editMembersModal.nicknameVisibilityNote()}</Text>
+                                <Text>{i18n('editMembersModal.nicknameVisibilityNote')}</Text>
                             </div>
                         ) : (
                             <div>
                                 <Text>
                                     {isCurrentAccount
-                                        ? I18n.editMembersModal.currentAccountLabel()
+                                        ? i18n('editMembersModal.currentAccountLabel')
                                         : isCurrentDelegatedAccount
-                                        ? I18n.editMembersModal.currentHotAccountLabel()
-                                        : I18n.editMembersModal.accountType(accountType)}
+                                        ? i18n('editMembersModal.currentHotAccountLabel')
+                                        : i18n('editMembersModal.accountType', accountType)}
                                 </Text>
                             </div>
                         )}
@@ -465,7 +465,7 @@ function Item({
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                {I18n.common.viewOnExplorer()}
+                                {i18n('common.viewOnExplorer')}
                             </MenuLinkItem>
                             <MenuButtonItem
                                 icon={<CopyIcon />}
@@ -476,13 +476,13 @@ function Item({
 
                                     dispatch(
                                         ToasterAction.show({
-                                            title: I18n.common.copied(),
+                                            title: i18n('common.copied'),
                                             type: ToastType.Success,
                                         })
                                     )
                                 }}
                             >
-                                {I18n.accountModal.copy()}
+                                {i18n('accountModal.copy')}
                             </MenuButtonItem>
                             <MenuSeparatorItem />
                             <MenuButtonItem
@@ -494,8 +494,8 @@ function Item({
                                 }}
                             >
                                 {alias
-                                    ? I18n.editMembersModal.editNicknameLabel()
-                                    : I18n.editMembersModal.setNicknameLabel()}
+                                    ? i18n('editMembersModal.editNicknameLabel')
+                                    : i18n('editMembersModal.setNicknameLabel')}
                             </MenuButtonItem>
                             {canBeDeleted && !isCurrentAccount && (
                                 <>
@@ -517,7 +517,7 @@ function Item({
                                             setMemberMenuOpen(false)
                                         }}
                                     >
-                                        {I18n.editMembersModal.deleteMemberLabel()}
+                                        {i18n('editMembersModal.deleteMemberLabel')}
                                     </MenuButtonItem>
                                 </>
                             )}

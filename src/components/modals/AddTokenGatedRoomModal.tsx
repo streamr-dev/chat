@@ -28,7 +28,7 @@ import { BigNumber } from 'ethers'
 import uniq from 'lodash/uniq'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { parseUnits } from '@ethersproject/units'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 interface Gate {
     tokenAddress: Address
@@ -59,7 +59,7 @@ const defaultTransientParams = {
 }
 
 export default function AddTokenGatedRoomModal({
-    title = I18n.addTokenGatedRoomModal.title(),
+    title = i18n('addTokenGatedRoomModal.title'),
     onProceed,
     ...props
 }: Props) {
@@ -151,7 +151,7 @@ export default function AddTokenGatedRoomModal({
                 }
             }}
         >
-            <Label>{I18n.addTokenGatedRoomModal.addressFieldLabel()}</Label>
+            <Label>{i18n('addTokenGatedRoomModal.addressFieldLabel')}</Label>
             {isBlank(tokenInfo.address) ? (
                 <Search
                     info={previousTokenInfo.current}
@@ -200,11 +200,11 @@ export default function AddTokenGatedRoomModal({
                 {!!isCountable && (
                     <>
                         <Label htmlFor="minRequiredBalance">
-                            {I18n.addTokenGatedRoomModal.minBalanceFieldLabel()}
+                            {i18n('addTokenGatedRoomModal.minBalanceFieldLabel')}
                         </Label>
                         <TextField
                             id="minRequiredBalance"
-                            placeholder={I18n.addTokenGatedRoomModal.minBalanceFieldPlaceholder()}
+                            placeholder={i18n('addTokenGatedRoomModal.minBalanceFieldPlaceholder')}
                             value={minRequiredBalance}
                             onChange={({ target }) =>
                                 void setTransientParams((t) => ({
@@ -218,7 +218,7 @@ export default function AddTokenGatedRoomModal({
                 {!!hasIds && (
                     <>
                         <Label htmlFor="tokenIds">
-                            {I18n.addTokenGatedRoomModal.tokenIdsFieldLabel()}
+                            {i18n('addTokenGatedRoomModal.tokenIdsFieldLabel')}
                         </Label>
                         <TextField
                             id="tokenIds"
@@ -232,11 +232,11 @@ export default function AddTokenGatedRoomModal({
                         />
                     </>
                 )}
-                <Label>{I18n.addTokenGatedRoomModal.stakingLabel()}</Label>
+                <Label>{i18n('addTokenGatedRoomModal.stakingLabel')}</Label>
                 <div css={tw`flex`}>
                     <div css={tw`grow`}>
                         <Hint css={tw`pr-16`}>
-                            <Text>{I18n.addTokenGatedRoomModal.stakingDesc()}</Text>
+                            <Text>{i18n('addTokenGatedRoomModal.stakingDesc')}</Text>
                         </Hint>
                     </div>
                     <div css={tw`mt-2`}>
@@ -262,7 +262,7 @@ export default function AddTokenGatedRoomModal({
                         mt-10
                     `}
                 >
-                    <Text>{I18n.addTokenGatedRoomModal.createButtonLabel()}</Text>
+                    <Text>{i18n('addTokenGatedRoomModal.createButtonLabel')}</Text>
                 </PrimaryButton>
             </Form>
         </Modal>
@@ -365,7 +365,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                                 )
                             }}
                         >
-                            <Text>{I18n.common.tokenStandardLabel(TokenStandard.Unknown)}</Text>
+                            <Text>{i18n('common.tokenStandardLabel', TokenStandard.Unknown)}</Text>
                         </button>
                     ) : (
                         <div
@@ -379,7 +379,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                                 text-white
                             `}
                         >
-                            <Text>{I18n.common.tokenStandardLabel(standard)}</Text>
+                            <Text>{i18n('common.tokenStandardLabel', standard)}</Text>
                         </div>
                     )}
                 </>
@@ -404,7 +404,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                             px-4
                         `}
                     >
-                        <Text>{I18n.addTokenGatedRoomModal.changeButtonLabel()}</Text>
+                        <Text>{i18n('addTokenGatedRoomModal.changeButtonLabel')}</Text>
                     </SecondaryButton>
                 </div>
             )}
@@ -503,7 +503,7 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                             w-full
                             translate-y-[-0.06em]
                         `}
-                        placeholder={I18n.addTokenGatedRoomModal.searchFieldPlaceholder()}
+                        placeholder={i18n('addTokenGatedRoomModal.searchFieldPlaceholder')}
                         value={value}
                         autoFocus
                         onChange={({ target }) => void setValue(target.value)}
@@ -669,10 +669,10 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                         {isFetchingKnownTokens ? (
                             <>
                                 <Spinner />
-                                {I18n.addTokenGatedRoomModal.loadingTokens()}
+                                {i18n('addTokenGatedRoomModal.loadingTokens')}
                             </>
                         ) : (
-                            I18n.addTokenGatedRoomModal.noTokens()
+                            i18n('addTokenGatedRoomModal.noTokens')
                         )}
                     </div>
                 )}

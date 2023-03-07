@@ -24,7 +24,7 @@ import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
 import Submit from '$/components/Submit'
 import Textarea from '$/components/Conversation/Textarea'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 interface Props {
     disabled?: boolean
@@ -170,7 +170,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                         setValue(e.currentTarget.value)
                         makeDraft(e.currentTarget.value)
                     }}
-                    placeholder={I18n.messageInput.placeholder()}
+                    placeholder={i18n('messageInput.placeholder')}
                     onWidthOffsetChange={setRightOffset}
                     onKeyDown={(e) => {
                         setIsShiftDown(e.shiftKey)
@@ -215,14 +215,14 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                 text-[14px]
                                             `}
                                         >
-                                            {I18n.anonExplainer.desc()}
+                                            {i18n('anonExplainer.desc')}
                                         </p>
                                         <Label css={tw`mt-6`}>
-                                            {I18n.anonExplainer.addressLabel()}
+                                            {i18n('anonExplainer.addressLabel')}
                                         </Label>
                                         <TextField defaultValue={anonAccount} readOnly />
-                                        {!!I18n.anonExplainer.addressHint() && (
-                                            <Hint>{I18n.anonExplainer.addressHint()}</Hint>
+                                        {!!i18n('anonExplainer.addressHint') && (
+                                            <Hint>{i18n('anonExplainer.addressHint')}</Hint>
                                         )}
                                         {!!anonPKey && (
                                             <>
@@ -234,7 +234,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                         `}
                                                     >
                                                         <div css={tw`grow`}>
-                                                            {I18n.anonExplainer.privateKeyLabel()}
+                                                            {i18n('anonExplainer.privateKeyLabel')}
                                                         </div>
                                                         <button
                                                             type="button"
@@ -244,13 +244,15 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
 
                                                                 dispatch(
                                                                     ToasterAction.show({
-                                                                        title: I18n.common.copied(),
+                                                                        title: i18n(
+                                                                            'common.copied'
+                                                                        ),
                                                                         type: ToastType.Success,
                                                                     })
                                                                 )
                                                             }}
                                                         >
-                                                            {I18n.common.copy()}
+                                                            {i18n('common.copy')}
                                                         </button>
                                                     </div>
                                                 </Label>
@@ -260,7 +262,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                     type="password"
                                                 />
                                                 <Submit
-                                                    label={I18n.anonExplainer.okLabel()}
+                                                    label={i18n('anonExplainer.okLabel')}
                                                     type="button"
                                                     onClick={() => void close()}
                                                 />
@@ -268,7 +270,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                         )}
                                     </>,
                                     {
-                                        title: I18n.anonExplainer.title(),
+                                        title: i18n('anonExplainer.title'),
                                     }
                                 )
                             }

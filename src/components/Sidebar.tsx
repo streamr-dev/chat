@@ -13,7 +13,7 @@ import useSearchResult from '$/hooks/useSearchResult'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import ArrowIcon from '$/icons/ArrowIcon'
 import { Prefix } from '$/types'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import isBlank from '$/utils/isBlank'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { HTMLAttributes, useState } from 'react'
@@ -66,7 +66,7 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
                         onRoomId={setRawRoomId}
                         onGoBackButtonClick={() => void setShowSearch(false)}
                     />
-                    <Header>{I18n.search.resultLabel()}</Header>
+                    <Header>{i18n('search.resultLabel')}</Header>
                     {isSearching || searchResult == null ? (
                         <div
                             css={[
@@ -87,10 +87,10 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
                         >
                             <Text>
                                 {isSearching
-                                    ? I18n.search.waitLabel()
+                                    ? i18n('search.waitLabel')
                                     : searchResult === null
-                                    ? I18n.search.notFoundLabel()
-                                    : I18n.search.noResultsLabel()}
+                                    ? i18n('search.notFoundLabel')
+                                    : i18n('search.noResultsLabel')}
                             </Text>
                         </div>
                     ) : (
@@ -107,17 +107,17 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
             )}
             <div css={showSearch && tw`hidden`}>
                 <SidebarUtilityButton
-                    label={I18n.sidebar.findButtonLabel()}
+                    label={i18n('sidebar.findButtonLabel')}
                     type={SidebarUtilityButtonType.Search}
                     onClick={() => void setShowSearch(true)}
                 />
                 <SidebarUtilityButton
                     onClick={() => void onAddRoomButtonClick?.()}
-                    label={I18n.common.addNewRoomLabel()}
+                    label={i18n('common.addNewRoomLabel')}
                     type={SidebarUtilityButtonType.Add}
                     css={tw`mt-2`}
                 />
-                <Header>{I18n.sidebar.roomsLabel()}</Header>
+                <Header>{i18n('sidebar.roomsLabel')}</Header>
                 {(rooms || []).map((room) => (
                     <RoomButton
                         key={room.id}
@@ -194,7 +194,7 @@ function Search({ roomId, onRoomId, onGoBackButtonClick, ...props }: SearchProps
                     onChange={({ target }) => void onRoomId(target.value)}
                     autoFocus
                     type="text"
-                    placeholder={I18n.search.searchFieldPlaceholder()}
+                    placeholder={i18n('search.searchFieldPlaceholder')}
                     onKeyDown={(e) => {
                         if (e.key !== 'Escape') {
                             return

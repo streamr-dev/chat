@@ -7,7 +7,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
 import handleError from '$/utils/handleError'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import preflight from '$/utils/preflight'
 import { call } from 'redux-saga/effects'
 import { Stream, StreamPermission } from 'streamr-client'
@@ -27,7 +27,7 @@ export default function allowAnonsPublish({
 
         try {
             tc = yield retoast(tc, {
-                title: I18n.anonToast.title(),
+                title: i18n('anonToast.title'),
                 type: ToastType.Processing,
             })
 
@@ -35,11 +35,11 @@ export default function allowAnonsPublish({
 
             try {
                 t = yield toaster(Toast, {
-                    title: I18n.anonToast.confirmTitle(),
+                    title: i18n('anonToast.confirmTitle'),
                     type: ToastType.Warning,
-                    desc: I18n.anonToast.confirmDesc(),
-                    okLabel: I18n.anonToast.confirmOkLabel(),
-                    cancelLabel: I18n.anonToast.confirmCancelLabel(),
+                    desc: i18n('anonToast.confirmDesc'),
+                    okLabel: i18n('anonToast.confirmOkLabel'),
+                    cancelLabel: i18n('anonToast.confirmCancelLabel'),
                 })
 
                 yield t?.open()
@@ -47,7 +47,7 @@ export default function allowAnonsPublish({
                 dismissToast = false
 
                 tc = yield retoast(tc, {
-                    title: I18n.anonToast.cancelledTitle(),
+                    title: i18n('anonToast.cancelledTitle'),
                     type: ToastType.Info,
                 })
 
@@ -80,7 +80,7 @@ export default function allowAnonsPublish({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: I18n.anonToast.successTitle(),
+                title: i18n('anonToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
@@ -89,7 +89,7 @@ export default function allowAnonsPublish({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: I18n.anonToast.failureTitle(),
+                title: i18n('anonToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {

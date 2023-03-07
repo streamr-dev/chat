@@ -30,7 +30,7 @@ import useFlag from '$/hooks/useFlag'
 import { DelegationAction } from '$/features/delegation'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import { Provider } from '@web3-react/types'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     payload: IMessage
@@ -309,7 +309,7 @@ function ResendOneButton({
                 left ? tw`ml-[22px]` : tw`mr-[22px]`,
             ]}
         >
-            {I18n.common.retry(isResending)}
+            {i18n('common.retry', isResending)}
         </button>
     )
 }
@@ -317,7 +317,7 @@ function ResendOneButton({
 function EncryptedMessage() {
     return (
         <Text>
-            <em>{I18n.common.encryptedMessagePlaceholder()}</em>
+            <em>{i18n('common.encryptedMessagePlaceholder')}</em>
         </Text>
     )
 }

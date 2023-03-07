@@ -14,7 +14,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import fetchStream from '$/utils/fetchStream'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -73,7 +73,7 @@ export default function addMember({
 
         try {
             tc = yield retoast(tc, {
-                title: I18n.memberToast.addingTitle(member),
+                title: i18n('memberToast.addingTitle', member),
                 type: ToastType.Processing,
             })
 
@@ -115,7 +115,7 @@ export default function addMember({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: I18n.memberToast.successTitle(member),
+                title: i18n('memberToast.successTitle', member),
                 type: ToastType.Success,
             })
 
@@ -135,7 +135,7 @@ export default function addMember({
 
             if (e instanceof MemberExistsError) {
                 tc = yield retoast(tc, {
-                    title: I18n.memberToast.alreadyMemberTitle(e.member),
+                    title: i18n('memberToast.alreadyMemberTitle', e.member),
                     type: ToastType.Error,
                 })
 
@@ -145,7 +145,7 @@ export default function addMember({
             handleError(e)
 
             tc = yield retoast(tc, {
-                title: I18n.memberToast.failureTitle(member),
+                title: i18n('memberToast.failureTitle', member),
                 type: ToastType.Error,
             })
         } finally {

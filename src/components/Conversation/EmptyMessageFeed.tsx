@@ -14,7 +14,7 @@ import Spinner from '$/components/Spinner'
 import useAbility from '$/hooks/useAbility'
 import { StreamPermission } from 'streamr-client'
 import useAnonAccount from '$/hooks/useAnonAccount'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 interface Props {
     onAddMemberClick?: () => void
@@ -77,7 +77,7 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                                 <AddMemberIcon />
                             </div>
                             <div tw="grow">
-                                <Text>{I18n.common.addMember()}</Text>
+                                <Text>{i18n('common.addMember')}</Text>
                             </div>
                         </UtilityButton>
                     )}
@@ -91,7 +91,7 @@ function Credits() {
     const { createdAt, createdBy } = useSelectedRoom() || {}
 
     const displayName = useDisplayUsername(createdBy, {
-        fallback: I18n.common.unknownCreator(),
+        fallback: i18n('common.unknownCreator'),
     })
 
     if (createdAt) {
@@ -108,14 +108,19 @@ function Credits() {
                 >
                     {displayName}
                 </span>{' '}
-                {I18n.emptyMessageFeed.roomCreatedAt(createdAt)}
+                {i18n('emptyMessageFeed.roomCreatedAt', createdAt)}
             </>
         )
     }
 
     if (createdBy) {
-        return I18n.emptyMessageFeed.roomCreatedBy(
-            <span css={tw`font-medium`}>{trunc(createdBy)}</span>
+        return (
+            <>
+                {i18n(
+                    'emptyMessageFeed.roomCreatedBy',
+                    <span css={tw`font-medium`}>{trunc(createdBy)}</span>
+                )}
+            </>
         )
     }
 
@@ -136,7 +141,7 @@ function JoinButton() {
                 items-center
             `}
         >
-            <Text>{I18n.common.join(accepting)}</Text>
+            <Text>{i18n('common.join', accepting)}</Text>
             {accepting && (
                 <div
                     css={tw`

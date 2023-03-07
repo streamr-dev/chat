@@ -7,7 +7,7 @@ import useWalletModal from '$/hooks/useWalletModal'
 import useHowItWorksModal from '$/hooks/useHowItWorksModal'
 import TryMetaMask from '$/components/TryMetaMask'
 import { ButtonHTMLAttributes } from 'react'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export default function HomePage() {
     const { open, modal } = useWalletModal()
@@ -22,7 +22,7 @@ export default function HomePage() {
                 <div css={tw`relative`}>
                     <Navbar>
                         <NavButton onClick={() => void openHiwModal()}>
-                            {I18n.howItWorksModal.title()}
+                            {i18n('howItWorksModal.title')}
                         </NavButton>
                     </Navbar>
                     <div
@@ -53,7 +53,7 @@ export default function HomePage() {
                                     `,
                                 ]}
                             >
-                                <Text>{I18n.common.greeting()}</Text>
+                                <Text>{i18n('common.greeting')}</Text>
                             </h1>
                             <ConnectButton onClick={() => void open()} />
                             <TryMetaMask
@@ -94,7 +94,7 @@ function ConnectButton(props: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'chi
             ]}
             type="button"
         >
-            <Text>{I18n.common.connectWalletLabel()}</Text>
+            <Text>{i18n('common.connectWalletLabel')}</Text>
         </Button>
     )
 }
@@ -130,7 +130,7 @@ function PoweredBy() {
                 `}
             >
                 <Text>
-                    {I18n.common.decentralizedBy()}&nbsp;
+                    {i18n('common.decentralizedBy')}&nbsp;
                     <a
                         css={tw`!text-[#ff5924]`}
                         href="https://streamr.network"

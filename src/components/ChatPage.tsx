@@ -21,7 +21,7 @@ import ArrowIcon from '$/icons/ArrowIcon'
 import { FlagAction } from '$/features/flag'
 import ActionButton from '$/components/ActionButton'
 import Sidebar from '$/components/Sidebar'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export default function ChatPage() {
     const { open: openAccountModal, modal: accountModal } = useAccountModal()
@@ -74,7 +74,7 @@ export default function ChatPage() {
         <>
             {accountModal}
             {addRoomModal}
-            <Page title={I18n.common.chatPageTitle()}>
+            <Page title={i18n('common.chatPageTitle')}>
                 <Nav onAccountClick={() => void openAccountModal()} />
                 <main
                     css={tw`
@@ -145,7 +145,7 @@ export default function ChatPage() {
                                             <ArrowIcon />
                                         </ActionButton>
                                         <UtilityButton onClick={() => void openAddRoomModal()}>
-                                            <Text>{I18n.common.addNewRoomLabel()}</Text>
+                                            <Text>{i18n('common.addNewRoomLabel')}</Text>
                                         </UtilityButton>
                                     </div>
                                 </div>

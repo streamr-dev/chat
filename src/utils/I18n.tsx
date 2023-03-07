@@ -15,350 +15,328 @@ import trunc from '$/utils/trunc'
 import { format } from 'date-fns'
 import { ReactNode } from 'react'
 
-export const I18n = {
-    common: {
-        cancel() {
-            return 'Cancel'
-        },
-        save() {
-            return 'Save'
-        },
-        join(ongoing = false) {
-            return ongoing ? 'Joining…' : 'Join'
-        },
-        addMember() {
-            return 'Add member'
-        },
-        editMembers() {
-            return 'Edit members'
-        },
-        fullDate(timestamp: number) {
-            return format(timestamp, 'iiii, LLL do yyyy')
-        },
-        compactDate(timestamp: number) {
-            const d = new Date(timestamp)
+const I18n = {
+    'common.cancel': 'Cancel',
+    'common.save'() {
+        return 'Save'
+    },
+    'common.join'(ongoing = false) {
+        return ongoing ? 'Joining…' : 'Join'
+    },
+    'common.addMember'() {
+        return 'Add member'
+    },
+    'common.editMembers'() {
+        return 'Edit members'
+    },
+    'common.fullDate'(timestamp: number) {
+        return format(timestamp, 'iiii, LLL do yyyy')
+    },
+    'common.compactDate'(timestamp: number) {
+        const d = new Date(timestamp)
 
-            const [Y, M, D, h, m, s] = [
-                d.getFullYear(),
-                d.getMonth() + 1,
-                d.getDate(),
-                d.getHours(),
-                d.getMinutes(),
-                d.getSeconds(),
-            ].map((val: number) => `${val < 10 ? '0' : ''}${val}`)
+        const [Y, M, D, h, m, s] = [
+            d.getFullYear(),
+            d.getMonth() + 1,
+            d.getDate(),
+            d.getHours(),
+            d.getMinutes(),
+            d.getSeconds(),
+        ].map((val: number) => `${val < 10 ? '0' : ''}${val}`)
 
-            return `${Y}/${M}/${D} ${h}:${m}:${s}`
-        },
-        fallbackRoomName() {
-            return 'Unnamed room'
-        },
-        copied() {
-            return 'Copied to clipboard'
-        },
-        copyRoomId() {
-            return 'Copy room id'
-        },
-        copy() {
-            return 'Copy'
-        },
-        ok() {
-            return 'Ok'
-        },
-        hideRoom() {
-            return 'Hide room'
-        },
-        unhideRoom() {
-            return 'Unhide room'
-        },
-        unpin() {
-            return 'Unpin'
-        },
-        roomProperties() {
-            return 'Properties'
-        },
-        deleteRoom() {
-            return 'Delete room'
-        },
-        member(plural = false) {
-            return plural ? 'members' : 'member'
-        },
-        unknownCreator() {
-            return 'Someone'
-        },
-        enable(ongoing = false) {
-            return ongoing ? 'Enabling…' : 'Enable'
-        },
-        encryptedMessagePlaceholder() {
-            return 'Message could not be decrypted'
-        },
-        retry(ongoing = false) {
-            return ongoing ? 'Retrying…' : 'Retry'
-        },
-        loadingPreviousDay() {
-            return 'Loading previous day…'
-        },
-        roomPrivacyLabel(privacySetting: PrivacySetting) {
-            switch (privacySetting) {
-                case PrivacySetting.Private:
-                    return 'Private'
-                case PrivacySetting.Public:
-                    return 'Public'
-                case PrivacySetting.TokenGated:
-                    return 'Token gated'
-            }
-        },
-        roomPrivacyIcon(privacySetting: PrivacySetting) {
-            switch (privacySetting) {
-                case PrivacySetting.Private:
-                    return PrivateIcon
-                case PrivacySetting.Public:
-                    return PublicIcon
-                case PrivacySetting.TokenGated:
-                    return GatedIcon
-            }
-        },
-        roomPrivacyDesc(privacySetting: PrivacySetting) {
-            switch (privacySetting) {
-                case PrivacySetting.Private:
-                    return 'Only invited members can post and view messages'
-                case PrivacySetting.Public:
-                    return 'Anyone can view messages'
-                case PrivacySetting.TokenGated:
-                    return (
-                        <>
-                            Access granted only if you <Hodl /> a particular NFT
-                            or&nbsp;ERC&#8209;20 token
-                        </>
-                    )
-            }
-        },
-        tokenStandardLabel(tokenStandard: TokenStandard) {
-            switch (tokenStandard) {
-                case TokenStandard.ERC1155:
-                case TokenStandard.ERC20:
-                case TokenStandard.ERC721:
-                case TokenStandard.ERC777:
-                    return <>ERC&#8209;{tokenStandard.replace(/ERC/, '')}</>
-                case TokenStandard.Unknown:
-                    return 'Unknown'
-            }
-        },
-        load(ongoing = false) {
-            return ongoing ? 'Loading…' : 'Load'
-        },
-        invitePending() {
-            return 'Invite pending'
-        },
-        viewOnExplorer() {
-            return 'View on explorer'
-        },
-        integrationLabel(integrationId: WalletIntegrationId) {
-            switch (integrationId) {
-                case WalletIntegrationId.CoinbaseWallet:
-                    return 'Coinbase Wallet'
-                case WalletIntegrationId.MetaMask:
-                    return 'MetaMask'
-                case WalletIntegrationId.WalletConnect:
-                    return 'WalletConnect'
-            }
-        },
-        integrationIcon(integrationId: WalletIntegrationId) {
-            switch (integrationId) {
-                case WalletIntegrationId.CoinbaseWallet:
-                    return CoinbaseWalletIcon
-                case WalletIntegrationId.MetaMask:
-                    return MetaMaskIcon
-                case WalletIntegrationId.WalletConnect:
-                    return WalletConnectIcon
-            }
-        },
-        frontPageTitle() {
-            return 'Streamr Chat dApp'
-        },
-        chatPageTitle() {
-            return "Let's chat!"
-        },
-        addNewRoomLabel() {
-            return 'Add new room'
-        },
-        holdLabel(flip = false) {
-            return flip ? 'hodl' : 'hold'
-        },
-        greeting() {
-            const h = new Date().getHours()
+        return `${Y}/${M}/${D} ${h}:${m}:${s}`
+    },
+    'common.fallbackRoomName'() {
+        return 'Unnamed room'
+    },
+    'common.copied'() {
+        return 'Copied to clipboard'
+    },
+    'common.copyRoomId'() {
+        return 'Copy room id'
+    },
+    'common.copy'() {
+        return 'Copy'
+    },
+    'common.ok'() {
+        return 'Ok'
+    },
+    'common.hideRoom'() {
+        return 'Hide room'
+    },
+    'common.unhideRoom'() {
+        return 'Unhide room'
+    },
+    'common.unpin'() {
+        return 'Unpin'
+    },
+    'common.roomProperties'() {
+        return 'Properties'
+    },
+    'common.deleteRoom'() {
+        return 'Delete room'
+    },
+    'common.member'(plural = false) {
+        return plural ? 'members' : 'member'
+    },
+    'common.unknownCreator'() {
+        return 'Someone'
+    },
+    'common.enable'(ongoing = false) {
+        return ongoing ? 'Enabling…' : 'Enable'
+    },
+    'common.encryptedMessagePlaceholder'() {
+        return 'Message could not be decrypted'
+    },
+    'common.retry'(ongoing = false) {
+        return ongoing ? 'Retrying…' : 'Retry'
+    },
+    'common.loadingPreviousDay'() {
+        return 'Loading previous day…'
+    },
+    'common.roomPrivacyLabel'(privacySetting: PrivacySetting) {
+        switch (privacySetting) {
+            case PrivacySetting.Private:
+                return 'Private'
+            case PrivacySetting.Public:
+                return 'Public'
+            case PrivacySetting.TokenGated:
+                return 'Token gated'
+        }
+    },
+    'common.roomPrivacyIcon'(privacySetting: PrivacySetting) {
+        switch (privacySetting) {
+            case PrivacySetting.Private:
+                return PrivateIcon
+            case PrivacySetting.Public:
+                return PublicIcon
+            case PrivacySetting.TokenGated:
+                return GatedIcon
+        }
+    },
+    'common.roomPrivacyDesc'(privacySetting: PrivacySetting) {
+        switch (privacySetting) {
+            case PrivacySetting.Private:
+                return 'Only invited members can post and view messages'
+            case PrivacySetting.Public:
+                return 'Anyone can view messages'
+            case PrivacySetting.TokenGated:
+                return (
+                    <>
+                        Access granted only if you <Hodl /> a particular NFT or&nbsp;ERC&#8209;20
+                        token
+                    </>
+                )
+        }
+    },
+    'common.tokenStandardLabel'(tokenStandard: TokenStandard) {
+        switch (tokenStandard) {
+            case TokenStandard.ERC1155:
+            case TokenStandard.ERC20:
+            case TokenStandard.ERC721:
+            case TokenStandard.ERC777:
+                return <>ERC&#8209;{tokenStandard.replace(/ERC/, '')}</>
+            case TokenStandard.Unknown:
+                return 'Unknown'
+        }
+    },
+    'common.load'(ongoing = false) {
+        return ongoing ? 'Loading…' : 'Load'
+    },
+    'common.invitePending'() {
+        return 'Invite pending'
+    },
+    'common.viewOnExplorer'() {
+        return 'View on explorer'
+    },
+    'common.integrationLabel'(integrationId: WalletIntegrationId) {
+        switch (integrationId) {
+            case WalletIntegrationId.CoinbaseWallet:
+                return 'Coinbase Wallet'
+            case WalletIntegrationId.MetaMask:
+                return 'MetaMask'
+            case WalletIntegrationId.WalletConnect:
+                return 'WalletConnect'
+        }
+    },
+    'common.integrationIcon'(integrationId: WalletIntegrationId) {
+        switch (integrationId) {
+            case WalletIntegrationId.CoinbaseWallet:
+                return CoinbaseWalletIcon
+            case WalletIntegrationId.MetaMask:
+                return MetaMaskIcon
+            case WalletIntegrationId.WalletConnect:
+                return WalletConnectIcon
+        }
+    },
+    'common.frontPageTitle'() {
+        return 'Streamr Chat dApp'
+    },
+    'common.chatPageTitle'() {
+        return "Let's chat!"
+    },
+    'common.addNewRoomLabel'() {
+        return 'Add new room'
+    },
+    'common.holdLabel'(flip = false) {
+        return flip ? 'hodl' : 'hold'
+    },
+    'common.greeting'() {
+        const h = new Date().getHours()
 
-            if (h >= 3 && h <= 9 && Math.random() < 0.1) {
-                // Betten 3am & 9am there's a tiny chance to get a gm.
-                return 'gm'
-            }
+        if (h >= 3 && h <= 9 && Math.random() < 0.1) {
+            // Betten 3am & 9am there's a tiny chance to get a gm.
+            return 'gm'
+        }
 
-            return 'Hello world.'
-        },
-        connectWalletLabel() {
-            return 'Connect a wallet'
-        },
-        decentralizedBy() {
-            return 'Decentralized by'
-        },
-        inviteLabel() {
-            return 'Invite'
-        },
-        requiringLabel() {
-            return ' requiring '
-        },
-        defaultSubmitLabel() {
-            return 'Submit'
-        },
-        needWalletLabel() {
-            return 'Need a wallet? Try '
-        },
-        yesLabel() {
-            return 'Yes'
-        },
-        noLabel() {
-            return 'No'
-        },
+        return 'Hello world.'
     },
-    aliasToast: {
-        failedToDestroy() {
-            return 'Failed to remove a nickname'
-        },
-        failedToCreate() {
-            return 'Failed to create a nickname'
-        },
-        failedToUpdate() {
-            return 'Failed to update a nickname'
-        },
+    'common.connectWalletLabel'() {
+        return 'Connect a wallet'
     },
-    toasts: {
-        defaultTitle() {
-            return 'Toast'
-        },
+    'common.decentralizedBy'() {
+        return 'Decentralized by'
     },
-    tokenIdToast: {
-        title() {
-            return 'Token id required'
-        },
-        message(tokenStandard: TokenStandard) {
-            return (
-                <>
-                    This room is gated by an {tokenStandard} token. Tell us your token ID to
-                    confirm&nbsp;ownership.
-                </>
-            )
-        },
-        tokenIdInputPlaceholder() {
-            return 'Type here…'
-        },
-        okLabel() {
-            return 'Ok'
-        },
-        cancelLabel() {
-            return 'Cancel'
-        },
+    'common.inviteLabel'() {
+        return 'Invite'
     },
-    delegationToast: {
-        title() {
-            return 'Hot wallet required'
-        },
-        desc() {
-            return 'In order to proceed the app will ask for your signature.'
-        },
-        okLabel() {
-            return I18n.common.ok()
-        },
-        cancelLabel() {
-            return I18n.common.cancel()
-        },
-        authorizingLabel() {
-            return 'Authorizing your delegated wallet…'
-        },
-        successLabel() {
-            return 'Access delegated successfully'
-        },
-        failureLabel() {
-            return 'Failed to delegate access'
-        },
+    'common.requiringLabel'() {
+        return ' requiring '
     },
-    acceptInviteToast: {
-        joiningTitle() {
-            return 'Setting new permissions…'
-        },
-        successTitle() {
-            return 'Joined successfully'
-        },
-        failureTitle() {
-            return 'Failed to join'
-        },
+    'common.defaultSubmitLabel'() {
+        return 'Submit'
     },
-    memberToast: {
-        addingTitle(address: Address) {
-            return (
-                <>
-                    Adding <strong>{trunc(address)}</strong>…
-                </>
-            )
-        },
-        successTitle(address: Address) {
-            return (
-                <>
-                    <strong>{trunc(address)}</strong> has been added
-                </>
-            )
-        },
-        alreadyMemberTitle(address: Address) {
-            return (
-                <>
-                    <strong>{trunc(address)}</strong> is already a member
-                </>
-            )
-        },
-        failureTitle(address: Address) {
-            return (
-                <>
-                    Failed to add <strong>{trunc(address)}</strong>
-                </>
-            )
-        },
+    'common.needWalletLabel'() {
+        return 'Need a wallet? Try '
     },
-    recoverToast: {
-        title() {
-            return 'Failed'
-        },
-        desc() {
-            return 'Would you like to try again?'
-        },
-        okLabel() {
-            return I18n.common.yesLabel()
-        },
-        cancelLabel() {
-            return I18n.common.noLabel()
-        },
+    'common.yesLabel'() {
+        return 'Yes'
     },
-    confirmToast: {
-        title() {
-            return 'Are you sure?'
-        },
-        okLabel() {
-            return I18n.common.yesLabel()
-        },
-        cancelLabel() {
-            return I18n.common.cancel()
-        },
+    'common.noLabel'() {
+        return 'No'
     },
-    isAuthorizedDelegationRecoverToast: {
-        title() {
-            return I18n.recoverToast.title()
-        },
-        desc() {
-            return I18n.recoverToast.desc()
-        },
-        okLabel() {
-            return I18n.recoverToast.okLabel()
-        },
-        cancelLabel() {
-            return I18n.recoverToast.cancelLabel()
-        },
+    'aliasToast.failedToDestroy'() {
+        return 'Failed to remove a nickname'
+    },
+    'aliasToast.failedToCreate'() {
+        return 'Failed to create a nickname'
+    },
+    'aliasToast.failedToUpdate'() {
+        return 'Failed to update a nickname'
+    },
+    'toasts.defaultTitle'() {
+        return 'Toast'
+    },
+    'tokenIdToast.title'() {
+        return 'Token id required'
+    },
+    'tokenIdToast.message'(tokenStandard: TokenStandard) {
+        return (
+            <>
+                This room is gated by an {tokenStandard} token. Tell us your token ID to
+                confirm&nbsp;ownership.
+            </>
+        )
+    },
+    'tokenIdToast.tokenIdInputPlaceholder'() {
+        return 'Type here…'
+    },
+    'tokenIdToast.okLabel'() {
+        return 'Ok'
+    },
+    'tokenIdToast.cancelLabel'() {
+        return 'Cancel'
+    },
+    'delegationToast.title'() {
+        return 'Hot wallet required'
+    },
+    'delegationToast.desc'() {
+        return 'In order to proceed the app will ask for your signature.'
+    },
+    'delegationToast.okLabel'() {
+        return i18n('common.ok')
+    },
+    'delegationToast.cancelLabel'() {
+        return i18n('common.cancel')
+    },
+    'delegationToast.authorizingLabel'() {
+        return 'Authorizing your delegated wallet…'
+    },
+    'delegationToast.successLabel'() {
+        return 'Access delegated successfully'
+    },
+    'delegationToast.failureLabel'() {
+        return 'Failed to delegate access'
+    },
+    'acceptInviteToast.joiningTitle'() {
+        return 'Setting new permissions…'
+    },
+    'acceptInviteToast.successTitle'() {
+        return 'Joined successfully'
+    },
+    'acceptInviteToast.failureTitle'() {
+        return 'Failed to join'
+    },
+    'memberToast.addingTitle'(address: Address) {
+        return (
+            <>
+                Adding <strong>{trunc(address)}</strong>…
+            </>
+        )
+    },
+    'memberToast.successTitle'(address: Address) {
+        return (
+            <>
+                <strong>{trunc(address)}</strong> has been added
+            </>
+        )
+    },
+    'memberToast.alreadyMemberTitle'(address: Address) {
+        return (
+            <>
+                <strong>{trunc(address)}</strong> is already a member
+            </>
+        )
+    },
+    'memberToast.failureTitle'(address: Address) {
+        return (
+            <>
+                Failed to add <strong>{trunc(address)}</strong>
+            </>
+        )
+    },
+    'recoverToast.title'() {
+        return 'Failed'
+    },
+    'recoverToast.desc'() {
+        return 'Would you like to try again?'
+    },
+    'recoverToast.okLabel'() {
+        return i18n('common.yesLabel')
+    },
+    'recoverToast.cancelLabel'() {
+        return i18n('common.noLabel')
+    },
+    'confirmToast.title'() {
+        return 'Are you sure?'
+    },
+    'confirmToast.okLabel'() {
+        return i18n('common.yesLabel')
+    },
+    'confirmToast.cancelLabel'() {
+        return i18n('common.cancel')
+    },
+    'isAuthorizedDelegationRecoverToast.title'() {
+        return i18n('recoverToast.title')
+    },
+    'isAuthorizedDelegationRecoverToast.desc'() {
+        return i18n('recoverToast.desc')
+    },
+    'isAuthorizedDelegationRecoverToast.okLabel'() {
+        return i18n('recoverToast.okLabel')
+    },
+    'isAuthorizedDelegationRecoverToast.cancelLabel'() {
+        return i18n('recoverToast.cancelLabel')
     },
     appName() {
         return 'thechat.app'
@@ -366,527 +344,487 @@ export const I18n = {
     appLabel() {
         return 'beta'
     },
-    search: {
-        resultLabel() {
-            return 'Search results'
-        },
-        waitLabel() {
-            return 'Please wait…'
-        },
-        notFoundLabel() {
-            return 'Not found'
-        },
-        noResultsLabel() {
-            return 'No results'
-        },
-        searchFieldPlaceholder() {
-            return 'Room id'
-        },
+    'search.resultLabel'() {
+        return 'Search results'
     },
-    sidebar: {
-        findButtonLabel() {
-            return 'Find'
-        },
-        roomsLabel() {
-            return 'Rooms'
-        },
+    'search.waitLabel'() {
+        return 'Please wait…'
     },
-    messageInput: {
-        placeholder() {
-            return 'Type a message…'
-        },
+    'search.notFoundLabel'() {
+        return 'Not found'
     },
-    anonExplainer: {
-        title() {
-            return 'Anonymous mode'
-        },
-        desc() {
-            return 'Your randomly generated wallet address used for sending messages to others in this room:'
-        },
-        addressLabel() {
-            return 'Address'
-        },
-        addressHint() {
-            return "It'll change on refresh or when you switch to a different account."
-        },
-        privateKeyLabel() {
-            return 'Private key'
-        },
-        okLabel() {
-            return I18n.common.ok()
-        },
+    'search.noResultsLabel'() {
+        return 'No results'
     },
-    modal: {
-        defaultTitle() {
-            return 'Untitled dialog'
-        },
+    'search.searchFieldPlaceholder'() {
+        return 'Room id'
     },
-    accountModal: {
-        title() {
-            return 'Account'
-        },
-        connectedWith(integrationId: WalletIntegrationId) {
-            return `Connected with ${I18n.common.integrationLabel(integrationId)}`
-        },
-        change() {
-            return 'Change'
-        },
-        copy(copied = false) {
-            return copied ? 'Copied' : 'Copy address'
-        },
-        showHiddenRoomsLabel() {
-            return 'Show hidden rooms'
-        },
-        retrieveOnLoginLabel() {
-            return 'Retrieve hot wallet on login'
-        },
+    'sidebar.findButtonLabel'() {
+        return 'Find'
     },
-    addMemberModal: {
-        title() {
-            return 'Add member'
-        },
-        memberFieldLabel() {
-            return 'ENS name or 0x address'
-        },
-        memberFieldPlaceholder() {
-            return '0x…'
-        },
-        addButtonLabel() {
-            return 'Add'
-        },
+    'sidebar.roomsLabel'() {
+        return 'Rooms'
     },
-    addRoomModal: {
-        title() {
-            return 'Add new room'
-        },
-        nextButtonLabel() {
-            return 'Next'
-        },
-        createButtonLabel() {
-            return 'Create'
-        },
-        roomFieldPlaceholder() {
-            return 'e.g. giggling-bear'
-        },
-        roomFieldHint() {
-            return 'The room name will be publicly visible.'
-        },
-        privacyFieldLabel() {
-            return 'Choose privacy'
-        },
-        storageFieldLabel() {
-            return 'Message storage'
-        },
-        storageFieldHint() {
-            return 'When message storage is disabled, participants will only see messages sent while they are online.'
-        },
+    'messageInput.placeholder'() {
+        return 'Type a message…'
     },
-    addTokenGatedRoomModal: {
-        title() {
-            return 'Add new token gated room'
-        },
-        addressFieldLabel() {
-            return 'Token contract address from Polygon chain'
-        },
-        minBalanceFieldLabel() {
-            return 'Minimum balance needed to join the room'
-        },
-        minBalanceFieldPlaceholder() {
-            return 'e.g. 100'
-        },
-        tokenIdsFieldLabel() {
-            return 'Token IDs (comma separated)'
-        },
-        stakingLabel() {
-            return 'Enable Staking'
-        },
-        stakingDesc() {
-            return 'When token staking is enabled, participants will need to deposit the minimum amount in order to join the room.'
-        },
-        createButtonLabel() {
-            return 'Create'
-        },
-        changeButtonLabel() {
-            return 'Change'
-        },
-        searchFieldPlaceholder() {
-            return 'Search or enter token address…'
-        },
-        loadingTokens() {
-            return 'Loading tokens…'
-        },
-        noTokens() {
-            return 'No tokens'
-        },
+    'anonExplainer.title'() {
+        return 'Anonymous mode'
     },
-    editMembersModal: {
-        title() {
-            return 'Edit members'
-        },
-        nicknameVisibilityNote() {
-            return 'Nickname is only visible to you'
-        },
-        currentAccountLabel() {
-            return 'You'
-        },
-        currentHotAccountLabel() {
-            return 'Your delegated account'
-        },
-        accountType(accountType: AccountType) {
-            switch (accountType) {
-                case AccountType.Main:
-                    return '[Main account] Room member'
-                case AccountType.Unset:
-                    return '[Unset account] Room member'
-                default:
-                    return null
-            }
-        },
-        editNicknameLabel() {
-            return 'Edit nickname'
-        },
-        setNicknameLabel() {
-            return 'Set nickname'
-        },
-        deleteMemberLabel() {
-            return 'Delete member'
-        },
+    'anonExplainer.desc'() {
+        return 'Your randomly generated wallet address used for sending messages to others in this room:'
     },
-    howItWorksModal: {
-        title() {
-            return 'How it works?'
-        },
-        content() {
-            return (
-                <>
-                    <p>
-                        Every chatroom is a stream on the Streamr Network and the chat room
-                        participants are registered on the on-chain stream registry. The fabric
-                        underpinning every chat room is a peer-to-peer WebRTC mesh network composed
-                        of the participants of the chat&nbsp;room.
-                    </p>
-                    <p>
-                        Streams, and chat rooms come in two main flavors - public and private.
-                        Public meaning publicly readable, whereas private is
-                        end-to-end&nbsp;encrypted.
-                    </p>
-                    <p>
-                        If you wish to make a private group to chat with your friends, or with a
-                        community - you can now do so without any intermediary and with full
-                        confidence you are chatting with exactly who you think you're
-                        chatting&nbsp;with!
-                    </p>
-                </>
-            )
-        },
+    'anonExplainer.addressLabel'() {
+        return 'Address'
     },
-    infoModal: {
-        title() {
-            return 'Info'
-        },
+    'anonExplainer.addressHint'() {
+        return "It'll change on refresh or when you switch to a different account."
     },
-    roomPropertiesModal: {
-        title() {
-            return 'Room properties'
-        },
-        stakingLabel() {
-            return 'Staking'
-        },
-        roomIdLabel() {
-            return 'Room id'
-        },
-        dismissButtonLabel() {
-            return 'Close'
-        },
+    'anonExplainer.privateKeyLabel'() {
+        return 'Private key'
     },
-    walletModal: {
-        title() {
-            return 'Select a wallet'
-        },
+    'anonExplainer.okLabel'() {
+        return i18n('common.ok')
     },
-    conversationHeader: {
-        roomNamePlaceholder() {
-            return 'e.g. random-giggly-bear'
-        },
-        renamingInProgress(from: string, to: string) {
-            return `Renaming "${from}" to "${to}"…`
-        },
-        renamingIdle() {
-            return 'The room name will be publicly visible.'
-        },
-        renameRoom() {
-            return 'Rename room'
-        },
+    'modal.defaultTitle'() {
+        return 'Untitled dialog'
     },
-    emptyMessageFeed: {
-        roomCreatedAt(createdAt: number) {
-            return `created this room on ${I18n.common.fullDate(createdAt)}`
-        },
-        roomCreatedBy(createdBy: ReactNode) {
-            return <>Room created by {createdBy}.</>
-        },
+    'accountModal.title'() {
+        return 'Account'
     },
-    rooms: {
-        promoteHotWalletPrompt() {
-            return 'Use your hot wallet to sign messages in this room.'
-        },
-        joinGatedPrompt() {
-            return 'This is a token gated room. Join it to send messages.'
-        },
-        delegatePrompt(actions: string[]) {
-            return `Activate hot wallet signing to ${actions.join(' and ')} messages.`
-        },
+    'accountModal.connectedWith'(integrationId: WalletIntegrationId) {
+        return `Connected with ${i18n('common.integrationLabel', integrationId)}`
     },
-    anonToast: {
-        title() {
-            return 'Granting anons more rights…'
-        },
-        failureTitle() {
-            return 'Failed to give anons more rights'
-        },
-        successTitle() {
-            return 'Done'
-        },
-        confirmTitle() {
-            return I18n.confirmToast.title()
-        },
-        confirmDesc() {
-            return 'Anyone will be able to read and send messages in this room.'
-        },
-        confirmOkLabel() {
-            return I18n.confirmToast.okLabel()
-        },
-        confirmCancelLabel() {
-            return I18n.confirmToast.cancelLabel()
-        },
-        cancelledTitle() {
-            return 'Maybe another time!'
-        },
+    'accountModal.change'() {
+        return 'Change'
     },
-    promoteToast: {
-        successTitle() {
-            return 'Delegated account has been promoted'
-        },
-        failureTitle() {
-            return 'Failed to promote the delegated account'
-        },
+    'accountModal.copy'(copied = false) {
+        return copied ? 'Copied' : 'Copy address'
     },
-    removeMemberToast: {
-        successTitle(name: string) {
-            return (
-                <>
-                    <strong>{name}</strong> has been removed
-                </>
-            )
-        },
-        failureTitle(name: string) {
-            return (
-                <>
-                    Failed to remove <strong>{name}</strong>
-                </>
-            )
-        },
+    'accountModal.showHiddenRoomsLabel'() {
+        return 'Show hidden rooms'
     },
-    preferenceToast: {
-        updateFailureTitle() {
-            return 'Failed to update preferences'
-        },
+    'accountModal.retrieveOnLoginLabel'() {
+        return 'Retrieve hot wallet on login'
     },
-    tokenGateToast: {
-        deployingTitle() {
-            return 'Deploying token gate…'
-        },
-        waitingTitle() {
-            return 'Waiting for the network…'
-        },
-        grantingTitle(policyAddress: Address) {
-            return `Assigning permissions to the token gate at ${policyAddress}…`
-        },
-        successTitle() {
-            return 'Done'
-        },
-        failureTitle() {
-            return 'Failed to deploy your token gate'
-        },
+    'addMemberModal.title'() {
+        return 'Add member'
     },
-    tokenGatePolicyRecoverToast: {
-        title() {
-            return 'Failed to deploy the policy'
-        },
-        desc() {
-            return I18n.recoverToast.desc()
-        },
-        okLabel() {
-            return I18n.recoverToast.okLabel()
-        },
-        cancelLabel() {
-            return I18n.recoverToast.cancelLabel()
-        },
+    'addMemberModal.memberFieldLabel'() {
+        return 'ENS name or 0x address'
     },
-    tokenGateAddressRecoverToast: {
-        title() {
-            return 'Failed to determine policy address'
-        },
-        desc() {
-            return I18n.recoverToast.desc()
-        },
-        okLabel() {
-            return I18n.recoverToast.okLabel()
-        },
-        cancelLabel() {
-            return I18n.recoverToast.cancelLabel()
-        },
+    'addMemberModal.memberFieldPlaceholder'() {
+        return '0x…'
     },
-    tokenGateGrantRecoverToast: {
-        title() {
-            return 'Failed to assign new permissions'
-        },
-        desc() {
-            return I18n.recoverToast.desc()
-        },
-        okLabel() {
-            return I18n.recoverToast.okLabel()
-        },
-        cancelLabel() {
-            return I18n.recoverToast.cancelLabel()
-        },
+    'addMemberModal.addButtonLabel'() {
+        return 'Add'
     },
-    unpinToast: {
-        failureTitle() {
-            return 'Unpinning failed'
-        },
+    'addRoomModal.title'() {
+        return 'Add new room'
     },
-    storageToast: {
-        enabledTitle() {
-            return 'Storage enabled'
-        },
-        disabledTitle() {
-            return 'Storage disabled'
-        },
-        failedToEnableTitle() {
-            return 'Failed to enable storage'
-        },
-        failedToDisableTitle() {
-            return 'Failed to disable storage'
-        },
+    'addRoomModal.nextButtonLabel'() {
+        return 'Next'
     },
-    roomVisibilityToast: {
-        failedToToggleTitle() {
-            return 'Failed to toggle room visibility'
-        },
+    'addRoomModal.createButtonLabel'() {
+        return 'Create'
     },
-    roomRenameToast: {
-        upToDateTitle() {
-            return 'Room name is already up-to-date'
-        },
-        successTitle() {
-            return 'Room renamed successfully'
-        },
-        failureTitle() {
-            return 'Failed to rename the room'
-        },
+    'addRoomModal.roomFieldPlaceholder'() {
+        return 'e.g. giggling-bear'
     },
-    gotInviteToast: {
-        title() {
-            return "You've got an invite"
-        },
-        desc() {
-            return 'Room list will reflect it shortly'
-        },
+    'addRoomModal.roomFieldHint'() {
+        return 'The room name will be publicly visible.'
     },
-    deleteRoomToast: {
-        successTitle() {
-            return 'Room has been deleted'
-        },
-        failureTitle() {
-            return 'Failed to delete room'
-        },
+    'addRoomModal.privacyFieldLabel'() {
+        return 'Choose privacy'
     },
-    roomCreateToast: {
-        unsupportedTokenTitle() {
-            return 'Only ERC-20s & ERC-721s are supported'
-        },
-        creatingTitle(roomName: string) {
-            return `Creating "${roomName}"…`
-        },
-        publishingTitle(roomName: string) {
-            return `Making "${roomName}" public…`
-        },
-        successTitle(roomName: string) {
-            return `Room "${roomName}" created`
-        },
-        failureTitle(roomName: string) {
-            return `Failed to create "${roomName}"`
-        },
+    'addRoomModal.storageFieldLabel'() {
+        return 'Message storage'
     },
-    publishRoomRecoverToast: {
-        title(roomName: string) {
-            return `Failed to make "${roomName}" public`
-        },
-        desc() {
-            return 'Would you like to try again? If you click "No" the room will stay private.'
-        },
-        okLabel() {
-            return I18n.recoverToast.okLabel()
-        },
-        cancelLabel() {
-            return I18n.recoverToast.cancelLabel()
-        },
+    'addRoomModal.storageFieldHint'() {
+        return 'When message storage is disabled, participants will only see messages sent while they are online.'
     },
-    stickyPinToast: {
-        title(count: number) {
-            return `Pinned ${count} new sticky room${count === 1 ? '' : 's'}`
-        },
-        okLabel() {
-            return 'Dismiss'
-        },
+    'addTokenGatedRoomModal.title'() {
+        return 'Add new token gated room'
     },
-    joinTokenGatedRoomToast: {
-        notTokenGatedTitle() {
-            return "It's not a token gated room"
-        },
-        joiningTitle(name: string | undefined, roomId: RoomId) {
-            return <>Joining {name ? `"${name}"` : <Id>{roomId}</Id>}…</>
-        },
-        insufficientFundsTitle() {
-            return 'Not enough tokens'
-        },
-        checkingPermissionsTitle() {
-            return 'Checking permissions…'
-        },
-        successTitle() {
-            return 'Joined!'
-        },
-        failureTitle() {
-            return 'Failed to join'
-        },
+    'addTokenGatedRoomModal.addressFieldLabel'() {
+        return 'Token contract address from Polygon chain'
     },
-    joinTokenGatedRecoverToast: {
-        title() {
-            return 'Transaction failed'
-        },
-        desc() {
-            return I18n.recoverToast.desc()
-        },
-        okLabel() {
-            return I18n.recoverToast.okLabel()
-        },
-        cancelLabel() {
-            return I18n.recoverToast.cancelLabel()
-        },
+    'addTokenGatedRoomModal.minBalanceFieldLabel'() {
+        return 'Minimum balance needed to join the room'
     },
-    checkTokenGatedPermissionsRecoverToast: {
-        title() {
-            return 'Failed to detect new permissions'
-        },
-        desc() {
-            return I18n.recoverToast.desc()
-        },
-        okLabel() {
-            return I18n.recoverToast.okLabel()
-        },
-        cancelLabel() {
-            return I18n.recoverToast.cancelLabel()
-        },
+    'addTokenGatedRoomModal.minBalanceFieldPlaceholder'() {
+        return 'e.g. 100'
     },
+    'addTokenGatedRoomModal.tokenIdsFieldLabel'() {
+        return 'Token IDs (comma separated)'
+    },
+    'addTokenGatedRoomModal.stakingLabel'() {
+        return 'Enable Staking'
+    },
+    'addTokenGatedRoomModal.stakingDesc'() {
+        return 'When token staking is enabled, participants will need to deposit the minimum amount in order to join the room.'
+    },
+    'addTokenGatedRoomModal.createButtonLabel'() {
+        return 'Create'
+    },
+    'addTokenGatedRoomModal.changeButtonLabel'() {
+        return 'Change'
+    },
+    'addTokenGatedRoomModal.searchFieldPlaceholder'() {
+        return 'Search or enter token address…'
+    },
+    'addTokenGatedRoomModal.loadingTokens'() {
+        return 'Loading tokens…'
+    },
+    'addTokenGatedRoomModal.noTokens'() {
+        return 'No tokens'
+    },
+    'editMembersModal.title'() {
+        return 'Edit members'
+    },
+    'editMembersModal.nicknameVisibilityNote'() {
+        return 'Nickname is only visible to you'
+    },
+    'editMembersModal.currentAccountLabel'() {
+        return 'You'
+    },
+    'editMembersModal.currentHotAccountLabel'() {
+        return 'Your delegated account'
+    },
+    'editMembersModal.accountType'(accountType: AccountType) {
+        switch (accountType) {
+            case AccountType.Main:
+                return '[Main account] Room member'
+            case AccountType.Unset:
+                return '[Unset account] Room member'
+            default:
+                return null
+        }
+    },
+    'editMembersModal.editNicknameLabel'() {
+        return 'Edit nickname'
+    },
+    'editMembersModal.setNicknameLabel'() {
+        return 'Set nickname'
+    },
+    'editMembersModal.deleteMemberLabel'() {
+        return 'Delete member'
+    },
+    'howItWorksModal.title'() {
+        return 'How it works?'
+    },
+    'howItWorksModal.content'() {
+        return (
+            <>
+                <p>
+                    Every chatroom is a stream on the Streamr Network and the chat room participants
+                    are registered on the on-chain stream registry. The fabric underpinning every
+                    chat room is a peer-to-peer WebRTC mesh network composed of the participants of
+                    the chat&nbsp;room.
+                </p>
+                <p>
+                    Streams, and chat rooms come in two main flavors - public and private. Public
+                    meaning publicly readable, whereas private is end-to-end&nbsp;encrypted.
+                </p>
+                <p>
+                    If you wish to make a private group to chat with your friends, or with a
+                    community - you can now do so without any intermediary and with full confidence
+                    you are chatting with exactly who you think you're chatting&nbsp;with!
+                </p>
+            </>
+        )
+    },
+    'infoModal.title'() {
+        return 'Info'
+    },
+    'roomPropertiesModal.title'() {
+        return 'Room properties'
+    },
+    'roomPropertiesModal.stakingLabel'() {
+        return 'Staking'
+    },
+    'roomPropertiesModal.roomIdLabel'() {
+        return 'Room id'
+    },
+    'roomPropertiesModal.dismissButtonLabel'() {
+        return 'Close'
+    },
+    'walletModal.title'() {
+        return 'Select a wallet'
+    },
+    'conversationHeader.roomNamePlaceholder'() {
+        return 'e.g. random-giggly-bear'
+    },
+    'conversationHeader.renamingInProgress'(from: string, to: string) {
+        return `Renaming "${from}" to "${to}"…`
+    },
+    'conversationHeader.renamingIdle'() {
+        return 'The room name will be publicly visible.'
+    },
+    'conversationHeader.renameRoom'() {
+        return 'Rename room'
+    },
+    'emptyMessageFeed.roomCreatedAt'(createdAt: number) {
+        return `created this room on ${i18n('common.fullDate', createdAt)}`
+    },
+    'emptyMessageFeed.roomCreatedBy'(createdBy: ReactNode) {
+        return <>Room created by {createdBy}.</>
+    },
+    'rooms.promoteHotWalletPrompt'() {
+        return 'Use your hot wallet to sign messages in this room.'
+    },
+    'rooms.joinGatedPrompt'() {
+        return 'This is a token gated room. Join it to send messages.'
+    },
+    'rooms.delegatePrompt'(actions: string[]) {
+        return `Activate hot wallet signing to ${actions.join(' and ')} messages.`
+    },
+    'anonToast.title'() {
+        return 'Granting anons more rights…'
+    },
+    'anonToast.failureTitle'() {
+        return 'Failed to give anons more rights'
+    },
+    'anonToast.successTitle'() {
+        return 'Done'
+    },
+    'anonToast.confirmTitle'() {
+        return i18n('confirmToast.title')
+    },
+    'anonToast.confirmDesc'() {
+        return 'Anyone will be able to read and send messages in this room.'
+    },
+    'anonToast.confirmOkLabel'() {
+        return i18n('confirmToast.okLabel')
+    },
+    'anonToast.confirmCancelLabel'() {
+        return i18n('confirmToast.cancelLabel')
+    },
+    'anonToast.cancelledTitle'() {
+        return 'Maybe another time!'
+    },
+    'promoteToast.successTitle'() {
+        return 'Delegated account has been promoted'
+    },
+    'promoteToast.failureTitle'() {
+        return 'Failed to promote the delegated account'
+    },
+    'removeMemberToast.successTitle'(name: string) {
+        return (
+            <>
+                <strong>{name}</strong> has been removed
+            </>
+        )
+    },
+    'removeMemberToast.failureTitle'(name: string) {
+        return (
+            <>
+                Failed to remove <strong>{name}</strong>
+            </>
+        )
+    },
+    'preferenceToast.updateFailureTitle'() {
+        return 'Failed to update preferences'
+    },
+    'tokenGateToast.deployingTitle'() {
+        return 'Deploying token gate…'
+    },
+    'tokenGateToast.waitingTitle'() {
+        return 'Waiting for the network…'
+    },
+    'tokenGateToast.grantingTitle'(policyAddress: Address) {
+        return `Assigning permissions to the token gate at ${policyAddress}…`
+    },
+    'tokenGateToast.successTitle'() {
+        return 'Done'
+    },
+    'tokenGateToast.failureTitle'() {
+        return 'Failed to deploy your token gate'
+    },
+    'tokenGatePolicyRecoverToast.title'() {
+        return 'Failed to deploy the policy'
+    },
+    'tokenGatePolicyRecoverToast.desc'() {
+        return i18n('recoverToast.desc')
+    },
+    'tokenGatePolicyRecoverToast.okLabel'() {
+        return i18n('recoverToast.okLabel')
+    },
+    'tokenGatePolicyRecoverToast.cancelLabel'() {
+        return i18n('recoverToast.cancelLabel')
+    },
+    'tokenGateAddressRecoverToast.title'() {
+        return 'Failed to determine policy address'
+    },
+    'tokenGateAddressRecoverToast.desc'() {
+        return i18n('recoverToast.desc')
+    },
+    'tokenGateAddressRecoverToast.okLabel'() {
+        return i18n('recoverToast.okLabel')
+    },
+    'tokenGateAddressRecoverToast.cancelLabel'() {
+        return i18n('recoverToast.cancelLabel')
+    },
+    'tokenGateGrantRecoverToast.title'() {
+        return 'Failed to assign new permissions'
+    },
+    'tokenGateGrantRecoverToast.desc'() {
+        return i18n('recoverToast.desc')
+    },
+    'tokenGateGrantRecoverToast.okLabel'() {
+        return i18n('recoverToast.okLabel')
+    },
+    'tokenGateGrantRecoverToast.cancelLabel'() {
+        return i18n('recoverToast.cancelLabel')
+    },
+    'unpinToast.failureTitle'() {
+        return 'Unpinning failed'
+    },
+    'storageToast.enabledTitle'() {
+        return 'Storage enabled'
+    },
+    'storageToast.disabledTitle'() {
+        return 'Storage disabled'
+    },
+    'storageToast.failedToEnableTitle'() {
+        return 'Failed to enable storage'
+    },
+    'storageToast.failedToDisableTitle'() {
+        return 'Failed to disable storage'
+    },
+    'roomVisibilityToast.failedToToggleTitle'() {
+        return 'Failed to toggle room visibility'
+    },
+    'roomRenameToast.upToDateTitle'() {
+        return 'Room name is already up-to-date'
+    },
+    'roomRenameToast.successTitle'() {
+        return 'Room renamed successfully'
+    },
+    'roomRenameToast.failureTitle'() {
+        return 'Failed to rename the room'
+    },
+    'gotInviteToast.title'() {
+        return "You've got an invite"
+    },
+    'gotInviteToast.desc'() {
+        return 'Room list will reflect it shortly'
+    },
+    'deleteRoomToast.successTitle'() {
+        return 'Room has been deleted'
+    },
+    'deleteRoomToast.failureTitle'() {
+        return 'Failed to delete room'
+    },
+    'roomCreateToast.unsupportedTokenTitle'() {
+        return 'Only ERC-20s & ERC-721s are supported'
+    },
+    'roomCreateToast.creatingTitle'(roomName: string) {
+        return `Creating "${roomName}"…`
+    },
+    'roomCreateToast.publishingTitle'(roomName: string) {
+        return `Making "${roomName}" public…`
+    },
+    'roomCreateToast.successTitle'(roomName: string) {
+        return `Room "${roomName}" created`
+    },
+    'roomCreateToast.failureTitle'(roomName: string) {
+        return `Failed to create "${roomName}"`
+    },
+    'publishRoomRecoverToast.title'(roomName: string) {
+        return `Failed to make "${roomName}" public`
+    },
+    'publishRoomRecoverToast.desc'() {
+        return 'Would you like to try again? If you click "No" the room will stay private.'
+    },
+    'publishRoomRecoverToast.okLabel'() {
+        return i18n('recoverToast.okLabel')
+    },
+    'publishRoomRecoverToast.cancelLabel'() {
+        return i18n('recoverToast.cancelLabel')
+    },
+    'stickyPinToast.title'(count: number) {
+        return `Pinned ${count} new sticky room${count === 1 ? '' : 's'}`
+    },
+    'stickyPinToast.okLabel'() {
+        return 'Dismiss'
+    },
+    'joinTokenGatedRoomToast.notTokenGatedTitle'() {
+        return "It's not a token gated room"
+    },
+    'joinTokenGatedRoomToast.joiningTitle'(name: string | undefined, roomId: RoomId) {
+        return <>Joining {name ? `"${name}"` : <Id>{roomId}</Id>}…</>
+    },
+    'joinTokenGatedRoomToast.insufficientFundsTitle'() {
+        return 'Not enough tokens'
+    },
+    'joinTokenGatedRoomToast.checkingPermissionsTitle'() {
+        return 'Checking permissions…'
+    },
+    'joinTokenGatedRoomToast.successTitle'() {
+        return 'Joined!'
+    },
+    'joinTokenGatedRoomToast.failureTitle'() {
+        return 'Failed to join'
+    },
+    'joinTokenGatedRecoverToast.title'() {
+        return 'Transaction failed'
+    },
+    'joinTokenGatedRecoverToast.desc'() {
+        return i18n('recoverToast.desc')
+    },
+    'joinTokenGatedRecoverToast.okLabel'() {
+        return i18n('recoverToast.okLabel')
+    },
+    'joinTokenGatedRecoverToast.cancelLabel'() {
+        return i18n('recoverToast.cancelLabel')
+    },
+    'checkTokenGatedPermissionsRecoverToast.title'() {
+        return 'Failed to detect new permissions'
+    },
+    'checkTokenGatedPermissionsRecoverToast.desc'() {
+        return i18n('recoverToast.desc')
+    },
+    'checkTokenGatedPermissionsRecoverToast.okLabel'() {
+        return i18n('recoverToast.okLabel')
+    },
+    'checkTokenGatedPermissionsRecoverToast.cancelLabel'() {
+        return i18n('recoverToast.cancelLabel')
+    },
+}
+
+type TKey = keyof typeof I18n
+
+type TValue<K extends TKey> = (typeof I18n)[K]
+
+type Args<K extends TKey> = TValue<K> extends string
+    ? []
+    : TValue<K> extends (...args: infer R) => any
+    ? R
+    : []
+
+type TReturn<K extends TKey> = TValue<K> extends string
+    ? string
+    : TValue<K> extends (...args: any) => infer R
+    ? R
+    : never
+
+export default function i18n<K extends keyof typeof I18n>(
+    k: K,
+    ...args: Args<K>
+): TReturn<K> | string {
+    try {
+        const value: TValue<K> = I18n[k]
+
+        if (typeof value === 'function') {
+            return (value as any)(...args) as TReturn<K>
+        }
+
+        return I18n[k] as TReturn<K>
+    } catch (e) {
+        // Do nothing
+    }
+
+    // Any failure resolves into showing the original key.
+    return k
 }

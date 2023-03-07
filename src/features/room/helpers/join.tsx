@@ -24,7 +24,7 @@ import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import tokenIdPreflight from '$/utils/tokenIdPreflight'
 import recover from '$/utils/recover'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -70,7 +70,7 @@ export default function join(
         try {
             if (!tokenAddress) {
                 yield onToast({
-                    title: I18n.joinTokenGatedRoomToast.notTokenGatedTitle(),
+                    title: i18n('joinTokenGatedRoomToast.notTokenGatedTitle'),
                     type: ToastType.Error,
                 })
 
@@ -94,7 +94,7 @@ export default function join(
             }
 
             yield onToast({
-                title: I18n.joinTokenGatedRoomToast.joiningTitle(name, roomId),
+                title: i18n('joinTokenGatedRoomToast.joiningTitle', name, roomId),
                 type: ToastType.Processing,
             })
 
@@ -140,7 +140,7 @@ export default function join(
                             /error_notEnoughTokens/.test(e.message)
                         ) {
                             yield onToast({
-                                title: I18n.joinTokenGatedRoomToast.insufficientFundsTitle(),
+                                title: i18n('joinTokenGatedRoomToast.insufficientFundsTitle'),
                                 type: ToastType.Error,
                                 autoCloseAfter: 5,
                             })
@@ -152,10 +152,10 @@ export default function join(
                     }
                 },
                 {
-                    title: I18n.joinTokenGatedRecoverToast.title(),
-                    desc: I18n.joinTokenGatedRecoverToast.desc(),
-                    okLabel: I18n.joinTokenGatedRecoverToast.okLabel(),
-                    cancelLabel: I18n.joinTokenGatedRecoverToast.cancelLabel(),
+                    title: i18n('joinTokenGatedRecoverToast.title'),
+                    desc: i18n('joinTokenGatedRecoverToast.desc'),
+                    okLabel: i18n('joinTokenGatedRecoverToast.okLabel'),
+                    cancelLabel: i18n('joinTokenGatedRecoverToast.cancelLabel'),
                 }
             )
 
@@ -164,7 +164,7 @@ export default function join(
             }
 
             yield onToast({
-                title: I18n.joinTokenGatedRoomToast.checkingPermissionsTitle(),
+                title: i18n('joinTokenGatedRoomToast.checkingPermissionsTitle'),
                 type: ToastType.Processing,
             })
 
@@ -193,10 +193,10 @@ export default function join(
                         })
                     },
                     {
-                        title: I18n.checkTokenGatedPermissionsRecoverToast.title(),
-                        desc: I18n.checkTokenGatedPermissionsRecoverToast.desc(),
-                        okLabel: I18n.checkTokenGatedPermissionsRecoverToast.okLabel(),
-                        cancelLabel: I18n.checkTokenGatedPermissionsRecoverToast.cancelLabel(),
+                        title: i18n('checkTokenGatedPermissionsRecoverToast.title'),
+                        desc: i18n('checkTokenGatedPermissionsRecoverToast.desc'),
+                        okLabel: i18n('checkTokenGatedPermissionsRecoverToast.okLabel'),
+                        cancelLabel: i18n('checkTokenGatedPermissionsRecoverToast.cancelLabel'),
                     }
                 )
 
@@ -214,14 +214,14 @@ export default function join(
             }
 
             yield onToast({
-                title: I18n.joinTokenGatedRoomToast.successTitle(),
+                title: i18n('joinTokenGatedRoomToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
             yield onToast({
-                title: I18n.joinTokenGatedRoomToast.failureTitle(),
+                title: i18n('joinTokenGatedRoomToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {

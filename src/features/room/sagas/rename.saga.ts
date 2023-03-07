@@ -14,7 +14,7 @@ import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import fetchStream from '$/utils/fetchStream'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },
@@ -30,7 +30,7 @@ function* onRenameAction({
 
         if (roomMetadata.name === name) {
             yield toast({
-                title: I18n.roomRenameToast.upToDateTitle(),
+                title: i18n('roomRenameToast.upToDateTitle'),
                 type: ToastType.Info,
             })
 
@@ -84,7 +84,7 @@ function* onRenameAction({
         yield put(FlagAction.unset(Flag.isRoomNameBeingEdited(roomId)))
 
         yield toast({
-            title: I18n.roomRenameToast.successTitle(),
+            title: i18n('roomRenameToast.successTitle'),
             type: ToastType.Success,
         })
     } catch (e) {
@@ -95,7 +95,7 @@ function* onRenameAction({
         handleError(e)
 
         yield toast({
-            title: I18n.roomRenameToast.failureTitle(),
+            title: i18n('roomRenameToast.failureTitle'),
             type: ToastType.Error,
         })
     }

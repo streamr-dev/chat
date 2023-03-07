@@ -4,7 +4,7 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { WalletAction } from '$/features/wallet'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import { WalletIntegrationId } from '$/features/wallet/types'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Props as ModalProps } from './Modal'
@@ -20,7 +20,7 @@ const lineup = [
 ]
 
 export default function WalletModal({
-    title = I18n.walletModal.title(),
+    title = i18n('walletModal.title'),
     showTryMetaMask = false,
     ...props
 }: Props) {
@@ -65,7 +65,7 @@ function WalletOption<T extends WalletIntegrationId>({
     integrationId,
     onClick: onClickProp,
 }: WalletOptionProps<T>) {
-    const Icon = I18n.common.integrationIcon(integrationId)
+    const Icon = i18n('common.integrationIcon', integrationId)
 
     const currentIntegrationId = useWalletIntegrationId()
 
@@ -104,7 +104,7 @@ function WalletOption<T extends WalletIntegrationId>({
                     `,
             ]}
         >
-            <div css={tw`grow`}>{I18n.common.integrationLabel(integrationId)}</div>
+            <div css={tw`grow`}>{i18n('common.integrationLabel', integrationId)}</div>
             <div>
                 <Icon />
             </div>

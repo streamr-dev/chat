@@ -10,7 +10,7 @@ import { ToasterAction } from '$/features/toaster'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import trunc from '$/utils/trunc'
 import { AnchorHTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
@@ -22,7 +22,7 @@ interface Props extends ModalProps {
 }
 
 export default function AccountModal({
-    title = I18n.accountModal.title(),
+    title = i18n('accountModal.title'),
     onProceed,
     ...props
 }: Props) {
@@ -62,11 +62,11 @@ export default function AccountModal({
                             mr-4
                         `}
                     >
-                        {I18n.accountModal.connectedWith(integrationId)}
+                        {i18n('accountModal.connectedWith', integrationId)}
                     </div>
                     <div>
                         <SecondaryButton onClick={() => void onProceed?.()}>
-                            <Text>{I18n.accountModal.change()}</Text>
+                            <Text>{i18n('accountModal.change')}</Text>
                         </SecondaryButton>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ export default function AccountModal({
                                 fill="currentColor"
                             />
                         </svg>
-                        <Text>{I18n.common.viewOnExplorer()}</Text>
+                        <Text>{i18n('common.viewOnExplorer')}</Text>
                     </ExternalLink>
                     <ExternalLink
                         href="#"
@@ -105,7 +105,7 @@ export default function AccountModal({
 
                             dispatch(
                                 ToasterAction.show({
-                                    title: I18n.common.copied(),
+                                    title: i18n('common.copied'),
                                     type: ToastType.Success,
                                 })
                             )
@@ -123,14 +123,14 @@ export default function AccountModal({
                                 fill="currentColor"
                             />
                         </svg>
-                        <Text>{I18n.accountModal.copy(isCopied)}</Text>
+                        <Text>{i18n('accountModal.copy', isCopied)}</Text>
                     </ExternalLink>
                 </div>
                 <hr css={tw`my-3`} />
                 <div css={tw`flex`}>
                     <div css={tw`grow`}>
                         <Hint css={tw`pr-16`}>
-                            <Text>{I18n.accountModal.showHiddenRoomsLabel()}</Text>
+                            <Text>{i18n('accountModal.showHiddenRoomsLabel')}</Text>
                         </Hint>
                     </div>
                     <div css={tw`mt-2`}>
@@ -154,7 +154,7 @@ export default function AccountModal({
                 <div css={tw`flex`}>
                     <div css={tw`grow`}>
                         <Hint css={tw`pr-16`}>
-                            <Text>{I18n.accountModal.retrieveOnLoginLabel()}</Text>
+                            <Text>{i18n('accountModal.retrieveOnLoginLabel')}</Text>
                         </Hint>
                     </div>
                     <div css={tw`mt-2`}>

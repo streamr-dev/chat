@@ -4,7 +4,7 @@ import { Props as SelectProps } from 'react-select'
 import tw, { css } from 'twin.macro'
 import Hint from './Hint'
 import Text from './Text'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export const PrivateRoomOption: PrivacyOption = {
     value: PrivacySetting.Private,
@@ -36,13 +36,13 @@ export default function PrivacySelectField({ value, ...props }: Props) {
             value={value}
             optionComponent={Option}
             singleValueComponent={SingleValue}
-            getOptionLabel={({ value }: any) => I18n.common.roomPrivacyLabel(value)}
+            getOptionLabel={({ value }: any) => i18n('common.roomPrivacyLabel', value)}
         />
     )
 }
 
 function SingleValue({ data: { value }, children, ...props }: any) {
-    const Icon = I18n.common.roomPrivacyIcon(value)
+    const Icon = i18n('common.roomPrivacyIcon', value)
 
     return (
         <RawSingleValue {...props}>
@@ -73,7 +73,7 @@ function SingleValue({ data: { value }, children, ...props }: any) {
 }
 
 function Option({ data: { value }, isDisabled, ...props }: any) {
-    const Icon = I18n.common.roomPrivacyIcon(value)
+    const Icon = i18n('common.roomPrivacyIcon', value)
 
     return (
         <RawOption {...props} isDisabled={isDisabled}>
@@ -112,7 +112,7 @@ function Option({ data: { value }, isDisabled, ...props }: any) {
                                 `,
                         ]}
                     >
-                        <Text>{I18n.common.roomPrivacyLabel(value)}</Text>
+                        <Text>{i18n('common.roomPrivacyLabel', value)}</Text>
                     </div>
                     <Hint
                         css={tw`
@@ -121,7 +121,7 @@ function Option({ data: { value }, isDisabled, ...props }: any) {
                             pr-12
                         `}
                     >
-                        <Text>{I18n.common.roomPrivacyDesc(value)}</Text>
+                        <Text>{i18n('common.roomPrivacyDesc', value)}</Text>
                     </Hint>
                 </div>
             </div>

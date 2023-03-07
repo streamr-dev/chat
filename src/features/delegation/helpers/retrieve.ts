@@ -9,7 +9,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import recover from '$/utils/recover'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export default function retrieve({
     provider,
@@ -54,10 +54,10 @@ export default function retrieve({
                     return result
                 },
                 {
-                    title: I18n.isAuthorizedDelegationRecoverToast.title(),
-                    desc: I18n.isAuthorizedDelegationRecoverToast.desc(),
-                    okLabel: I18n.isAuthorizedDelegationRecoverToast.okLabel(),
-                    cancelLabel: I18n.isAuthorizedDelegationRecoverToast.cancelLabel(),
+                    title: i18n('isAuthorizedDelegationRecoverToast.title'),
+                    desc: i18n('isAuthorizedDelegationRecoverToast.desc'),
+                    okLabel: i18n('isAuthorizedDelegationRecoverToast.okLabel'),
+                    cancelLabel: i18n('isAuthorizedDelegationRecoverToast.cancelLabel'),
                 }
             )
 
@@ -65,7 +65,7 @@ export default function retrieve({
                 dismissToast = true
 
                 tc = yield retoast(tc, {
-                    title: I18n.delegationToast.authorizingLabel(),
+                    title: i18n('delegationToast.authorizingLabel'),
                     type: ToastType.Processing,
                 })
 
@@ -77,7 +77,7 @@ export default function retrieve({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: I18n.delegationToast.successLabel(),
+                title: i18n('delegationToast.successLabel'),
                 type: ToastType.Success,
             })
 
@@ -86,7 +86,7 @@ export default function retrieve({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: I18n.delegationToast.failureLabel(),
+                title: i18n('delegationToast.failureLabel'),
                 type: ToastType.Error,
             })
 

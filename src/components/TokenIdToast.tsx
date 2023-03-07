@@ -4,7 +4,7 @@ import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { useEffect, useRef, useState } from 'react'
 import tw from 'twin.macro'
 import { BigNumber } from 'ethers'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 interface Props extends Omit<ToastableProps, 'onProceed'> {
     onProceed?: (tokenId: string) => void
@@ -62,18 +62,18 @@ export default function TokenIdToast({ onProceed, tokenStandard, abortSignal, ..
         <Toast
             {...props}
             onProceed={() => void onProceed?.(tokenId)}
-            title={I18n.tokenIdToast.title()}
+            title={i18n('tokenIdToast.title')}
             type={ToastType.Warning}
             abortSignal={abortController.signal}
             canSubmit={canSubmit}
             desc={
                 <>
-                    <p>{I18n.tokenIdToast.message(tokenStandard)}</p>
+                    <p>{i18n('tokenIdToast.message', tokenStandard)}</p>
                     <TextField
                         type="text"
                         value={tokenId}
                         onChange={({ target }) => void setTokenId(target.value)}
-                        placeholder={I18n.tokenIdToast.tokenIdInputPlaceholder()}
+                        placeholder={i18n('tokenIdToast.tokenIdInputPlaceholder')}
                         css={tw`
                             h-12
                             mt-4
@@ -95,8 +95,8 @@ export default function TokenIdToast({ onProceed, tokenStandard, abortSignal, ..
                     />
                 </>
             }
-            okLabel={I18n.tokenIdToast.okLabel()}
-            cancelLabel={I18n.tokenIdToast.cancelLabel()}
+            okLabel={i18n('tokenIdToast.okLabel')}
+            cancelLabel={i18n('tokenIdToast.cancelLabel')}
         />
     )
 }

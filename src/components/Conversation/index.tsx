@@ -27,7 +27,7 @@ import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBei
 import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 import useJoin from '$/hooks/useJoin'
 import usePublisher, { PublisherState } from '$/hooks/usePublisher'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export default function Conversation() {
     const messages = useMessages()
@@ -151,11 +151,11 @@ function TokenGatedBox() {
         <MessageInputPlaceholder
             cta={
                 <Cta busy={isJoining} disabled={isJoining || !join} onClick={() => void join?.()}>
-                    {I18n.common.join(isJoining)}
+                    {i18n('common.join', isJoining)}
                 </Cta>
             }
         >
-            {I18n.rooms.joinGatedPrompt()}
+            {i18n('rooms.joinGatedPrompt')}
         </MessageInputPlaceholder>
     )
 }
@@ -169,11 +169,11 @@ function PermitBox() {
         <MessageInputPlaceholder
             cta={
                 <Cta busy={isPromoting} disabled={isPromoting || !promote} onClick={promote}>
-                    {I18n.common.enable(isPromoting)}
+                    {i18n('common.enable', isPromoting)}
                 </Cta>
             }
         >
-            {I18n.rooms.promoteHotWalletPrompt()}
+            {i18n('rooms.promoteHotWalletPrompt')}
         </MessageInputPlaceholder>
     )
 }
@@ -195,11 +195,11 @@ function DelegationBox() {
                     disabled={isDelegatingAccess}
                     onClick={requestPrivateKey}
                 >
-                    {I18n.common.enable(isDelegatingAccess)}
+                    {i18n('common.enable', isDelegatingAccess)}
                 </Cta>
             }
         >
-            {I18n.rooms.delegatePrompt(actions)}
+            {i18n('rooms.delegatePrompt', actions)}
         </MessageInputPlaceholder>
     )
 }

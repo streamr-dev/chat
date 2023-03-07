@@ -4,7 +4,7 @@ import { RoomAction } from '$/features/room'
 import toast from '$/features/toaster/helpers/toast'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { put } from 'redux-saga/effects'
 
@@ -28,7 +28,7 @@ function* onUnpinAction({
         handleError(e)
 
         yield toast({
-            title: I18n.unpinToast.failureTitle(),
+            title: i18n('unpinToast.failureTitle'),
             type: ToastType.Error,
         })
     }

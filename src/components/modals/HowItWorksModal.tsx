@@ -1,8 +1,11 @@
 import Modal, { Props } from '$/components/modals/Modal'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import tw from 'twin.macro'
 
-export default function HowItWorksModal({ title = I18n.howItWorksModal.title(), ...props }: Props) {
+export default function HowItWorksModal({
+    title = i18n('howItWorksModal.title'),
+    ...props
+}: Props) {
     return (
         <Modal {...props} title={title}>
             <div
@@ -12,7 +15,7 @@ export default function HowItWorksModal({ title = I18n.howItWorksModal.title(), 
                     leading-6
                 `}
             >
-                {I18n.howItWorksModal.content()}
+                {i18n('howItWorksModal.content')}
             </div>
         </Modal>
     )

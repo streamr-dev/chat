@@ -6,7 +6,7 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import toast from '$/features/toaster/helpers/toast'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 function* onRegisterInviteAction({
     payload: { roomId, invitee, streamrClient },
@@ -32,8 +32,8 @@ function* onRegisterInviteAction({
         })
 
         yield toast({
-            title: I18n.gotInviteToast.title(),
-            desc: I18n.gotInviteToast.desc(),
+            title: i18n('gotInviteToast.title'),
+            desc: i18n('gotInviteToast.desc'),
         })
 
         yield put(

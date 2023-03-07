@@ -6,7 +6,7 @@ import tw from 'twin.macro'
 import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
 import RoomEntryRequirements from '$/components/RoomEntryRequirements'
 import usePrivacy from '$/hooks/usePrivacy'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import { PrivacySetting } from '$/types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -23,7 +23,7 @@ export default function RoomInfo({ roomId, mini = false, children, ...props }: P
         return <Pending>{children}</Pending>
     }
 
-    const PrivacyIcon = I18n.common.roomPrivacyIcon(privacy)
+    const PrivacyIcon = i18n('common.roomPrivacyIcon', privacy)
 
     return (
         <Wrap {...props}>
@@ -37,7 +37,7 @@ export default function RoomInfo({ roomId, mini = false, children, ...props }: P
                             ml-0.5
                         `}
                     />
-                    <Text truncate>{I18n.common.roomPrivacyLabel(privacy)} room</Text>
+                    <Text truncate>{i18n('common.roomPrivacyLabel', privacy)} room</Text>
                 </>
             )}
             {requirements && (
@@ -50,7 +50,7 @@ export default function RoomInfo({ roomId, mini = false, children, ...props }: P
                                 lg:block
                             `}
                         >
-                            {I18n.common.requiringLabel()}
+                            {i18n('common.requiringLabel')}
                         </Text>
                     )}
                     <RoomEntryRequirements
@@ -97,7 +97,7 @@ function Pending({ children, ...props }: HTMLAttributes<HTMLDivElement>) {
             >
                 <Spinner r={4} strokeWidth={1.5} />
             </div>
-            <Text>{I18n.common.load(true)}</Text>
+            <Text>{i18n('common.load', true)}</Text>
             {children}
         </Wrap>
     )

@@ -9,7 +9,7 @@ import { Flag } from '$/features/flag/types'
 import { Provider } from '@web3-react/types'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import handleError from '$/utils/handleError'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 
 export default function delegationPreflight({
     requester,
@@ -32,11 +32,11 @@ export default function delegationPreflight({
                 yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
 
                 confirm = yield toaster(Toast, {
-                    title: I18n.delegationToast.title(),
+                    title: i18n('delegationToast.title'),
                     type: ToastType.Warning,
-                    desc: I18n.delegationToast.desc(),
-                    okLabel: I18n.delegationToast.okLabel(),
-                    cancelLabel: I18n.delegationToast.cancelLabel(),
+                    desc: i18n('delegationToast.desc'),
+                    okLabel: i18n('delegationToast.okLabel'),
+                    cancelLabel: i18n('delegationToast.cancelLabel'),
                 })
 
                 yield confirm?.open()

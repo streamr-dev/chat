@@ -1,7 +1,7 @@
 import Text from '$/components/Text'
 import { WalletIntegrationId } from '$/features/wallet/types'
 import MetaMaskIcon from '$/icons/MetaMaskIcon'
-import { I18n } from '$/utils/I18n'
+import i18n from '$/utils/I18n'
 import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
 
@@ -12,7 +12,7 @@ interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
 export default function TryMetaMask({ onWhite = false, ...props }: Props) {
     return (
         <div {...props} css={tw`flex`}>
-            {I18n.common.needWalletLabel()}
+            {i18n('common.needWalletLabel')}
             <a
                 href="https://metamask.io/"
                 rel="noreferrer noopener"
@@ -43,7 +43,7 @@ export default function TryMetaMask({ onWhite = false, ...props }: Props) {
                         mr-1
                     `}
                 />{' '}
-                <Text>{I18n.common.integrationLabel(WalletIntegrationId.MetaMask)}</Text>
+                <Text>{i18n('common.integrationLabel', WalletIntegrationId.MetaMask)}</Text>
             </a>
         </div>
     )
