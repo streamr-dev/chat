@@ -16,6 +16,7 @@ import tw from 'twin.macro'
 import { Controller } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
+import { I18n } from '$/utils/I18n'
 
 const { stickyRoomIds } = config
 
@@ -137,7 +138,7 @@ export default function pinSticky({
 
             try {
                 t = yield toaster(Toast, {
-                    title: `Pinned ${n} new sticky room${n === 1 ? '' : 's'}`,
+                    title: I18n.stickyPinToast.title(n),
                     type: ToastType.Info,
                     desc: (
                         <ol css={tw`text-[14px] list-decimal`}>
@@ -146,7 +147,7 @@ export default function pinSticky({
                             ))}
                         </ol>
                     ),
-                    okLabel: 'Dismiss',
+                    okLabel: I18n.stickyPinToast.okLabel(),
                 })
 
                 yield t?.open()

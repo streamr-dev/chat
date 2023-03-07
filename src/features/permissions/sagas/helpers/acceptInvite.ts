@@ -35,7 +35,7 @@ export default function acceptInvite({
             dismissToast = true
 
             tc = yield retoast(tc, {
-                title: I18n.inviteToast.joiningTitle(),
+                title: I18n.acceptInviteToast.joiningTitle(),
                 type: ToastType.Processing,
             })
 
@@ -66,7 +66,7 @@ export default function acceptInvite({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: I18n.inviteToast.successTitle(),
+                title: I18n.acceptInviteToast.successTitle(),
                 type: ToastType.Success,
             })
         } catch (e) {
@@ -75,7 +75,7 @@ export default function acceptInvite({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: I18n.inviteToast.failureTitle(),
+                title: I18n.acceptInviteToast.failureTitle(),
                 type: ToastType.Error,
             })
         } finally {

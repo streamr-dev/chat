@@ -21,6 +21,7 @@ import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 import recover from '$/utils/recover'
+import { I18n } from '$/utils/I18n'
 
 function* onCreateAction({
     payload: {
@@ -77,9 +78,9 @@ function* onCreateAction({
                 tokenType.standard !== TokenStandard.ERC721
             ) {
                 yield toast({
-                    title: 'Only ERC-20s & ERC-721s are supported',
+                    title: I18n.roomCreateToast.unsupportedTokenTitle(),
                     type: ToastType.Error,
-                    okLabel: 'Ok',
+                    okLabel: I18n.common.ok(),
                 })
 
                 throw new Error('Unsupported standard')
@@ -87,7 +88,7 @@ function* onCreateAction({
         }
 
         tc = yield retoast(tc, {
-            title: `Creating "${params.name}"…`,
+            title: I18n.roomCreateToast.creatingTitle(params.name),
             type: ToastType.Processing,
         })
 
@@ -121,7 +122,7 @@ function* onCreateAction({
 
         if (privacy === PrivacySetting.Public) {
             tc = yield retoast(tc, {
-                title: `Making "${params.name}" public…`,
+                title: I18n.roomCreateToast.publishingTitle(params.name),
                 type: ToastType.Processing,
             })
 
@@ -135,8 +136,10 @@ function* onCreateAction({
                     })
                 },
                 {
-                    title: `Failed to make "${params.name}" public`,
-                    desc: 'Would you like to try again? If you click "No" the room will stay private.',
+                    title: I18n.publishRoomRecoverToast.title(params.name),
+                    desc: I18n.publishRoomRecoverToast.desc(),
+                    okLabel: I18n.publishRoomRecoverToast.okLabel(),
+                    cancelLabel: I18n.publishRoomRecoverToast.cancelLabel(),
                 }
             )
         }
@@ -150,7 +153,7 @@ function* onCreateAction({
         dismissToast = false
 
         tc = yield retoast(tc, {
-            title: `Room "${params.name}" created`,
+            title: I18n.roomCreateToast.successTitle(params.name),
             type: ToastType.Success,
         })
 
@@ -178,7 +181,7 @@ function* onCreateAction({
         dismissToast = false
 
         tc = yield retoast(tc, {
-            title: `Failed to create "${params.name}"`,
+            title: I18n.roomCreateToast.failureTitle(params.name),
             type: ToastType.Error,
         })
     } finally {

@@ -14,7 +14,6 @@ import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155Joi
 import Toast, { ToastType } from '$/components/Toast'
 import StreamrClient, { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
-import Id from '$/components/Id'
 import { ComponentProps } from 'react'
 import { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
@@ -25,6 +24,7 @@ import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import tokenIdPreflight from '$/utils/tokenIdPreflight'
 import recover from '$/utils/recover'
+import { I18n } from '$/utils/I18n'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -70,7 +70,7 @@ export default function join(
         try {
             if (!tokenAddress) {
                 yield onToast({
-                    title: "It's not a token gated room",
+                    title: I18n.joinTokenGatedRoomToast.notTokenGatedTitle(),
                     type: ToastType.Error,
                 })
 
@@ -94,7 +94,7 @@ export default function join(
             }
 
             yield onToast({
-                title: <>Joining {name ? `"${name}"` : <Id>{roomId}</Id>}…</>,
+                title: I18n.joinTokenGatedRoomToast.joiningTitle(name, roomId),
                 type: ToastType.Processing,
             })
 
@@ -140,7 +140,7 @@ export default function join(
                             /error_notEnoughTokens/.test(e.message)
                         ) {
                             yield onToast({
-                                title: 'Not enough tokens',
+                                title: I18n.joinTokenGatedRoomToast.insufficientFundsTitle(),
                                 type: ToastType.Error,
                                 autoCloseAfter: 5,
                             })
@@ -152,7 +152,10 @@ export default function join(
                     }
                 },
                 {
-                    title: 'Transaction failed',
+                    title: I18n.joinTokenGatedRecoverToast.title(),
+                    desc: I18n.joinTokenGatedRecoverToast.desc(),
+                    okLabel: I18n.joinTokenGatedRecoverToast.okLabel(),
+                    cancelLabel: I18n.joinTokenGatedRecoverToast.cancelLabel(),
                 }
             )
 
@@ -161,7 +164,7 @@ export default function join(
             }
 
             yield onToast({
-                title: 'Checking permissions…',
+                title: I18n.joinTokenGatedRoomToast.checkingPermissionsTitle(),
                 type: ToastType.Processing,
             })
 
@@ -190,7 +193,10 @@ export default function join(
                         })
                     },
                     {
-                        title: 'Failed to detect new permissions',
+                        title: I18n.checkTokenGatedPermissionsRecoverToast.title(),
+                        desc: I18n.checkTokenGatedPermissionsRecoverToast.desc(),
+                        okLabel: I18n.checkTokenGatedPermissionsRecoverToast.okLabel(),
+                        cancelLabel: I18n.checkTokenGatedPermissionsRecoverToast.cancelLabel(),
                     }
                 )
 
@@ -208,14 +214,14 @@ export default function join(
             }
 
             yield onToast({
-                title: 'Joined!',
+                title: I18n.joinTokenGatedRoomToast.successTitle(),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
             yield onToast({
-                title: 'Failed to join',
+                title: I18n.joinTokenGatedRoomToast.failureTitle(),
                 type: ToastType.Error,
             })
         } finally {

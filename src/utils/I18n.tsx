@@ -1,4 +1,6 @@
 import Hodl from '$/components/Hodl'
+import Id from '$/components/Id'
+import { RoomId } from '$/features/room/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { WalletIntegrationId } from '$/features/wallet/types'
 import CoinbaseWalletIcon from '$/icons/CoinbaseWalletIcon'
@@ -278,7 +280,7 @@ export const I18n = {
             return 'Failed to delegate access'
         },
     },
-    inviteToast: {
+    acceptInviteToast: {
         joiningTitle() {
             return 'Setting new permissions…'
         },
@@ -738,6 +740,144 @@ export const I18n = {
     tokenGateGrantRecoverToast: {
         title() {
             return 'Failed to assign new permissions'
+        },
+        desc() {
+            return I18n.recoverToast.desc()
+        },
+        okLabel() {
+            return I18n.recoverToast.okLabel()
+        },
+        cancelLabel() {
+            return I18n.recoverToast.cancelLabel()
+        },
+    },
+    unpinToast: {
+        failureTitle() {
+            return 'Unpinning failed'
+        },
+    },
+    storageToast: {
+        enabledTitle() {
+            return 'Storage enabled'
+        },
+        disabledTitle() {
+            return 'Storage disabled'
+        },
+        failedToEnableTitle() {
+            return 'Failed to enable storage'
+        },
+        failedToDisableTitle() {
+            return 'Failed to disable storage'
+        },
+    },
+    roomVisibilityToast: {
+        failedToToggleTitle() {
+            return 'Failed to toggle room visibility'
+        },
+    },
+    roomRenameToast: {
+        upToDateTitle() {
+            return 'Room name is already up-to-date'
+        },
+        successTitle() {
+            return 'Room renamed successfully'
+        },
+        failureTitle() {
+            return 'Failed to rename the room'
+        },
+    },
+    gotInviteToast: {
+        title() {
+            return "You've got an invite"
+        },
+        desc() {
+            return 'Room list will reflect it shortly'
+        },
+    },
+    deleteRoomToast: {
+        successTitle() {
+            return 'Room has been deleted'
+        },
+        failureTitle() {
+            return 'Failed to delete room'
+        },
+    },
+    roomCreateToast: {
+        unsupportedTokenTitle() {
+            return 'Only ERC-20s & ERC-721s are supported'
+        },
+        creatingTitle(roomName: string) {
+            return `Creating "${roomName}"…`
+        },
+        publishingTitle(roomName: string) {
+            return `Making "${roomName}" public…`
+        },
+        successTitle(roomName: string) {
+            return `Room "${roomName}" created`
+        },
+        failureTitle(roomName: string) {
+            return `Failed to create "${roomName}"`
+        },
+    },
+    publishRoomRecoverToast: {
+        title(roomName: string) {
+            return `Failed to make "${roomName}" public`
+        },
+        desc() {
+            return 'Would you like to try again? If you click "No" the room will stay private.'
+        },
+        okLabel() {
+            return I18n.recoverToast.okLabel()
+        },
+        cancelLabel() {
+            return I18n.recoverToast.cancelLabel()
+        },
+    },
+    stickyPinToast: {
+        title(count: number) {
+            return `Pinned ${count} new sticky room${count === 1 ? '' : 's'}`
+        },
+        okLabel() {
+            return 'Dismiss'
+        },
+    },
+    joinTokenGatedRoomToast: {
+        notTokenGatedTitle() {
+            return "It's not a token gated room"
+        },
+        joiningTitle(name: string | undefined, roomId: RoomId) {
+            return <>Joining {name ? `"${name}"` : <Id>{roomId}</Id>}…</>
+        },
+        insufficientFundsTitle() {
+            return 'Not enough tokens'
+        },
+        checkingPermissionsTitle() {
+            return 'Checking permissions…'
+        },
+        successTitle() {
+            return 'Joined!'
+        },
+        failureTitle() {
+            return 'Failed to join'
+        },
+    },
+    joinTokenGatedRecoverToast: {
+        title() {
+            return 'Transaction failed'
+        },
+        desc() {
+            return I18n.recoverToast.desc()
+        },
+        okLabel() {
+            return I18n.recoverToast.okLabel()
+        },
+        cancelLabel() {
+            return I18n.recoverToast.cancelLabel()
+        },
+    },
+    checkTokenGatedPermissionsRecoverToast: {
+        title() {
+            return 'Failed to detect new permissions'
         },
         desc() {
             return I18n.recoverToast.desc()

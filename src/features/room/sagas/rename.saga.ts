@@ -14,6 +14,7 @@ import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import fetchStream from '$/utils/fetchStream'
+import { I18n } from '$/utils/I18n'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },
@@ -29,11 +30,15 @@ function* onRenameAction({
 
         if (roomMetadata.name === name) {
             yield toast({
-                title: 'Room name is already up-to-date',
+                title: I18n.roomRenameToast.upToDateTitle(),
                 type: ToastType.Info,
             })
 
             try {
+                /**
+                 * Let's check if the name of the room cached locally is equal to the remote
+                 * room's name. Trigger a sync if it's not.
+                 */
                 const room: undefined | IRoom = yield db.rooms.where('id').equals(roomId).first()
 
                 if (room && room.name !== name) {
@@ -79,7 +84,7 @@ function* onRenameAction({
         yield put(FlagAction.unset(Flag.isRoomNameBeingEdited(roomId)))
 
         yield toast({
-            title: 'Room renamed successfully',
+            title: I18n.roomRenameToast.successTitle(),
             type: ToastType.Success,
         })
     } catch (e) {
@@ -90,7 +95,7 @@ function* onRenameAction({
         handleError(e)
 
         yield toast({
-            title: 'Failed to rename the room',
+            title: I18n.roomRenameToast.failureTitle(),
             type: ToastType.Error,
         })
     }
