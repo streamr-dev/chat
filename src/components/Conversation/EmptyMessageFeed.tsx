@@ -15,6 +15,9 @@ import Spinner from '$/components/Spinner'
 import useAbility from '$/hooks/useAbility'
 import { StreamPermission } from 'streamr-client'
 import useAnonAccount from '$/hooks/useAnonAccount'
+import usePrivacy from '$/hooks/usePrivacy'
+import { PrivacySetting } from '$/types'
+import useTokenMetadata from '$/hooks/useTokenMetadata'
 
 interface Props {
     onAddMemberClick?: () => void
@@ -30,6 +33,8 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
     const canGrant = !!useAbility(roomId, walletAccount, StreamPermission.GRANT)
 
     const invited = useJustInvited(useSelectedRoomId(), walletAccount)
+
+    const isTokenGated = usePrivacy(roomId) === PrivacySetting.TokenGated
 
     if (typeof isPublic === 'undefined') {
         return null
@@ -64,6 +69,8 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                     </div>
                     {invited ? (
                         <JoinButton />
+                    ) : isTokenGated ? (
+                        <TokenGatedMessage />
                     ) : (
                         <UtilityButton
                             disabled={!canGrant}
@@ -85,6 +92,36 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
             )}
         </div>
     )
+}
+
+function TokenGatedMessage() {
+    const { tokenAddress, tokenIds, tokenType, stakingEnabled } = useSelectedRoom() || {}
+
+    const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds)
+    const polygonScanUrl = `https://polygonscan.com/token/${tokenAddress}`
+
+    const displayTokenAddress = useDisplayUsername(tokenAddress, {
+        fallback: tokenAddress,
+    })
+
+    const urlText = tokenMetadata
+        ? `${tokenMetadata.name} (${tokenMetadata.symbol})`
+        : displayTokenAddress
+
+    if (tokenAddress) {
+        return (
+            <div>
+                This is a{stakingEnabled ? ' staking' : ' token'}
+                -gated room, governed by the
+                <a href={polygonScanUrl} target="_blank">
+                    {' '}
+                    <b>{urlText}</b>{' '}
+                </a>
+                {tokenType.standard} token
+            </div>
+        )
+    }
+    return null
 }
 
 function Credits() {
