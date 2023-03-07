@@ -27,6 +27,7 @@ import { ZeroAddress } from '$/consts'
 import { Controller } from '$/features/toaster/helpers/toast'
 import isSameAddress from '$/utils/isSameAddress'
 import recover from '$/utils/recover'
+import { I18n } from '$/utils/I18n'
 
 const Factory: Record<
     TokenStandard,
@@ -87,7 +88,7 @@ export default function createTokenGatePolicy({
 
                 try {
                     tc = yield retoast(tc, {
-                        title: 'Deploying token gate…',
+                        title: I18n.tokenGateToast.deployingTitle(),
                         type: ToastType.Processing,
                     })
 
@@ -126,7 +127,10 @@ export default function createTokenGatePolicy({
                             yield tx.wait(10)
                         },
                         {
-                            title: 'Failed to deploy the policy',
+                            title: I18n.tokenGatePolicyRecoverToast.title(),
+                            desc: I18n.tokenGatePolicyRecoverToast.desc(),
+                            okLabel: I18n.tokenGatePolicyRecoverToast.okLabel(),
+                            cancelLabel: I18n.tokenGatePolicyRecoverToast.cancelLabel(),
                         }
                     )
 
@@ -135,7 +139,7 @@ export default function createTokenGatePolicy({
                     let policyAddress: Address = ZeroAddress
 
                     tc = yield retoast(tc, {
-                        title: 'Waiting for the network…',
+                        title: I18n.tokenGateToast.waitingTitle(),
                         type: ToastType.Processing,
                     })
 
@@ -157,12 +161,15 @@ export default function createTokenGatePolicy({
                             })
                         },
                         {
-                            title: 'Failed to determine policy address',
+                            title: I18n.tokenGateAddressRecoverToast.title(),
+                            desc: I18n.tokenGateAddressRecoverToast.desc(),
+                            okLabel: I18n.tokenGateAddressRecoverToast.okLabel(),
+                            cancelLabel: I18n.tokenGateAddressRecoverToast.cancelLabel(),
                         }
                     )
 
                     tc = yield retoast(tc, {
-                        title: `Assigning permissions to the token gate at ${policyAddress}`,
+                        title: I18n.tokenGateToast.grantingTitle(policyAddress),
                         type: ToastType.Processing,
                     })
 
@@ -193,12 +200,15 @@ export default function createTokenGatePolicy({
                             )
                         },
                         {
-                            title: 'Failed to assign new permissions',
+                            title: I18n.tokenGateGrantRecoverToast.title(),
+                            desc: I18n.tokenGateGrantRecoverToast.desc(),
+                            okLabel: I18n.tokenGateGrantRecoverToast.okLabel(),
+                            cancelLabel: I18n.tokenGateGrantRecoverToast.cancelLabel(),
                         }
                     )
 
                     tc = yield retoast(tc, {
-                        title: 'Done!',
+                        title: I18n.tokenGateToast.successTitle(),
                         type: ToastType.Success,
                     })
 
@@ -207,7 +217,7 @@ export default function createTokenGatePolicy({
                     handleError(e)
 
                     tc = yield retoast(tc, {
-                        title: 'Failed to deploy your token gate',
+                        title: I18n.tokenGateToast.failureTitle(),
                         type: ToastType.Error,
                     })
 

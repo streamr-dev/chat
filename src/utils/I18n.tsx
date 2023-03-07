@@ -7,8 +7,9 @@ import MetaMaskIcon from '$/icons/MetaMaskIcon'
 import PrivateIcon from '$/icons/PrivateIcon'
 import PublicIcon from '$/icons/PublicIcon'
 import WalletConnectIcon from '$/icons/WalletConnectIcon'
-import { PrivacySetting } from '$/types'
+import { Address, PrivacySetting } from '$/types'
 import { AccountType } from '$/utils/getAccountType'
+import trunc from '$/utils/trunc'
 import { format } from 'date-fns'
 import { ReactNode } from 'react'
 
@@ -216,6 +217,17 @@ export const I18n = {
             return 'No'
         },
     },
+    aliasToast: {
+        failedToDestroy() {
+            return 'Failed to remove a nickname'
+        },
+        failedToCreate() {
+            return 'Failed to create a nickname'
+        },
+        failedToUpdate() {
+            return 'Failed to update a nickname'
+        },
+    },
     toasts: {
         defaultTitle() {
             return 'Toast'
@@ -256,6 +268,56 @@ export const I18n = {
         cancelLabel() {
             return I18n.common.cancel()
         },
+        authorizingLabel() {
+            return 'Authorizing your delegated wallet…'
+        },
+        successLabel() {
+            return 'Access delegated successfully'
+        },
+        failureLabel() {
+            return 'Failed to delegate access'
+        },
+    },
+    inviteToast: {
+        joiningTitle() {
+            return 'Setting new permissions…'
+        },
+        successTitle() {
+            return 'Joined successfully'
+        },
+        failureTitle() {
+            return 'Failed to join'
+        },
+    },
+    memberToast: {
+        addingTitle(address: Address) {
+            return (
+                <>
+                    Adding <strong>{trunc(address)}</strong>…
+                </>
+            )
+        },
+        successTitle(address: Address) {
+            return (
+                <>
+                    <strong>{trunc(address)}</strong> has been added
+                </>
+            )
+        },
+        alreadyMemberTitle(address: Address) {
+            return (
+                <>
+                    <strong>{trunc(address)}</strong> is already a member
+                </>
+            )
+        },
+        failureTitle(address: Address) {
+            return (
+                <>
+                    Failed to add <strong>{trunc(address)}</strong>
+                </>
+            )
+        },
     },
     recoverToast: {
         title() {
@@ -269,6 +331,31 @@ export const I18n = {
         },
         cancelLabel() {
             return I18n.common.noLabel()
+        },
+    },
+    confirmToast: {
+        title() {
+            return 'Are you sure?'
+        },
+        okLabel() {
+            return I18n.common.yesLabel()
+        },
+        cancelLabel() {
+            return I18n.common.cancel()
+        },
+    },
+    isAuthorizedDelegationRecoverToast: {
+        title() {
+            return I18n.recoverToast.title()
+        },
+        desc() {
+            return I18n.recoverToast.desc()
+        },
+        okLabel() {
+            return I18n.recoverToast.okLabel()
+        },
+        cancelLabel() {
+            return I18n.recoverToast.cancelLabel()
         },
     },
     appName() {
@@ -546,6 +633,120 @@ export const I18n = {
         },
         delegatePrompt(actions: string[]) {
             return `Activate hot wallet signing to ${actions.join(' and ')} messages.`
+        },
+    },
+    anonToast: {
+        title() {
+            return 'Granting anons more rights…'
+        },
+        failureTitle() {
+            return 'Failed to give anons more rights'
+        },
+        successTitle() {
+            return 'Done'
+        },
+        confirmTitle() {
+            return I18n.confirmToast.title()
+        },
+        confirmDesc() {
+            return 'Anyone will be able to read and send messages in this room.'
+        },
+        confirmOkLabel() {
+            return I18n.confirmToast.okLabel()
+        },
+        confirmCancelLabel() {
+            return I18n.confirmToast.cancelLabel()
+        },
+        cancelledTitle() {
+            return 'Maybe another time!'
+        },
+    },
+    promoteToast: {
+        successTitle() {
+            return 'Delegated account has been promoted'
+        },
+        failureTitle() {
+            return 'Failed to promote the delegated account'
+        },
+    },
+    removeMemberToast: {
+        successTitle(name: string) {
+            return (
+                <>
+                    <strong>{name}</strong> has been removed
+                </>
+            )
+        },
+        failureTitle(name: string) {
+            return (
+                <>
+                    Failed to remove <strong>{name}</strong>
+                </>
+            )
+        },
+    },
+    preferenceToast: {
+        updateFailureTitle() {
+            return 'Failed to update preferences'
+        },
+    },
+    tokenGateToast: {
+        deployingTitle() {
+            return 'Deploying token gate…'
+        },
+        waitingTitle() {
+            return 'Waiting for the network…'
+        },
+        grantingTitle(policyAddress: Address) {
+            return `Assigning permissions to the token gate at ${policyAddress}…`
+        },
+        successTitle() {
+            return 'Done'
+        },
+        failureTitle() {
+            return 'Failed to deploy your token gate'
+        },
+    },
+    tokenGatePolicyRecoverToast: {
+        title() {
+            return 'Failed to deploy the policy'
+        },
+        desc() {
+            return I18n.recoverToast.desc()
+        },
+        okLabel() {
+            return I18n.recoverToast.okLabel()
+        },
+        cancelLabel() {
+            return I18n.recoverToast.cancelLabel()
+        },
+    },
+    tokenGateAddressRecoverToast: {
+        title() {
+            return 'Failed to determine policy address'
+        },
+        desc() {
+            return I18n.recoverToast.desc()
+        },
+        okLabel() {
+            return I18n.recoverToast.okLabel()
+        },
+        cancelLabel() {
+            return I18n.recoverToast.cancelLabel()
+        },
+    },
+    tokenGateGrantRecoverToast: {
+        title() {
+            return 'Failed to assign new permissions'
+        },
+        desc() {
+            return I18n.recoverToast.desc()
+        },
+        okLabel() {
+            return I18n.recoverToast.okLabel()
+        },
+        cancelLabel() {
+            return I18n.recoverToast.cancelLabel()
         },
     },
 }

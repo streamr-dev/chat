@@ -8,6 +8,7 @@ import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import delegationPreflight from '$/utils/delegationPreflight'
+import { I18n } from '$/utils/I18n'
 
 export default function acceptInvite({
     roomId,
@@ -34,7 +35,7 @@ export default function acceptInvite({
             dismissToast = true
 
             tc = yield retoast(tc, {
-                title: 'Setting new permissions…',
+                title: I18n.inviteToast.joiningTitle(),
                 type: ToastType.Processing,
             })
 
@@ -65,7 +66,7 @@ export default function acceptInvite({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Joined successfully',
+                title: I18n.inviteToast.successTitle(),
                 type: ToastType.Success,
             })
         } catch (e) {
@@ -74,7 +75,7 @@ export default function acceptInvite({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Failed to join',
+                title: I18n.inviteToast.failureTitle(),
                 type: ToastType.Error,
             })
         } finally {

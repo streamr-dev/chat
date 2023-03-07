@@ -145,7 +145,7 @@ const reducer = createReducer(initialState, (b) => {
         Object.keys(item).forEach((permission) => {
             const { cache = 0 } = item[permission]
 
-            // This will make all active `useLoadAbilityEffect` refetch.
+            // This will make all active `useAbility` refetch.
             item[permission].cache = cache + 1
         })
     })

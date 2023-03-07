@@ -9,12 +9,12 @@ import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import MemberExistsError from '$/errors/MemberExistsError'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import trunc from '$/utils/trunc'
 import { PermissionsAction } from '$/features/permissions'
 import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import fetchStream from '$/utils/fetchStream'
+import { I18n } from '$/utils/I18n'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -73,11 +73,7 @@ export default function addMember({
 
         try {
             tc = yield retoast(tc, {
-                title: (
-                    <>
-                        Adding <strong>{trunc(member)}</strong>…
-                    </>
-                ),
+                title: I18n.memberToast.addingTitle(member),
                 type: ToastType.Processing,
             })
 
@@ -119,11 +115,7 @@ export default function addMember({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: (
-                    <>
-                        <strong>{trunc(member)}</strong> has been added
-                    </>
-                ),
+                title: I18n.memberToast.successTitle(member),
                 type: ToastType.Success,
             })
 
@@ -143,11 +135,7 @@ export default function addMember({
 
             if (e instanceof MemberExistsError) {
                 tc = yield retoast(tc, {
-                    title: (
-                        <>
-                            <strong>{trunc(e.member)}</strong> is already a member
-                        </>
-                    ),
+                    title: I18n.memberToast.alreadyMemberTitle(e.member),
                     type: ToastType.Error,
                 })
 
@@ -157,11 +145,7 @@ export default function addMember({
             handleError(e)
 
             tc = yield retoast(tc, {
-                title: (
-                    <>
-                        Failed to add <strong>{trunc(member)}</strong>
-                    </>
-                ),
+                title: I18n.memberToast.failureTitle(member),
                 type: ToastType.Error,
             })
         } finally {

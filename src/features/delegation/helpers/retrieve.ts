@@ -9,6 +9,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import recover from '$/utils/recover'
+import { I18n } from '$/utils/I18n'
 
 export default function retrieve({
     provider,
@@ -53,7 +54,10 @@ export default function retrieve({
                     return result
                 },
                 {
-                    title: 'Authorization check failed',
+                    title: I18n.isAuthorizedDelegationRecoverToast.title(),
+                    desc: I18n.isAuthorizedDelegationRecoverToast.desc(),
+                    okLabel: I18n.isAuthorizedDelegationRecoverToast.okLabel(),
+                    cancelLabel: I18n.isAuthorizedDelegationRecoverToast.cancelLabel(),
                 }
             )
 
@@ -61,7 +65,7 @@ export default function retrieve({
                 dismissToast = true
 
                 tc = yield retoast(tc, {
-                    title: 'Authorizing your delegated wallet…',
+                    title: I18n.delegationToast.authorizingLabel(),
                     type: ToastType.Processing,
                 })
 
@@ -73,7 +77,7 @@ export default function retrieve({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Access delegated successfully',
+                title: I18n.delegationToast.successLabel(),
                 type: ToastType.Success,
             })
 
@@ -82,7 +86,7 @@ export default function retrieve({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Failed to delegate access',
+                title: I18n.delegationToast.failureLabel(),
                 type: ToastType.Error,
             })
 

@@ -5,6 +5,7 @@ import toast from '$/features/toaster/helpers/toast'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getDisplayUsername from '$/utils/getDisplayUsername'
 import handleError from '$/utils/handleError'
+import { I18n } from '$/utils/I18n'
 import isSameAddress from '$/utils/isSameAddress'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { call } from 'redux-saga/effects'
@@ -48,22 +49,14 @@ export default function removeMember({
             })
 
             yield toast({
-                title: (
-                    <>
-                        <strong>{displayName}</strong> has been removed
-                    </>
-                ),
+                title: I18n.removeMemberToast.successTitle(displayName),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
             yield toast({
-                title: (
-                    <>
-                        Failed to remove <strong>{displayName}</strong>
-                    </>
-                ),
+                title: I18n.removeMemberToast.failureTitle(displayName),
                 type: ToastType.Error,
             })
         }
