@@ -9,7 +9,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import recover from '$/utils/recover'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function retrieve({
     provider,

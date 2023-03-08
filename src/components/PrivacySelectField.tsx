@@ -4,7 +4,7 @@ import { Props as SelectProps } from 'react-select'
 import tw, { css } from 'twin.macro'
 import Hint from './Hint'
 import Text from './Text'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export const PrivateRoomOption: PrivacyOption = {
     value: PrivacySetting.Private,

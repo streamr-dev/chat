@@ -14,7 +14,7 @@ import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import fetchStream from '$/utils/fetchStream'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 function* onRenameAction({
     payload: { roomId, name, provider, requester, streamrClient },

@@ -37,7 +37,7 @@ import { AccountType } from '$/utils/getAccountType'
 import useCanGrant from '$/hooks/useCanGrant'
 import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import usePrivacy from '$/hooks/usePrivacy'
 
 export default function EditMembersModal({

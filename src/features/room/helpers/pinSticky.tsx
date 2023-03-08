@@ -16,7 +16,7 @@ import tw from 'twin.macro'
 import { Controller } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 const { stickyRoomIds } = config
 

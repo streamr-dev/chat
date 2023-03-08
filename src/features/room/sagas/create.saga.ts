@@ -21,7 +21,7 @@ import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 import recover from '$/utils/recover'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 function* onCreateAction({
     payload: {

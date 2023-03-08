@@ -24,7 +24,7 @@ import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import tokenIdPreflight from '$/utils/tokenIdPreflight'
 import recover from '$/utils/recover'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,

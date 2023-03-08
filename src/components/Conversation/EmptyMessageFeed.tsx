@@ -14,7 +14,7 @@ import Spinner from '$/components/Spinner'
 import useAbility from '$/hooks/useAbility'
 import { StreamPermission } from 'streamr-client'
 import useAnonAccount from '$/hooks/useAnonAccount'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props {
     onAddMemberClick?: () => void

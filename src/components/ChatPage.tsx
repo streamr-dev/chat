@@ -21,7 +21,7 @@ import ArrowIcon from '$/icons/ArrowIcon'
 import { FlagAction } from '$/features/flag'
 import ActionButton from '$/components/ActionButton'
 import Sidebar from '$/components/Sidebar'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function ChatPage() {
     const { open: openAccountModal, modal: accountModal } = useAccountModal()

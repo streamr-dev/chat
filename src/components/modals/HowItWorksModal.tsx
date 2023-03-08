@@ -1,5 +1,5 @@
 import Modal, { Props } from '$/components/modals/Modal'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import tw from 'twin.macro'
 
 export default function HowItWorksModal({

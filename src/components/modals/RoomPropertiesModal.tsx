@@ -22,7 +22,7 @@ import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function RoomPropertiesModal({
     title = i18n('roomPropertiesModal.title'),

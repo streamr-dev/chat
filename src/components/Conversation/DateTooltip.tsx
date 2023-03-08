@@ -1,5 +1,5 @@
 import Tooltip from '$/components/Tooltip'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props {
     timestamp?: number

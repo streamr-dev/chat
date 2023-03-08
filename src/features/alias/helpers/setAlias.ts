@@ -4,7 +4,7 @@ import toast from '$/features/toaster/helpers/toast'
 import { Address } from '$/types'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import isBlank from '$/utils/isBlank'
 import { call } from 'redux-saga/effects'
 

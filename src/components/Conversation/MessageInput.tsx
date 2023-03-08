@@ -24,7 +24,7 @@ import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
 import Submit from '$/components/Submit'
 import Textarea from '$/components/Conversation/Textarea'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props {
     disabled?: boolean

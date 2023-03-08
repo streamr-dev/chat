@@ -30,7 +30,7 @@ import useFlag from '$/hooks/useFlag'
 import { DelegationAction } from '$/features/delegation'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import { Provider } from '@web3-react/types'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     payload: IMessage

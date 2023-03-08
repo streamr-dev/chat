@@ -14,7 +14,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import fetchStream from '$/utils/fetchStream'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)

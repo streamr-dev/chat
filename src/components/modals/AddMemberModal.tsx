@@ -7,7 +7,7 @@ import TextField from '../TextField'
 import { Address } from '$/types'
 import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
 import useCanGrant from '$/hooks/useCanGrant'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props extends ModalProps {
     onProceed?: (address: Address) => void

@@ -8,7 +8,7 @@ import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import delegationPreflight from '$/utils/delegationPreflight'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function acceptInvite({
     roomId,

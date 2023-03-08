@@ -2,7 +2,7 @@ import Toast, { ToastType } from '$/components/Toast'
 import { ComponentProps } from 'react'
 import { Controller as ToastController } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 type RecoverReturnType<T> = T extends () => Generator<any, infer U, any> ? U : never
 

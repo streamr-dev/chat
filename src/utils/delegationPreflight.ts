@@ -9,7 +9,7 @@ import { Flag } from '$/features/flag/types'
 import { Provider } from '@web3-react/types'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import handleError from '$/utils/handleError'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function delegationPreflight({
     requester,

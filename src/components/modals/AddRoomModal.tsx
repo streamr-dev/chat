@@ -14,7 +14,7 @@ import PrivacySelectField, {
     PrivateRoomOption,
 } from '$/components/PrivacySelectField'
 import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export interface NewRoom {
     name: string

@@ -4,7 +4,7 @@ import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { useEffect, useRef, useState } from 'react'
 import tw from 'twin.macro'
 import { BigNumber } from 'ethers'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props extends Omit<ToastableProps, 'onProceed'> {
     onProceed?: (tokenId: string) => void

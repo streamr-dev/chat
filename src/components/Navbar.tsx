@@ -2,7 +2,7 @@ import tw from 'twin.macro'
 import Text from './Text'
 import Button from './Button'
 import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElement>) {
     return (

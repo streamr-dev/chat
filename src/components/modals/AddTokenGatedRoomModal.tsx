@@ -28,7 +28,7 @@ import { BigNumber } from 'ethers'
 import uniq from 'lodash/uniq'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { parseUnits } from '@ethersproject/units'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Gate {
     tokenAddress: Address

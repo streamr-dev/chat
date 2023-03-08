@@ -6,7 +6,7 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import toast from '$/features/toaster/helpers/toast'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 function* onRegisterInviteAction({
     payload: { roomId, invitee, streamrClient },

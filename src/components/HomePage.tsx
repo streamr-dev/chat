@@ -7,7 +7,7 @@ import useWalletModal from '$/hooks/useWalletModal'
 import useHowItWorksModal from '$/hooks/useHowItWorksModal'
 import TryMetaMask from '$/components/TryMetaMask'
 import { ButtonHTMLAttributes } from 'react'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function HomePage() {
     const { open, modal } = useWalletModal()

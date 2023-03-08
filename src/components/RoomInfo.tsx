@@ -6,7 +6,7 @@ import tw from 'twin.macro'
 import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
 import RoomEntryRequirements from '$/components/RoomEntryRequirements'
 import usePrivacy from '$/hooks/usePrivacy'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import { PrivacySetting } from '$/types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {

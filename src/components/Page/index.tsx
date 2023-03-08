@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet'
 import tw, { css } from 'twin.macro'
 import Background from './background.png'
 import pkg from '$/../package-lock.json'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props {
     children?: ReactNode

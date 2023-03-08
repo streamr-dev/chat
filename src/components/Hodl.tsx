@@ -1,4 +1,4 @@
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import { css } from 'twin.macro'
 
 export default function Hodl() {

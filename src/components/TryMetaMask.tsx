@@ -1,7 +1,7 @@
 import Text from '$/components/Text'
 import { WalletIntegrationId } from '$/features/wallet/types'
 import MetaMaskIcon from '$/icons/MetaMaskIcon'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
 

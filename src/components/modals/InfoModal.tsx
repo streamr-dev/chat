@@ -1,5 +1,5 @@
 import Modal, { Props as ModalProps } from '$/components/modals/Modal'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import { ReactNode } from 'react'
 
 interface Props extends ModalProps {

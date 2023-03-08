@@ -47,7 +47,7 @@ import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 import RoomInfo from '$/components/RoomInfo'
 import UserIcon from '$/icons/UserIcon'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     canModifyMembers?: boolean

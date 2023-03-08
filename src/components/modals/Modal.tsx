@@ -1,4 +1,4 @@
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 import gsap from 'gsap'
 import { ReactNode, useEffect, useRef } from 'react'
 import useGlobalKeyDownEffect from 'streamr-ui/hooks/useGlobalKeyDownEffect'

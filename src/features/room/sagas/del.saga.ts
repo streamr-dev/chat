@@ -5,7 +5,7 @@ import preflight from '$/utils/preflight'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 function* onDeleteAction({
     payload: { roomId, provider, requester, streamrClient },

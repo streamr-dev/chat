@@ -27,7 +27,7 @@ import { ZeroAddress } from '$/consts'
 import { Controller } from '$/features/toaster/helpers/toast'
 import isSameAddress from '$/utils/isSameAddress'
 import recover from '$/utils/recover'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 const Factory: Record<
     TokenStandard,

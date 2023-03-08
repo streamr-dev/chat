@@ -27,7 +27,7 @@ import useIsDelegatedAccountBeingPromoted from '$/hooks/useIsDelegatedAccountBei
 import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 import useJoin from '$/hooks/useJoin'
 import usePublisher, { PublisherState } from '$/hooks/usePublisher'
-import i18n from '$/utils/I18n'
+import i18n from '$/utils/i18n'
 
 export default function Conversation() {
     const messages = useMessages()
