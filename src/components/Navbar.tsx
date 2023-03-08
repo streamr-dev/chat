@@ -40,9 +40,9 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
                                 tracking-widest
                             `}
                         >
-                            {i18n('appName')}
+                            {i18n('app.name')}
                         </span>
-                        {!!i18n('appLabel') && (
+                        {!!i18n('app.label') && (
                             <div
                                 css={tw`
                                     absolute
@@ -57,7 +57,7 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
                                     -right-8
                                 `}
                             >
-                                <Text>{i18n('appLabel')}</Text>
+                                <Text>{i18n('app.label')}</Text>
                                 <div
                                     css={tw`
                                         bg-white
