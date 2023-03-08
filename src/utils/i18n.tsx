@@ -516,10 +516,7 @@ type TReturn<K extends TKey> = TValue<K> extends string
     ? R
     : never
 
-export default function i18n<K extends keyof typeof I18n>(
-    k: K,
-    ...args: Args<K>
-): TReturn<K> | string {
+export default function i18n<K extends TKey>(k: K, ...args: Args<K>): TReturn<K> | string {
     let result: TReturn<K> | undefined
 
     try {
