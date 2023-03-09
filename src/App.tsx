@@ -3,7 +3,6 @@ import { css, Global } from '@emotion/react'
 import { HashRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import store from '$/store'
-import Clock from '$/components/Clock'
 import IndexPage from '$/components/IndexPage'
 import Toaster from '$/components/Toaster'
 
@@ -86,7 +85,6 @@ export default function App() {
         <Provider store={store}>
             <GlobalStyles />
             <Global styles={customGlobalStyles} />
-            <Clock />
             <div>
                 <HashRouter>
                     <IndexPage />

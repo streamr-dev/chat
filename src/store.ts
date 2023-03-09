@@ -7,7 +7,6 @@ import rooms, { roomsSaga } from '$/features/rooms'
 import permissions, { permissionsSaga } from '$/features/permissions'
 import drafts, { draftsSaga } from '$/features/drafts'
 import identicons, { identiconsSaga } from '$/features/identicons'
-import clock from '$/features/clock'
 import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
 import misc, { miscSaga } from '$/features/misc'
@@ -23,7 +22,6 @@ const sagaMiddleware = createSagaMiddleware()
 
 const store = configureStore({
     reducer: {
-        clock,
         delegation,
         drafts,
         ens,
