@@ -31,6 +31,7 @@ import { DelegationAction } from '$/features/delegation'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import { Provider } from '@web3-react/types'
 import i18n from '$/utils/i18n'
+import useSubscriber from '$/hooks/useSubscriber'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     payload: IMessage
@@ -270,14 +271,14 @@ function ResendOneButton({
 }: ResendOneButtonProps) {
     const dispatch = useDispatch()
 
-    const delegatedClient = useDelegatedClient()
+    const streamrClient = useSubscriber(roomId)
 
     const isResending = useFlag(
         requester ? Flag.isResendingTimestamp(roomId, requester, timestamp) : undefined
     )
 
     function onClick() {
-        if (!requester || !delegatedClient) {
+        if (!requester || !streamrClient) {
             return
         }
 
@@ -287,7 +288,7 @@ function ResendOneButton({
                 requester,
                 exact: true,
                 timestamp,
-                streamrClient: delegatedClient,
+                streamrClient,
                 fingerprint: Flag.isResendingTimestamp(roomId, requester, timestamp),
             })
         )
