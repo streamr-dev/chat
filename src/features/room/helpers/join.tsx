@@ -104,10 +104,6 @@ export default function join(
 
             const delegatedAccount = yield* delegationPreflight(requester)
 
-            if (!delegatedAccount) {
-                throw new Error('No delegated account')
-            }
-
             const policyRegistry = getJoinPolicyRegistry(provider)
 
             const policyAddress: string = yield policyRegistry.getPolicy(

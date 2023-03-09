@@ -24,10 +24,6 @@ export default function acceptInvite({
         try {
             const delegatedAccount = yield* delegationPreflight(requester)
 
-            if (!delegatedAccount) {
-                throw new Error('No delegated account')
-            }
-
             dismissToast = true
 
             tc = yield retoast(tc, {
