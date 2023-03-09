@@ -498,6 +498,16 @@ const I18n = {
     'checkTokenGatedPermissionsRecoverToast.cancelLabel'() {
         return i18n('recoverToast.cancelLabel')
     },
+    'preselectToast.roomNotFoundTitle': 'Failed to find the room',
+    'preselectToast.failedToUnhideTitle': 'Failed to unhide the room',
+    'preselectToast.unauthorizedTitle': "You don't have access to the room",
+    'preselectToast.failedtoOpenTitle': 'Failed to open the room',
+    'preselectToast.openingTitle'(roomName: string | undefined, roomId: RoomId) {
+        return <>Opening {roomName ? `"${roomName}"` : <Id>{roomId}</Id>}…</>
+    },
+    'preselectToast.pinningTitle'(roomName: string | undefined, roomId: RoomId) {
+        return <>Pinning {roomName ? `"${roomName}"` : <Id>{roomId}</Id>}…</>
+    },
 }
 
 type TKey = keyof typeof I18n

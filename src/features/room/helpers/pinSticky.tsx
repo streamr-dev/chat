@@ -72,7 +72,7 @@ function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClie
                 }
             }
 
-            return name || 'Unnamed room'
+            return name || i18n('common.fallbackRoomName')
         } catch (e) {
             handleError(e)
         }
