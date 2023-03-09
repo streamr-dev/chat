@@ -14,7 +14,6 @@ import { Stream, StreamPermission } from 'streamr-client'
 
 export default function allowAnonsPublish({
     roomId,
-    provider,
     requester,
     streamrClient,
 }: ReturnType<typeof PermissionsAction.allowAnonsPublish>['payload']) {
@@ -56,10 +55,7 @@ export default function allowAnonsPublish({
                 return
             }
 
-            yield preflight({
-                provider,
-                requester,
-            })
+            yield* preflight(requester)
 
             const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 

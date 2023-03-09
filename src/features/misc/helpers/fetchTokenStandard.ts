@@ -10,11 +10,10 @@ import { abi as erc20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
 import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
 import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
 import { Address } from '$/types'
-import { Provider } from '@web3-react/types'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 export default function fetchTokenStandard({
     address,
-    provider,
     showLoadingToast,
 }: ReturnType<typeof MiscAction.fetchTokenStandard>['payload']) {
     return call(function* () {
@@ -33,7 +32,7 @@ export default function fetchTokenStandard({
                     })
                 }
 
-                const standard: TokenStandard = yield fetchUtil(address, provider)
+                const standard = yield* fetchUtil(address)
 
                 yield put(
                     MiscAction.setTokenStandard({
@@ -46,7 +45,6 @@ export default function fetchTokenStandard({
                     MiscAction.fetchTokenMetadata({
                         tokenAddress: address,
                         tokenStandard: standard,
-                        provider,
                         tokenIds: [],
                         fingerprint: Flag.isFetchingTokenMetadata(address, []),
                     })
@@ -60,7 +58,9 @@ export default function fetchTokenStandard({
     })
 }
 
-async function fetchUtil(address: Address, provider: Provider) {
+function* fetchUtil(address: Address) {
+    const provider = yield* getWalletProvider()
+
     const contract = new Contract(
         address,
         erc165abi,
@@ -68,7 +68,7 @@ async function fetchUtil(address: Address, provider: Provider) {
     )
 
     try {
-        const supportsERC1155Interface: boolean = await contract.supportsInterface(
+        const supportsERC1155Interface: boolean = yield contract.supportsInterface(
             InterfaceId.ERC1155
         )
 
@@ -80,7 +80,7 @@ async function fetchUtil(address: Address, provider: Provider) {
     }
 
     try {
-        const supportsERC721Interface: boolean = await contract.supportsInterface(
+        const supportsERC721Interface: boolean = yield contract.supportsInterface(
             InterfaceId.ERC721
         )
 
@@ -92,17 +92,17 @@ async function fetchUtil(address: Address, provider: Provider) {
     }
 
     try {
-        const supportsERC20Interface: boolean = await contract.supportsInterface(InterfaceId.ERC20)
+        const supportsERC20Interface: boolean = yield contract.supportsInterface(InterfaceId.ERC20)
 
-        const supportsERC20NameInterface: boolean = await contract.supportsInterface(
+        const supportsERC20NameInterface: boolean = yield contract.supportsInterface(
             InterfaceId.ERC20Name
         )
 
-        const supportsERC20SymbolInterface: boolean = await contract.supportsInterface(
+        const supportsERC20SymbolInterface: boolean = yield contract.supportsInterface(
             InterfaceId.ERC20Symbol
         )
 
-        const supportsERC20DecimalsInterface: boolean = await contract.supportsInterface(
+        const supportsERC20DecimalsInterface: boolean = yield contract.supportsInterface(
             InterfaceId.ERC20Decimals
         )
 
@@ -126,9 +126,9 @@ async function fetchUtil(address: Address, provider: Provider) {
     )
 
     try {
-        const balanceCheck: BigNumber = await erc20Contract.balanceOf(erc20Contract.address)
+        const balanceCheck: BigNumber = yield erc20Contract.balanceOf(erc20Contract.address)
 
-        const totalSupplyCheck: BigNumber = await erc20Contract.totalSupply()
+        const totalSupplyCheck: BigNumber = yield erc20Contract.totalSupply()
 
         if (balanceCheck.gte(0) && totalSupplyCheck.gte(0)) {
             return TokenStandard.ERC20
@@ -147,7 +147,7 @@ async function fetchUtil(address: Address, provider: Provider) {
     )
 
     try {
-        await erc777Contract.granularity()
+        yield erc777Contract.granularity()
 
         return TokenStandard.ERC777
     } catch (_) {

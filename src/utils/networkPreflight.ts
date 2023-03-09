@@ -1,20 +1,22 @@
-import { Provider } from '@web3-react/types'
 import addNetwork from '$/utils/addNetwork'
 import switchNetwork from '$/utils/switchNetwork'
 import isCorrectNetwork from './isCorrectNetwork'
+import getWalletProvider from '$/utils/getWalletProvider'
 
-export default async function networkPreflight(provider: Provider) {
+export default function* networkPreflight() {
+    const provider = yield* getWalletProvider()
+
     try {
-        if (await isCorrectNetwork(provider)) {
+        if ((yield isCorrectNetwork(provider)) as boolean) {
             return
         }
 
-        await switchNetwork(provider)
+        yield switchNetwork(provider)
     } catch (e: any) {
         if (e.code !== 4902) {
             throw e
         }
 
-        await addNetwork(provider)
+        yield addNetwork(provider)
     }
 }

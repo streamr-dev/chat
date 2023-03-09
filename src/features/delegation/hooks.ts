@@ -1,7 +1,7 @@
 import { DelegationAction } from '$/features/delegation'
 import { selectFlag } from '$/features/flag/selectors'
 import { Flag } from '$/features/flag/types'
-import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectDelegatedAccount, selectDelegatedClient } from './selectors'
@@ -25,21 +25,18 @@ export function useRequestPrivateKey() {
 
     const owner = useWalletAccount()
 
-    const provider = useWalletProvider()
-
     const isDelegatingAccess = useIsDelegatingAccess()
 
     return useCallback(() => {
-        if (isDelegatingAccess || !owner || !provider) {
+        if (isDelegatingAccess || !owner) {
             return
         }
 
         dispatch(
             DelegationAction.requestPrivateKey({
                 owner,
-                provider,
                 fingerprint: Flag.isAccessBeingDelegated(owner),
             })
         )
-    }, [owner, provider, isDelegatingAccess])
+    }, [owner, isDelegatingAccess])
 }

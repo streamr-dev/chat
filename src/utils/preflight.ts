@@ -1,9 +1,17 @@
-import { PreflightParams } from '$/types'
+import { BigNumber, providers } from 'ethers'
+import { Address } from '$/types'
+import getWalletProvider from '$/utils/getWalletProvider'
 import networkPreflight from './networkPreflight'
-import requirePositiveBalance from './requirePositiveBalance'
+import InsufficientFundsError from '$/errors/InsufficientFundsError'
 
-export default async function preflight(params: PreflightParams) {
-    await networkPreflight(params.provider)
+export default function* preflight(account: Address) {
+    yield* networkPreflight()
 
-    await requirePositiveBalance(params)
+    const provider = yield* getWalletProvider()
+
+    const balance: BigNumber = yield new providers.Web3Provider(provider).getBalance(account)
+
+    if (balance.eq(0)) {
+        throw new InsufficientFundsError()
+    }
 }

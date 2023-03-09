@@ -17,7 +17,7 @@ import Submit from '../Submit'
 import Text from '../Text'
 import Toggle from '../Toggle'
 import Modal, { Props as ModalProps } from './Modal'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { MiscAction } from '$/features/misc'
@@ -56,12 +56,10 @@ export default function RoomPropertiesModal({
 
     const streamrClient = useWalletClient()
 
-    const provider = useWalletProvider()
-
     const requester = useWalletAccount()
 
     function onStorageToggleClick() {
-        if (!selectedRoomId || isStorageBusy || !provider || !requester || !streamrClient) {
+        if (!selectedRoomId || isStorageBusy || !requester || !streamrClient) {
             return
         }
 
@@ -70,7 +68,6 @@ export default function RoomPropertiesModal({
                 roomId: selectedRoomId,
                 address: STREAMR_STORAGE_NODE_GERMANY,
                 state: !isStorageEnabled,
-                provider,
                 requester,
                 streamrClient,
                 fingerprint: Flag.isTogglingStorageNode(
@@ -98,7 +95,7 @@ export default function RoomPropertiesModal({
     const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds)
 
     useEffect(() => {
-        if (!tokenAddress || !tokenType || !provider || !tokenIds) {
+        if (!tokenAddress || !tokenType || !tokenIds) {
             return
         }
 
@@ -106,12 +103,11 @@ export default function RoomPropertiesModal({
             MiscAction.fetchTokenMetadata({
                 tokenAddress,
                 tokenStandard: tokenType.standard,
-                provider,
                 tokenIds,
                 fingerprint: Flag.isFetchingTokenMetadata(tokenAddress, tokenIds),
             })
         )
-    }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
+    }, [tokenAddress, tokenType, tokenIds, tokenMetadata])
 
     return (
         <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>

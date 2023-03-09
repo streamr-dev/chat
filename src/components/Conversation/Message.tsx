@@ -13,7 +13,7 @@ import { IMessage } from '$/features/message/types'
 import Avatar, { Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
-import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import useSeenMessageEffect from '$/hooks/useSeenMessageEffect'
 import useMainAccount from '$/hooks/useMainAccount'
 import isSameAddress from '$/utils/isSameAddress'
@@ -25,11 +25,10 @@ import useAlias from '$/hooks/useAlias'
 import useENSName from '$/hooks/useENSName'
 import { RoomId } from '$/features/room/types'
 import { MessageAction } from '$/features/message'
-import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import { useDelegatedAccount } from '$/features/delegation/hooks'
 import useFlag from '$/hooks/useFlag'
 import { DelegationAction } from '$/features/delegation'
 import useAnonAccount from '$/hooks/useAnonAccount'
-import { Provider } from '@web3-react/types'
 import i18n from '$/utils/i18n'
 import useSubscriber from '$/hooks/useSubscriber'
 
@@ -83,17 +82,11 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
 
     useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen || isEncrypted })
 
-    const provider = useWalletProvider()
-
     const skipAvatar = !!previousCreatedBy && isSameAddress(sender, previousSender)
 
     const avatar =
         sender === null ? (
-            <Wrap>
-                {!!createdBy && !!provider && (
-                    <LookupAddressButton creator={createdBy} provider={provider} />
-                )}
-            </Wrap>
+            <Wrap>{!!createdBy && <LookupAddressButton creator={createdBy} />}</Wrap>
         ) : skipAvatar ? (
             <Wrap />
         ) : (
@@ -103,18 +96,17 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (typeof sender !== 'undefined' || !provider) {
+        if (typeof sender !== 'undefined') {
             return
         }
 
         dispatch(
             DelegationAction.lookup({
                 delegated: createdBy,
-                provider,
                 fingerprint: Flag.isLookingUpDelegation(createdBy),
             })
         )
-    }, [sender, provider, createdBy, dispatch])
+    }, [sender, createdBy, dispatch])
 
     const delegatedAccount = useDelegatedAccount()
 
@@ -395,7 +387,7 @@ function Sender({ short, full, ...props }: SenderProps) {
     )
 }
 
-function LookupAddressButton({ creator, provider }: { creator: Address; provider: Provider }) {
+function LookupAddressButton({ creator }: { creator: Address }) {
     const dispatch = useDispatch()
 
     return (
@@ -412,7 +404,6 @@ function LookupAddressButton({ creator, provider }: { creator: Address; provider
                 dispatch(
                     DelegationAction.lookup({
                         delegated: creator,
-                        provider,
                         fingerprint: Flag.isLookingUpDelegation(creator),
                     })
                 )

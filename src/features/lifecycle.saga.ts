@@ -101,7 +101,7 @@ export default function* lifecycle() {
                     return
                 }
 
-                const tokenMetadata: TokenMetadata = yield fetchTokenMetadata(payload)
+                const tokenMetadata = yield* fetchTokenMetadata(payload)
 
                 yield put(
                     MiscAction.cacheTokenMetadata({

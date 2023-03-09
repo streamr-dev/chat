@@ -1,6 +1,6 @@
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { selectWalletClient } from '$/features/wallet/selectors'
-import { Address, OptionalAddress } from '$/types'
+import { Address } from '$/types'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
@@ -102,10 +102,7 @@ export default function join(
                 })
             }
 
-            const delegatedAccount: OptionalAddress = yield delegationPreflight({
-                requester,
-                provider,
-            })
+            const delegatedAccount = yield* delegationPreflight(requester)
 
             if (!delegatedAccount) {
                 throw new Error('No delegated account')

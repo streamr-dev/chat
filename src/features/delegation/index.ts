@@ -1,9 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit'
 import StreamrClient from 'streamr-client'
-import { SEE_SAGA } from '$/utils/consts'
 import { DelegationState } from './types'
 import { createAction } from '@reduxjs/toolkit'
-import { Provider } from '@web3-react/types'
 import { Address, IFingerprinted, IOwnable, OptionalAddress } from '$/types'
 
 const initialState: DelegationState = {
@@ -15,14 +13,11 @@ const initialState: DelegationState = {
 export const DelegationAction = {
     setPrivateKey: createAction<string | undefined>('delegation: set delegated private key'),
 
-    requestPrivateKey: createAction<IOwnable & IFingerprinted & { provider: Provider }>(
-        'delegation: request private key'
-    ),
+    requestPrivateKey: createAction<IOwnable & IFingerprinted>('delegation: request private key'),
 
     lookup: createAction<
         IFingerprinted & {
             delegated: Address
-            provider: Provider
         }
     >('delegation: lookup'),
 
@@ -48,10 +43,6 @@ const reducer = createReducer(initialState, (builder) => {
               })
             : undefined
     })
-
-    builder.addCase(DelegationAction.requestPrivateKey, SEE_SAGA)
-
-    builder.addCase(DelegationAction.lookup, SEE_SAGA)
 
     builder.addCase(DelegationAction.setDelegation, (state, { payload: { main, delegated } }) => {
         if (typeof main === 'undefined') {

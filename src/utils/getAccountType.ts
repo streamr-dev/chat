@@ -1,6 +1,6 @@
 import { Address } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
-import { Provider } from '@web3-react/types'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 export enum AccountType {
     Main = 'main',
@@ -8,14 +8,13 @@ export enum AccountType {
     Unset = 'unset',
 }
 
-export default async function getAccountType(
-    account: Address,
-    rawProvider: Provider
-): Promise<AccountType> {
-    const contract = getDelegatedAccessRegistry(rawProvider)
+export default function* getAccountType(account: Address) {
+    const provider = yield* getWalletProvider()
+
+    const contract = getDelegatedAccessRegistry(provider)
 
     try {
-        const [metamaskAccount]: boolean[] = await contract.functions.isMainWallet(account)
+        const [metamaskAccount]: boolean[] = yield contract.functions.isMainWallet(account)
 
         if (metamaskAccount) {
             return AccountType.Main
@@ -25,7 +24,7 @@ export default async function getAccountType(
     }
 
     try {
-        const [delegatedAccount]: boolean[] = await contract.functions.isDelegatedWallet(account)
+        const [delegatedAccount]: boolean[] = yield contract.functions.isDelegatedWallet(account)
 
         if (delegatedAccount) {
             return AccountType.Delegated

@@ -2,7 +2,7 @@ import AddRoomModal, { NewRoom } from '$/components/modals/AddRoomModal'
 import AddTokenGatedRoomModal from '$/components/modals/AddTokenGatedRoomModal'
 import { RoomAction } from '$/features/room'
 import { TokenTypes } from '$/features/tokenGatedRooms/types'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useModalDialog from '$/hooks/useModalDialog'
 import { Prefix, PrivacySetting } from '$/types'
 import { useCallback } from 'react'
@@ -16,14 +16,12 @@ export default function useAddRoomModal() {
 
     const account = useWalletAccount()
 
-    const provider = useWalletProvider()
-
     const streamrClient = useWalletClient()
 
     const dispatch = useDispatch()
 
     const open = useCallback(async () => {
-        if (!account || !streamrClient || !provider) {
+        if (!account || !streamrClient) {
             return
         }
 
@@ -56,7 +54,6 @@ export default function useAddRoomModal() {
                             },
                             privacy: params.privacy,
                             storage: params.storage,
-                            provider,
                             requester: account,
                             streamrClient,
                         })
@@ -88,7 +85,6 @@ export default function useAddRoomModal() {
                             },
                             privacy: params.privacy,
                             storage: params.storage,
-                            provider,
                             requester: account,
                             streamrClient,
                         })
@@ -102,7 +98,7 @@ export default function useAddRoomModal() {
                 break
             }
         }
-    }, [openNameModal, account, streamrClient, provider])
+    }, [openNameModal, account, streamrClient])
 
     return {
         open,

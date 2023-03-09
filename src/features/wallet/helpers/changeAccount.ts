@@ -49,7 +49,6 @@ export default function* changeAccount(
         yield put(
             DelegationAction.requestPrivateKey({
                 owner: account,
-                provider,
                 fingerprint: Flag.isAccessBeingDelegated(account),
             })
         )

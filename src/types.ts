@@ -1,5 +1,4 @@
 import store from '$/store'
-import { Provider } from '@web3-react/types'
 
 export enum StorageKey {
     WalletIntegrationId = 'chat/walletIntegrationId',
@@ -35,7 +34,6 @@ export enum PrivacySetting {
 }
 
 export interface PreflightParams {
-    provider: Provider
     requester: Address
 }
 

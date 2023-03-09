@@ -13,7 +13,6 @@ import fetchStream from '$/utils/fetchStream'
 export default function detectRoomMembers({
     roomId,
     streamrClient,
-    provider,
 }: ReturnType<typeof PermissionsAction.detectRoomMembers>['payload']) {
     return call(function* () {
         try {
@@ -37,13 +36,12 @@ export default function detectRoomMembers({
                     continue
                 }
 
-                const accountType: AccountType = yield getAccountType(assignment.user, provider)
+                const accountType = yield* getAccountType(assignment.user)
 
                 if (accountType === AccountType.Delegated) {
                     yield put(
                         DelegationAction.lookup({
                             delegated: assignment.user,
-                            provider,
                             fingerprint: Flag.isLookingUpDelegation(assignment.user),
                         })
                     )

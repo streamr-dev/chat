@@ -6,7 +6,6 @@ import { selectPrivacy } from '$/hooks/usePrivacy'
 import { PrivacySetting } from '$/types'
 import fetchPrivacy from '$/utils/fetchPrivacy'
 import getRoomMetadata from '$/utils/getRoomMetadata'
-import getWalletProvider from '$/utils/getWalletProvider'
 import handleError from '$/utils/handleError'
 import { call, fork, put, select } from 'redux-saga/effects'
 import type StreamrClient from 'streamr-client'
@@ -36,13 +35,10 @@ export default function fetchStream(roomId: RoomId, streamrClient: StreamrClient
                 })
             )
 
-            const provider = yield* getWalletProvider()
-
             if (tokenAddress) {
                 yield put(
                     MiscAction.fetchTokenStandard({
                         address: tokenAddress,
-                        provider,
                         showLoadingToast: false,
                         fingerprint: Flag.isFetchingTokenStandard(tokenAddress),
                     })

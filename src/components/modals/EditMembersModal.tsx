@@ -6,7 +6,7 @@ import { PermissionsAction } from '$/features/permissions'
 import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import CopyIcon from '$/icons/CopyIcon'
 import ExternalLinkIcon from '$/icons/ExternalLinkIcon'
@@ -59,15 +59,13 @@ export default function EditMembersModal({
 
     const selectedRoomId = useSelectedRoomId()
 
-    const provider = useWalletProvider()
-
     const requester = useWalletAccount()
 
     const streamrClient = useWalletClient()
 
     const onDeleteClick = useCallback(
         (member: Address) => {
-            if (!selectedRoomId || !provider || !requester || !streamrClient) {
+            if (!selectedRoomId || !requester || !streamrClient) {
                 return
             }
 
@@ -75,14 +73,13 @@ export default function EditMembersModal({
                 PermissionsAction.removeMember({
                     roomId: selectedRoomId,
                     member,
-                    provider,
                     requester,
                     streamrClient,
                     fingerprint: Flag.isMemberBeingRemoved(selectedRoomId, member),
                 })
             )
         },
-        [dispatch, selectedRoomId, provider, requester, streamrClient]
+        [dispatch, selectedRoomId, requester, streamrClient]
     )
 
     const members = useRoomMembers(selectedRoomId)
