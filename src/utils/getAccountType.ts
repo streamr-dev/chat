@@ -1,6 +1,7 @@
 import { Address } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getWalletProvider from '$/utils/getWalletProvider'
+import { call } from 'redux-saga/effects'
 
 export enum AccountType {
     Main = 'main',
@@ -9,29 +10,41 @@ export enum AccountType {
 }
 
 export default function* getAccountType(account: Address) {
-    const provider = yield* getWalletProvider()
+    let type: AccountType | undefined
 
-    const contract = getDelegatedAccessRegistry(provider)
+    yield call(function* () {
+        const provider = yield* getWalletProvider()
 
-    try {
-        const [metamaskAccount]: boolean[] = yield contract.functions.isMainWallet(account)
+        const contract = getDelegatedAccessRegistry(provider)
 
-        if (metamaskAccount) {
-            return AccountType.Main
+        try {
+            const [metamaskAccount]: boolean[] = yield contract.functions.isMainWallet(account)
+
+            if (metamaskAccount) {
+                return void (type = AccountType.Main)
+            }
+        } catch (e) {
+            // Proceed.
         }
-    } catch (e) {
-        // Proceed.
+
+        try {
+            const [delegatedAccount]: boolean[] = yield contract.functions.isDelegatedWallet(
+                account
+            )
+
+            if (delegatedAccount) {
+                return void (type = AccountType.Delegated)
+            }
+        } catch (e) {
+            // Proceed.
+        }
+
+        type = AccountType.Unset
+    })
+
+    if (!type) {
+        throw new Error('Invalid account type')
     }
 
-    try {
-        const [delegatedAccount]: boolean[] = yield contract.functions.isDelegatedWallet(account)
-
-        if (delegatedAccount) {
-            return AccountType.Delegated
-        }
-    } catch (e) {
-        // Proceed.
-    }
-
-    return AccountType.Unset
+    return type
 }

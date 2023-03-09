@@ -11,7 +11,7 @@ function* onDeleteAction({
     payload: { roomId, requester, streamrClient },
 }: ReturnType<typeof RoomAction.delete>) {
     try {
-        yield* preflight(requester)
+        yield preflight(requester)
 
         yield streamrClient.deleteStream(roomId)
 

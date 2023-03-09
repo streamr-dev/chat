@@ -55,7 +55,7 @@ export default function allowAnonsPublish({
                 return
             }
 
-            yield* preflight(requester)
+            yield preflight(requester)
 
             const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 

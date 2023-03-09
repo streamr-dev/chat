@@ -6,53 +6,54 @@ import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import { WalletAction } from '$/features/wallet'
 import db from '$/utils/db'
-import { put } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 
-export default function* changeAccount(
+export default function changeAccount(
     payload: ReturnType<typeof WalletAction.changeAccount>['payload']
 ) {
-    // Reset previous private key (different account = different private key).
-    yield put(DelegationAction.setPrivateKey(undefined))
+    return call(function* () {
+        // Reset previous private key (different account = different private key).
+        yield put(DelegationAction.setPrivateKey(undefined))
 
-    // Reset all anon wallets and clients.
-    yield put(AnonAction.reset())
+        // Reset all anon wallets and clients.
+        yield put(AnonAction.reset())
 
-    if (!payload?.account) {
-        // Deselect current room.
-        yield put(RoomAction.select(undefined))
+        if (!payload?.account) {
+            // Deselect current room.
+            yield put(RoomAction.select(undefined))
 
-        return
-    }
-
-    const { account, provider, streamrClient } = payload
-
-    yield put(
-        RoomAction.pinSticky({
-            requester: account,
-            provider,
-            streamrClient,
-            fingerprint: Flag.isPinningStickyRooms(account),
-        })
-    )
-
-    yield put(EnsAction.fetchNames([account]))
-
-    try {
-        const preferences: null | IPreference = yield db.preferences
-            .where({ owner: account.toLowerCase() })
-            .first()
-
-        if (!preferences?.retrieveHotWalletImmediately) {
             return
         }
 
+        const { account, streamrClient } = payload
+
         yield put(
-            DelegationAction.requestPrivateKey({
-                owner: account,
-                fingerprint: Flag.isAccessBeingDelegated(account),
+            RoomAction.pinSticky({
+                requester: account,
+                streamrClient,
+                fingerprint: Flag.isPinningStickyRooms(account),
             })
         )
-    } catch (e) {
-        // ¯\_(ツ)_/¯
-    }
+
+        yield put(EnsAction.fetchNames([account]))
+
+        try {
+            const preferences: null | IPreference = yield db.preferences
+                .where({ owner: account.toLowerCase() })
+                .first()
+
+            if (!preferences?.retrieveHotWalletImmediately) {
+                return
+            }
+
+            yield put(
+                DelegationAction.requestPrivateKey({
+                    owner: account,
+                    fingerprint: Flag.isAccessBeingDelegated(account),
+                })
+            )
+        } catch (e) {
+            // ¯\_(ツ)_/¯
+        }
+    })
 }

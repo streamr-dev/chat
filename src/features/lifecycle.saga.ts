@@ -129,15 +129,15 @@ export default function* lifecycle() {
 
         // This needs to go last. It triggers some of the actions that have
         // takers set up above.
-        yield* changeAccount(payload)
+        yield changeAccount(payload)
     })
 
     yield takeLeading(WalletAction.connectEagerly, function* () {
-        yield* connectEagerly()
+        yield connectEagerly()
     })
 
     yield takeLatest(WalletAction.connect, function* ({ payload }) {
-        yield* connect(payload)
+        yield connect(payload)
     })
 
     yield takeEvery(WalletAction.setIntegrationId, function ({ payload }) {

@@ -11,7 +11,7 @@ function* onToggleStorageNodeAction({
     payload: { roomId, address, state, requester, streamrClient },
 }: ReturnType<typeof RoomAction.toggleStorageNode>) {
     try {
-        yield* preflight(requester)
+        yield preflight(requester)
 
         yield put(
             RoomAction.setTogglingStorageNode({

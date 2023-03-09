@@ -25,7 +25,7 @@ export default function setMultiplePermissions(
     { requester, streamrClient, validate = true }: Options
 ) {
     return call(function* () {
-        yield* preflight(requester)
+        yield preflight(requester)
 
         yield streamrClient.setPermissions({
             streamId: roomId,

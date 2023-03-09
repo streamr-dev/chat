@@ -37,7 +37,7 @@ function* onCreateAction({
     let dismissToast = false
 
     try {
-        yield* preflight(requester)
+        yield preflight(requester)
 
         // `payload.id` is a partial room id. The real room id gets constructed by the
         // client from the given value and the account address that creates the stream.

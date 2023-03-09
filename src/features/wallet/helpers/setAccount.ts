@@ -3,6 +3,8 @@ import { WalletAction } from '..'
 import { OptionalAddress } from '$/types'
 import isSameAddress from '$/utils/isSameAddress'
 import getNewStreamrClient from '$/utils/getNewStreamrClient'
+import getWalletProvider from '$/utils/getWalletProvider'
+import handleError from '$/utils/handleError'
 
 export default function* setAccount() {
     let lastKnownAccount: OptionalAddress = undefined
@@ -12,29 +14,32 @@ export default function* setAccount() {
             WalletAction.setAccount
         )
 
-        if (isSameAddress(payload?.account, lastKnownAccount)) {
-            // Skip repeated processing of the last known account.
-            continue
+        try {
+            if (isSameAddress(payload, lastKnownAccount)) {
+                // Skip repeated processing of the last known account.
+                continue
+            }
+
+            lastKnownAccount = payload
+
+            if (!payload) {
+                yield put(WalletAction.changeAccount())
+
+                continue
+            }
+
+            const provider = yield* getWalletProvider()
+
+            yield put(
+                WalletAction.changeAccount({
+                    account: payload,
+                    streamrClient: getNewStreamrClient({
+                        ethereum: provider,
+                    }),
+                })
+            )
+        } catch (e) {
+            handleError(e)
         }
-
-        lastKnownAccount = payload?.account
-
-        if (!payload) {
-            yield put(WalletAction.changeAccount())
-
-            continue
-        }
-
-        const { account, provider } = payload
-
-        yield put(
-            WalletAction.changeAccount({
-                account,
-                provider,
-                streamrClient: getNewStreamrClient({
-                    ethereum: provider,
-                }),
-            })
-        )
     }
 }

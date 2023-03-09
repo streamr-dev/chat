@@ -23,7 +23,7 @@ export default function retrieve({
         try {
             const provider = yield* getWalletProvider()
 
-            yield* networkPreflight()
+            yield networkPreflight()
 
             const signature: string = yield new providers.Web3Provider(provider)
                 .getSigner()

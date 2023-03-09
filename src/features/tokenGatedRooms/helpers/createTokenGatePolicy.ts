@@ -92,7 +92,7 @@ export default function createTokenGatePolicy({
 
                     dismissToast = true
 
-                    yield* preflight(requester)
+                    yield preflight(requester)
 
                     const factory = Factory[tokenType.standard]
 

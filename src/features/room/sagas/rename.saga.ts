@@ -59,7 +59,7 @@ function* onRenameAction({
             throw new RedundantRenameError()
         }
 
-        yield* preflight(requester)
+        yield preflight(requester)
 
         yield stream.update({
             description: name,

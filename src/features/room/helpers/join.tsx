@@ -97,9 +97,7 @@ export default function join(
             let tokenId = '0'
 
             if (tokenType.hasIds) {
-                tokenId = yield* tokenIdPreflight({
-                    tokenStandard,
-                })
+                tokenId = yield* tokenIdPreflight(tokenStandard)
             }
 
             const delegatedAccount = yield* delegationPreflight(requester)
