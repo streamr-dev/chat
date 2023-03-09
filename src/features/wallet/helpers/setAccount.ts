@@ -2,7 +2,7 @@ import { put, take } from 'redux-saga/effects'
 import { WalletAction } from '..'
 import { OptionalAddress } from '$/types'
 import isSameAddress from '$/utils/isSameAddress'
-import StreamrClient from 'streamr-client'
+import getNewStreamrClient from '$/utils/getNewStreamrClient'
 
 export default function* setAccount() {
     let lastKnownAccount: OptionalAddress = undefined
@@ -31,15 +31,8 @@ export default function* setAccount() {
             WalletAction.changeAccount({
                 account,
                 provider,
-                streamrClient: new StreamrClient({
-                    auth: {
-                        ethereum: provider,
-                    },
-                    encryption: {
-                        litProtocolEnabled: true,
-                        litProtocolLogging: false,
-                    },
-                    gapFill: false,
+                streamrClient: getNewStreamrClient({
+                    ethereum: provider,
                 }),
             })
         )

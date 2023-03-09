@@ -1,4 +1,5 @@
 import { RoomId } from '$/features/room/types'
+import getNewStreamrClient from '$/utils/getNewStreamrClient'
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import type { Wallet } from 'ethers'
 import StreamrClient from 'streamr-client'
@@ -33,15 +34,8 @@ const reducer = createReducer(initialState, (b) => {
         }
 
         state.rooms[roomId] = {
-            client: new StreamrClient({
-                auth: {
-                    privateKey: wallet.privateKey,
-                },
-                gapFill: false,
-                encryption: {
-                    litProtocolEnabled: true,
-                    litProtocolLogging: false,
-                },
+            client: getNewStreamrClient({
+                privateKey: wallet.privateKey,
             }),
             wallet,
         }

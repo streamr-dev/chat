@@ -1,8 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit'
-import StreamrClient from 'streamr-client'
 import { DelegationState } from './types'
 import { createAction } from '@reduxjs/toolkit'
 import { Address, IFingerprinted, IOwnable, OptionalAddress } from '$/types'
+import getNewStreamrClient from '$/utils/getNewStreamrClient'
 
 const initialState: DelegationState = {
     privateKey: undefined,
@@ -31,15 +31,8 @@ const reducer = createReducer(initialState, (builder) => {
         state.privateKey = privateKey || undefined
 
         state.client = privateKey
-            ? new StreamrClient({
-                  auth: {
-                      privateKey,
-                  },
-                  gapFill: false,
-                  encryption: {
-                      litProtocolEnabled: true,
-                      litProtocolLogging: false,
-                  },
+            ? getNewStreamrClient({
+                  privateKey,
               })
             : undefined
     })
