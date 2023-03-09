@@ -2,9 +2,6 @@ import { createAction, createReducer } from '@reduxjs/toolkit'
 import { Address, StorageKey } from '$/types'
 import { WalletIntegrationId, WalletState } from './types'
 import StreamrClient from 'streamr-client'
-import { all } from 'redux-saga/effects'
-import setAccount from './sagas/setAccount.saga'
-import setIntegrationId from './sagas/setIntegrationId.saga'
 import { Provider } from '@web3-react/types'
 import { SEE_SAGA } from '$/utils/consts'
 
@@ -47,9 +44,5 @@ const reducer = createReducer(initialState, (builder) => {
         })
     })
 })
-
-export function* walletSaga() {
-    yield all([setAccount(), setIntegrationId()])
-}
 
 export default reducer

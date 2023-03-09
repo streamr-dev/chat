@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import wallet, { walletSaga } from '$/features/wallet'
+import wallet from '$/features/wallet'
 import delegation from '$/features/delegation'
 import room, { roomSaga } from '$/features/room'
 import rooms, { roomsSaga } from '$/features/rooms'
@@ -80,7 +80,6 @@ sagaMiddleware.run(function* saga() {
         preferencesSaga(),
         roomSaga(),
         roomsSaga(),
-        walletSaga(),
         miscSaga(),
         lifecycle(),
     ])
