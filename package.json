@@ -10,6 +10,11 @@
         "prettier": "prettier --write src",
         "test": "jest"
     },
+    "babelMacros": {
+        "twin": {
+            "preset": "emotion"
+        }
+    },
     "dependencies": {
         "@coinbase/wallet-sdk": "^3.6.3",
         "@emotion/react": "^11.10.5",
@@ -58,7 +63,12 @@
         "uuid": "^9.0.0"
     },
     "devDependencies": {
+        "@babel/plugin-transform-react-jsx": "^7.21.0",
+        "@babel/preset-env": "^7.20.2",
+        "@babel/preset-react": "^7.18.6",
+        "@babel/preset-typescript": "^7.21.0",
         "@emotion/babel-plugin": "^11.10.5",
+        "@emotion/babel-plugin-jsx-pragmatic": "^0.2.0",
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
         "@testing-library/react": "^14.0.0",
         "@types/identicon.js": "^2.3.1",
