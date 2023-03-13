@@ -1,4 +1,3 @@
-import Id from '$/components/Id'
 import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { MiscAction } from '$/features/misc'

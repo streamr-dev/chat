@@ -1,5 +1,8 @@
 {
-    "presets": ["@babel/preset-env", "@babel/preset-react", "@babel/preset-typescript"],
+    "presets": [
+        "@babel/preset-env",
+        "@babel/preset-typescript"
+    ],
     "plugins": [
         "babel-plugin-macros",
         [
@@ -10,6 +13,7 @@
                 "module": "@emotion/react"
             }
         ],
+        ["@babel/plugin-transform-react-jsx", { "runtime": "automatic" }],
         ["@babel/plugin-transform-react-jsx", { "pragma": "__cssprop" }, "twin.macro"]
     ]
 }

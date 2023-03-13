@@ -3,7 +3,9 @@ import { render } from '@testing-library/react'
 
 jest.mock('streamr-client', () => ({
     __esModule: true,
-    default: () => {},
+    default: () => {
+        // Do nothing.
+    },
 }))
 
 describe('Getting into the app', () => {
