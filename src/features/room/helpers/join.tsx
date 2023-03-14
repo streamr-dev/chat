@@ -1,10 +1,9 @@
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { selectWalletClient, selectWalletProvider } from '$/features/wallet/selectors'
-import { Address, OptionalAddress } from '$/types'
+import { selectWalletClient } from '$/features/wallet/selectors'
+import { Address } from '$/types'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
-import { Provider } from '@web3-react/types'
 import { call, put, select } from 'redux-saga/effects'
 import { BigNumber, Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
@@ -25,6 +24,7 @@ import isSameAddress from '$/utils/isSameAddress'
 import tokenIdPreflight from '$/utils/tokenIdPreflight'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -87,11 +87,7 @@ export default function join(
                 throw new Error('Unknown token standard')
             }
 
-            const provider: Provider | undefined = yield select(selectWalletProvider)
-
-            if (!provider) {
-                throw new Error('No provider')
-            }
+            const provider = yield* getWalletProvider()
 
             yield onToast({
                 title: i18n('joinTokenGatedRoomToast.joiningTitle', name, roomId),
@@ -101,19 +97,10 @@ export default function join(
             let tokenId = '0'
 
             if (tokenType.hasIds) {
-                tokenId = yield* tokenIdPreflight({
-                    tokenStandard,
-                })
+                tokenId = yield* tokenIdPreflight(tokenStandard)
             }
 
-            const delegatedAccount: OptionalAddress = yield delegationPreflight({
-                requester,
-                provider,
-            })
-
-            if (!delegatedAccount) {
-                throw new Error('No delegated account')
-            }
+            const delegatedAccount = yield* delegationPreflight(requester)
 
             const policyRegistry = getJoinPolicyRegistry(provider)
 

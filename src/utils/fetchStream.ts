@@ -2,13 +2,11 @@ import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { RoomAction } from '$/features/room'
 import { RoomId } from '$/features/room/types'
-import { selectWalletProvider } from '$/features/wallet/selectors'
 import { selectPrivacy } from '$/hooks/usePrivacy'
 import { PrivacySetting } from '$/types'
 import fetchPrivacy from '$/utils/fetchPrivacy'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
-import { Provider } from '@web3-react/types'
 import { call, fork, put, select } from 'redux-saga/effects'
 import type StreamrClient from 'streamr-client'
 import type { Stream } from 'streamr-client'
@@ -37,17 +35,10 @@ export default function fetchStream(roomId: RoomId, streamrClient: StreamrClient
                 })
             )
 
-            const provider: Provider | undefined = yield select(selectWalletProvider)
-
-            if (!provider) {
-                throw new Error('No provider')
-            }
-
             if (tokenAddress) {
                 yield put(
                     MiscAction.fetchTokenStandard({
                         address: tokenAddress,
-                        provider,
                         showLoadingToast: false,
                         fingerprint: Flag.isFetchingTokenStandard(tokenAddress),
                     })

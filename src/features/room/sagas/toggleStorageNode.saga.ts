@@ -8,13 +8,10 @@ import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
 
 function* onToggleStorageNodeAction({
-    payload: { roomId, address, state, provider, requester, streamrClient },
+    payload: { roomId, address, state, requester, streamrClient },
 }: ReturnType<typeof RoomAction.toggleStorageNode>) {
     try {
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         yield put(
             RoomAction.setTogglingStorageNode({

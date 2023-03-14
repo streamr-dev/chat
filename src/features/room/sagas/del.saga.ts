@@ -8,13 +8,10 @@ import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
 
 function* onDeleteAction({
-    payload: { roomId, provider, requester, streamrClient },
+    payload: { roomId, requester, streamrClient },
 }: ReturnType<typeof RoomAction.delete>) {
     try {
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         yield streamrClient.deleteStream(roomId)
 

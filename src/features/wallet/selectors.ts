@@ -13,9 +13,4 @@ export const selectWalletIntegrationId = createSelector(
 
 export const selectWalletAccount = createSelector(selectSelf, ({ account }: WalletState) => account)
 
-export const selectWalletProvider = createSelector(
-    selectSelf,
-    ({ provider }: WalletState) => provider
-)
-
 export const selectWalletClient = createSelector(selectSelf, ({ client }) => client)

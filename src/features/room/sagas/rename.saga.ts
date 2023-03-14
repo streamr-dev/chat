@@ -17,7 +17,7 @@ import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
 
 function* onRenameAction({
-    payload: { roomId, name, provider, requester, streamrClient },
+    payload: { roomId, name, requester, streamrClient },
 }: ReturnType<typeof RoomAction.rename>) {
     try {
         const stream: Stream | null = yield fetchStream(roomId, streamrClient)
@@ -59,10 +59,7 @@ function* onRenameAction({
             throw new RedundantRenameError()
         }
 
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         yield stream.update({
             description: name,

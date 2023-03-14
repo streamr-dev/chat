@@ -6,7 +6,6 @@ import { WalletAction } from '$/features/wallet'
 import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
-import { Provider } from '@web3-react/types'
 import { Contract, providers, BigNumber } from 'ethers'
 import { call, race, retry, spawn, take } from 'redux-saga/effects'
 import StreamrClient, { StreamPermission } from 'streamr-client'
@@ -28,6 +27,7 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import isSameAddress from '$/utils/isSameAddress'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 const Factory: Record<
     TokenStandard,
@@ -63,7 +63,6 @@ interface Params {
     minRequiredBalance?: string
     tokenIds: string[]
     stakingEnabled: boolean
-    provider: Provider
     streamrClient: StreamrClient
 }
 
@@ -75,7 +74,6 @@ export default function createTokenGatePolicy({
     minRequiredBalance,
     tokenIds,
     stakingEnabled,
-    provider,
     streamrClient,
 }: Params) {
     return spawn(function* () {
@@ -94,10 +92,7 @@ export default function createTokenGatePolicy({
 
                     dismissToast = true
 
-                    yield preflight({
-                        provider,
-                        requester,
-                    })
+                    yield preflight(requester)
 
                     const factory = Factory[tokenType.standard]
 
@@ -106,6 +101,8 @@ export default function createTokenGatePolicy({
                     }
 
                     const { abi, address } = factory
+
+                    const provider = yield* getWalletProvider()
 
                     const factoryContract = new Contract(
                         address,

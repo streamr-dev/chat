@@ -11,7 +11,7 @@ import {
     useSelectedRoomId,
     useTransientRoomName,
 } from '$/features/room/hooks'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import AddMemberIcon from '$/icons/AddMemberIcon'
@@ -119,7 +119,7 @@ export default function ConversationHeader({
     const streamrClient = useWalletClient()
 
     function onRenameSubmit() {
-        if (!selectedRoomId || !provider || !account || !streamrClient) {
+        if (!selectedRoomId || !account || !streamrClient) {
             return
         }
 
@@ -127,7 +127,6 @@ export default function ConversationHeader({
             RoomAction.rename({
                 roomId: selectedRoomId,
                 name: transientRoomName,
-                provider,
                 requester: account,
                 streamrClient,
                 fingerprint: Flag.isPersistingRoomName(selectedRoomId),
@@ -156,8 +155,6 @@ export default function ConversationHeader({
     const isVisible = useIsRoomVisible(selectedRoomId)
 
     const isPinned = useIsRoomPinned(selectedRoomId)
-
-    const provider = useWalletProvider()
 
     const acceptInvite = useAcceptInvite()
 
@@ -497,16 +494,10 @@ export default function ConversationHeader({
                                     <MenuButtonItem
                                         icon={<DeleteIcon />}
                                         onClick={() => {
-                                            if (
-                                                account &&
-                                                selectedRoomId &&
-                                                provider &&
-                                                streamrClient
-                                            ) {
+                                            if (account && selectedRoomId && streamrClient) {
                                                 dispatch(
                                                     RoomAction.delete({
                                                         roomId: selectedRoomId,
-                                                        provider,
                                                         requester: account,
                                                         streamrClient,
                                                         fingerprint:

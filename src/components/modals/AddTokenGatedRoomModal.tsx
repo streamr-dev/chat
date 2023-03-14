@@ -18,7 +18,6 @@ import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import trunc from '$/utils/trunc'
 import isSameAddress from '$/utils/isSameAddress'
-import { useWalletProvider } from '$/features/wallet/hooks'
 import useTokenStandard from '$/hooks/useTokenStandard'
 import { TokenStandard, TokenTypes } from '$/features/tokenGatedRooms/types'
 import TextField from '$/components/TextField'
@@ -68,8 +67,6 @@ export default function AddTokenGatedRoomModal({
     const previousTokenInfo = useRef<Info>(tokenInfo)
 
     const dispatch = useDispatch()
-
-    const provider = useWalletProvider()
 
     const standard = useTokenStandard(tokenInfo.address)
 
@@ -158,14 +155,9 @@ export default function AddTokenGatedRoomModal({
                     onInfo={(info) => {
                         setTokenInfo(info)
 
-                        if (!provider) {
-                            return
-                        }
-
                         dispatch(
                             MiscAction.fetchTokenStandard({
                                 address: info.address,
-                                provider,
                                 showLoadingToast: true,
                                 fingerprint: Flag.isFetchingTokenStandard(info.address),
                             })
@@ -281,8 +273,6 @@ function Token({ info, onChangeClick }: TokenProps) {
 
     const dispatch = useDispatch()
 
-    const provider = useWalletProvider()
-
     return (
         <div
             css={tw`
@@ -351,14 +341,9 @@ function Token({ info, onChangeClick }: TokenProps) {
                                     })
                                 )
 
-                                if (!provider) {
-                                    return
-                                }
-
                                 dispatch(
                                     MiscAction.fetchTokenStandard({
                                         address: info.address,
-                                        provider,
                                         showLoadingToast: true,
                                         fingerprint: Flag.isFetchingTokenStandard(info.address),
                                     })

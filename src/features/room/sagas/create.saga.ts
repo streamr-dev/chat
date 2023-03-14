@@ -28,7 +28,6 @@ function* onCreateAction({
         privacy,
         storage,
         params: { owner, ...params },
-        provider,
         requester,
         streamrClient,
     },
@@ -38,10 +37,7 @@ function* onCreateAction({
     let dismissToast = false
 
     try {
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         // `payload.id` is a partial room id. The real room id gets constructed by the
         // client from the given value and the account address that creates the stream.
@@ -113,7 +109,6 @@ function* onCreateAction({
                 roomId: stream.id,
                 tokenIds,
                 minRequiredBalance,
-                provider,
                 streamrClient,
                 tokenType,
                 stakingEnabled,
@@ -165,7 +160,6 @@ function* onCreateAction({
                     roomId: stream.id,
                     address: STREAMR_STORAGE_NODE_GERMANY,
                     state: true,
-                    provider,
                     requester,
                     streamrClient,
                     fingerprint: Flag.isTogglingStorageNode(

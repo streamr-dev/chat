@@ -3,16 +3,18 @@ import { DelegationAction } from '$/features/delegation'
 import { selectMainAccount } from '$/hooks/useMainAccount'
 import { Address, OptionalAddress } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
+import getWalletProvider from '$/utils/getWalletProvider'
 import handleError from '$/utils/handleError'
 import isSameAddress from '$/utils/isSameAddress'
 import { call, delay, put, race, select } from 'redux-saga/effects'
 
 export default function lookup({
     delegated,
-    provider,
 }: ReturnType<typeof DelegationAction.lookup>['payload']) {
     return call(function* () {
         try {
+            const provider = yield* getWalletProvider()
+
             const contract = getDelegatedAccessRegistry(provider)
 
             const mapping: OptionalAddress = yield select(selectMainAccount(delegated))

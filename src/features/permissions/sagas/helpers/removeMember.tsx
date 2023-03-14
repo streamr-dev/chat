@@ -4,6 +4,7 @@ import { PermissionsAction } from '$/features/permissions'
 import toast from '$/features/toaster/helpers/toast'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getDisplayUsername from '$/utils/getDisplayUsername'
+import getWalletProvider from '$/utils/getWalletProvider'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import isSameAddress from '$/utils/isSameAddress'
@@ -14,7 +15,6 @@ import type { UserPermissionAssignment } from 'streamr-client'
 export default function removeMember({
     roomId,
     member,
-    provider,
     requester,
     streamrClient,
 }: ReturnType<typeof PermissionsAction.removeMember>['payload']) {
@@ -22,6 +22,8 @@ export default function removeMember({
         const displayName: string = yield getDisplayUsername(member)
 
         try {
+            const provider = yield* getWalletProvider()
+
             const contract = getDelegatedAccessRegistry(provider)
 
             const [delegatedWallet]: string[] = yield contract.functions.mainToDelegatedWallets(
