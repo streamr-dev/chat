@@ -18,6 +18,7 @@ import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
 import { Provider } from '@web3-react/types'
 import { TokenGate } from '$/features/tokenGatedRooms/types'
+import leaveTokenGatedRoom from './sagas/leaveTokenGatedRoom.saga'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -182,6 +183,15 @@ export const RoomAction = {
     }>('room: cache search result'),
 
     cacheRecentRoomId: createAction<RoomId | undefined>('room: cache recent room id'),
+
+    leaveTokenGatedRoom: createAction<{
+        roomId: RoomId
+        tokenId?: string
+        requester: Address
+        provider: Provider
+        streamrClient: StreamrClient
+    }>('room: leave token gated room'),
+
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -247,6 +257,7 @@ export function* roomSaga() {
         sync(),
         toggleStorageNode(),
         unpin(),
+        leaveTokenGatedRoom(),
     ])
 }
 

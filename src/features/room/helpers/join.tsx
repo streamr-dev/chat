@@ -11,6 +11,8 @@ import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPol
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
+import { abi as ERC20TokenAbi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
+import { abi as ERC721TokenAbi } from '$/contracts/tokens/ERC721Token.sol/ERC721.json'
 import Toast, { ToastType } from '$/components/Toast'
 import StreamrClient, { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
@@ -44,7 +46,7 @@ export default function join(
     return call(function* () {
         const roomId = stream.id
 
-        const { name, tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
+        const { name, tokenAddress, tokenType, stakingEnabled = false, minRequiredBalance } = getRoomMetadata(stream)
 
         let tc: Controller | undefined
 
@@ -126,9 +128,49 @@ export default function join(
             const policy = new Contract(policyAddress, Abi[tokenStandard], policyRegistry.signer)
 
             try {
-                const tx: Record<string, any> = yield policy.requestDelegatedJoin()
+                if (stakingEnabled) {
+                    // authorize the transfer with the corresponding token type
+                    yield onToast({
+                        title: 'Authorizing token transfer…',
+                        type: ToastType.Processing,
+                    })
+                    let authorizationTx: Record<string, any>
+                    let tokenContract: Contract
+                    switch(tokenStandard) {
+                        case TokenStandard.ERC20:
+                            tokenContract = new Contract(tokenAddress, ERC20TokenAbi, policyRegistry.signer)
+                            authorizationTx = yield tokenContract.approve(policyAddress, BigNumber.from(minRequiredBalance || 0))
+                        break 
+                        case TokenStandard.ERC721:
+                            tokenContract = new Contract(tokenAddress, ERC721TokenAbi, policyRegistry.signer)
+                            authorizationTx = yield tokenContract.approve(policyAddress, BigNumber.from(tokenId))
+                        break 
+                        default:
+                            throw new Error(`Unsupported token standard ${tokenStandard}`)
+                    }
 
+                    yield authorizationTx.wait()
+                    yield onToast({
+                        title: 'Token transfer authorized',
+                        type: ToastType.Success,
+                    })
+
+                }
+                yield onToast({
+                    title: 'Requesting join...',
+                    type: ToastType.Processing,
+                })
+                let tx: Record<string, any>
+                if (tokenType.hasIds) {
+                    tx = yield policy.requestDelegatedJoin(BigNumber.from(tokenId))
+                } else {
+                    tx = yield policy.requestDelegatedJoin()
+                }
                 yield tx.wait()
+                yield onToast({
+                    title: 'Join request completed',
+                    type: ToastType.Success,
+                })
             } catch (e: any) {
                 if (typeof e?.message === 'string' && /error_notEnoughTokens/.test(e.message)) {
                     yield onToast({
