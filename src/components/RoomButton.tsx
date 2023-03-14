@@ -20,10 +20,10 @@ import isSameAddress from '$/utils/isSameAddress'
 import { Link, LinkProps } from 'react-router-dom'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { FlagAction } from '$/features/flag'
-import config from '$/config.json'
+import { stickyRoomIds } from '$/config.json'
 import i18n from '$/utils/i18n'
 
-const stickyRoomSubtitle = config.stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
+const stickyRoomSubtitle = stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
     (memo, { id, ...rest }) => {
         if ('subtitle' in rest && typeof rest.subtitle === 'string') {
             memo[id] = rest.subtitle

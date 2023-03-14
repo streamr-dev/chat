@@ -1,6 +1,6 @@
 import { RoomAction } from '$/features/room'
 import { call, put } from 'redux-saga/effects'
-import config from '$/config.json'
+import { stickyRoomIds } from '$/config.json'
 import { IPreference } from '$/features/preferences/types'
 import db from '$/utils/db'
 import { IRoom, RoomId } from '$/features/room/types'
@@ -17,8 +17,6 @@ import { Controller } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
-
-const { stickyRoomIds } = config
 
 function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClient) {
     return call(function* () {

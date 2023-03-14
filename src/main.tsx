@@ -1,4 +1,4 @@
-import React from 'react'
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import './fonts/Karelia.css'
@@ -8,9 +8,9 @@ const root = document.getElementById('root')
 
 if (root) {
     ReactDOM.createRoot(root).render(
-        <React.StrictMode>
+        <StrictMode>
             <App />
-        </React.StrictMode>
+        </StrictMode>
     )
 } else {
     throw new Error('Missing `#root`. Check `document.getElementById("root")`.')

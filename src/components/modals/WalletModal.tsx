@@ -77,6 +77,7 @@ function WalletOption<T extends WalletIntegrationId>({
                 }
             }}
             type="button"
+            data-testid={`WalletOption-${integrationId}`}
             css={[
                 tw`
                     appearance-none

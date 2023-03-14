@@ -10,7 +10,7 @@ import {
 import { createPortal } from 'react-dom'
 import tw, { css } from 'twin.macro'
 import Text from './Text'
-import useOnMouseDownOutsideEffect from 'streamr-ui/hooks/useOnMouseDownOutsideEffect'
+import { useOnMouseDownOutsideEffect } from 'streamr-ui/hooks'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     anchorEl?: HTMLButtonElement | null
