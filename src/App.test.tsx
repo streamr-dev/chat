@@ -1,5 +1,6 @@
 import App from '$/App'
-import { render } from '@testing-library/react'
+import { screen, render } from '@testing-library/react'
+import { act } from 'react-dom/test-utils'
 
 jest.mock('streamr-client', () => ({
     __esModule: true,
@@ -9,7 +10,19 @@ jest.mock('streamr-client', () => ({
 }))
 
 describe('Getting into the app', () => {
-    it('works', () => {
+    it('displays different wallet options in the wallet modal', async () => {
         render(<App />)
+
+        act(() => {
+            screen.getByText(/connect a wallet/i).click()
+        })
+
+        await screen.findByText(/select a wallet/i)
+
+        screen.getAllByTestId(/walletoption-metamask/i)
+
+        screen.getAllByTestId(/walletoption-coinbasewallet/i)
+
+        screen.getAllByTestId(/walletoption-walletconnect/i)
     })
 })
