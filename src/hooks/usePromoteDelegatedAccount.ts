@@ -3,7 +3,7 @@ import { Flag } from '$/features/flag/types'
 import { PermissionsAction } from '$/features/permissions'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import usePrivacy from '$/hooks/usePrivacy'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import { PrivacySetting } from '$/types'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
@@ -15,8 +15,6 @@ export default function usePromoteDelegatedAccount() {
 
     const delegatedAddress = useDelegatedAccount()
 
-    const provider = useWalletProvider()
-
     const requester = useWalletAccount()
 
     const streamrClient = useWalletClient()
@@ -24,7 +22,7 @@ export default function usePromoteDelegatedAccount() {
     const privacy = usePrivacy(roomId)
 
     const cb = useCallback(() => {
-        if (!roomId || !delegatedAddress || !provider || !requester || !streamrClient) {
+        if (!roomId || !delegatedAddress || !requester || !streamrClient) {
             return
         }
 
@@ -32,13 +30,12 @@ export default function usePromoteDelegatedAccount() {
             PermissionsAction.promoteDelegatedAccount({
                 roomId,
                 delegatedAddress,
-                provider,
                 requester,
                 streamrClient,
                 fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
             })
         )
-    }, [roomId, delegatedAddress, provider, requester, streamrClient])
+    }, [roomId, delegatedAddress, requester, streamrClient])
 
     if (privacy === PrivacySetting.Private || privacy === PrivacySetting.Public) {
         return cb

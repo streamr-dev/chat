@@ -8,7 +8,6 @@ import UtilityButton from '$/components/UtilityButton'
 import Text from '$/components/Text'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import { useDispatch } from 'react-redux'
-import useProviderChangeEffect from '$/hooks/useProviderChangeEffect'
 import { RoomsAction } from '$/features/rooms'
 import useListenForInvitesEffect from '$/hooks/useListenForInvitesEffect'
 import { RoomAction } from '$/features/room'
@@ -22,6 +21,7 @@ import ArrowIcon from '$/icons/ArrowIcon'
 import { FlagAction } from '$/features/flag'
 import ActionButton from '$/components/ActionButton'
 import Sidebar from '$/components/Sidebar'
+import i18n from '$/utils/i18n'
 
 export default function ChatPage() {
     const { open: openAccountModal, modal: accountModal } = useAccountModal()
@@ -49,8 +49,6 @@ export default function ChatPage() {
         )
     }, [dispatch, account, streamrClient])
 
-    useProviderChangeEffect()
-
     useListenForInvitesEffect(account, (roomId, invitee) => {
         if (!streamrClient) {
             return
@@ -76,27 +74,23 @@ export default function ChatPage() {
         <>
             {accountModal}
             {addRoomModal}
-            <Page title="Let's chat!">
+            <Page title={i18n('common.chatPageTitle')}>
                 <Nav onAccountClick={() => void openAccountModal()} />
                 <main
-                    css={[
-                        tw`
-                            w-screen
-                            h-screen
-                            md:p-10
-                            pt-20
-                            md:pt-24
-                        `,
-                    ]}
+                    css={tw`
+                        w-screen
+                        h-screen
+                        md:p-10
+                        pt-20
+                        md:pt-24
+                    `}
                 >
                     <div
-                        css={[
-                            tw`
-                                w-full
-                                h-full
-                                relative
-                            `,
-                        ]}
+                        css={tw`
+                            w-full
+                            h-full
+                            relative
+                        `}
                     >
                         <Sidebar
                             css={isDisplayingRooms && tw`block`}
@@ -124,16 +118,14 @@ export default function ChatPage() {
                                 <Conversation />
                             ) : (
                                 <div
-                                    css={[
-                                        tw`
-                                            h-full
-                                            w-full
-                                            flex
-                                            flex-col
-                                            items-center
-                                            justify-center
-                                        `,
-                                    ]}
+                                    css={tw`
+                                        h-full
+                                        w-full
+                                        flex
+                                        flex-col
+                                        items-center
+                                        justify-center
+                                    `}
                                 >
                                     <div css={tw`flex`}>
                                         <ActionButton
@@ -153,7 +145,7 @@ export default function ChatPage() {
                                             <ArrowIcon />
                                         </ActionButton>
                                         <UtilityButton onClick={() => void openAddRoomModal()}>
-                                            <Text>Add new room</Text>
+                                            <Text>{i18n('common.addNewRoomLabel')}</Text>
                                         </UtilityButton>
                                     </div>
                                 </div>

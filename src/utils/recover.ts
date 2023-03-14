@@ -2,6 +2,8 @@ import Toast, { ToastType } from '$/components/Toast'
 import { ComponentProps } from 'react'
 import { Controller as ToastController } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
+import i18n from '$/utils/i18n'
+import { call } from 'redux-saga/effects'
 
 type RecoverReturnType<T> = T extends () => Generator<any, infer U, any> ? U : never
 
@@ -12,34 +14,36 @@ export default function* recover<T extends (...args: any[]) => Generator<any, an
     props: ComponentProps<typeof Toast>,
     ...args: RecoverArgs<T>
 ) {
-    let tc: ToastController | undefined
+    const result: RecoverReturnType<T> = yield call(function* () {
+        let tc: ToastController | undefined
 
-    try {
-        while (true) {
-            try {
-                const result: RecoverReturnType<T> = yield* fn(...args)
-
-                return result
-            } catch (e) {
-                console.warn(e)
-
+        try {
+            while (true) {
                 try {
-                    tc = yield toaster(Toast, {
-                        title: 'Failed',
-                        desc: 'Would you like to try again?',
-                        type: ToastType.Warning,
-                        okLabel: 'Yes',
-                        cancelLabel: 'No',
-                        ...props,
-                    })
+                    return (yield call(fn, ...args)) as RecoverReturnType<T>
+                } catch (e) {
+                    console.warn(e)
 
-                    yield tc?.open()
-                } catch (_) {
-                    throw e
+                    try {
+                        tc = yield toaster(Toast, {
+                            title: i18n('recoverToast.title'),
+                            desc: i18n('recoverToast.desc'),
+                            type: ToastType.Error,
+                            okLabel: i18n('recoverToast.okLabel'),
+                            cancelLabel: i18n('recoverToast.cancelLabel'),
+                            ...props,
+                        })
+
+                        yield tc?.open()
+                    } catch (_) {
+                        throw e
+                    }
                 }
             }
+        } finally {
+            tc?.dismiss()
         }
-    } finally {
-        tc?.dismiss()
-    }
+    })
+
+    return result
 }

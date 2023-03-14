@@ -1,21 +1,16 @@
 import { FlagAction } from '$/features/flag'
 import { IFingerprinted } from '$/types'
-import { Action, ActionCreatorWithPayload, PayloadAction } from '@reduxjs/toolkit'
+import { ActionCreatorWithPayload, PayloadAction } from '@reduxjs/toolkit'
 import { Task } from 'redux-saga'
-import { ActionPattern, call, cancel, fork, put, take } from 'redux-saga/effects'
+import { call, fork, put, take } from 'redux-saga/effects'
 
 interface Memo {
     [key: string]: Task
 }
 
-interface Options {
-    cancellationPattern?: ActionPattern<Action<any>>
-}
-
 export default function takeEveryUnique<T extends IFingerprinted>(
     pattern: ActionCreatorWithPayload<T>,
-    worker: (action: PayloadAction<T>) => any,
-    { cancellationPattern }: Options = {}
+    worker: (action: PayloadAction<T>) => any
 ) {
     return fork(function* () {
         const memo: Memo = {}
@@ -42,12 +37,6 @@ export default function takeEveryUnique<T extends IFingerprinted>(
                         yield put(FlagAction.unset(key))
                     }
                 })
-
-                if (cancellationPattern && memo[key]) {
-                    yield take(cancellationPattern)
-
-                    yield cancel(memo[key])
-                }
             })
         }
     })

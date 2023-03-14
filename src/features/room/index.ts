@@ -16,7 +16,6 @@ import { IRoom, RoomId, RoomState } from './types'
 import setVisibility from '$/features/room/sagas/setVisibility.saga'
 import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
-import { Provider } from '@web3-react/types'
 import { TokenGate } from '$/features/tokenGatedRooms/types'
 import leaveTokenGatedRoom from './sagas/leaveTokenGatedRoom.saga'
 
@@ -154,7 +153,6 @@ export const RoomAction = {
         IFingerprinted & {
             requester: Address
             streamrClient: StreamrClient
-            provider: Provider
         }
     >('room: pin sticky'),
 

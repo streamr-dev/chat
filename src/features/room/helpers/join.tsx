@@ -1,10 +1,9 @@
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { selectWalletClient, selectWalletProvider } from '$/features/wallet/selectors'
-import { Address, OptionalAddress } from '$/types'
+import { selectWalletClient } from '$/features/wallet/selectors'
+import { Address } from '$/types'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
-import { Provider } from '@web3-react/types'
 import { call, put, select } from 'redux-saga/effects'
 import { BigNumber, Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
@@ -16,7 +15,6 @@ import { abi as ERC721TokenAbi } from '$/contracts/tokens/ERC721Token.sol/ERC721
 import Toast, { ToastType } from '$/components/Toast'
 import StreamrClient, { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
-import Id from '$/components/Id'
 import { ComponentProps } from 'react'
 import { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
@@ -26,6 +24,9 @@ import { RoomAction } from '$/features/room'
 import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import tokenIdPreflight from '$/utils/tokenIdPreflight'
+import recover from '$/utils/recover'
+import i18n from '$/utils/i18n'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -71,7 +72,7 @@ export default function join(
         try {
             if (!tokenAddress) {
                 yield onToast({
-                    title: "It's not a token gated room",
+                    title: i18n('joinTokenGatedRoomToast.notTokenGatedTitle'),
                     type: ToastType.Error,
                 })
 
@@ -88,33 +89,20 @@ export default function join(
                 throw new Error('Unknown token standard')
             }
 
-            const provider: Provider | undefined = yield select(selectWalletProvider)
-
-            if (!provider) {
-                throw new Error('No provider')
-            }
+            const provider = yield* getWalletProvider()
 
             yield onToast({
-                title: <>Joining {name ? `"${name}"` : <Id>{roomId}</Id>}…</>,
+                title: i18n('joinTokenGatedRoomToast.joiningTitle', name, roomId),
                 type: ToastType.Processing,
             })
 
             let tokenId = '0'
 
             if (tokenType.hasIds) {
-                tokenId = yield* tokenIdPreflight({
-                    tokenStandard,
-                })
+                tokenId = yield* tokenIdPreflight(tokenStandard)
             }
 
-            const delegatedAccount: OptionalAddress = yield delegationPreflight({
-                requester,
-                provider,
-            })
-
-            if (!delegatedAccount) {
-                throw new Error('No delegated account')
-            }
+            const delegatedAccount = yield* delegationPreflight(requester)
 
             const policyRegistry = getJoinPolicyRegistry(provider)
 
@@ -127,90 +115,79 @@ export default function join(
 
             const policy = new Contract(policyAddress, Abi[tokenStandard], policyRegistry.signer)
 
-            try {
-                if (stakingEnabled) {
-                    // authorize the transfer with the corresponding token type
-                    yield onToast({
-                        title: 'Authorizing token transfer…',
-                        type: ToastType.Processing,
-                    })
-                    let authorizationTx: Record<string, any>
-                    let tokenContract: Contract
-                    switch(tokenStandard) {
-                        case TokenStandard.ERC20:
-                            tokenContract = new Contract(tokenAddress, ERC20TokenAbi, policyRegistry.signer)
-                            authorizationTx = yield tokenContract.approve(policyAddress, BigNumber.from(minRequiredBalance || 0))
-                        break 
-                        case TokenStandard.ERC721:
-                            tokenContract = new Contract(tokenAddress, ERC721TokenAbi, policyRegistry.signer)
-                            authorizationTx = yield tokenContract.approve(policyAddress, BigNumber.from(tokenId))
-                        break 
-                        default:
-                            throw new Error(`Unsupported token standard ${tokenStandard}`)
+            const ok = yield* recover(
+                function* () {
+                    try {
+                        const tx: Record<string, any> = yield policy.requestDelegatedJoin()
+
+                        yield tx.wait()
+
+                        return true
+                    } catch (e: any) {
+                        if (
+                            typeof e?.message === 'string' &&
+                            /error_notEnoughTokens/.test(e.message)
+                        ) {
+                            yield onToast({
+                                title: i18n('joinTokenGatedRoomToast.insufficientFundsTitle'),
+                                type: ToastType.Error,
+                                autoCloseAfter: 5,
+                            })
+
+                            return false
+                        }
+
+                        throw e
                     }
-
-                    yield authorizationTx.wait()
-                    yield onToast({
-                        title: 'Token transfer authorized',
-                        type: ToastType.Success,
-                    })
-
+                },
+                {
+                    title: i18n('joinTokenGatedRecoverToast.title'),
+                    desc: i18n('joinTokenGatedRecoverToast.desc'),
+                    okLabel: i18n('joinTokenGatedRecoverToast.okLabel'),
+                    cancelLabel: i18n('joinTokenGatedRecoverToast.cancelLabel'),
                 }
-                yield onToast({
-                    title: 'Requesting join...',
-                    type: ToastType.Processing,
-                })
-                let tx: Record<string, any>
-                if (tokenType.hasIds) {
-                    tx = yield policy.requestDelegatedJoin(BigNumber.from(tokenId))
-                } else {
-                    tx = yield policy.requestDelegatedJoin()
-                }
-                yield tx.wait()
-                yield onToast({
-                    title: 'Join request completed',
-                    type: ToastType.Success,
-                })
-            } catch (e: any) {
-                if (typeof e?.message === 'string' && /error_notEnoughTokens/.test(e.message)) {
-                    yield onToast({
-                        title: 'Not enough tokens',
-                        type: ToastType.Error,
-                        autoCloseAfter: 5,
-                    })
+            )
 
-                    return
-                }
-
-                throw e
+            if (!ok) {
+                return
             }
 
             yield onToast({
-                title: 'Checking permissions…',
+                title: i18n('joinTokenGatedRoomToast.checkingPermissionsTitle'),
                 type: ToastType.Processing,
             })
 
             const streamrClient: StreamrClient | undefined = yield select(selectWalletClient)
 
             if (streamrClient) {
-                yield waitForPermissions(streamrClient, roomId, (assignments) => {
-                    for (let i = 0; i < assignments.length; i++) {
-                        const assignment = assignments[i]
+                yield* recover(
+                    function* () {
+                        yield waitForPermissions(streamrClient, roomId, (assignments) => {
+                            for (let i = 0; i < assignments.length; i++) {
+                                const assignment = assignments[i]
 
-                        if ('public' in assignment) {
-                            continue
-                        }
+                                if ('public' in assignment) {
+                                    continue
+                                }
 
-                        if (
-                            isSameAddress(assignment.user, requester) &&
-                            assignment.permissions.length
-                        ) {
-                            return true
-                        }
+                                if (
+                                    isSameAddress(assignment.user, requester) &&
+                                    assignment.permissions.length
+                                ) {
+                                    return true
+                                }
+                            }
+
+                            return false
+                        })
+                    },
+                    {
+                        title: i18n('checkTokenGatedPermissionsRecoverToast.title'),
+                        desc: i18n('checkTokenGatedPermissionsRecoverToast.desc'),
+                        okLabel: i18n('checkTokenGatedPermissionsRecoverToast.okLabel'),
+                        cancelLabel: i18n('checkTokenGatedPermissionsRecoverToast.cancelLabel'),
                     }
-
-                    return false
-                })
+                )
 
                 yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
 
@@ -226,14 +203,14 @@ export default function join(
             }
 
             yield onToast({
-                title: 'Joined!',
+                title: i18n('joinTokenGatedRoomToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
             yield onToast({
-                title: 'Failed to join',
+                title: i18n('joinTokenGatedRoomToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {

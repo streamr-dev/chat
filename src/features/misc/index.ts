@@ -6,7 +6,6 @@ import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
 import { Address, IFingerprinted, TokenMetadata } from '$/types'
 import isBlank from '$/utils/isBlank'
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { Provider } from '@web3-react/types'
 import { NavigateFunction } from 'react-router-dom'
 import { all } from 'redux-saga/effects'
 
@@ -21,9 +20,9 @@ export const MiscAction = {
 
     setKnownTokensFilter: createAction<string>('misc: set known tokens filter'),
 
-    fetchTokenStandard: createAction<IFingerprinted & { address: Address; provider: Provider }>(
-        'misc: fetch token standard'
-    ),
+    fetchTokenStandard: createAction<
+        IFingerprinted & { address: Address; showLoadingToast: boolean }
+    >('misc: fetch token standard'),
 
     setTokenStandard: createAction<{ address: Address; standard: undefined | TokenStandard }>(
         'misc: set token standard'
@@ -34,7 +33,6 @@ export const MiscAction = {
             tokenAddress: Address
             tokenIds: string[]
             tokenStandard: TokenStandard
-            provider: Provider
         }
     >('misc: fetch token metadata'),
 

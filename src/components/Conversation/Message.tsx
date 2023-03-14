@@ -13,11 +13,11 @@ import { IMessage } from '$/features/message/types'
 import Avatar, { Wrap } from '../Avatar'
 import Text from '../Text'
 import DateTooltip from './DateTooltip'
-import { useWalletAccount, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import useSeenMessageEffect from '$/hooks/useSeenMessageEffect'
 import useMainAccount from '$/hooks/useMainAccount'
 import isSameAddress from '$/utils/isSameAddress'
-import { OptionalAddress } from '$/types'
+import { Address, OptionalAddress } from '$/types'
 import { useDispatch } from 'react-redux'
 import { Flag } from '$/features/flag/types'
 import trunc from '$/utils/trunc'
@@ -25,10 +25,12 @@ import useAlias from '$/hooks/useAlias'
 import useENSName from '$/hooks/useENSName'
 import { RoomId } from '$/features/room/types'
 import { MessageAction } from '$/features/message'
-import { useDelegatedAccount, useDelegatedClient } from '$/features/delegation/hooks'
+import { useDelegatedAccount } from '$/features/delegation/hooks'
 import useFlag from '$/hooks/useFlag'
 import { DelegationAction } from '$/features/delegation'
 import useAnonAccount from '$/hooks/useAnonAccount'
+import i18n from '$/utils/i18n'
+import useSubscriber from '$/hooks/useSubscriber'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     payload: IMessage
@@ -36,18 +38,25 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 function formatMessage(message: string): ReactNode {
-    const chunks = message.split(' ')
+    const rexp = /https?:\/\/[-a-z0-9@:%_+.~#?&/=]{2,256}/gi
+
+    if (!rexp.test(message)) {
+        return message
+    }
+
+    const [first, ...texts] = message.split(rexp)
+
+    const links = message.match(rexp) || []
 
     return (
         <>
-            {chunks.map((chunk, i) => {
-                return (
-                    <Fragment key={i}>
-                        {/^https?:\/\/\S+$/.test(chunk) ? <Link href={chunk}>{chunk}</Link> : chunk}
-                        {i !== chunks.length - 1 && ' '}
-                    </Fragment>
-                )
-            })}
+            {first}
+            {links.map((href, i) => (
+                <Fragment key={i}>
+                    <Link href={links[i]}>{links[i]}</Link>
+                    {texts[i]}
+                </Fragment>
+            ))}
         </>
     )
 }
@@ -73,27 +82,31 @@ export default function Message({ payload, previousCreatedBy, ...props }: Props)
 
     useSeenMessageEffect(element, id, roomId, requester, { skip: isSeen || isEncrypted })
 
-    const provider = useWalletProvider()
-
     const skipAvatar = !!previousCreatedBy && isSameAddress(sender, previousSender)
 
-    const avatar = skipAvatar ? <Wrap /> : <Avatar seed={sender?.toLowerCase()} />
+    const avatar =
+        sender === null ? (
+            <Wrap>{!!createdBy && <LookupAddressButton creator={createdBy} />}</Wrap>
+        ) : skipAvatar ? (
+            <Wrap />
+        ) : (
+            <Avatar seed={sender?.toLowerCase()} />
+        )
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (sender || !provider) {
+        if (typeof sender !== 'undefined') {
             return
         }
 
         dispatch(
             DelegationAction.lookup({
                 delegated: createdBy,
-                provider,
                 fingerprint: Flag.isLookingUpDelegation(createdBy),
             })
         )
-    }, [sender, provider, createdBy, dispatch])
+    }, [sender, createdBy, dispatch])
 
     const delegatedAccount = useDelegatedAccount()
 
@@ -250,14 +263,14 @@ function ResendOneButton({
 }: ResendOneButtonProps) {
     const dispatch = useDispatch()
 
-    const delegatedClient = useDelegatedClient()
+    const streamrClient = useSubscriber(roomId)
 
     const isResending = useFlag(
         requester ? Flag.isResendingTimestamp(roomId, requester, timestamp) : undefined
     )
 
     function onClick() {
-        if (!requester || !delegatedClient) {
+        if (!requester || !streamrClient) {
             return
         }
 
@@ -267,7 +280,7 @@ function ResendOneButton({
                 requester,
                 exact: true,
                 timestamp,
-                streamrClient: delegatedClient,
+                streamrClient,
                 fingerprint: Flag.isResendingTimestamp(roomId, requester, timestamp),
             })
         )
@@ -279,26 +292,17 @@ function ResendOneButton({
             onClick={onClick}
             type="button"
             css={[
-                isResending &&
-                    tw`
-                        block!
-                    `,
+                isResending && tw`block!`,
                 tw`
                     appearance-none
                     text-[#59799C]
                     text-[12px]
                     hidden
                 `,
-                left
-                    ? tw`
-                        ml-[22px]
-                    `
-                    : tw`
-                        mr-[22px]
-                    `,
+                left ? tw`ml-[22px]` : tw`mr-[22px]`,
             ]}
         >
-            {isResending ? 'Retrying…' : 'Retry'}
+            {i18n('common.retry', isResending)}
         </button>
     )
 }
@@ -306,7 +310,7 @@ function ResendOneButton({
 function EncryptedMessage() {
     return (
         <Text>
-            <em>Message could not be decrypted</em>
+            <em>{i18n('common.encryptedMessagePlaceholder')}</em>
         </Text>
     )
 }
@@ -379,6 +383,58 @@ function Sender({ short, full, ...props }: SenderProps) {
             >
                 {full}
             </div>
+        </button>
+    )
+}
+
+function LookupAddressButton({ creator }: { creator: Address }) {
+    const dispatch = useDispatch()
+
+    return (
+        <button
+            type="button"
+            onClick={() => {
+                dispatch(
+                    DelegationAction.setDelegation({
+                        delegated: creator,
+                        main: undefined,
+                    })
+                )
+
+                dispatch(
+                    DelegationAction.lookup({
+                        delegated: creator,
+                        fingerprint: Flag.isLookingUpDelegation(creator),
+                    })
+                )
+            }}
+            css={tw`
+                appearance-none
+                rounded-full
+                bg-gray-100
+                w-full
+                h-full
+                flex
+                items-center
+                justify-center
+                text-[#59799C]
+            `}
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                css={tw`
+                    w-1/3
+                    h-1/3
+                `}
+            >
+                {/* Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}
+                {/* NOTE: The reload icon is free. */}
+                <path
+                    d="M370.3 160H320c-17.7 0-32 14.3-32 32s14.3 32 32 32H448c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v51.2L398.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L370.3 160z"
+                    fill="currentColor"
+                />
+            </svg>
         </button>
     )
 }

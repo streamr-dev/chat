@@ -5,29 +5,27 @@ import preflight from '$/utils/preflight'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
+import i18n from '$/utils/i18n'
 
 function* onDeleteAction({
-    payload: { roomId, provider, requester, streamrClient },
+    payload: { roomId, requester, streamrClient },
 }: ReturnType<typeof RoomAction.delete>) {
     try {
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         yield streamrClient.deleteStream(roomId)
 
         yield put(RoomAction.deleteLocal({ roomId, requester }))
 
         yield toast({
-            title: 'Room has been deleted',
+            title: i18n('deleteRoomToast.successTitle'),
             type: ToastType.Success,
         })
     } catch (e) {
         handleError(e)
 
         yield toast({
-            title: 'Failed to delete room',
+            title: i18n('deleteRoomToast.failureTitle'),
             type: ToastType.Error,
         })
     }

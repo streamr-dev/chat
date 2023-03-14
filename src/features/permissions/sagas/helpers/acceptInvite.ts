@@ -2,17 +2,17 @@ import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
 import retoast from '$/features/toaster/helpers/retoast'
 import { Controller } from '$/features/toaster/helpers/toast'
-import { OptionalAddress } from '$/types'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import delegationPreflight from '$/utils/delegationPreflight'
+import i18n from '$/utils/i18n'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 export default function acceptInvite({
     roomId,
     member,
-    provider,
     requester,
     streamrClient,
 }: ReturnType<typeof PermissionsAction.acceptInvite>['payload']) {
@@ -22,21 +22,16 @@ export default function acceptInvite({
         let dismissToast = false
 
         try {
-            const delegatedAccount: OptionalAddress = yield delegationPreflight({
-                requester,
-                provider,
-            })
-
-            if (!delegatedAccount) {
-                throw new Error('No delegated account')
-            }
+            const delegatedAccount = yield* delegationPreflight(requester)
 
             dismissToast = true
 
             tc = yield retoast(tc, {
-                title: 'Setting new permissions…',
+                title: i18n('acceptInviteToast.joiningTitle'),
                 type: ToastType.Processing,
             })
+
+            const provider = yield* getWalletProvider()
 
             yield setMultiplePermissions(
                 roomId,
@@ -65,7 +60,7 @@ export default function acceptInvite({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Joined successfully',
+                title: i18n('acceptInviteToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
@@ -74,7 +69,7 @@ export default function acceptInvite({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Failed to join',
+                title: i18n('acceptInviteToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {

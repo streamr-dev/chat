@@ -5,15 +5,13 @@ import preflight from '$/utils/preflight'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
+import i18n from '$/utils/i18n'
 
 function* onToggleStorageNodeAction({
-    payload: { roomId, address, state, provider, requester, streamrClient },
+    payload: { roomId, address, state, requester, streamrClient },
 }: ReturnType<typeof RoomAction.toggleStorageNode>) {
     try {
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         yield put(
             RoomAction.setTogglingStorageNode({
@@ -27,14 +25,14 @@ function* onToggleStorageNodeAction({
             yield streamrClient.addStreamToStorageNode(roomId, address)
 
             yield toast({
-                title: 'Storage enabled',
+                title: i18n('storageToast.enabledTitle'),
                 type: ToastType.Success,
             })
         } else {
             yield streamrClient.removeStreamFromStorageNode(roomId, address)
 
             yield toast({
-                title: 'Storage disabled',
+                title: i18n('storageToast.disabledTitle'),
                 type: ToastType.Success,
             })
         }
@@ -50,7 +48,9 @@ function* onToggleStorageNodeAction({
         handleError(e)
 
         yield toast({
-            title: state ? 'Failed to enable storage' : 'Failed to disable storage',
+            title: state
+                ? i18n('storageToast.failedToEnableTitle')
+                : i18n('storageToast.failedToDisableTitle'),
             type: ToastType.Error,
         })
     }

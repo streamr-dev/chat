@@ -4,7 +4,7 @@ import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { WalletAction } from '$/features/wallet'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import { WalletIntegrationId } from '$/features/wallet/types'
-import integrations from '$/utils/integrations'
+import i18n from '$/utils/i18n'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import { Props as ModalProps } from './Modal'
@@ -13,8 +13,14 @@ interface Props extends ModalProps {
     showTryMetaMask?: boolean
 }
 
+const lineup = [
+    WalletIntegrationId.MetaMask,
+    WalletIntegrationId.CoinbaseWallet,
+    WalletIntegrationId.WalletConnect,
+]
+
 export default function WalletModal({
-    title = 'Select a wallet',
+    title = i18n('walletModal.title'),
     showTryMetaMask = false,
     ...props
 }: Props) {
@@ -31,13 +37,13 @@ export default function WalletModal({
             return
         }
 
-        dispatch(WalletAction.connect({ integrationId, eager: false }))
+        dispatch(WalletAction.connect(integrationId))
     }
 
     return (
         <Modal {...props} title={title}>
             <div css={tw`[button + button]:mt-4`}>
-                {[...integrations.keys()].map((integrationId) => (
+                {lineup.map((integrationId) => (
                     <WalletOption
                         key={integrationId}
                         integrationId={integrationId}
@@ -59,7 +65,7 @@ function WalletOption<T extends WalletIntegrationId>({
     integrationId,
     onClick: onClickProp,
 }: WalletOptionProps<T>) {
-    const { label, icon: Icon } = integrations.get(integrationId)!
+    const Icon = i18n('common.integrationIcon', integrationId)
 
     const currentIntegrationId = useWalletIntegrationId()
 
@@ -71,6 +77,7 @@ function WalletOption<T extends WalletIntegrationId>({
                 }
             }}
             type="button"
+            data-testid={`WalletOption-${integrationId}`}
             css={[
                 tw`
                     appearance-none
@@ -98,7 +105,7 @@ function WalletOption<T extends WalletIntegrationId>({
                     `,
             ]}
         >
-            <div css={tw`grow`}>{label}</div>
+            <div css={tw`grow`}>{i18n('common.integrationLabel', integrationId)}</div>
             <div>
                 <Icon />
             </div>

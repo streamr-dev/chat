@@ -10,7 +10,7 @@ import {
 import { createPortal } from 'react-dom'
 import tw, { css } from 'twin.macro'
 import Text from './Text'
-import useOnMouseDownOutsideEffect from 'streamr-ui/hooks/useOnMouseDownOutsideEffect'
+import { useOnMouseDownOutsideEffect } from 'streamr-ui/hooks'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     anchorEl?: HTMLButtonElement | null
@@ -120,29 +120,25 @@ function MenuItem({ tag: Tag = 'button', icon, children, ...propsProp }: MenuIte
     return (
         <Tag
             {...props}
-            css={[
-                tw`
-                    bg-white
-                    w-full
-                    text-left
-                    flex
-                    items-center
-                    h-9
-                    !text-[#59799C]
-                    hover:bg-[#EFF4F9]
-                `,
-            ]}
+            css={tw`
+                bg-white
+                w-full
+                text-left
+                flex
+                items-center
+                h-9
+                !text-[#59799C]
+                hover:bg-[#EFF4F9]
+            `}
         >
             <div
-                css={[
-                    tw`
-                        w-10
-                        flex-shrink-0
-                        flex
-                        justify-center
-                        [svg]:block
-                    `,
-                ]}
+                css={tw`
+                    w-10
+                    shrink-0
+                    flex
+                    justify-center
+                    [svg]:block
+                `}
             >
                 {icon}
             </div>
@@ -161,14 +157,12 @@ export function MenuSeparatorItem(props: HTMLAttributes<HTMLHRElement>) {
     return (
         <hr
             {...props}
-            css={[
-                tw`
-                    border-0
-                    h-[1px]
-                    bg-[#DEE6EE]
-                    my-1
-                `,
-            ]}
+            css={tw`
+                border-0
+                h-[1px]
+                bg-[#DEE6EE]
+                my-1
+            `}
         />
     )
 }

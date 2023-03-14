@@ -1,3 +1,4 @@
+import i18n from '$/utils/i18n'
 import { ButtonHTMLAttributes } from 'react'
 import tw from 'twin.macro'
 import PrimaryButton from './PrimaryButton'
@@ -8,7 +9,7 @@ interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'
 }
 
 export default function Submit({
-    label = 'Submit',
+    label = i18n('common.defaultSubmitLabel'),
     disabled = false,
     type = 'submit',
     ...props

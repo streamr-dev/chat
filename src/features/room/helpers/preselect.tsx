@@ -1,4 +1,3 @@
-import Id from '$/components/Id'
 import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { MiscAction } from '$/features/misc'
@@ -14,6 +13,7 @@ import db from '$/utils/db'
 import fetchStream from '$/utils/fetchStream'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
+import i18n from '$/utils/i18n'
 import { call, delay, put, select } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
@@ -94,7 +94,7 @@ export default function preselect({
 
                 tc = yield retoast(tc, {
                     type: ToastType.Error,
-                    title: 'Failed to find the room',
+                    title: i18n('preselectToast.roomNotFoundTitle'),
                 })
 
                 return
@@ -103,7 +103,7 @@ export default function preselect({
             const localName = selectedRoom?.name
 
             tc = yield retoast(tc, {
-                title: <>Opening {localName ? `"${localName}"` : <Id>{roomId}</Id>}…</>,
+                title: i18n('preselectToast.openingTitle', localName, roomId),
                 type: ToastType.Processing,
             })
 
@@ -121,7 +121,7 @@ export default function preselect({
 
                         tc = yield retoast(tc, {
                             type: ToastType.Error,
-                            title: 'Failed to unhide the room',
+                            title: i18n('preselectToast.failedToUnhideTitle'),
                         })
                     }
                 }
@@ -148,7 +148,7 @@ export default function preselect({
             dismissToast = true
 
             tc = yield retoast(tc, {
-                title: <>Pinning {name ? `"${name}"` : <Id>{roomId}</Id>}…</>,
+                title: i18n('preselectToast.pinningTitle', name, roomId),
                 type: ToastType.Processing,
             })
 
@@ -175,7 +175,7 @@ export default function preselect({
 
                     tc = yield retoast(tc, {
                         type: ToastType.Error,
-                        title: "You don't have access to the room",
+                        title: i18n('preselectToast.unauthorizedTitle'),
                     })
 
                     return
@@ -214,7 +214,7 @@ export default function preselect({
 
                 tc = yield retoast(tc, {
                     type: ToastType.Error,
-                    title: 'Failed to open the room',
+                    title: i18n('preselectToast.failedtoOpenTitle'),
                 })
             }
         } finally {

@@ -17,15 +17,16 @@ import Submit from '../Submit'
 import Text from '../Text'
 import Toggle from '../Toggle'
 import Modal, { Props as ModalProps } from './Modal'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
+import i18n from '$/utils/i18n'
 
 export default function RoomPropertiesModal({
-    title = 'Room properties',
-    subtitle = 'Unnamed room',
+    title = i18n('roomPropertiesModal.title'),
+    subtitle = i18n('common.fallbackRoomName'),
     onAbort,
     ...props
 }: ModalProps) {
@@ -55,12 +56,10 @@ export default function RoomPropertiesModal({
 
     const streamrClient = useWalletClient()
 
-    const provider = useWalletProvider()
-
     const requester = useWalletAccount()
 
     function onStorageToggleClick() {
-        if (!selectedRoomId || isStorageBusy || !provider || !requester || !streamrClient) {
+        if (!selectedRoomId || isStorageBusy || !requester || !streamrClient) {
             return
         }
 
@@ -69,7 +68,6 @@ export default function RoomPropertiesModal({
                 roomId: selectedRoomId,
                 address: STREAMR_STORAGE_NODE_GERMANY,
                 state: !isStorageEnabled,
-                provider,
                 requester,
                 streamrClient,
                 fingerprint: Flag.isTogglingStorageNode(
@@ -97,7 +95,7 @@ export default function RoomPropertiesModal({
     const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds)
 
     useEffect(() => {
-        if (!tokenAddress || !tokenType || !provider || !tokenIds) {
+        if (!tokenAddress || !tokenType || !tokenIds) {
             return
         }
 
@@ -105,12 +103,11 @@ export default function RoomPropertiesModal({
             MiscAction.fetchTokenMetadata({
                 tokenAddress,
                 tokenStandard: tokenType.standard,
-                provider,
                 tokenIds,
                 fingerprint: Flag.isFetchingTokenMetadata(tokenAddress, tokenIds),
             })
         )
-    }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
+    }, [tokenAddress, tokenType, tokenIds, tokenMetadata])
 
     return (
         <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
@@ -168,14 +165,11 @@ export default function RoomPropertiesModal({
                             {minRequiredBalance.toString()}
                         </Label>
                     )}
-                    <Label>Staking</Label>
+                    <Label>{i18n('roomPropertiesModal.stakingLabel')}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>
-                                    When token staking is enabled, participants will need to deposit
-                                    the minimum amount in order to join the room.
-                                </Text>
+                                <Text>{i18n('addTokenGatedRoomModal.stakingDesc')}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
@@ -187,19 +181,16 @@ export default function RoomPropertiesModal({
             <Form onSubmit={() => void onAbort?.()}>
                 {!!selectedRoomId && (
                     <>
-                        <Label>Room id</Label>
+                        <Label>{i18n('roomPropertiesModal.roomIdLabel')}</Label>
                         <TextField defaultValue={selectedRoomId} readOnly />
                     </>
                 )}
                 <>
-                    <Label>Message storage</Label>
+                    <Label>{i18n('addRoomModal.storageFieldLabel')}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>
-                                    When message storage is disabled, participants will only see
-                                    messages sent while they are online.
-                                </Text>
+                                <Text>{i18n('addRoomModal.storageFieldHint')}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
@@ -212,7 +203,7 @@ export default function RoomPropertiesModal({
                     </div>
                 </>
                 <>
-                    <Submit label="Close" />
+                    <Submit label={i18n('roomPropertiesModal.dismissButtonLabel')} />
                 </>
             </Form>
         </Modal>

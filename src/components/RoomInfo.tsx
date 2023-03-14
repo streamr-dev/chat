@@ -1,12 +1,13 @@
 import Spinner from '$/components/Spinner'
 import Text from '$/components/Text'
 import { RoomId } from '$/features/room/types'
-import usePrivacyOption from '$/hooks/usePrivacyOption'
 import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
 import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
 import RoomEntryRequirements from '$/components/RoomEntryRequirements'
-import { TokenGatedRoomOption } from '$/components/PrivacySelectField'
+import usePrivacy from '$/hooks/usePrivacy'
+import i18n from '$/utils/i18n'
+import { PrivacySetting } from '$/types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     roomId: RoomId | undefined
@@ -14,34 +15,51 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 export default function RoomInfo({ roomId, mini = false, children, ...props }: Props) {
-    const privacyOption = usePrivacyOption(roomId)
+    const privacy = usePrivacy(roomId)
 
     const requirements = useRoomEntryRequirements(roomId)
 
-    if (typeof privacyOption === 'undefined' || typeof requirements === 'undefined') {
+    if (typeof privacy === 'undefined' || typeof requirements === 'undefined') {
         return <Pending>{children}</Pending>
     }
 
-    const { icon: PrivacyIcon, label: privacyLabel } = privacyOption || {}
+    const PrivacyIcon = i18n('common.roomPrivacyIcon', privacy)
 
     return (
         <Wrap {...props}>
-            {(!mini || privacyOption !== TokenGatedRoomOption) && (
+            {(!mini || privacy !== PrivacySetting.TokenGated) && (
                 <>
                     <PrivacyIcon
                         css={tw`
+                            shrink-0
                             w-3
                             mr-1.5
                             ml-0.5
                         `}
                     />
-                    <Text>{privacyLabel} room</Text>
+                    <Text truncate>{i18n('common.roomPrivacyLabel', privacy)} room</Text>
                 </>
             )}
             {requirements && (
                 <>
-                    {!mini && <Text css={tw`whitespace-pre-wrap`}> requiring </Text>}
-                    <RoomEntryRequirements {...requirements} />
+                    {!mini && (
+                        <Text
+                            css={tw`
+                                whitespace-pre-wrap
+                                hidden
+                                lg:block
+                            `}
+                        >
+                            {i18n('common.requiringLabel')}
+                        </Text>
+                    )}
+                    <RoomEntryRequirements
+                        {...requirements}
+                        css={tw`
+                            ml-1
+                            lg:ml-0
+                        `}
+                    />
                 </>
             )}
             {children}
@@ -79,7 +97,7 @@ function Pending({ children, ...props }: HTMLAttributes<HTMLDivElement>) {
             >
                 <Spinner r={4} strokeWidth={1.5} />
             </div>
-            <Text>Loading…</Text>
+            <Text>{i18n('common.load', true)}</Text>
             {children}
         </Wrap>
     )

@@ -1,5 +1,5 @@
-import formatDate from '$/utils/formatDate'
 import Tooltip from '$/components/Tooltip'
+import i18n from '$/utils/i18n'
 
 interface Props {
     timestamp?: number
@@ -10,5 +10,5 @@ export default function DateTooltip({ timestamp }: Props) {
         return <div />
     }
 
-    return <Tooltip>{formatDate(timestamp)}</Tooltip>
+    return <Tooltip>{i18n('common.compactDate', timestamp)}</Tooltip>
 }
