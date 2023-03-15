@@ -93,21 +93,6 @@ export default function RoomPropertiesModal({
 
     const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds)
 
-    useEffect(() => {
-        if (!tokenAddress || !tokenType || !tokenIds) {
-            return
-        }
-
-        dispatch(
-            MiscAction.fetchTokenMetadata({
-                tokenAddress,
-                tokenStandard: tokenType.standard,
-                tokenIds,
-                fingerprint: Flag.isFetchingTokenMetadata(tokenAddress, tokenIds),
-            })
-        )
-    }, [tokenAddress, tokenType, tokenIds, tokenMetadata])
-
     return (
         <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
             {tokenMetadata ? (
