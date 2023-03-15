@@ -20,6 +20,7 @@ export default function fetchStream(roomId: RoomId, streamrClient: StreamrClient
                 tokenAddress,
                 tokenIds = [],
                 minRequiredBalance = '0',
+                stakingEnabled = false,
             } = getRoomMetadata(stream)
 
             yield put(
@@ -30,6 +31,7 @@ export default function fetchStream(roomId: RoomId, streamrClient: StreamrClient
                               tokenAddress,
                               tokenIds,
                               minRequiredBalance,
+                              stakingEnabled,
                           }
                         : null,
                 })

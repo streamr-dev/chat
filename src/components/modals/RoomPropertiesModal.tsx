@@ -20,7 +20,6 @@ import Modal, { Props as ModalProps } from './Modal'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
-import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
 import i18n from '$/utils/i18n'
 

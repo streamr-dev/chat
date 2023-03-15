@@ -38,5 +38,5 @@ export interface IRoom extends IRecord, TokenGate {
 export type RoomId = IRoom['id']
 
 export type CachedTokenGate = Required<
-    Pick<TokenGate, 'tokenAddress' | 'tokenIds' | 'minRequiredBalance'>
+    Pick<TokenGate, 'tokenAddress' | 'tokenIds' | 'minRequiredBalance' | 'stakingEnabled'>
 >

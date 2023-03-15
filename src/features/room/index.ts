@@ -12,11 +12,10 @@ import rename from './sagas/rename.saga'
 import renameLocal from './sagas/renameLocal.saga'
 import sync from './sagas/sync.saga'
 import toggleStorageNode from './sagas/toggleStorageNode.saga'
-import { IRoom, RoomId, RoomState } from './types'
+import { CachedTokenGate, IRoom, RoomId, RoomState } from './types'
 import setVisibility from '$/features/room/sagas/setVisibility.saga'
 import StreamrClient from 'streamr-client'
 import unpin from '$/features/room/sagas/unpin.saga'
-import { TokenGate } from '$/features/tokenGatedRooms/types'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -165,9 +164,7 @@ export const RoomAction = {
 
     cacheTokenGate: createAction<{
         roomId: RoomId
-        tokenGate: Required<
-            Pick<TokenGate, 'tokenAddress' | 'tokenIds' | 'minRequiredBalance'>
-        > | null
+        tokenGate: CachedTokenGate | null
     }>('room: cache token gate'),
 
     search: createAction<IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }>(
