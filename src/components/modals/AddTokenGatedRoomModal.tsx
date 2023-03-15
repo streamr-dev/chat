@@ -28,6 +28,7 @@ import uniq from 'lodash/uniq'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { parseUnits } from '@ethersproject/units'
 import i18n from '$/utils/i18n'
+import TokenStandardLabel from '$/components/TokenStandardLabel'
 
 interface Gate {
     tokenAddress: Address
@@ -269,10 +270,6 @@ interface TokenProps {
 function Token({ info, onChangeClick }: TokenProps) {
     const isFetchingTokenStandard = useFlag(Flag.isFetchingTokenStandard(info.address))
 
-    const standard = useTokenStandard(info.address)
-
-    const dispatch = useDispatch()
-
     return (
         <div
             css={tw`
@@ -318,57 +315,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                     <div>{trunc(info.address)}</div>
                 </>
             )}
-            {!!standard && (
-                <>
-                    {standard === TokenStandard.Unknown ? (
-                        <button
-                            type="button"
-                            css={tw`
-                                bg-[#59799C]
-                                ml-6
-                                px-1
-                                rounded-sm
-                                select-none
-                                text-[10px]
-                                text-white
-                                appearance-none
-                            `}
-                            onClick={() => {
-                                dispatch(
-                                    MiscAction.setTokenStandard({
-                                        address: info.address,
-                                        standard: undefined,
-                                    })
-                                )
-
-                                dispatch(
-                                    MiscAction.fetchTokenStandard({
-                                        address: info.address,
-                                        showLoadingToast: true,
-                                        fingerprint: Flag.isFetchingTokenStandard(info.address),
-                                    })
-                                )
-                            }}
-                        >
-                            <Text>{i18n('common.tokenStandardLabel', TokenStandard.Unknown)}</Text>
-                        </button>
-                    ) : (
-                        <div
-                            css={tw`
-                                bg-[#59799C]
-                                ml-6
-                                px-1
-                                rounded-sm
-                                select-none
-                                text-[10px]
-                                text-white
-                            `}
-                        >
-                            <Text>{i18n('common.tokenStandardLabel', standard)}</Text>
-                        </div>
-                    )}
-                </>
-            )}
+            <TokenStandardLabel tokenAddress={info.address} />
             <div css={tw`grow`} />
             {isFetchingTokenStandard ? (
                 <div
