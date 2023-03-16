@@ -29,6 +29,7 @@ import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { parseUnits } from '@ethersproject/units'
 import i18n from '$/utils/i18n'
 import TokenStandardLabel from '$/components/TokenStandardLabel'
+import TokenLogo from '$/components/TokenLogo'
 
 interface Gate {
     tokenAddress: Address
@@ -285,37 +286,22 @@ function Token({ info, onChangeClick }: TokenProps) {
                 text-[14px]
             `}
         >
-            {'symbol' in info ? (
-                <>
-                    <img
-                        src={`https://polygonscan.com/token/images/${info.logo}`}
-                        alt={info.symbol}
-                        width="32"
-                        height="32"
-                    />
-                    <div>
+            <TokenLogo tokenAddress={info.address} />
+            <div>
+                {'symbol' in info ? (
+                    <>
                         <div css={tw`font-semibold`}>
                             <Text>{info.symbol}</Text>
                         </div>
                         <div css={tw`text-[#59799C]`}>
                             <Text>{info.name}</Text>
                         </div>
-                    </div>
-                </>
-            ) : (
-                <>
-                    <Avatar
-                        seed={info.address.toLowerCase()}
-                        css={tw`
-                            w-8
-                            h-8
-                            mr-3
-                        `}
-                    />
-                    <div>{trunc(info.address)}</div>
-                </>
-            )}
-            <TokenStandardLabel tokenAddress={info.address} />
+                    </>
+                ) : (
+                    trunc(info.address)
+                )}
+            </div>
+            <TokenStandardLabel tokenAddress={info.address} css={tw`ml-6`} />
             <div css={tw`grow`} />
             {isFetchingTokenStandard ? (
                 <div
