@@ -1,28 +1,19 @@
 import Text from '$/components/Text'
+import TokenLabel from '$/components/TokenLabel'
 import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import useTokenStandard from '$/hooks/useTokenStandard'
 import { OptionalAddress } from '$/types'
 import i18n from '$/utils/i18n'
+import { HTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
-import tw from 'twin.macro'
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
     tokenAddress: OptionalAddress
 }
 
-const commonCss = tw`
-    bg-[#59799C]
-    ml-6
-    px-1
-    rounded-sm
-    select-none
-    text-[10px]
-    text-white
-`
-
-export default function TokenStandardLabel({ tokenAddress }: Props) {
+export default function TokenStandardLabel({ tokenAddress, ...props }: Props) {
     const dispatch = useDispatch()
 
     const tokenStandard = useTokenStandard(tokenAddress)
@@ -32,10 +23,10 @@ export default function TokenStandardLabel({ tokenAddress }: Props) {
     }
 
     return (
-        <>
+        <div {...props}>
             {tokenStandard === TokenStandard.Unknown ? (
-                <button
-                    type="button"
+                <TokenLabel
+                    as="button"
                     onClick={() => {
                         dispatch(
                             MiscAction.setTokenStandard({
@@ -52,15 +43,14 @@ export default function TokenStandardLabel({ tokenAddress }: Props) {
                             })
                         )
                     }}
-                    css={[commonCss, tw`appearance-none`]}
                 >
                     <Text>{i18n('common.tokenStandardLabel', TokenStandard.Unknown)}</Text>
-                </button>
+                </TokenLabel>
             ) : (
-                <div css={commonCss}>
+                <TokenLabel as="div">
                     <Text>{i18n('common.tokenStandardLabel', tokenStandard)}</Text>
-                </div>
+                </TokenLabel>
             )}
-        </>
+        </div>
     )
 }

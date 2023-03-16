@@ -343,6 +343,7 @@ const I18n = {
     'roomPropertiesModal.stakingLabel': 'Staking',
     'roomPropertiesModal.roomIdLabel': 'Room id',
     'roomPropertiesModal.dismissButtonLabel': 'Close',
+    'roomPropertiesModal.tokenGateLabel': 'Entry requirement',
     'walletModal.title': 'Select a wallet',
     'conversationHeader.roomNamePlaceholder': 'e.g. random-giggly-bear',
     'conversationHeader.renamingInProgress'(from: string, to: string) {

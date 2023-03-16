@@ -10,6 +10,12 @@ export interface RoomState {
                 privacy?: PrivacySetting
                 storageNodes: Record<Address, boolean>
                 temporaryName?: string
+                /**
+                 * `tokenGate` is:
+                 * - null if the room isn't token gated,
+                 * - an object if it is, and
+                 * - undefined if we don't know if it is.
+                 */
                 tokenGate?: CachedTokenGate | null
             }
         >
