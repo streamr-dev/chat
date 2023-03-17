@@ -60,6 +60,8 @@ export interface Erc20 {
 
 export interface Erc1155 {
     uris: Record<string, string>
+    name: string
+    symbol: string
 }
 
 export interface Erc721 {

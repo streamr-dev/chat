@@ -1,5 +1,5 @@
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes } from 'react'
 import tw from 'twin.macro'
 
 interface Props extends Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {
