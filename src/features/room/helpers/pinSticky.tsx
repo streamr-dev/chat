@@ -4,7 +4,7 @@ import { stickyRoomIds } from '$/config.json'
 import { IPreference } from '$/features/preferences/types'
 import db from '$/utils/db'
 import { IRoom, RoomId } from '$/features/room/types'
-import StreamrClient, { Stream } from 'streamr-client'
+import { Stream } from 'streamr-client'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import handleError from '$/utils/handleError'
 import getRoomMetadata from '$/utils/getRoomMetadata'
@@ -18,12 +18,12 @@ import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
 
-function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClient) {
+function quietPin(roomId: RoomId, requester: Address) {
     return call(function* () {
         try {
             const owner = requester.toLowerCase()
 
-            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+            const stream: Stream | null = yield fetchStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)
@@ -79,7 +79,6 @@ function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClie
 
 export default function pinSticky({
     requester,
-    streamrClient,
 }: ReturnType<typeof RoomAction.pinSticky>['payload']) {
     return call(function* () {
         let t: Controller<typeof Toast> | undefined
@@ -111,7 +110,7 @@ export default function pinSticky({
                 const { id } = stickyRoomIds[i]
 
                 if (!ids.includes(id)) {
-                    const pinName: undefined | string = yield quietPin(id, requester, streamrClient)
+                    const pinName: undefined | string = yield quietPin(id, requester)
 
                     newIds.push(id)
 

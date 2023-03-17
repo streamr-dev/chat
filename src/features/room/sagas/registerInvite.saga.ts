@@ -1,5 +1,5 @@
 import { put } from 'redux-saga/effects'
-import { StreamPermission } from 'streamr-client'
+import StreamrClient, { StreamPermission } from 'streamr-client'
 import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
@@ -7,11 +7,14 @@ import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import toast from '$/features/toaster/helpers/toast'
 import i18n from '$/utils/i18n'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 function* onRegisterInviteAction({
-    payload: { roomId, invitee, streamrClient },
+    payload: { roomId, invitee },
 }: ReturnType<typeof RoomAction.registerInvite>) {
     try {
+        const streamrClient: StreamrClient = yield getTransactionalClient()
+
         // Invite detector tends to trigger the invitation event prematurely. In other
         // words, at times we've gotta wait a couple of seconds for `GRANT` permission
         // to be fully established and propagated.
@@ -40,7 +43,6 @@ function* onRegisterInviteAction({
             RoomAction.fetch({
                 roomId,
                 requester: invitee,
-                streamrClient,
             })
         )
     } catch (e) {

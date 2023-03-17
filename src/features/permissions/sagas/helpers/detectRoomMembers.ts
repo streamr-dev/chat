@@ -12,13 +12,12 @@ import fetchStream from '$/utils/fetchStream'
 
 export default function detectRoomMembers({
     roomId,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.detectRoomMembers>['payload']) {
     return call(function* () {
         try {
             const members: IMember[] = []
 
-            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+            const stream: Stream | null = yield fetchStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

@@ -2,7 +2,7 @@ import AddMemberModal from '$/components/modals/AddMemberModal'
 import { Flag } from '$/features/flag/types'
 import { PermissionsAction } from '$/features/permissions'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import useModalDialog from '$/hooks/useModalDialog'
 import { OptionalAddress } from '$/types'
 import { useCallback } from 'react'
@@ -15,12 +15,10 @@ export default function useAddMemberModal() {
 
     const roomId = useSelectedRoomId()
 
-    const streamrClient = useWalletClient()
-
     const requester = useWalletAccount()
 
     const open = useCallback(async () => {
-        if (!roomId || !streamrClient || !requester) {
+        if (!roomId || !requester) {
             return
         }
 
@@ -41,11 +39,10 @@ export default function useAddMemberModal() {
                 roomId,
                 member,
                 requester,
-                streamrClient,
                 fingerprint: Flag.isMemberBeingAdded(roomId, member),
             })
         )
-    }, [openModal, roomId, streamrClient, requester])
+    }, [openModal, roomId, requester])
 
     return {
         open,

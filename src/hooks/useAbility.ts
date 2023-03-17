@@ -1,7 +1,6 @@
 import { Flag } from '$/features/flag/types'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomId } from '$/features/room/types'
-import { useWalletClient } from '$/features/wallet/hooks'
 import { OptionalAddress, State } from '$/types'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -42,10 +41,8 @@ export default function useAbility(
 
     const cache = useSelector(selectPermissionCache(roomId, address, permission))
 
-    const streamrClient = useWalletClient()
-
     useEffect(() => {
-        if (!roomId || !address || !streamrClient) {
+        if (!roomId || !address) {
             return
         }
 
@@ -54,11 +51,10 @@ export default function useAbility(
                 roomId,
                 address,
                 permission,
-                streamrClient,
                 fingerprint: Flag.isPermissionBeingFetched(roomId, address, permission),
             })
         )
-    }, [roomId, address, permission, cache, streamrClient])
+    }, [roomId, address, permission, cache])
 
     return useSelector(selectAbility(roomId, address, permission))
 }

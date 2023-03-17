@@ -4,6 +4,7 @@ import { EnsAction } from '$/features/ens'
 import { Flag } from '$/features/flag/types'
 import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
+import { RoomsAction } from '$/features/rooms'
 import { WalletAction } from '$/features/wallet'
 import db from '$/utils/db'
 import { call, put } from 'redux-saga/effects'
@@ -25,12 +26,17 @@ export default function changeAccount(
             return
         }
 
-        const { account, streamrClient } = payload
+        const { account } = payload
+
+        yield put(
+            RoomsAction.fetch({
+                requester: account,
+            })
+        )
 
         yield put(
             RoomAction.pinSticky({
                 requester: account,
-                streamrClient,
                 fingerprint: Flag.isPinningStickyRooms(account),
             })
         )

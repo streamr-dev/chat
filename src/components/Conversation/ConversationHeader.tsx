@@ -11,7 +11,7 @@ import {
     useSelectedRoomId,
     useTransientRoomName,
 } from '$/features/room/hooks'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import AddMemberIcon from '$/icons/AddMemberIcon'
@@ -116,10 +116,8 @@ export default function ConversationHeader({
 
     const { copy } = useCopy()
 
-    const streamrClient = useWalletClient()
-
     function onRenameSubmit() {
-        if (!selectedRoomId || !account || !streamrClient) {
+        if (!selectedRoomId || !account) {
             return
         }
 
@@ -128,21 +126,19 @@ export default function ConversationHeader({
                 roomId: selectedRoomId,
                 name: transientRoomName,
                 requester: account,
-                streamrClient,
                 fingerprint: Flag.isPersistingRoomName(selectedRoomId),
             })
         )
     }
 
     useEffect(() => {
-        if (!selectedRoomId || !streamrClient) {
+        if (!selectedRoomId) {
             return
         }
 
         dispatch(
             RoomAction.getPrivacy({
                 roomId: selectedRoomId,
-                streamrClient,
                 fingerprint: Flag.isGettingPrivacy(selectedRoomId),
             })
         )
@@ -455,12 +451,11 @@ export default function ConversationHeader({
                                     <MenuButtonItem
                                         icon={<PinIcon css={tw`w-2.5`} />}
                                         onClick={() => {
-                                            if (selectedRoomId && account && streamrClient) {
+                                            if (selectedRoomId && account) {
                                                 dispatch(
                                                     RoomAction.unpin({
                                                         roomId: selectedRoomId,
                                                         requester: account,
-                                                        streamrClient,
                                                         fingerprint: Flag.isRoomBeingUnpinned(
                                                             selectedRoomId,
                                                             account
@@ -494,12 +489,11 @@ export default function ConversationHeader({
                                     <MenuButtonItem
                                         icon={<DeleteIcon />}
                                         onClick={() => {
-                                            if (account && selectedRoomId && streamrClient) {
+                                            if (account && selectedRoomId) {
                                                 dispatch(
                                                     RoomAction.delete({
                                                         roomId: selectedRoomId,
                                                         requester: account,
-                                                        streamrClient,
                                                         fingerprint:
                                                             Flag.isRoomBeingDeleted(selectedRoomId),
                                                     })

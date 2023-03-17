@@ -5,13 +5,10 @@ import handleError from '$/utils/handleError'
 import { call, put } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 
-export default function search({
-    roomId,
-    streamrClient,
-}: ReturnType<typeof RoomAction.search>['payload']) {
+export default function search({ roomId }: ReturnType<typeof RoomAction.search>['payload']) {
     return call(function* () {
         try {
-            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+            const stream: Stream | null = yield fetchStream(roomId)
 
             if (!stream) {
                 yield put(

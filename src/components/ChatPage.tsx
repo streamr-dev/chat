@@ -1,14 +1,12 @@
-import { useEffect } from 'react'
 import tw from 'twin.macro'
 import Page from '$/components/Page'
 import Conversation from '$/components/Conversation'
 import Nav from '$/components/Nav'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import UtilityButton from '$/components/UtilityButton'
 import Text from '$/components/Text'
 import useSelectedRoom from '$/hooks/useSelectedRoom'
 import { useDispatch } from 'react-redux'
-import { RoomsAction } from '$/features/rooms'
 import useListenForInvitesEffect from '$/hooks/useListenForInvitesEffect'
 import { RoomAction } from '$/features/room'
 import { Flag } from '$/features/flag/types'
@@ -34,31 +32,11 @@ export default function ChatPage() {
 
     const account = useWalletAccount()
 
-    const streamrClient = useWalletClient()
-
-    useEffect(() => {
-        if (!account || !streamrClient) {
-            return
-        }
-
-        dispatch(
-            RoomsAction.fetch({
-                requester: account,
-                streamrClient,
-            })
-        )
-    }, [dispatch, account, streamrClient])
-
     useListenForInvitesEffect(account, (roomId, invitee) => {
-        if (!streamrClient) {
-            return
-        }
-
         dispatch(
             RoomAction.registerInvite({
                 roomId,
                 invitee,
-                streamrClient,
                 fingerprint: Flag.isInviteBeingRegistered(roomId, invitee),
             })
         )

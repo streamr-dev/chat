@@ -8,11 +8,9 @@ import { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import fetchStream from '$/utils/fetchStream'
 
-function* onFetchAction({
-    payload: { roomId, requester, streamrClient },
-}: ReturnType<typeof RoomAction.fetch>) {
+function* onFetchAction({ payload: { roomId, requester } }: ReturnType<typeof RoomAction.fetch>) {
     try {
-        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+        const stream: Stream | null = yield fetchStream(roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

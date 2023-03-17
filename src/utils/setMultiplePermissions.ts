@@ -4,14 +4,12 @@ import { RoomId } from '$/features/room/types'
 import { Address } from '$/types'
 import waitForPermissions, { Validator } from '$/utils/waitForPermissions'
 import preflight from '$/utils/preflight'
-import { Provider } from '@web3-react/types'
 import { call, put } from 'redux-saga/effects'
 import StreamrClient, { StreamPermission, UserPermissionAssignment } from 'streamr-client'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 interface Options {
-    provider: Provider
     requester: Address
-    streamrClient: StreamrClient
     validate?: boolean | Validator
 }
 
@@ -19,13 +17,16 @@ interface AssignmentsMap {
     [user: Address]: StreamPermission[]
 }
 
+// @FIXME: Rename to `setMultipleUserPermissions` for clarity.
 export default function setMultiplePermissions(
     roomId: RoomId,
     assignments: UserPermissionAssignment[],
-    { requester, streamrClient, validate = true }: Options
+    { requester, validate = true }: Options
 ) {
     return call(function* () {
         yield preflight(requester)
+
+        const streamrClient: StreamrClient = yield getTransactionalClient()
 
         yield streamrClient.setPermissions({
             streamId: roomId,
@@ -99,7 +100,6 @@ export default function setMultiplePermissions(
         yield put(
             PermissionsAction.detectRoomMembers({
                 roomId,
-                streamrClient,
                 fingerprint: Flag.isDetectingMembers(roomId),
             })
         )

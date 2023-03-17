@@ -9,11 +9,9 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import fetchStream from '$/utils/fetchStream'
 
-function* onSyncAction({
-    payload: { roomId, requester, streamrClient },
-}: ReturnType<typeof RoomAction.sync>) {
+function* onSyncAction({ payload: { roomId, requester } }: ReturnType<typeof RoomAction.sync>) {
     try {
-        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+        const stream: Stream | null = yield fetchStream(roomId)
 
         if (stream) {
             const [permissions, isPublic]: UserPermissions = yield getUserPermissions(

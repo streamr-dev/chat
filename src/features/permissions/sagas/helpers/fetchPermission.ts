@@ -9,11 +9,10 @@ export default function fetchPermission({
     roomId,
     address,
     permission,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.fetchPermission>['payload']) {
     return call(function* () {
         try {
-            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+            const stream: Stream | null = yield fetchStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

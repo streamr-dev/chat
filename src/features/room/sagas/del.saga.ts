@@ -6,12 +6,14 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
+import StreamrClient from 'streamr-client'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
-function* onDeleteAction({
-    payload: { roomId, requester, streamrClient },
-}: ReturnType<typeof RoomAction.delete>) {
+function* onDeleteAction({ payload: { roomId, requester } }: ReturnType<typeof RoomAction.delete>) {
     try {
         yield preflight(requester)
+
+        const streamrClient: StreamrClient = yield getTransactionalClient()
 
         yield streamrClient.deleteStream(roomId)
 

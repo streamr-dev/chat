@@ -5,6 +5,7 @@ import { Prefix } from '$/types'
 import handleError from '$/utils/handleError'
 import { RoomAction } from '../../room'
 import { RoomId } from '../../room/types'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 async function getRoomIds(client: StreamrClient, account: string) {
     const ids: RoomId[] = []
@@ -21,10 +22,10 @@ async function getRoomIds(client: StreamrClient, account: string) {
     return ids
 }
 
-function* onFetchAction({
-    payload: { requester, streamrClient },
-}: ReturnType<typeof RoomsAction.fetch>) {
+function* onFetchAction({ payload: { requester } }: ReturnType<typeof RoomsAction.fetch>) {
     try {
+        const streamrClient: StreamrClient = yield getTransactionalClient()
+
         const ids: RoomId[] = yield getRoomIds(streamrClient, requester)
 
         for (let i = 0; i < ids.length; i++) {
@@ -32,7 +33,6 @@ function* onFetchAction({
                 RoomAction.fetch({
                     roomId: ids[i],
                     requester,
-                    streamrClient,
                 })
             )
         }

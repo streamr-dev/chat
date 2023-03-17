@@ -9,9 +9,7 @@ import fetchStream from '$/utils/fetchStream'
 import { selectPrivacy } from '$/hooks/usePrivacy'
 import fetchPrivacy from '$/utils/fetchPrivacy'
 
-function* onGetPrivacyAction({
-    payload: { roomId, streamrClient },
-}: ReturnType<typeof RoomAction.getPrivacy>) {
+function* onGetPrivacyAction({ payload: { roomId } }: ReturnType<typeof RoomAction.getPrivacy>) {
     try {
         const currentPrivacy: PrivacySetting | undefined = yield select(selectPrivacy(roomId))
 
@@ -19,7 +17,7 @@ function* onGetPrivacyAction({
             return
         }
 
-        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+        const stream: Stream | null = yield fetchStream(roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

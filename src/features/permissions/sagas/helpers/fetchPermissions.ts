@@ -1,16 +1,18 @@
 import { call, put } from 'redux-saga/effects'
-import { PermissionAssignment, StreamPermission } from 'streamr-client'
+import StreamrClient, { PermissionAssignment, StreamPermission } from 'streamr-client'
 import handleError from '$/utils/handleError'
 import isSameAddress from '$/utils/isSameAddress'
 import { PermissionsAction } from '$/features/permissions'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 export default function fetchPermissions({
     roomId,
     address,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.fetchPermissions>['payload']) {
     return call(function* () {
         try {
+            const streamrClient: StreamrClient = yield getTransactionalClient()
+
             const assignments: PermissionAssignment[] = yield streamrClient.getPermissions(roomId)
 
             const permissions: { [permission: string]: boolean } = {

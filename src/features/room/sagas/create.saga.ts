@@ -112,7 +112,6 @@ function* onCreateAction({
                 roomId: stream.id,
                 tokenIds,
                 minRequiredBalance,
-                streamrClient,
                 tokenType,
                 stakingEnabled,
             })
@@ -164,7 +163,6 @@ function* onCreateAction({
                     address: STREAMR_STORAGE_NODE_GERMANY,
                     state: true,
                     requester,
-                    streamrClient,
                     fingerprint: Flag.isTogglingStorageNode(
                         stream.id,
                         STREAMR_STORAGE_NODE_GERMANY

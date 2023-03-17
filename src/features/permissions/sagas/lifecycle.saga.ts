@@ -44,10 +44,10 @@ export default function* lifecycle() {
                 )
 
                 yield takeEveryUnique(PermissionsAction.join, function* ({ payload }) {
-                    const { requester, roomId, streamrClient } = payload
+                    const { requester, roomId } = payload
 
                     try {
-                        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+                        const stream: Stream | null = yield fetchStream(roomId)
 
                         if (!stream) {
                             throw new RoomNotFoundError(roomId)
