@@ -7,13 +7,13 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
 import handleError from '$/utils/handleError'
+import i18n from '$/utils/i18n'
 import preflight from '$/utils/preflight'
 import { call } from 'redux-saga/effects'
 import { Stream, StreamPermission } from 'streamr-client'
 
 export default function allowAnonsPublish({
     roomId,
-    provider,
     requester,
     streamrClient,
 }: ReturnType<typeof PermissionsAction.allowAnonsPublish>['payload']) {
@@ -26,7 +26,7 @@ export default function allowAnonsPublish({
 
         try {
             tc = yield retoast(tc, {
-                title: 'Granting anons more rights…',
+                title: i18n('anonToast.title'),
                 type: ToastType.Processing,
             })
 
@@ -34,11 +34,11 @@ export default function allowAnonsPublish({
 
             try {
                 t = yield toaster(Toast, {
-                    title: 'Are you sure?',
+                    title: i18n('anonToast.confirmTitle'),
                     type: ToastType.Warning,
-                    desc: 'Anyone will be able to read and send messages in this room.',
-                    okLabel: 'Yes',
-                    cancelLabel: 'Cancel',
+                    desc: i18n('anonToast.confirmDesc'),
+                    okLabel: i18n('anonToast.confirmOkLabel'),
+                    cancelLabel: i18n('anonToast.confirmCancelLabel'),
                 })
 
                 yield t?.open()
@@ -46,7 +46,7 @@ export default function allowAnonsPublish({
                 dismissToast = false
 
                 tc = yield retoast(tc, {
-                    title: 'Maybe another time!',
+                    title: i18n('anonToast.cancelledTitle'),
                     type: ToastType.Info,
                 })
 
@@ -55,10 +55,7 @@ export default function allowAnonsPublish({
                 return
             }
 
-            yield preflight({
-                provider,
-                requester,
-            })
+            yield preflight(requester)
 
             const stream: Stream | null = yield fetchStream(roomId, streamrClient)
 
@@ -79,7 +76,7 @@ export default function allowAnonsPublish({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Done',
+                title: i18n('anonToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
@@ -88,7 +85,7 @@ export default function allowAnonsPublish({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Failed to give anons more rights',
+                title: i18n('anonToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {

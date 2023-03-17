@@ -1,10 +1,9 @@
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { selectWalletClient, selectWalletProvider } from '$/features/wallet/selectors'
-import { Address, OptionalAddress } from '$/types'
+import { selectWalletClient } from '$/features/wallet/selectors'
+import { Address } from '$/types'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
-import { Provider } from '@web3-react/types'
 import { call, put, select } from 'redux-saga/effects'
 import { BigNumber, Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
@@ -14,7 +13,6 @@ import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155Joi
 import Toast, { ToastType } from '$/components/Toast'
 import StreamrClient, { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
-import Id from '$/components/Id'
 import { ComponentProps } from 'react'
 import { Controller } from '$/features/toaster/helpers/toast'
 import retoast from '$/features/toaster/helpers/retoast'
@@ -25,6 +23,8 @@ import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import tokenIdPreflight from '$/utils/tokenIdPreflight'
 import recover from '$/utils/recover'
+import i18n from '$/utils/i18n'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -70,7 +70,7 @@ export default function join(
         try {
             if (!tokenAddress) {
                 yield onToast({
-                    title: "It's not a token gated room",
+                    title: i18n('joinTokenGatedRoomToast.notTokenGatedTitle'),
                     type: ToastType.Error,
                 })
 
@@ -87,33 +87,20 @@ export default function join(
                 throw new Error('Unknown token standard')
             }
 
-            const provider: Provider | undefined = yield select(selectWalletProvider)
-
-            if (!provider) {
-                throw new Error('No provider')
-            }
+            const provider = yield* getWalletProvider()
 
             yield onToast({
-                title: <>Joining {name ? `"${name}"` : <Id>{roomId}</Id>}…</>,
+                title: i18n('joinTokenGatedRoomToast.joiningTitle', name, roomId),
                 type: ToastType.Processing,
             })
 
             let tokenId = '0'
 
             if (tokenType.hasIds) {
-                tokenId = yield* tokenIdPreflight({
-                    tokenStandard,
-                })
+                tokenId = yield* tokenIdPreflight(tokenStandard)
             }
 
-            const delegatedAccount: OptionalAddress = yield delegationPreflight({
-                requester,
-                provider,
-            })
-
-            if (!delegatedAccount) {
-                throw new Error('No delegated account')
-            }
+            const delegatedAccount = yield* delegationPreflight(requester)
 
             const policyRegistry = getJoinPolicyRegistry(provider)
 
@@ -140,7 +127,7 @@ export default function join(
                             /error_notEnoughTokens/.test(e.message)
                         ) {
                             yield onToast({
-                                title: 'Not enough tokens',
+                                title: i18n('joinTokenGatedRoomToast.insufficientFundsTitle'),
                                 type: ToastType.Error,
                                 autoCloseAfter: 5,
                             })
@@ -152,7 +139,10 @@ export default function join(
                     }
                 },
                 {
-                    title: 'Transaction failed',
+                    title: i18n('joinTokenGatedRecoverToast.title'),
+                    desc: i18n('joinTokenGatedRecoverToast.desc'),
+                    okLabel: i18n('joinTokenGatedRecoverToast.okLabel'),
+                    cancelLabel: i18n('joinTokenGatedRecoverToast.cancelLabel'),
                 }
             )
 
@@ -161,7 +151,7 @@ export default function join(
             }
 
             yield onToast({
-                title: 'Checking permissions…',
+                title: i18n('joinTokenGatedRoomToast.checkingPermissionsTitle'),
                 type: ToastType.Processing,
             })
 
@@ -190,7 +180,10 @@ export default function join(
                         })
                     },
                     {
-                        title: 'Failed to detect new permissions',
+                        title: i18n('checkTokenGatedPermissionsRecoverToast.title'),
+                        desc: i18n('checkTokenGatedPermissionsRecoverToast.desc'),
+                        okLabel: i18n('checkTokenGatedPermissionsRecoverToast.okLabel'),
+                        cancelLabel: i18n('checkTokenGatedPermissionsRecoverToast.cancelLabel'),
                     }
                 )
 
@@ -208,14 +201,14 @@ export default function join(
             }
 
             yield onToast({
-                title: 'Joined!',
+                title: i18n('joinTokenGatedRoomToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
             yield onToast({
-                title: 'Failed to join',
+                title: i18n('joinTokenGatedRoomToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {

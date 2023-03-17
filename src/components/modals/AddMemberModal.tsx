@@ -7,12 +7,17 @@ import TextField from '../TextField'
 import { Address } from '$/types'
 import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
 import useCanGrant from '$/hooks/useCanGrant'
+import i18n from '$/utils/i18n'
 
 interface Props extends ModalProps {
     onProceed?: (address: Address) => void
 }
 
-export default function AddMemberModal({ title = 'Add member', onProceed, ...props }: Props) {
+export default function AddMemberModal({
+    title = i18n('addMemberModal.title'),
+    onProceed,
+    ...props
+}: Props) {
     const [address, setAddress] = useState<Address>('')
 
     const canGrant = useCanGrant()
@@ -36,14 +41,14 @@ export default function AddMemberModal({ title = 'Add member', onProceed, ...pro
                     }
                 }}
             >
-                <Label>ENS name or 0x address</Label>
+                <Label>{i18n('addMemberModal.memberFieldLabel')}</Label>
                 <TextField
                     autoFocus
-                    placeholder="0x…"
+                    placeholder={i18n('addMemberModal.memberFieldPlaceholder')}
                     value={address}
                     onChange={(e) => void setAddress(e.target.value)}
                 />
-                <Submit label="Add" disabled={!canSubmit} />
+                <Submit label={i18n('addMemberModal.addButtonLabel')} disabled={!canSubmit} />
             </Form>
         </Modal>
     )

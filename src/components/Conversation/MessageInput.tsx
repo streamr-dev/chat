@@ -15,7 +15,6 @@ import Avatar from '$/components/Avatar'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import useAnonClient from '$/hooks/useAnonClient'
 import useInfoModal from '$/hooks/useInfoModal'
-import { P } from '$/components/modals/HowItWorksModal'
 import TextField from '$/components/TextField'
 import Hint from '$/components/Hint'
 import useAnonPrivateKey from '$/hooks/useAnonPrivateKey'
@@ -25,6 +24,7 @@ import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
 import Submit from '$/components/Submit'
 import Textarea from '$/components/Conversation/Textarea'
+import i18n from '$/utils/i18n'
 
 interface Props {
     disabled?: boolean
@@ -170,7 +170,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                         setValue(e.currentTarget.value)
                         makeDraft(e.currentTarget.value)
                     }}
-                    placeholder="Type a message…"
+                    placeholder={i18n('messageInput.placeholder')}
                     onWidthOffsetChange={setRightOffset}
                     onKeyDown={(e) => {
                         setIsShiftDown(e.shiftKey)
@@ -209,16 +209,21 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                             onClick={() =>
                                 void open(
                                     <>
-                                        <P>
-                                            Your randomly generated wallet address used for sending
-                                            messages to others in this room:
-                                        </P>
-                                        <Label css={tw`mt-6`}>Address</Label>
+                                        <p
+                                            css={tw`
+                                                leading-6
+                                                text-[14px]
+                                            `}
+                                        >
+                                            {i18n('anonExplainer.desc')}
+                                        </p>
+                                        <Label css={tw`mt-6`}>
+                                            {i18n('anonExplainer.addressLabel')}
+                                        </Label>
                                         <TextField defaultValue={anonAccount} readOnly />
-                                        <Hint>
-                                            It'll change on refresh or when you switch to a
-                                            different account.
-                                        </Hint>
+                                        {!!i18n('anonExplainer.addressHint') && (
+                                            <Hint>{i18n('anonExplainer.addressHint')}</Hint>
+                                        )}
                                         {!!anonPKey && (
                                             <>
                                                 <Label css={tw`mt-6`}>
@@ -228,24 +233,26 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                             items-center
                                                         `}
                                                     >
-                                                        <div css={tw`grow`}>Private key</div>
+                                                        <div css={tw`grow`}>
+                                                            {i18n('anonExplainer.privateKeyLabel')}
+                                                        </div>
                                                         <button
                                                             type="button"
-                                                            css={tw`
-                                                                appearance-none
-                                                            `}
+                                                            css={tw`appearance-none`}
                                                             onClick={() => {
                                                                 copy(anonPKey)
 
                                                                 dispatch(
                                                                     ToasterAction.show({
-                                                                        title: 'Copied to clipboard',
+                                                                        title: i18n(
+                                                                            'common.copied'
+                                                                        ),
                                                                         type: ToastType.Success,
                                                                     })
                                                                 )
                                                             }}
                                                         >
-                                                            Copy
+                                                            {i18n('common.copy')}
                                                         </button>
                                                     </div>
                                                 </Label>
@@ -255,7 +262,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                                     type="password"
                                                 />
                                                 <Submit
-                                                    label="Ok"
+                                                    label={i18n('anonExplainer.okLabel')}
                                                     type="button"
                                                     onClick={() => void close()}
                                                 />
@@ -263,7 +270,7 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                                         )}
                                     </>,
                                     {
-                                        title: 'Anonymous mode',
+                                        title: i18n('anonExplainer.title'),
                                     }
                                 )
                             }
@@ -324,9 +331,9 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                             submittable &&
                                 !isShiftDown &&
                                 tw`
-                                opacity-100
-                                cursor-pointer
-                            `,
+                                    opacity-100
+                                    cursor-pointer
+                                `,
                         ]}
                     >
                         <svg

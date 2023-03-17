@@ -4,6 +4,7 @@ import toast from '$/features/toaster/helpers/toast'
 import { Address } from '$/types'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
+import i18n from '$/utils/i18n'
 import isBlank from '$/utils/isBlank'
 import { call } from 'redux-saga/effects'
 
@@ -41,7 +42,7 @@ export default function setAlias({
                     yield destroy(owner, address)
                 } catch (e) {
                     yield toast({
-                        title: 'Failed to remove a nickname',
+                        title: i18n('aliasToast.failedToDestroy'),
                         type: ToastType.Error,
                     })
 
@@ -59,7 +60,7 @@ export default function setAlias({
                 }
             } catch (e) {
                 yield toast({
-                    title: 'Failed to update a nickname',
+                    title: i18n('aliasToast.failedToUpdate'),
                     type: ToastType.Error,
                 })
 
@@ -70,7 +71,7 @@ export default function setAlias({
                 yield create(owner, address, value)
             } catch (e) {
                 yield toast({
-                    title: 'Failed to create a nickname',
+                    title: i18n('aliasToast.failedToCreate'),
                     type: ToastType.Error,
                 })
 

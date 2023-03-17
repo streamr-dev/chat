@@ -3,6 +3,7 @@ import { RoomAction } from '$/features/room'
 import toast from '$/features/toaster/helpers/toast'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
+import i18n from '$/utils/i18n'
 import { takeEvery } from 'redux-saga/effects'
 
 function* onSetVisibilityAction({
@@ -16,7 +17,7 @@ function* onSetVisibilityAction({
         handleError(e)
 
         yield toast({
-            title: 'Failed to toggle room visibility',
+            title: i18n('roomVisibilityToast.failedToToggleTitle'),
             type: ToastType.Error,
         })
     }

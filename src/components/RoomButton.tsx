@@ -20,9 +20,10 @@ import isSameAddress from '$/utils/isSameAddress'
 import { Link, LinkProps } from 'react-router-dom'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { FlagAction } from '$/features/flag'
-import config from '$/config.json'
+import { stickyRoomIds } from '$/config.json'
+import i18n from '$/utils/i18n'
 
-const stickyRoomSubtitle = config.stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
+const stickyRoomSubtitle = stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
     (memo, { id, ...rest }) => {
         if ('subtitle' in rest && typeof rest.subtitle === 'string') {
             memo[id] = rest.subtitle
@@ -100,7 +101,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
             pinned={isPinned}
             roomId={id}
             roomName={name}
-            tagLabel={justInvited ? 'Invite' : undefined}
+            tagLabel={justInvited ? i18n('common.inviteLabel') : undefined}
             visible={isVisible}
             desc={
                 stickyRoomSubtitle[id] || (
@@ -248,7 +249,7 @@ export function PassiveRoomButton({
                         truncate
                     `}
                 >
-                    {roomName || 'Unnamed room'}
+                    {roomName || i18n('common.fallbackRoomName')}
                 </div>
                 <div
                     css={tw`

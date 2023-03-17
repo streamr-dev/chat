@@ -1,5 +1,4 @@
 import tw from 'twin.macro'
-import { format } from 'date-fns'
 import Text from '../Text'
 import AddMemberIcon from '$/icons/AddMemberIcon'
 import trunc from '$/utils/trunc'
@@ -18,6 +17,8 @@ import useAnonAccount from '$/hooks/useAnonAccount'
 import usePrivacy from '$/hooks/usePrivacy'
 import { PrivacySetting } from '$/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
+import i18n from '$/utils/i18n'
+import { TokenStandard } from '$/features/tokenGatedRooms/types'
 
 interface Props {
     onAddMemberClick?: () => void
@@ -84,7 +85,7 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
                                 <AddMemberIcon />
                             </div>
                             <div tw="grow">
-                                <Text>Add member</Text>
+                                <Text>{i18n('common.addMember')}</Text>
                             </div>
                         </UtilityButton>
                     )}
@@ -97,16 +98,20 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
 function TokenGatedMessage() {
     const { tokenAddress, tokenIds, tokenType, stakingEnabled } = useSelectedRoom() || {}
 
-    const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds)
+    if (!tokenType || tokenIds) {
+        return null
+    }
+    const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds || [])
     const polygonScanUrl = `https://polygonscan.com/token/${tokenAddress}`
 
     const displayTokenAddress = useDisplayUsername(tokenAddress, {
         fallback: tokenAddress,
     })
 
-    const urlText = tokenMetadata
-        ? `${tokenMetadata.name} (${tokenMetadata.symbol})`
-        : displayTokenAddress
+    const urlText =
+        tokenMetadata && tokenType.standard !== TokenStandard.ERC1155
+            ? `${tokenMetadata.name} (${tokenMetadata.symbol})`
+            : displayTokenAddress
 
     if (tokenAddress) {
         return (
@@ -128,7 +133,7 @@ function Credits() {
     const { createdAt, createdBy } = useSelectedRoom() || {}
 
     const displayName = useDisplayUsername(createdBy, {
-        fallback: 'Someone',
+        fallback: i18n('common.unknownCreator'),
     })
 
     if (createdAt) {
@@ -145,7 +150,7 @@ function Credits() {
                 >
                     {displayName}
                 </span>{' '}
-                created this room on {format(createdAt, 'iiii, LLL do yyyy')}.
+                {i18n('emptyMessageFeed.roomCreatedAt', createdAt)}
             </>
         )
     }
@@ -153,7 +158,10 @@ function Credits() {
     if (createdBy) {
         return (
             <>
-                Room created by <span tw="font-medium">{trunc(createdBy)}</span>.
+                {i18n(
+                    'emptyMessageFeed.roomCreatedBy',
+                    <span css={tw`font-medium`}>{trunc(createdBy)}</span>
+                )}
             </>
         )
     }
@@ -175,7 +183,7 @@ function JoinButton() {
                 items-center
             `}
         >
-            <Text>{accepting ? <>Joining…</> : <>Join</>}</Text>
+            <Text>{i18n('common.join', accepting)}</Text>
             {accepting && (
                 <div
                     css={tw`

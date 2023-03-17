@@ -3,7 +3,6 @@ import { IMember, PermissionsState } from '$/features/permissions/types'
 import { RoomId } from '$/features/room/types'
 import { Address, IFingerprinted, PreflightParams } from '$/types'
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { Provider } from '@web3-react/types'
 import { all } from 'redux-saga/effects'
 import type StreamrClient from 'streamr-client'
 import { StreamPermission } from 'streamr-client'
@@ -15,7 +14,7 @@ const initialState: PermissionsState = {
 
 export const PermissionsAction = {
     detectRoomMembers: createAction<
-        IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient; provider: Provider }
+        IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }
     >('permissions: detect room members'),
 
     setRoomMembers: createAction<{ roomId: RoomId; members: IMember[] }>(
@@ -145,7 +144,7 @@ const reducer = createReducer(initialState, (b) => {
         Object.keys(item).forEach((permission) => {
             const { cache = 0 } = item[permission]
 
-            // This will make all active `useLoadAbilityEffect` refetch.
+            // This will make all active `useAbility` refetch.
             item[permission].cache = cache + 1
         })
     })

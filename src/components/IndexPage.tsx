@@ -11,24 +11,15 @@ import { useNavigate } from 'react-router-dom'
 function useConnectEffect() {
     const integrationId = useWalletIntegrationId()
 
-    const [{ provider }, { useAccount }] = getConnector(integrationId)
+    const [, { useAccount }] = getConnector(integrationId)
 
     const account = useAccount()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!account || !provider) {
-            return void dispatch(WalletAction.setAccount())
-        }
-
-        dispatch(
-            WalletAction.setAccount({
-                account,
-                provider,
-            })
-        )
-    }, [account, provider, dispatch])
+        dispatch(WalletAction.setAccount(account))
+    }, [account, dispatch])
 }
 
 export default function IndexPage() {

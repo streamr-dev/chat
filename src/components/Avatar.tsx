@@ -10,10 +10,10 @@ import fallbackIdenticon from '$/utils/fallbackIdenticon'
 import Spinner from './Spinner'
 import useENSName from '$/hooks/useENSName'
 import useAvatar from '$/hooks/useAvatar'
-import config from '$/config.json'
+import { stickyRoomIds } from '$/config.json'
 import { RoomId } from '$/features/room/types'
 
-const stickyRoomAvatar = config.stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
+const stickyRoomAvatar = stickyRoomIds.reduce<Partial<Record<RoomId, string>>>(
     (memo, { id, ...rest }) => {
         if ('iconSrc' in rest && typeof rest.iconSrc === 'string') {
             memo[id] = rest.iconSrc

@@ -10,7 +10,7 @@ import { ToasterAction } from '$/features/toaster'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
-import integrations from '$/utils/integrations'
+import i18n from '$/utils/i18n'
 import trunc from '$/utils/trunc'
 import { AnchorHTMLAttributes } from 'react'
 import { useDispatch } from 'react-redux'
@@ -21,10 +21,12 @@ interface Props extends ModalProps {
     onProceed?: () => void
 }
 
-export default function AccountModal({ title = 'Account', onProceed, ...props }: Props) {
+export default function AccountModal({
+    title = i18n('accountModal.title'),
+    onProceed,
+    ...props
+}: Props) {
     const integrationId = useWalletIntegrationId()
-
-    const { label } = integrations.get(integrationId!)!
 
     const account = useWalletAccount() || ''
 
@@ -37,6 +39,10 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
     const retrieveHotWalletImmediately = Boolean(preferences?.retrieveHotWalletImmediately)
 
     const dispatch = useDispatch()
+
+    if (!integrationId) {
+        return null
+    }
 
     return (
         <>
@@ -56,11 +62,11 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                             mr-4
                         `}
                     >
-                        Connected with {label}
+                        {i18n('accountModal.connectedWith', integrationId)}
                     </div>
                     <div>
                         <SecondaryButton onClick={() => void onProceed?.()}>
-                            <Text>Change</Text>
+                            <Text>{i18n('accountModal.change')}</Text>
                         </SecondaryButton>
                     </div>
                 </div>
@@ -73,7 +79,7 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                     `}
                 >
                     <ExternalLink
-                        href={getExplorerURL(account!)}
+                        href={getExplorerURL(account)}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -89,7 +95,7 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                                 fill="currentColor"
                             />
                         </svg>
-                        <Text>View on explorer</Text>
+                        <Text>{i18n('common.viewOnExplorer')}</Text>
                     </ExternalLink>
                     <ExternalLink
                         href="#"
@@ -99,7 +105,7 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
 
                             dispatch(
                                 ToasterAction.show({
-                                    title: 'Copied to clipboard',
+                                    title: i18n('common.copied'),
                                     type: ToastType.Success,
                                 })
                             )
@@ -117,14 +123,14 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                                 fill="currentColor"
                             />
                         </svg>
-                        <Text>{isCopied ? 'Copied!' : 'Copy address'}</Text>
+                        <Text>{i18n('accountModal.copy', isCopied)}</Text>
                     </ExternalLink>
                 </div>
                 <hr css={tw`my-3`} />
                 <div css={tw`flex`}>
                     <div css={tw`grow`}>
                         <Hint css={tw`pr-16`}>
-                            <Text>Show hidden rooms</Text>
+                            <Text>{i18n('accountModal.showHiddenRoomsLabel')}</Text>
                         </Hint>
                     </div>
                     <div css={tw`mt-2`}>
@@ -148,7 +154,7 @@ export default function AccountModal({ title = 'Account', onProceed, ...props }:
                 <div css={tw`flex`}>
                     <div css={tw`grow`}>
                         <Hint css={tw`pr-16`}>
-                            <Text>Retrieve hot wallet on login</Text>
+                            <Text>{i18n('accountModal.retrieveOnLoginLabel')}</Text>
                         </Hint>
                     </div>
                     <div css={tw`mt-2`}>

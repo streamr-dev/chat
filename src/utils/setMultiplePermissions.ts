@@ -22,13 +22,10 @@ interface AssignmentsMap {
 export default function setMultiplePermissions(
     roomId: RoomId,
     assignments: UserPermissionAssignment[],
-    { provider, requester, streamrClient, validate = true }: Options
+    { requester, streamrClient, validate = true }: Options
 ) {
     return call(function* () {
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         yield streamrClient.setPermissions({
             streamId: roomId,
@@ -103,7 +100,6 @@ export default function setMultiplePermissions(
             PermissionsAction.detectRoomMembers({
                 roomId,
                 streamrClient,
-                provider,
                 fingerprint: Flag.isDetectingMembers(roomId),
             })
         )

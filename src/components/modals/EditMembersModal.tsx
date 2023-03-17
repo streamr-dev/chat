@@ -1,13 +1,12 @@
 import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { Address } from '$/types'
+import { Address, PrivacySetting } from '$/types'
 import { PermissionsAction } from '$/features/permissions'
 import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import usePrivacyOption from '$/hooks/usePrivacyOption'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import CopyIcon from '$/icons/CopyIcon'
 import ExternalLinkIcon from '$/icons/ExternalLinkIcon'
@@ -38,9 +37,13 @@ import { AccountType } from '$/utils/getAccountType'
 import useCanGrant from '$/hooks/useCanGrant'
 import { ToasterAction } from '$/features/toaster'
 import { ToastType } from '$/components/Toast'
-import { PrivateRoomOption } from '$/components/PrivacySelectField'
+import i18n from '$/utils/i18n'
+import usePrivacy from '$/hooks/usePrivacy'
 
-export default function EditMembersModal({ title = 'Edit members', ...props }: Props) {
+export default function EditMembersModal({
+    title = i18n('editMembersModal.title'),
+    ...props
+}: Props) {
     const menuOpenRef = useRef<Record<string, boolean>>({})
 
     const canGrant = useCanGrant()
@@ -56,15 +59,13 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
 
     const selectedRoomId = useSelectedRoomId()
 
-    const provider = useWalletProvider()
-
     const requester = useWalletAccount()
 
     const streamrClient = useWalletClient()
 
     const onDeleteClick = useCallback(
         (member: Address) => {
-            if (!selectedRoomId || !provider || !requester || !streamrClient) {
+            if (!selectedRoomId || !requester || !streamrClient) {
                 return
             }
 
@@ -72,14 +73,13 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
                 PermissionsAction.removeMember({
                     roomId: selectedRoomId,
                     member,
-                    provider,
                     requester,
                     streamrClient,
                     fingerprint: Flag.isMemberBeingRemoved(selectedRoomId, member),
                 })
             )
         },
-        [dispatch, selectedRoomId, provider, requester, streamrClient]
+        [dispatch, selectedRoomId, requester, streamrClient]
     )
 
     const members = useRoomMembers(selectedRoomId)
@@ -90,11 +90,9 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
 
     const delegatedAccount = useDelegatedAccount()
 
-    const {
-        icon: PrivacyIcon,
-        desc: privacyDesc,
-        label: privacyLabel,
-    } = usePrivacyOption(selectedRoomId, PrivateRoomOption)
+    const privacy = usePrivacy(selectedRoomId, PrivacySetting.Private)
+
+    const PrivacyIcon = i18n('common.roomPrivacyIcon', privacy)
 
     return (
         <Modal {...props} title={title}>
@@ -116,9 +114,9 @@ export default function EditMembersModal({ title = 'Edit members', ...props }: P
                 </div>
                 <div>
                     <p css={tw`text-[0.75rem]`}>
-                        <strong>{privacyLabel} room</strong>
+                        <strong>{i18n('common.roomPrivacyLabel', privacy)} room</strong>
                         <br />
-                        {privacyDesc}
+                        {i18n('common.roomPrivacyDesc', privacy)}
                     </p>
                 </div>
             </div>
@@ -312,7 +310,7 @@ function Item({
                     [* + *]:ml-1
                 `}
             >
-                {justInvited && <Tag>Invite pending</Tag>}
+                {justInvited && <Tag>{i18n('common.invitePending')}</Tag>}
             </div>
             <div
                 {...props}
@@ -400,29 +398,16 @@ function Item({
                     >
                         {isAddingNickname ? (
                             <div>
-                                <Text>Nickname is only visible to you</Text>
+                                <Text>{i18n('editMembersModal.nicknameVisibilityNote')}</Text>
                             </div>
                         ) : (
                             <div>
                                 <Text>
-                                    {isCurrentAccount ? (
-                                        <>You</>
-                                    ) : (
-                                        <>
-                                            {isCurrentDelegatedAccount ? (
-                                                <>Your delegated account</>
-                                            ) : (
-                                                <>
-                                                    {accountType === AccountType.Main
-                                                        ? '[Main Account] '
-                                                        : accountType === AccountType.Unset
-                                                        ? '[Unset Account] '
-                                                        : null}
-                                                    Room member
-                                                </>
-                                            )}
-                                        </>
-                                    )}
+                                    {isCurrentAccount
+                                        ? i18n('editMembersModal.currentAccountLabel')
+                                        : isCurrentDelegatedAccount
+                                        ? i18n('editMembersModal.currentHotAccountLabel')
+                                        : i18n('editMembersModal.accountType', accountType)}
                                 </Text>
                             </div>
                         )}
@@ -477,7 +462,7 @@ function Item({
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                View on explorer
+                                {i18n('common.viewOnExplorer')}
                             </MenuLinkItem>
                             <MenuButtonItem
                                 icon={<CopyIcon />}
@@ -488,13 +473,13 @@ function Item({
 
                                     dispatch(
                                         ToasterAction.show({
-                                            title: 'Copied to clipboard',
+                                            title: i18n('common.copied'),
                                             type: ToastType.Success,
                                         })
                                     )
                                 }}
                             >
-                                Copy address
+                                {i18n('accountModal.copy')}
                             </MenuButtonItem>
                             <MenuSeparatorItem />
                             <MenuButtonItem
@@ -505,7 +490,9 @@ function Item({
                                     setMemberMenuOpen(false)
                                 }}
                             >
-                                {alias ? <>Edit nickname</> : <>Set nickname</>}
+                                {alias
+                                    ? i18n('editMembersModal.editNicknameLabel')
+                                    : i18n('editMembersModal.setNicknameLabel')}
                             </MenuButtonItem>
                             {canBeDeleted && !isCurrentAccount && (
                                 <>
@@ -527,7 +514,7 @@ function Item({
                                             setMemberMenuOpen(false)
                                         }}
                                     >
-                                        Delete member
+                                        {i18n('editMembersModal.deleteMemberLabel')}
                                     </MenuButtonItem>
                                 </>
                             )}

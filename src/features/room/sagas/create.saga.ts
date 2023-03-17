@@ -21,13 +21,13 @@ import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 import recover from '$/utils/recover'
+import i18n from '$/utils/i18n'
 
 function* onCreateAction({
     payload: {
         privacy,
         storage,
         params: { owner, ...params },
-        provider,
         requester,
         streamrClient,
     },
@@ -37,10 +37,7 @@ function* onCreateAction({
     let dismissToast = false
 
     try {
-        yield preflight({
-            provider,
-            requester,
-        })
+        yield preflight(requester)
 
         // `payload.id` is a partial room id. The real room id gets constructed by the
         // client from the given value and the account address that creates the stream.
@@ -77,9 +74,9 @@ function* onCreateAction({
                 tokenType.standard !== TokenStandard.ERC721
             ) {
                 yield toast({
-                    title: 'Only ERC-20s & ERC-721s are supported',
+                    title: i18n('roomCreateToast.unsupportedTokenTitle'),
                     type: ToastType.Error,
-                    okLabel: 'Ok',
+                    okLabel: i18n('common.ok'),
                 })
 
                 throw new Error('Unsupported standard')
@@ -87,7 +84,7 @@ function* onCreateAction({
         }
 
         tc = yield retoast(tc, {
-            title: `Creating "${params.name}"…`,
+            title: i18n('roomCreateToast.creatingTitle', params.name),
             type: ToastType.Processing,
         })
 
@@ -112,7 +109,6 @@ function* onCreateAction({
                 roomId: stream.id,
                 tokenIds,
                 minRequiredBalance,
-                provider,
                 streamrClient,
                 tokenType,
                 stakingEnabled,
@@ -121,7 +117,7 @@ function* onCreateAction({
 
         if (privacy === PrivacySetting.Public) {
             tc = yield retoast(tc, {
-                title: `Making "${params.name}" public…`,
+                title: i18n('roomCreateToast.publishingTitle', params.name),
                 type: ToastType.Processing,
             })
 
@@ -135,8 +131,10 @@ function* onCreateAction({
                     })
                 },
                 {
-                    title: `Failed to make "${params.name}" public`,
-                    desc: 'Would you like to try again? If you click "No" the room will stay private.',
+                    title: i18n('publishRoomRecoverToast.title', params.name),
+                    desc: i18n('publishRoomRecoverToast.desc'),
+                    okLabel: i18n('publishRoomRecoverToast.okLabel'),
+                    cancelLabel: i18n('publishRoomRecoverToast.cancelLabel'),
                 }
             )
         }
@@ -150,7 +148,7 @@ function* onCreateAction({
         dismissToast = false
 
         tc = yield retoast(tc, {
-            title: `Room "${params.name}" created`,
+            title: i18n('roomCreateToast.successTitle', params.name),
             type: ToastType.Success,
         })
 
@@ -162,7 +160,6 @@ function* onCreateAction({
                     roomId: stream.id,
                     address: STREAMR_STORAGE_NODE_GERMANY,
                     state: true,
-                    provider,
                     requester,
                     streamrClient,
                     fingerprint: Flag.isTogglingStorageNode(
@@ -178,7 +175,7 @@ function* onCreateAction({
         dismissToast = false
 
         tc = yield retoast(tc, {
-            title: `Failed to create "${params.name}"`,
+            title: i18n('roomCreateToast.failureTitle', params.name),
             type: ToastType.Error,
         })
     } finally {

@@ -1,6 +1,6 @@
 import { ForwardedRef, forwardRef, TextareaHTMLAttributes, useEffect, useRef } from 'react'
 import tw from 'twin.macro'
-import useRefs from 'streamr-ui/hooks/useRefs'
+import { useRefs } from 'streamr-ui/hooks'
 
 interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
     onWidthOffsetChange?: (value: number) => void
