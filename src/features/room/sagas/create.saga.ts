@@ -1,6 +1,6 @@
 import db from '$/utils/db'
 import { put, takeEvery } from 'redux-saga/effects'
-import {
+import StreamrClient, {
     Stream,
     StreamMetadata,
     StreamPermission,
@@ -22,6 +22,7 @@ import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 function* onCreateAction({
     payload: {
@@ -29,7 +30,6 @@ function* onCreateAction({
         storage,
         params: { owner, ...params },
         requester,
-        streamrClient,
     },
 }: ReturnType<typeof RoomAction.create>) {
     let tc: Controller | undefined
@@ -90,6 +90,8 @@ function* onCreateAction({
         dismissToast = true
 
         yield preflight(requester)
+
+        const streamrClient: StreamrClient = yield getTransactionalClient()
 
         const stream = yield* recover(function* () {
             const s: Stream = yield streamrClient.createStream({

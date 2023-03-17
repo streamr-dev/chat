@@ -58,6 +58,7 @@ export default function createStore(reducer = defaultReducer) {
                         ignoredPaths: [
                             'wallet.provider',
                             'wallet.client',
+                            'wallet.transactionalClient',
                             'delegation.client',
                             'misc.navigate',
                             'anon.rooms',

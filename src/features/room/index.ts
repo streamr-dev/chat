@@ -44,7 +44,6 @@ export const RoomAction = {
             params: IRoom
             privacy: PrivacySetting
             storage: boolean
-            streamrClient: StreamrClient
         }
     >('room: create'),
 
