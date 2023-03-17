@@ -2,7 +2,7 @@ import { Address, OptionalAddress, State } from '$/types'
 import { useSelector } from 'react-redux'
 
 export function tokenMetadataCacheKey(tokenAddress: Address, tokenIds: string[]) {
-    return JSON.stringify([tokenAddress.toLowerCase(), ...[...tokenIds].sort()])
+    return [tokenAddress.toLowerCase(), ...[...tokenIds].sort()]
 }
 
 export function selectTokenMetadata(tokenAddress: OptionalAddress, tokenIds: string[]) {
@@ -10,7 +10,8 @@ export function selectTokenMetadata(tokenAddress: OptionalAddress, tokenIds: str
         return () => undefined
     }
 
-    return ({ misc }: State) => misc.tokenMetadatas[tokenMetadataCacheKey(tokenAddress, tokenIds)]
+    return ({ misc }: State) =>
+        misc.tokenMetadatas[JSON.stringify(tokenMetadataCacheKey(tokenAddress, tokenIds))]
 }
 
 export default function useTokenMetadata(tokenAddress: OptionalAddress, tokenIds: string[]) {

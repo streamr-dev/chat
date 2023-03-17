@@ -107,7 +107,8 @@ const reducer = createReducer(initialState, (b) => {
     b.addCase(
         MiscAction.cacheTokenMetadata,
         (state, { payload: { tokenAddress, tokenIds, tokenMetadata } }) => {
-            state.tokenMetadatas[tokenMetadataCacheKey(tokenAddress, tokenIds)] = tokenMetadata
+            state.tokenMetadatas[JSON.stringify(tokenMetadataCacheKey(tokenAddress, tokenIds))] =
+                tokenMetadata
         }
     )
 })

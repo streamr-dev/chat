@@ -5,7 +5,6 @@ import PrimaryButton from '$/components/PrimaryButton'
 import SecondaryButton from '$/components/SecondaryButton'
 import Spinner from '$/components/Spinner'
 import Text from '$/components/Text'
-import Avatar from '$/components/Avatar'
 import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { TokenInfo } from '$/features/misc/types'
@@ -28,6 +27,8 @@ import uniq from 'lodash/uniq'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { parseUnits } from '@ethersproject/units'
 import i18n from '$/utils/i18n'
+import TokenStandardLabel from '$/components/TokenStandardLabel'
+import TokenLogo from '$/components/TokenLogo'
 
 interface Gate {
     tokenAddress: Address
@@ -269,10 +270,6 @@ interface TokenProps {
 function Token({ info, onChangeClick }: TokenProps) {
     const isFetchingTokenStandard = useFlag(Flag.isFetchingTokenStandard(info.address))
 
-    const standard = useTokenStandard(info.address)
-
-    const dispatch = useDispatch()
-
     return (
         <div
             css={tw`
@@ -288,87 +285,22 @@ function Token({ info, onChangeClick }: TokenProps) {
                 text-[14px]
             `}
         >
-            {'symbol' in info ? (
-                <>
-                    <img
-                        src={`https://polygonscan.com/token/images/${info.logo}`}
-                        alt={info.symbol}
-                        width="32"
-                        height="32"
-                    />
-                    <div>
+            <TokenLogo tokenAddress={info.address} />
+            <div>
+                {'symbol' in info ? (
+                    <>
                         <div css={tw`font-semibold`}>
                             <Text>{info.symbol}</Text>
                         </div>
                         <div css={tw`text-[#59799C]`}>
                             <Text>{info.name}</Text>
                         </div>
-                    </div>
-                </>
-            ) : (
-                <>
-                    <Avatar
-                        seed={info.address.toLowerCase()}
-                        css={tw`
-                            w-8
-                            h-8
-                            mr-3
-                        `}
-                    />
-                    <div>{trunc(info.address)}</div>
-                </>
-            )}
-            {!!standard && (
-                <>
-                    {standard === TokenStandard.Unknown ? (
-                        <button
-                            type="button"
-                            css={tw`
-                                bg-[#59799C]
-                                ml-6
-                                px-1
-                                rounded-sm
-                                select-none
-                                text-[10px]
-                                text-white
-                                appearance-none
-                            `}
-                            onClick={() => {
-                                dispatch(
-                                    MiscAction.setTokenStandard({
-                                        address: info.address,
-                                        standard: undefined,
-                                    })
-                                )
-
-                                dispatch(
-                                    MiscAction.fetchTokenStandard({
-                                        address: info.address,
-                                        showLoadingToast: true,
-                                        fingerprint: Flag.isFetchingTokenStandard(info.address),
-                                    })
-                                )
-                            }}
-                        >
-                            <Text>{i18n('common.tokenStandardLabel', TokenStandard.Unknown)}</Text>
-                        </button>
-                    ) : (
-                        <div
-                            css={tw`
-                                bg-[#59799C]
-                                ml-6
-                                px-1
-                                rounded-sm
-                                select-none
-                                text-[10px]
-                                text-white
-                            `}
-                        >
-                            <Text>{i18n('common.tokenStandardLabel', standard)}</Text>
-                        </div>
-                    )}
-                </>
-            )}
+                    </>
+                ) : (
+                    trunc(info.address)
+                )}
+            </div>
+            <TokenStandardLabel tokenAddress={info.address} css={tw`ml-6`} />
             <div css={tw`grow`} />
             {isFetchingTokenStandard ? (
                 <div
