@@ -1,6 +1,6 @@
 import { ToastType } from '$/components/Toast'
 import { MiscAction } from '$/features/misc'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { Controller } from '$/features/toaster/helpers/toast'
 import { InterfaceId, TokenStandard } from '$/features/tokenGatedRooms/types'
 import { selectTokenStandard } from '$/hooks/useTokenStandard'
 import { call, put, select } from 'redux-saga/effects'
@@ -11,6 +11,7 @@ import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
 import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
 import { Address } from '$/types'
 import getWalletProvider from '$/utils/getWalletProvider'
+import retoast from '$/features/toaster/helpers/retoast'
 
 export default function fetchTokenStandard({
     address,
@@ -26,7 +27,7 @@ export default function fetchTokenStandard({
 
             if (!currentStandard) {
                 if (showLoadingToast) {
-                    tc = yield toast({
+                    tc = yield retoast(tc, {
                         title: 'Loading token info…',
                         type: ToastType.Processing,
                     })

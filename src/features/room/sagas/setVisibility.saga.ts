@@ -1,10 +1,10 @@
 import { ToastType } from '$/components/Toast'
 import { RoomAction } from '$/features/room'
-import toast from '$/features/toaster/helpers/toast'
+import { ToasterAction } from '$/features/toaster'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
-import { takeEvery } from 'redux-saga/effects'
+import { put, takeEvery } from 'redux-saga/effects'
 
 function* onSetVisibilityAction({
     payload: { roomId, owner, visible },
@@ -16,10 +16,12 @@ function* onSetVisibilityAction({
     } catch (e) {
         handleError(e)
 
-        yield toast({
-            title: i18n('roomVisibilityToast.failedToToggleTitle'),
-            type: ToastType.Error,
-        })
+        yield put(
+            ToasterAction.show({
+                title: i18n('roomVisibilityToast.failedToToggleTitle'),
+                type: ToastType.Error,
+            })
+        )
     }
 }
 

@@ -1,7 +1,7 @@
 import { ToastType } from '$/components/Toast'
 import { ZeroAddress } from '$/consts'
 import { PermissionsAction } from '$/features/permissions'
-import toast from '$/features/toaster/helpers/toast'
+import { ToasterAction } from '$/features/toaster'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getDisplayUsername from '$/utils/getDisplayUsername'
 import getWalletProvider from '$/utils/getWalletProvider'
@@ -9,7 +9,7 @@ import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import isSameAddress from '$/utils/isSameAddress'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { call } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import type { UserPermissionAssignment } from 'streamr-client'
 
 export default function removeMember({
@@ -47,17 +47,21 @@ export default function removeMember({
                 requester,
             })
 
-            yield toast({
-                title: i18n('removeMemberToast.successTitle', displayName),
-                type: ToastType.Success,
-            })
+            yield put(
+                ToasterAction.show({
+                    title: i18n('removeMemberToast.successTitle', displayName),
+                    type: ToastType.Success,
+                })
+            )
         } catch (e) {
             handleError(e)
 
-            yield toast({
-                title: i18n('removeMemberToast.failureTitle', displayName),
-                type: ToastType.Error,
-            })
+            yield put(
+                ToasterAction.show({
+                    title: i18n('removeMemberToast.failureTitle', displayName),
+                    type: ToastType.Error,
+                })
+            )
         }
     })
 }

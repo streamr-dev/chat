@@ -5,9 +5,9 @@ import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
-import toast from '$/features/toaster/helpers/toast'
 import i18n from '$/utils/i18n'
 import getTransactionalClient from '$/utils/getTransactionalClient'
+import { ToasterAction } from '$/features/toaster'
 
 function* onRegisterInviteAction({
     payload: { roomId, invitee },
@@ -34,10 +34,12 @@ function* onRegisterInviteAction({
             return false
         })
 
-        yield toast({
-            title: i18n('gotInviteToast.title'),
-            desc: i18n('gotInviteToast.desc'),
-        })
+        yield put(
+            ToasterAction.show({
+                title: i18n('gotInviteToast.title'),
+                desc: i18n('gotInviteToast.desc'),
+            })
+        )
 
         yield put(
             RoomAction.fetch({

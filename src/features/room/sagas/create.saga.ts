@@ -16,13 +16,14 @@ import { TokenStandard, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { MiscAction } from '$/features/misc'
 import { RoomMetadata } from '$/utils/getRoomMetadata'
 import { BigNumber } from 'ethers'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
+import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getTransactionalClient from '$/utils/getTransactionalClient'
+import { ToasterAction } from '$/features/toaster'
 
 function* onCreateAction({
     payload: {
@@ -72,11 +73,13 @@ function* onCreateAction({
                 tokenType.standard !== TokenStandard.ERC20 &&
                 tokenType.standard !== TokenStandard.ERC721
             ) {
-                yield toast({
-                    title: i18n('roomCreateToast.unsupportedTokenTitle'),
-                    type: ToastType.Error,
-                    okLabel: i18n('common.ok'),
-                })
+                yield put(
+                    ToasterAction.show({
+                        title: i18n('roomCreateToast.unsupportedTokenTitle'),
+                        type: ToastType.Error,
+                        okLabel: i18n('common.ok'),
+                    })
+                )
 
                 throw new Error('Unsupported standard')
             }
