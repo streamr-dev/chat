@@ -6,13 +6,19 @@ import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getWalletProvider from '$/utils/getWalletProvider'
 import handleError from '$/utils/handleError'
 import isSameAddress from '$/utils/isSameAddress'
+import networkPreflight from '$/utils/networkPreflight'
 import { call, delay, put, race, select } from 'redux-saga/effects'
 
 export default function lookup({
     delegated,
+    checkNetwork = false,
 }: ReturnType<typeof DelegationAction.lookup>['payload']) {
     return call(function* () {
         try {
+            if (checkNetwork) {
+                yield networkPreflight()
+            }
+
             const provider = yield* getWalletProvider()
 
             const contract = getDelegatedAccessRegistry(provider)
