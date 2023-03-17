@@ -8,7 +8,7 @@ import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { Contract, providers, BigNumber } from 'ethers'
 import { call, race, retry, spawn, take } from 'redux-saga/effects'
-import StreamrClient, { StreamPermission } from 'streamr-client'
+import { StreamPermission } from 'streamr-client'
 import { abi as erc20abi } from '$/contracts/Factories/ERC20PolicyFactory.sol/ERC20PolicyFactory.json'
 import { abi as erc721abi } from '$/contracts/Factories/ERC721PolicyFactory.sol/ERC721PolicyFactory.json'
 import { abi as erc777abi } from '$/contracts/Factories/ERC777PolicyFactory.sol/ERC777PolicyFactory.json'
@@ -63,7 +63,6 @@ interface Params {
     minRequiredBalance?: string
     tokenIds: string[]
     stakingEnabled: boolean
-    streamrClient: StreamrClient
 }
 
 export default function createTokenGatePolicy({
@@ -74,7 +73,6 @@ export default function createTokenGatePolicy({
     minRequiredBalance,
     tokenIds,
     stakingEnabled,
-    streamrClient,
 }: Params) {
     return spawn(function* () {
         yield race([
@@ -92,8 +90,6 @@ export default function createTokenGatePolicy({
 
                     dismissToast = true
 
-                    yield preflight(requester)
-
                     const factory = Factory[tokenType.standard]
 
                     if (!factory) {
@@ -101,6 +97,8 @@ export default function createTokenGatePolicy({
                     }
 
                     const { abi, address } = factory
+
+                    yield preflight(requester)
 
                     const provider = yield* getWalletProvider()
 
@@ -190,9 +188,7 @@ export default function createTokenGatePolicy({
                                     },
                                 ],
                                 {
-                                    provider,
                                     requester,
-                                    streamrClient,
                                 }
                             )
                         },

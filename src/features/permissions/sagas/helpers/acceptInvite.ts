@@ -8,13 +8,11 @@ import { call } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import delegationPreflight from '$/utils/delegationPreflight'
 import i18n from '$/utils/i18n'
-import getWalletProvider from '$/utils/getWalletProvider'
 
 export default function acceptInvite({
     roomId,
     member,
     requester,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.acceptInvite>['payload']) {
     return call(function* () {
         let tc: Controller | undefined
@@ -30,8 +28,6 @@ export default function acceptInvite({
                 title: i18n('acceptInviteToast.joiningTitle'),
                 type: ToastType.Processing,
             })
-
-            const provider = yield* getWalletProvider()
 
             yield setMultiplePermissions(
                 roomId,
@@ -51,9 +47,7 @@ export default function acceptInvite({
                     },
                 ],
                 {
-                    provider,
                     requester,
-                    streamrClient,
                 }
             )
 

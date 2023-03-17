@@ -16,7 +16,6 @@ export default function removeMember({
     roomId,
     member,
     requester,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.removeMember>['payload']) {
     return call(function* () {
         const displayName: string = yield getDisplayUsername(member)
@@ -45,9 +44,7 @@ export default function removeMember({
             }
 
             yield setMultiplePermissions(roomId, assignments, {
-                provider,
                 requester,
-                streamrClient,
             })
 
             yield toast({

@@ -6,6 +6,7 @@ import StreamrClient from 'streamr-client'
 const initialState: WalletState = {
     account: undefined,
     client: undefined,
+    transactionalClient: undefined,
     integrationId:
         (localStorage.getItem(StorageKey.WalletIntegrationId) as WalletIntegrationId) || undefined,
 }
@@ -22,6 +23,10 @@ export const WalletAction = {
     connect: createAction<WalletIntegrationId>('wallet: connect'),
 
     connectEagerly: createAction('wallet: connect eagerly'),
+
+    setTransactionalClient: createAction<{ streamrClient: StreamrClient }>(
+        'wallet: set transactional client'
+    ),
 }
 
 const reducer = createReducer(initialState, (builder) => {
@@ -30,11 +35,23 @@ const reducer = createReducer(initialState, (builder) => {
     })
 
     builder.addCase(WalletAction.changeAccount, (state, { payload }) => {
-        Object.assign(state, {
-            client: payload?.streamrClient,
-            account: payload?.account,
-        })
+        state.client = payload?.streamrClient
+
+        state.account = payload?.account
+
+        /**
+         * Let's use the initial client instance for transactions. It'll get
+         * overwritten when the network conditions change.
+         */
+        state.transactionalClient = state.client
     })
+
+    builder.addCase(
+        WalletAction.setTransactionalClient,
+        (state, { payload: { streamrClient } }) => {
+            state.transactionalClient = streamrClient
+        }
+    )
 })
 
 export default reducer

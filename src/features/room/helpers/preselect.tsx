@@ -44,7 +44,6 @@ function selectRoom(roomId: RoomId, owner: Address) {
 export default function preselect({
     roomId,
     account,
-    streamrClient,
 }: ReturnType<typeof RoomAction.preselect>['payload']) {
     return call(function* () {
         if (!account) {
@@ -137,7 +136,7 @@ export default function preselect({
              * we're gonna make efforts to pin/bookmark it.
              */
 
-            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+            const stream: Stream | null = yield fetchStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)

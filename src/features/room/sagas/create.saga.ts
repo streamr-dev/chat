@@ -1,6 +1,6 @@
 import db from '$/utils/db'
 import { put, takeEvery } from 'redux-saga/effects'
-import {
+import StreamrClient, {
     Stream,
     StreamMetadata,
     StreamPermission,
@@ -22,6 +22,7 @@ import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 function* onCreateAction({
     payload: {
@@ -29,7 +30,6 @@ function* onCreateAction({
         storage,
         params: { owner, ...params },
         requester,
-        streamrClient,
     },
 }: ReturnType<typeof RoomAction.create>) {
     let tc: Controller | undefined
@@ -37,11 +37,10 @@ function* onCreateAction({
     let dismissToast = false
 
     try {
-        yield preflight(requester)
-
-        // `payload.id` is a partial room id. The real room id gets constructed by the
-        // client from the given value and the account address that creates the stream.
-
+        /**
+         * `payload.id` is a partial room id. The real room id gets constructed by the
+         * client from the given value and the account address that creates the stream.
+         */
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
         const {
@@ -90,6 +89,10 @@ function* onCreateAction({
 
         dismissToast = true
 
+        yield preflight(requester)
+
+        const streamrClient: StreamrClient = yield getTransactionalClient()
+
         const stream = yield* recover(function* () {
             const s: Stream = yield streamrClient.createStream({
                 id,
@@ -109,7 +112,6 @@ function* onCreateAction({
                 roomId: stream.id,
                 tokenIds,
                 minRequiredBalance,
-                streamrClient,
                 tokenType,
                 stakingEnabled,
             })
@@ -161,7 +163,6 @@ function* onCreateAction({
                     address: STREAMR_STORAGE_NODE_GERMANY,
                     state: true,
                     requester,
-                    streamrClient,
                     fingerprint: Flag.isTogglingStorageNode(
                         stream.id,
                         STREAMR_STORAGE_NODE_GERMANY

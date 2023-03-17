@@ -8,9 +8,7 @@ import i18n from '$/utils/i18n'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { put } from 'redux-saga/effects'
 
-function* onUnpinAction({
-    payload: { roomId, requester, streamrClient },
-}: ReturnType<typeof RoomAction.unpin>) {
+function* onUnpinAction({ payload: { roomId, requester } }: ReturnType<typeof RoomAction.unpin>) {
     try {
         yield db.rooms
             .where({ owner: requester.toLowerCase(), id: roomId })
@@ -20,7 +18,6 @@ function* onUnpinAction({
             RoomAction.sync({
                 roomId,
                 requester,
-                streamrClient,
                 fingerprint: Flag.isSyncingRoom(roomId),
             })
         )

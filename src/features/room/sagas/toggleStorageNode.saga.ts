@@ -6,12 +6,16 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
+import StreamrClient from 'streamr-client'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 function* onToggleStorageNodeAction({
-    payload: { roomId, address, state, requester, streamrClient },
+    payload: { roomId, address, state, requester },
 }: ReturnType<typeof RoomAction.toggleStorageNode>) {
     try {
         yield preflight(requester)
+
+        const streamrClient: StreamrClient = yield getTransactionalClient()
 
         yield put(
             RoomAction.setTogglingStorageNode({

@@ -3,6 +3,7 @@
     "private": true,
     "version": "0.0.0",
     "scripts": {
+        "check": "tsc --noEmit && npm run lint && npm test",
         "build": "tsc && vite build",
         "lint": "eslint . --ext .ts,.tsx",
         "preview": "vite preview",

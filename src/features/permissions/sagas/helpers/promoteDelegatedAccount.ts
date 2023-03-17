@@ -1,24 +1,21 @@
 import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
 import toast from '$/features/toaster/helpers/toast'
+import { selectWalletAccount } from '$/features/wallet/selectors'
 import { Address } from '$/types'
-import getWalletProvider from '$/utils/getWalletProvider'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { call } from 'redux-saga/effects'
+import { call, select } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 export default function promoteDelegatedAccount({
     roomId,
     delegatedAddress,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.promoteDelegatedAccount>['payload']) {
     return call(function* () {
         try {
-            const requester: Address = yield streamrClient.getAddress()
-
-            const provider = yield* getWalletProvider()
+            const requester: Address = yield select(selectWalletAccount)
 
             yield setMultiplePermissions(
                 roomId,
@@ -29,9 +26,7 @@ export default function promoteDelegatedAccount({
                     },
                 ],
                 {
-                    provider,
                     requester,
-                    streamrClient,
                 }
             )
 

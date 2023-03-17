@@ -15,7 +15,6 @@ import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
-import getWalletProvider from '$/utils/getWalletProvider'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -64,7 +63,6 @@ export default function addMember({
     roomId,
     member,
     requester,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.addMember>['payload']) {
     return call(function* () {
         let tc: Controller | undefined
@@ -85,7 +83,7 @@ export default function addMember({
                 throw new Error('Address could not be resolved')
             }
 
-            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+            const stream: Stream | null = yield fetchStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)
@@ -97,8 +95,6 @@ export default function addMember({
                 throw new MemberExistsError(member)
             }
 
-            const provider = yield* getWalletProvider()
-
             yield setMultiplePermissions(
                 roomId,
                 [
@@ -108,9 +104,7 @@ export default function addMember({
                     },
                 ],
                 {
-                    provider,
                     requester,
-                    streamrClient,
                 }
             )
 

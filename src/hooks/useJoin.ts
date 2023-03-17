@@ -3,7 +3,7 @@ import { Flag } from '$/features/flag/types'
 import { PermissionsAction } from '$/features/permissions'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import usePrivacy from '$/hooks/usePrivacy'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import { PrivacySetting } from '$/types'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
@@ -17,12 +17,10 @@ export default function useJoin() {
 
     const requester = useWalletAccount()
 
-    const streamrClient = useWalletClient()
-
     const privacy = usePrivacy(roomId)
 
     const cb = useCallback(() => {
-        if (!roomId || !delegatedAddress || !requester || !streamrClient) {
+        if (!roomId || !delegatedAddress || !requester) {
             return
         }
 
@@ -31,11 +29,10 @@ export default function useJoin() {
                 roomId,
                 delegatedAddress,
                 requester,
-                streamrClient,
                 fingerprint: Flag.isDelegatedAccountBeingPromoted(roomId, delegatedAddress),
             })
         )
-    }, [roomId, delegatedAddress, requester, streamrClient])
+    }, [roomId, delegatedAddress, requester])
 
     if (privacy === PrivacySetting.TokenGated) {
         return cb

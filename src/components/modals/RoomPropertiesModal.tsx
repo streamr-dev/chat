@@ -17,7 +17,7 @@ import Submit from '../Submit'
 import Text from '../Text'
 import Toggle from '../Toggle'
 import Modal, { Props as ModalProps } from './Modal'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
 import TextField from '$/components/TextField'
 import i18n from '$/utils/i18n'
@@ -53,12 +53,10 @@ export default function RoomPropertiesModal({
 
     const dispatch = useDispatch()
 
-    const streamrClient = useWalletClient()
-
     const requester = useWalletAccount()
 
     function onStorageToggleClick() {
-        if (!selectedRoomId || isStorageBusy || !requester || !streamrClient) {
+        if (!selectedRoomId || isStorageBusy || !requester) {
             return
         }
 
@@ -68,7 +66,6 @@ export default function RoomPropertiesModal({
                 address: STREAMR_STORAGE_NODE_GERMANY,
                 state: !isStorageEnabled,
                 requester,
-                streamrClient,
                 fingerprint: Flag.isTogglingStorageNode(
                     selectedRoomId,
                     STREAMR_STORAGE_NODE_GERMANY
@@ -78,14 +75,13 @@ export default function RoomPropertiesModal({
     }
 
     useEffect(() => {
-        if (!open || !selectedRoomId || !streamrClient) {
+        if (!open || !selectedRoomId) {
             return
         }
 
         dispatch(
             RoomAction.getStorageNodes({
                 roomId: selectedRoomId,
-                streamrClient,
                 fingerprint: Flag.isGettingStorageNodes(selectedRoomId),
             })
         )

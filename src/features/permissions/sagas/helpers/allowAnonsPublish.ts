@@ -6,16 +6,16 @@ import retoast from '$/features/toaster/helpers/retoast'
 import { Controller } from '$/features/toaster/helpers/toast'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import preflight from '$/utils/preflight'
 import { call } from 'redux-saga/effects'
-import { Stream, StreamPermission } from 'streamr-client'
+import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
 
 export default function allowAnonsPublish({
     roomId,
     requester,
-    streamrClient,
 }: ReturnType<typeof PermissionsAction.allowAnonsPublish>['payload']) {
     return call(function* () {
         let t: ToastController<typeof Toast> | undefined
@@ -55,13 +55,15 @@ export default function allowAnonsPublish({
                 return
             }
 
-            yield preflight(requester)
-
-            const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+            const stream: Stream | null = yield fetchStream(roomId)
 
             if (!stream) {
                 throw new RoomNotFoundError(roomId)
             }
+
+            yield preflight(requester)
+
+            const streamrClient: StreamrClient = yield getTransactionalClient()
 
             yield streamrClient.setPermissions({
                 streamId: roomId,

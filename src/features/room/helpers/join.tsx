@@ -1,10 +1,9 @@
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { selectWalletClient } from '$/features/wallet/selectors'
 import { Address } from '$/types'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
-import { call, put, select } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import { BigNumber, Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
@@ -25,6 +24,7 @@ import tokenIdPreflight from '$/utils/tokenIdPreflight'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -155,50 +155,47 @@ export default function join(
                 type: ToastType.Processing,
             })
 
-            const streamrClient: StreamrClient | undefined = yield select(selectWalletClient)
+            const streamrClient: StreamrClient = yield getTransactionalClient()
 
-            if (streamrClient) {
-                yield* recover(
-                    function* () {
-                        yield waitForPermissions(streamrClient, roomId, (assignments) => {
-                            for (let i = 0; i < assignments.length; i++) {
-                                const assignment = assignments[i]
+            yield* recover(
+                function* () {
+                    yield waitForPermissions(streamrClient, roomId, (assignments) => {
+                        for (let i = 0; i < assignments.length; i++) {
+                            const assignment = assignments[i]
 
-                                if ('public' in assignment) {
-                                    continue
-                                }
-
-                                if (
-                                    isSameAddress(assignment.user, requester) &&
-                                    assignment.permissions.length
-                                ) {
-                                    return true
-                                }
+                            if ('public' in assignment) {
+                                continue
                             }
 
-                            return false
-                        })
-                    },
-                    {
-                        title: i18n('checkTokenGatedPermissionsRecoverToast.title'),
-                        desc: i18n('checkTokenGatedPermissionsRecoverToast.desc'),
-                        okLabel: i18n('checkTokenGatedPermissionsRecoverToast.okLabel'),
-                        cancelLabel: i18n('checkTokenGatedPermissionsRecoverToast.cancelLabel'),
-                    }
-                )
+                            if (
+                                isSameAddress(assignment.user, requester) &&
+                                assignment.permissions.length
+                            ) {
+                                return true
+                            }
+                        }
 
-                yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
-
-                yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
-
-                yield put(
-                    RoomAction.fetch({
-                        roomId,
-                        requester,
-                        streamrClient,
+                        return false
                     })
-                )
-            }
+                },
+                {
+                    title: i18n('checkTokenGatedPermissionsRecoverToast.title'),
+                    desc: i18n('checkTokenGatedPermissionsRecoverToast.desc'),
+                    okLabel: i18n('checkTokenGatedPermissionsRecoverToast.okLabel'),
+                    cancelLabel: i18n('checkTokenGatedPermissionsRecoverToast.cancelLabel'),
+                }
+            )
+
+            yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
+
+            yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
+
+            yield put(
+                RoomAction.fetch({
+                    roomId,
+                    requester,
+                })
+            )
 
             yield onToast({
                 title: i18n('joinTokenGatedRoomToast.successTitle'),

@@ -17,10 +17,10 @@ import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
 
 function* onRenameAction({
-    payload: { roomId, name, requester, streamrClient },
+    payload: { roomId, name, requester },
 }: ReturnType<typeof RoomAction.rename>) {
     try {
-        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+        const stream: Stream | null = yield fetchStream(roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)
@@ -47,7 +47,6 @@ function* onRenameAction({
                         RoomAction.sync({
                             roomId,
                             requester,
-                            streamrClient,
                             fingerprint: Flag.isSyncingRoom(roomId),
                         })
                     )

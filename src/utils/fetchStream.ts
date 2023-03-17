@@ -6,14 +6,17 @@ import { selectPrivacy } from '$/hooks/usePrivacy'
 import { PrivacySetting } from '$/types'
 import fetchPrivacy from '$/utils/fetchPrivacy'
 import getRoomMetadata from '$/utils/getRoomMetadata'
+import getTransactionalClient from '$/utils/getTransactionalClient'
 import handleError from '$/utils/handleError'
 import { call, fork, put, select } from 'redux-saga/effects'
 import type StreamrClient from 'streamr-client'
 import type { Stream } from 'streamr-client'
 
-export default function fetchStream(roomId: RoomId, streamrClient: StreamrClient) {
+export default function fetchStream(roomId: RoomId) {
     return call(function* () {
         try {
+            const streamrClient: StreamrClient = yield getTransactionalClient()
+
             const stream: Stream = yield streamrClient.getStream(roomId)
 
             const {

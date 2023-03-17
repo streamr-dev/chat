@@ -4,7 +4,6 @@ import { RoomId } from '$/features/room/types'
 import { Address, IFingerprinted, PreflightParams } from '$/types'
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { all } from 'redux-saga/effects'
-import type StreamrClient from 'streamr-client'
 import { StreamPermission } from 'streamr-client'
 
 const initialState: PermissionsState = {
@@ -13,9 +12,9 @@ const initialState: PermissionsState = {
 }
 
 export const PermissionsAction = {
-    detectRoomMembers: createAction<
-        IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }
-    >('permissions: detect room members'),
+    detectRoomMembers: createAction<IFingerprinted & { roomId: RoomId }>(
+        'permissions: detect room members'
+    ),
 
     setRoomMembers: createAction<{ roomId: RoomId; members: IMember[] }>(
         'permissions: set room members'
@@ -26,21 +25,18 @@ export const PermissionsAction = {
             PreflightParams & {
                 roomId: RoomId
                 member: Address
-                streamrClient: StreamrClient
             }
     >('permissions: remove member'),
 
-    addMember: createAction<
-        IFingerprinted &
-            PreflightParams & { roomId: RoomId; member: Address; streamrClient: StreamrClient }
-    >('permissions: add member'),
+    addMember: createAction<IFingerprinted & PreflightParams & { roomId: RoomId; member: Address }>(
+        'permissions: add member'
+    ),
 
     acceptInvite: createAction<
         IFingerprinted &
             PreflightParams & {
                 roomId: RoomId
                 member: Address
-                streamrClient: StreamrClient
             }
     >('permissions: accept invite'),
 
@@ -49,7 +45,6 @@ export const PermissionsAction = {
             PreflightParams & {
                 roomId: RoomId
                 delegatedAddress: Address
-                streamrClient: StreamrClient
             }
     >('permissions: promote delegated account'),
 
@@ -58,7 +53,6 @@ export const PermissionsAction = {
             PreflightParams & {
                 roomId: RoomId
                 delegatedAddress: Address
-                streamrClient: StreamrClient
             }
     >('permissions: token gated promote delegated account'),
 
@@ -67,14 +61,17 @@ export const PermissionsAction = {
             roomId: RoomId
             address: Address
             permission: StreamPermission
-            streamrClient: StreamrClient
         }
     >('permissions: fetch permission'),
 
-    fetchPermissions: createAction<
-        IFingerprinted & { roomId: RoomId; address: Address; streamrClient: StreamrClient }
-    >('permissions: fetch permissions'),
+    fetchPermissions: createAction<IFingerprinted & { roomId: RoomId; address: Address }>(
+        'permissions: fetch permissions'
+    ),
 
+    /**
+     * @FIXME: This shoule be named better. `cachePermissions` is better. Atm we don't know
+     * if it's gonna trigger some network traffic or not.
+     */
     setPermissions: createAction<{
         roomId: RoomId
         address: Address
@@ -90,7 +87,6 @@ export const PermissionsAction = {
         IFingerprinted &
             PreflightParams & {
                 roomId: RoomId
-                streamrClient: StreamrClient
             }
     >('permissions: allow anons publish'),
 }

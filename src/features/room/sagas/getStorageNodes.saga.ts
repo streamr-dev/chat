@@ -7,10 +7,10 @@ import takeEveryUnique from '$/utils/takeEveryUnique'
 import fetchStream from '$/utils/fetchStream'
 
 function* onGetStorageNodesAction({
-    payload: { roomId, streamrClient },
+    payload: { roomId },
 }: ReturnType<typeof RoomAction.getStorageNodes>) {
     try {
-        const stream: Stream | null = yield fetchStream(roomId, streamrClient)
+        const stream: Stream | null = yield fetchStream(roomId)
 
         if (!stream) {
             throw new RoomNotFoundError(roomId)

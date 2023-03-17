@@ -1,6 +1,6 @@
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import { Prefix } from '$/types'
 import pathnameToRoomIdPartials from '$/utils/pathnameToRoomIdPartials'
 import { useEffect, useRef } from 'react'
@@ -12,8 +12,6 @@ export default function usePreselectRoomEffect() {
 
     const dispatch = useDispatch()
 
-    const streamrClient = useWalletClient()
-
     const { pathname } = useLocation()
 
     const pathnameRef = useRef(pathname)
@@ -23,7 +21,7 @@ export default function usePreselectRoomEffect() {
     }, [pathname])
 
     useEffect(() => {
-        if (!streamrClient || !account) {
+        if (!account) {
             return
         }
 
@@ -38,9 +36,8 @@ export default function usePreselectRoomEffect() {
             RoomAction.preselect({
                 account,
                 roomId,
-                streamrClient,
                 fingerprint: Flag.isPreselectingRoom(roomId),
             })
         )
-    }, [account, dispatch, streamrClient])
+    }, [account, dispatch])
 }
