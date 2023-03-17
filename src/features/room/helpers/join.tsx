@@ -27,6 +27,7 @@ import tokenIdPreflight from '$/utils/tokenIdPreflight'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
+import { ZeroAddress } from '$/consts'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -47,7 +48,13 @@ export default function join(
     return call(function* () {
         const roomId = stream.id
 
-        const { name, tokenAddress, tokenType, stakingEnabled = false, minRequiredBalance } = getRoomMetadata(stream)
+        const {
+            name,
+            tokenAddress,
+            tokenType,
+            stakingEnabled = false,
+            minRequiredBalance,
+        } = getRoomMetadata(stream)
 
         let tc: Controller | undefined
 
@@ -118,9 +125,102 @@ export default function join(
             const ok = yield* recover(
                 function* () {
                     try {
-                        const tx: Record<string, any> = yield policy.requestDelegatedJoin()
+                        if (stakingEnabled) {
+                            yield onToast({
+                                title: i18n('joinTokenGatedRoomToast.authorizeTokenTransfer'),
+                                type: ToastType.Processing,
+                            })
+                            let authorizationTx: Record<string, any>
+                            let tokenContract: Contract
+                            switch (tokenStandard) {
+                                case TokenStandard.ERC20:
+                                    tokenContract = new Contract(
+                                        tokenAddress,
+                                        ERC20TokenAbi,
+                                        policyRegistry.signer
+                                    )
+                                    authorizationTx = yield tokenContract.approve(
+                                        policyAddress,
+                                        BigNumber.from(minRequiredBalance || 0)
+                                    )
+                                    break
+                                case TokenStandard.ERC721:
+                                    tokenContract = new Contract(
+                                        tokenAddress,
+                                        ERC721TokenAbi,
+                                        policyRegistry.signer
+                                    )
+                                    authorizationTx = yield tokenContract.approve(
+                                        policyAddress,
+                                        BigNumber.from(tokenId)
+                                    )
+                                    break
+                                default:
+                                    throw new Error(`Unsupported token standard ${tokenStandard}`)
+                            }
 
+                            yield authorizationTx.wait()
+                            yield onToast({
+                                title: i18n('joinTokenGatedRoomToast.authorizationComplete'),
+                                type: ToastType.Success,
+                            })
+                        }
+                        yield onToast({
+                            title: i18n('joinTokenGatedRoomToast.requestingJoin'),
+                            type: ToastType.Processing,
+                        })
+                        let tx: Record<string, any>
+                        if (tokenType.hasIds) {
+                            tx = yield policy.requestDelegatedJoin(BigNumber.from(tokenId))
+                        } else {
+                            tx = yield policy.requestDelegatedJoin()
+                        }
                         yield tx.wait()
+
+                        // revoke the token allowance for the tokenGate
+                        if (stakingEnabled) {
+                            yield onToast({
+                                title: i18n('joinTokenGatedRoomToast.revokeTokenTransfer'),
+                                type: ToastType.Processing,
+                            })
+                            let authorizationTx: Record<string, any>
+                            let tokenContract: Contract
+                            switch (tokenType.standard) {
+                                case TokenStandard.ERC20:
+                                    tokenContract = new Contract(
+                                        tokenAddress,
+                                        ERC20TokenAbi,
+                                        policyRegistry.signer
+                                    )
+                                    authorizationTx = yield tokenContract.approve(
+                                        policyAddress,
+                                        BigNumber.from(0)
+                                    )
+                                    break
+                                case TokenStandard.ERC721:
+                                    tokenContract = new Contract(
+                                        tokenAddress,
+                                        ERC721TokenAbi,
+                                        policyRegistry.signer
+                                    )
+                                    authorizationTx = yield tokenContract.approve(
+                                        ZeroAddress,
+                                        BigNumber.from(tokenId)
+                                    )
+                                    break
+                                default:
+                                    throw new Error(
+                                        `Unsupported token standard ${tokenType.standard}`
+                                    )
+                            }
+
+                            yield authorizationTx.wait()
+                        }
+
+                        yield onToast({
+                            title: i18n('joinTokenGatedRoomToast.requestComplete'),
+                            type: ToastType.Success,
+                        })
 
                         return true
                     } catch (e: any) {

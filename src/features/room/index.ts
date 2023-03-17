@@ -184,12 +184,9 @@ export const RoomAction = {
 
     leaveTokenGatedRoom: createAction<{
         roomId: RoomId
-        tokenId?: string
         requester: Address
-        provider: Provider
         streamrClient: StreamrClient
     }>('room: leave token gated room'),
-
 }
 
 const reducer = createReducer(initialState, (builder) => {

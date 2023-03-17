@@ -488,6 +488,11 @@ const I18n = {
     'joinTokenGatedRecoverToast.cancelLabel'() {
         return i18n('recoverToast.cancelLabel')
     },
+    'joinTokenGatedRoomToast.authorizeTokenTransfer': 'Authorizing token transfer…',
+    'joinTokenGatedRoomToast.authorizationComplete': 'Token transfer authorized',
+    'joinTokenGatedRoomToast.requestingJoin': 'Requesting to join…',
+    'joinTokenGatedRoomToast.revokeTokenTransfer': 'Revoking token transfer…',
+    'joinTokenGatedRoomToast.requestComplete': 'Join request completed',
     'checkTokenGatedPermissionsRecoverToast.title': 'Failed to detect new permissions',
     'checkTokenGatedPermissionsRecoverToast.desc'() {
         return i18n('recoverToast.desc')

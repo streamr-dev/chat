@@ -51,7 +51,6 @@ import { PrivacySetting } from '$/types'
 import RemoveUserIcon from '$/icons/RemoveUserIcon'
 import UserIcon from '$/icons/UserIcon'
 import i18n from '$/utils/i18n'
-import getWalletProvider from '$/utils/getWalletProvider'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     canModifyMembers?: boolean
@@ -96,8 +95,6 @@ export default function ConversationHeader({
     const isRoomBeingDeleted = useIsBeingDeleted(selectedRoomId)
 
     const invitePending = useJustInvited(selectedRoomId, account)
-
-    const provider = getWalletProvider()
 
     function edit() {
         if (canEdit && selectedRoomId && !isRoomBeingDeleted) {
@@ -502,24 +499,14 @@ export default function ConversationHeader({
                                         {i18n('common.roomProperties')}
                                     </MenuButtonItem>
                                 )}
-                                {
-                                    // leave room button
-                                    // check if user can publish to the room
-                                    // check if room is tokenGated
-                                    canPublish && isTokenGatedRoom && (
-                                        <MenuButtonItem
+                                {canPublish && isTokenGatedRoom && (
+                                    <MenuButtonItem
                                         icon={<RemoveUserIcon />}
                                         onClick={() => {
-                                            if (
-                                                account &&
-                                                selectedRoomId &&
-                                                provider &&
-                                                streamrClient
-                                            ) {
+                                            if (account && selectedRoomId && streamrClient) {
                                                 dispatch(
                                                     RoomAction.leaveTokenGatedRoom({
                                                         roomId: selectedRoomId,
-                                                        provider,
                                                         requester: account,
                                                         streamrClient,
                                                     })
@@ -531,10 +518,7 @@ export default function ConversationHeader({
                                     >
                                         Leave room
                                     </MenuButtonItem>
-                                        
-                                    )
-
-                                }
+                                )}
                                 {canDelete && (
                                     <MenuButtonItem
                                         icon={<DeleteIcon />}
@@ -557,8 +541,6 @@ export default function ConversationHeader({
                                         {i18n('common.deleteRoom')}
                                     </MenuButtonItem>
                                 )}
-
-                                
                             </Menu>
                         )}
                     </>
