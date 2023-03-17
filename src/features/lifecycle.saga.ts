@@ -22,13 +22,15 @@ import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Wallet } from 'ethers'
-import { put, select, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { fork, put, select, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
 import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
 import fetchTokenStandard from '$/features/misc/helpers/fetchTokenStandard'
 import preselect from '$/features/room/helpers/preselect'
 import connectEagerly from '$/features/wallet/helpers/eagerConnect'
 import connect from '$/features/wallet/helpers/connect'
+import storeIntegrationId from '$/features/wallet/helpers/storeIntegrationId'
+import setAccount from '$/features/wallet/helpers/setAccount'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -99,7 +101,7 @@ export default function* lifecycle() {
                     return
                 }
 
-                const tokenMetadata: TokenMetadata = yield fetchTokenMetadata(payload)
+                const tokenMetadata = yield* fetchTokenMetadata(payload)
 
                 yield put(
                     MiscAction.cacheTokenMetadata({
@@ -131,10 +133,16 @@ export default function* lifecycle() {
     })
 
     yield takeLeading(WalletAction.connectEagerly, function* () {
-        yield* connectEagerly()
+        yield connectEagerly()
     })
 
     yield takeLatest(WalletAction.connect, function* ({ payload }) {
-        yield* connect(payload)
+        yield connect(payload)
     })
+
+    yield takeEvery(WalletAction.setIntegrationId, function ({ payload }) {
+        storeIntegrationId(payload)
+    })
+
+    yield fork(setAccount)
 }

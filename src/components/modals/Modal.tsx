@@ -1,6 +1,7 @@
+import i18n from '$/utils/i18n'
 import gsap from 'gsap'
 import { ReactNode, useEffect, useRef } from 'react'
-import useGlobalKeyDownEffect from 'streamr-ui/hooks/useGlobalKeyDownEffect'
+import { useGlobalKeyDownEffect } from 'streamr-ui/hooks'
 import tw from 'twin.macro'
 
 export enum AbortReason {
@@ -18,7 +19,7 @@ export interface Props {
 }
 
 export default function Modal({
-    title = 'Untitled dialog',
+    title = i18n('modal.defaultTitle'),
     subtitle,
     children,
     onAbort,

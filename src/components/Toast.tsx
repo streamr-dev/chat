@@ -2,6 +2,7 @@ import Dot from '$/components/Dot'
 import Form from '$/components/Form'
 import Spinner from '$/components/Spinner'
 import Text from '$/components/Text'
+import i18n from '$/utils/i18n'
 import {
     ButtonHTMLAttributes,
     FC,
@@ -119,7 +120,7 @@ export default function Toast({
     onAbort,
     onProceed,
     onDiscardable,
-    title = 'Toast',
+    title = i18n('toasts.defaultTitle'),
     desc,
     okLabel,
     cancelLabel,

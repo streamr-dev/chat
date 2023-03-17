@@ -1,0 +1,19 @@
+{
+    "presets": [
+        "@babel/preset-env",
+        "@babel/preset-typescript"
+    ],
+    "plugins": [
+        "babel-plugin-macros",
+        [
+            "@emotion/babel-plugin-jsx-pragmatic",
+            {
+                "export": "jsx",
+                "import": "__cssprop",
+                "module": "@emotion/react"
+            }
+        ],
+        ["@babel/plugin-transform-react-jsx", { "runtime": "automatic" }],
+        ["@babel/plugin-transform-react-jsx", { "pragma": "__cssprop" }, "twin.macro"]
+    ]
+}

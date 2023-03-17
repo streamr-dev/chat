@@ -25,12 +25,11 @@ export default function changeAccount(
             return
         }
 
-        const { account, provider, streamrClient } = payload
+        const { account, streamrClient } = payload
 
         yield put(
             RoomAction.pinSticky({
                 requester: account,
-                provider,
                 streamrClient,
                 fingerprint: Flag.isPinningStickyRooms(account),
             })
@@ -50,7 +49,6 @@ export default function changeAccount(
             yield put(
                 DelegationAction.requestPrivateKey({
                     owner: account,
-                    provider,
                     fingerprint: Flag.isAccessBeingDelegated(account),
                 })
             )

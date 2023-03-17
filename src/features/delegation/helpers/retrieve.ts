@@ -9,18 +9,21 @@ import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import recover from '$/utils/recover'
+import i18n from '$/utils/i18n'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 export default function retrieve({
-    provider,
     owner,
-}: Pick<ReturnType<typeof DelegationAction.requestPrivateKey>['payload'], 'owner' | 'provider'>) {
+}: Pick<ReturnType<typeof DelegationAction.requestPrivateKey>['payload'], 'owner'>) {
     return call(function* () {
         let tc: Controller | undefined
 
         let dismissToast = false
 
         try {
-            yield networkPreflight(provider)
+            const provider = yield* getWalletProvider()
+
+            yield networkPreflight()
 
             const signature: string = yield new providers.Web3Provider(provider)
                 .getSigner()
@@ -53,7 +56,10 @@ export default function retrieve({
                     return result
                 },
                 {
-                    title: 'Authorization check failed',
+                    title: i18n('isAuthorizedDelegationRecoverToast.title'),
+                    desc: i18n('isAuthorizedDelegationRecoverToast.desc'),
+                    okLabel: i18n('isAuthorizedDelegationRecoverToast.okLabel'),
+                    cancelLabel: i18n('isAuthorizedDelegationRecoverToast.cancelLabel'),
                 }
             )
 
@@ -61,7 +67,7 @@ export default function retrieve({
                 dismissToast = true
 
                 tc = yield retoast(tc, {
-                    title: 'Authorizing your delegated wallet…',
+                    title: i18n('delegationToast.authorizingLabel'),
                     type: ToastType.Processing,
                 })
 
@@ -73,7 +79,7 @@ export default function retrieve({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Access delegated successfully',
+                title: i18n('delegationToast.successLabel'),
                 type: ToastType.Success,
             })
 
@@ -82,7 +88,7 @@ export default function retrieve({
             dismissToast = false
 
             tc = yield retoast(tc, {
-                title: 'Failed to delegate access',
+                title: i18n('delegationToast.failureLabel'),
                 type: ToastType.Error,
             })
 

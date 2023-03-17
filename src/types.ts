@@ -1,9 +1,4 @@
-import GatedIcon from '$/icons/GatedIcon'
 import store from '$/store'
-import { Provider } from '@web3-react/types'
-import { ReactNode } from 'react'
-import PrivateIcon from '../src/icons/PrivateIcon'
-import PublicIcon from '../src/icons/PublicIcon'
 
 export enum StorageKey {
     WalletIntegrationId = 'chat/walletIntegrationId',
@@ -39,16 +34,11 @@ export enum PrivacySetting {
 }
 
 export interface PreflightParams {
-    provider: Provider
     requester: Address
 }
 
 export type PrivacyOption = {
     value: PrivacySetting
-    label: string
-    desc: ReactNode
-    icon: typeof PrivateIcon | typeof PublicIcon | typeof GatedIcon
-    disabled?: boolean
 }
 
 export enum Fallback {

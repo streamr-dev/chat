@@ -1,6 +1,6 @@
 import { RoomAction } from '$/features/room'
 import { call, put } from 'redux-saga/effects'
-import config from '$/config.json'
+import { stickyRoomIds } from '$/config.json'
 import { IPreference } from '$/features/preferences/types'
 import db from '$/utils/db'
 import { IRoom, RoomId } from '$/features/room/types'
@@ -16,8 +16,7 @@ import tw from 'twin.macro'
 import { Controller } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
-
-const { stickyRoomIds } = config
+import i18n from '$/utils/i18n'
 
 function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClient) {
     return call(function* () {
@@ -71,7 +70,7 @@ function quietPin(roomId: RoomId, requester: Address, streamrClient: StreamrClie
                 }
             }
 
-            return name || 'Unnamed room'
+            return name || i18n('common.fallbackRoomName')
         } catch (e) {
             handleError(e)
         }
@@ -137,7 +136,7 @@ export default function pinSticky({
 
             try {
                 t = yield toaster(Toast, {
-                    title: `Pinned ${n} new sticky room${n === 1 ? '' : 's'}`,
+                    title: i18n('stickyPinToast.title', n),
                     type: ToastType.Info,
                     desc: (
                         <ol css={tw`text-[14px] list-decimal`}>
@@ -146,7 +145,7 @@ export default function pinSticky({
                             ))}
                         </ol>
                     ),
-                    okLabel: 'Dismiss',
+                    okLabel: i18n('stickyPinToast.okLabel'),
                 })
 
                 yield t?.open()

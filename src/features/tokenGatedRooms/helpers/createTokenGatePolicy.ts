@@ -6,7 +6,6 @@ import { WalletAction } from '$/features/wallet'
 import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
-import { Provider } from '@web3-react/types'
 import { Contract, providers, BigNumber } from 'ethers'
 import { call, race, retry, spawn, take } from 'redux-saga/effects'
 import StreamrClient, { StreamPermission } from 'streamr-client'
@@ -27,6 +26,8 @@ import { ZeroAddress } from '$/consts'
 import { Controller } from '$/features/toaster/helpers/toast'
 import isSameAddress from '$/utils/isSameAddress'
 import recover from '$/utils/recover'
+import i18n from '$/utils/i18n'
+import getWalletProvider from '$/utils/getWalletProvider'
 
 const Factory: Record<
     TokenStandard,
@@ -62,7 +63,6 @@ interface Params {
     minRequiredBalance?: string
     tokenIds: string[]
     stakingEnabled: boolean
-    provider: Provider
     streamrClient: StreamrClient
 }
 
@@ -74,7 +74,6 @@ export default function createTokenGatePolicy({
     minRequiredBalance,
     tokenIds,
     stakingEnabled,
-    provider,
     streamrClient,
 }: Params) {
     return spawn(function* () {
@@ -87,16 +86,13 @@ export default function createTokenGatePolicy({
 
                 try {
                     tc = yield retoast(tc, {
-                        title: 'Deploying token gate…',
+                        title: i18n('tokenGateToast.deployingTitle'),
                         type: ToastType.Processing,
                     })
 
                     dismissToast = true
 
-                    yield preflight({
-                        provider,
-                        requester,
-                    })
+                    yield preflight(requester)
 
                     const factory = Factory[tokenType.standard]
 
@@ -105,6 +101,8 @@ export default function createTokenGatePolicy({
                     }
 
                     const { abi, address } = factory
+
+                    const provider = yield* getWalletProvider()
 
                     const factoryContract = new Contract(
                         address,
@@ -126,7 +124,10 @@ export default function createTokenGatePolicy({
                             yield tx.wait(10)
                         },
                         {
-                            title: 'Failed to deploy the policy',
+                            title: i18n('tokenGatePolicyRecoverToast.title'),
+                            desc: i18n('tokenGatePolicyRecoverToast.desc'),
+                            okLabel: i18n('tokenGatePolicyRecoverToast.okLabel'),
+                            cancelLabel: i18n('tokenGatePolicyRecoverToast.cancelLabel'),
                         }
                     )
 
@@ -135,7 +136,7 @@ export default function createTokenGatePolicy({
                     let policyAddress: Address = ZeroAddress
 
                     tc = yield retoast(tc, {
-                        title: 'Waiting for the network…',
+                        title: i18n('tokenGateToast.waitingTitle'),
                         type: ToastType.Processing,
                     })
 
@@ -157,12 +158,15 @@ export default function createTokenGatePolicy({
                             })
                         },
                         {
-                            title: 'Failed to determine policy address',
+                            title: i18n('tokenGateAddressRecoverToast.title'),
+                            desc: i18n('tokenGateAddressRecoverToast.desc'),
+                            okLabel: i18n('tokenGateAddressRecoverToast.okLabel'),
+                            cancelLabel: i18n('tokenGateAddressRecoverToast.cancelLabel'),
                         }
                     )
 
                     tc = yield retoast(tc, {
-                        title: `Assigning permissions to the token gate at ${policyAddress}`,
+                        title: i18n('tokenGateToast.grantingTitle', policyAddress),
                         type: ToastType.Processing,
                     })
 
@@ -193,12 +197,15 @@ export default function createTokenGatePolicy({
                             )
                         },
                         {
-                            title: 'Failed to assign new permissions',
+                            title: i18n('tokenGateGrantRecoverToast.title'),
+                            desc: i18n('tokenGateGrantRecoverToast.desc'),
+                            okLabel: i18n('tokenGateGrantRecoverToast.okLabel'),
+                            cancelLabel: i18n('tokenGateGrantRecoverToast.cancelLabel'),
                         }
                     )
 
                     tc = yield retoast(tc, {
-                        title: 'Done!',
+                        title: i18n('tokenGateToast.successTitle'),
                         type: ToastType.Success,
                     })
 
@@ -207,7 +214,7 @@ export default function createTokenGatePolicy({
                     handleError(e)
 
                     tc = yield retoast(tc, {
-                        title: 'Failed to deploy your token gate',
+                        title: i18n('tokenGateToast.failureTitle'),
                         type: ToastType.Error,
                     })
 

@@ -17,28 +17,28 @@ import Submit from '../Submit'
 import Text from '../Text'
 import Toggle from '../Toggle'
 import Modal, { Props as ModalProps } from './Modal'
-import { useWalletAccount, useWalletClient, useWalletProvider } from '$/features/wallet/hooks'
+import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import { Flag } from '$/features/flag/types'
-import useTokenMetadata from '$/hooks/useTokenMetadata'
-import { MiscAction } from '$/features/misc'
 import TextField from '$/components/TextField'
+import i18n from '$/utils/i18n'
+import useRoomEntryRequirements from '$/hooks/useRoomEntryRequirements'
+import TokenLogo from '$/components/TokenLogo'
+import TokenStandardLabel from '$/components/TokenStandardLabel'
+import { RoomId } from '$/features/room/types'
+import useCachedTokenGate from '$/hooks/useCachedTokenGate'
+import trunc from '$/utils/trunc'
+import TokenLabel from '$/components/TokenLabel'
+import useFetchingTokenMetadataForAnyTokenId from '$/hooks/useFetchingTokenMetadataForAnyTokenId'
 
 export default function RoomPropertiesModal({
-    title = 'Room properties',
-    subtitle = 'Unnamed room',
+    title = i18n('roomPropertiesModal.title'),
+    subtitle = i18n('common.fallbackRoomName'),
     onAbort,
     ...props
 }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
 
-    const {
-        name: roomName = '',
-        tokenAddress,
-        minRequiredBalance,
-        tokenType,
-        tokenIds = [],
-        stakingEnabled = false,
-    } = useSelectedRoom() || {}
+    const { name: roomName = '' } = useSelectedRoom() || {}
 
     const isStorageEnabled = useStorageNodeState(selectedRoomId, STREAMR_STORAGE_NODE_GERMANY)
 
@@ -55,12 +55,10 @@ export default function RoomPropertiesModal({
 
     const streamrClient = useWalletClient()
 
-    const provider = useWalletProvider()
-
     const requester = useWalletAccount()
 
     function onStorageToggleClick() {
-        if (!selectedRoomId || isStorageBusy || !provider || !requester || !streamrClient) {
+        if (!selectedRoomId || isStorageBusy || !requester || !streamrClient) {
             return
         }
 
@@ -69,7 +67,6 @@ export default function RoomPropertiesModal({
                 roomId: selectedRoomId,
                 address: STREAMR_STORAGE_NODE_GERMANY,
                 state: !isStorageEnabled,
-                provider,
                 requester,
                 streamrClient,
                 fingerprint: Flag.isTogglingStorageNode(
@@ -94,112 +91,22 @@ export default function RoomPropertiesModal({
         )
     }, [open, selectedRoomId])
 
-    const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds)
-
-    useEffect(() => {
-        if (!tokenAddress || !tokenType || !provider || !tokenIds) {
-            return
-        }
-
-        dispatch(
-            MiscAction.fetchTokenMetadata({
-                tokenAddress,
-                tokenStandard: tokenType.standard,
-                provider,
-                tokenIds,
-                fingerprint: Flag.isFetchingTokenMetadata(tokenAddress, tokenIds),
-            })
-        )
-    }, [tokenAddress, tokenType, provider, tokenIds, tokenMetadata])
-
     return (
         <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
-            {tokenMetadata ? (
-                <>
-                    {tokenType && (
-                        <Label>
-                            <b>Token Standard:</b>
-                            {tokenType.standard}
-                        </Label>
-                    )}
-                    {tokenAddress && (
-                        <Label>
-                            <b>Address:</b>
-                            {tokenAddress}
-                        </Label>
-                    )}
-                    {'name' in tokenMetadata && tokenMetadata.name && (
-                        <Label>
-                            <b>Token Name:</b>
-                            {tokenMetadata.name}
-                        </Label>
-                    )}
-                    {'symbol' in tokenMetadata && tokenMetadata.symbol && (
-                        <Label>
-                            <b>Symbol:</b>
-                            {tokenMetadata.symbol}
-                        </Label>
-                    )}
-                    {'decimals' in tokenMetadata && tokenMetadata.decimals && (
-                        <Label>
-                            <b>Decimals:</b>
-                            {tokenMetadata.decimals}
-                        </Label>
-                    )}
-                    {'granularity' in tokenMetadata && tokenMetadata.granularity && (
-                        <Label>
-                            <b>Granularity:</b>
-                            {tokenMetadata.granularity}
-                        </Label>
-                    )}
-                    {'uris' in tokenMetadata && tokenMetadata.uris && (
-                        <>
-                            {Object.entries(tokenMetadata.uris).map(([tokenId, uri]) => (
-                                <Label key={tokenId}>
-                                    <b>URI:</b>
-                                    {uri}
-                                </Label>
-                            ))}
-                        </>
-                    )}
-                    {minRequiredBalance !== undefined && (
-                        <Label>
-                            <b>Min Token Amount:</b>
-                            {minRequiredBalance.toString()}
-                        </Label>
-                    )}
-                    <Label>Staking</Label>
-                    <div css={tw`flex`}>
-                        <div css={tw`grow`}>
-                            <Hint css={tw`pr-16`}>
-                                <Text>
-                                    When token staking is enabled, participants will need to deposit
-                                    the minimum amount in order to join the room.
-                                </Text>
-                            </Hint>
-                        </div>
-                        <div css={tw`mt-2`}>
-                            <Toggle value={stakingEnabled} />
-                        </div>
-                    </div>
-                </>
-            ) : null}
             <Form onSubmit={() => void onAbort?.()}>
                 {!!selectedRoomId && (
                     <>
-                        <Label>Room id</Label>
+                        <Label>{i18n('roomPropertiesModal.roomIdLabel')}</Label>
                         <TextField defaultValue={selectedRoomId} readOnly />
                     </>
                 )}
+                <TokenGateSummary roomId={selectedRoomId} />
                 <>
-                    <Label>Message storage</Label>
+                    <Label>{i18n('addRoomModal.storageFieldLabel')}</Label>
                     <div css={tw`flex`}>
                         <div css={tw`grow`}>
                             <Hint css={tw`pr-16`}>
-                                <Text>
-                                    When message storage is disabled, participants will only see
-                                    messages sent while they are online.
-                                </Text>
+                                <Text>{i18n('addRoomModal.storageFieldHint')}</Text>
                             </Hint>
                         </div>
                         <div css={tw`mt-2`}>
@@ -212,7 +119,7 @@ export default function RoomPropertiesModal({
                     </div>
                 </>
                 <>
-                    <Submit label="Close" />
+                    <Submit label={i18n('roomPropertiesModal.dismissButtonLabel')} />
                 </>
             </Form>
         </Modal>
@@ -220,3 +127,76 @@ export default function RoomPropertiesModal({
 }
 
 RoomPropertiesModal.displayName = 'RoomPropertiesModal'
+
+function TokenGateSummary({ roomId }: { roomId: RoomId | undefined }) {
+    const tokenGate = useCachedTokenGate(roomId)
+
+    const entryReq = useRoomEntryRequirements(roomId)
+
+    const isFetching = useFetchingTokenMetadataForAnyTokenId(tokenGate?.tokenAddress)
+
+    if (!tokenGate) {
+        return null
+    }
+
+    const { tokenAddress, stakingEnabled } = tokenGate
+
+    return (
+        <>
+            <Label>{i18n('roomPropertiesModal.tokenGateLabel')}</Label>
+            <div
+                css={tw`
+                    [img]:mr-3
+                    border
+                    border-[#F1F4F7]
+                    flex
+                    h-[64px]
+                    items-center
+                    px-4
+                    rounded-lg
+                    text-[#36404E]
+                    text-[14px]
+                `}
+            >
+                <TokenLogo tokenAddress={tokenAddress} />
+                <div css={tw`mr-6 grow`}>
+                    <div css={tw`font-semibold`}>
+                        <Text
+                            truncate
+                            css={[
+                                tw`leading-normal`,
+                                isFetching &&
+                                    tw`
+                                        animate-pulse
+                                        [animation-duration: 0.5s]
+                                    `,
+                            ]}
+                        >
+                            {isFetching ? (
+                                i18n('common.load', true)
+                            ) : !entryReq ? (
+                                <>Failed to load</>
+                            ) : (
+                                <>
+                                    {typeof entryReq.quantity === 'string' && (
+                                        <>{entryReq.quantity} </>
+                                    )}
+                                    {entryReq.unit}
+                                </>
+                            )}
+                        </Text>
+                    </div>
+                    <div css={tw`text-[#59799C]`}>
+                        <Text>{trunc(tokenAddress)}</Text>
+                    </div>
+                </div>
+                <TokenStandardLabel tokenAddress={tokenAddress} css={tw`mr-1.5`} />
+                {stakingEnabled && (
+                    <TokenLabel as="div" css={tw`uppercase`}>
+                        <Text>{i18n('roomPropertiesModal.stakingLabel')}</Text>
+                    </TokenLabel>
+                )}
+            </div>
+        </>
+    )
+}

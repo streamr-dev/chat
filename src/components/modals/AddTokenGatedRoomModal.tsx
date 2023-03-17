@@ -5,7 +5,6 @@ import PrimaryButton from '$/components/PrimaryButton'
 import SecondaryButton from '$/components/SecondaryButton'
 import Spinner from '$/components/Spinner'
 import Text from '$/components/Text'
-import Avatar from '$/components/Avatar'
 import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { TokenInfo } from '$/features/misc/types'
@@ -18,7 +17,6 @@ import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import trunc from '$/utils/trunc'
 import isSameAddress from '$/utils/isSameAddress'
-import { useWalletProvider } from '$/features/wallet/hooks'
 import useTokenStandard from '$/hooks/useTokenStandard'
 import { TokenStandard, TokenTypes } from '$/features/tokenGatedRooms/types'
 import TextField from '$/components/TextField'
@@ -28,6 +26,9 @@ import { BigNumber } from 'ethers'
 import uniq from 'lodash/uniq'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import { parseUnits } from '@ethersproject/units'
+import i18n from '$/utils/i18n'
+import TokenStandardLabel from '$/components/TokenStandardLabel'
+import TokenLogo from '$/components/TokenLogo'
 
 interface Gate {
     tokenAddress: Address
@@ -58,7 +59,7 @@ const defaultTransientParams = {
 }
 
 export default function AddTokenGatedRoomModal({
-    title = 'Add new token gated room',
+    title = i18n('addTokenGatedRoomModal.title'),
     onProceed,
     ...props
 }: Props) {
@@ -67,8 +68,6 @@ export default function AddTokenGatedRoomModal({
     const previousTokenInfo = useRef<Info>(tokenInfo)
 
     const dispatch = useDispatch()
-
-    const provider = useWalletProvider()
 
     const standard = useTokenStandard(tokenInfo.address)
 
@@ -150,21 +149,16 @@ export default function AddTokenGatedRoomModal({
                 }
             }}
         >
-            <Label>Token contract address from Polygon chain</Label>
+            <Label>{i18n('addTokenGatedRoomModal.addressFieldLabel')}</Label>
             {isBlank(tokenInfo.address) ? (
                 <Search
                     info={previousTokenInfo.current}
                     onInfo={(info) => {
                         setTokenInfo(info)
 
-                        if (!provider) {
-                            return
-                        }
-
                         dispatch(
                             MiscAction.fetchTokenStandard({
                                 address: info.address,
-                                provider,
                                 showLoadingToast: true,
                                 fingerprint: Flag.isFetchingTokenStandard(info.address),
                             })
@@ -199,11 +193,11 @@ export default function AddTokenGatedRoomModal({
                 {!!isCountable && (
                     <>
                         <Label htmlFor="minRequiredBalance">
-                            Minimum balance needed to join the room
+                            {i18n('addTokenGatedRoomModal.minBalanceFieldLabel')}
                         </Label>
                         <TextField
                             id="minRequiredBalance"
-                            placeholder="e.g. 100"
+                            placeholder={i18n('addTokenGatedRoomModal.minBalanceFieldPlaceholder')}
                             value={minRequiredBalance}
                             onChange={({ target }) =>
                                 void setTransientParams((t) => ({
@@ -216,7 +210,9 @@ export default function AddTokenGatedRoomModal({
                 )}
                 {!!hasIds && (
                     <>
-                        <Label htmlFor="tokenIds">Token IDs (comma separated)</Label>
+                        <Label htmlFor="tokenIds">
+                            {i18n('addTokenGatedRoomModal.tokenIdsFieldLabel')}
+                        </Label>
                         <TextField
                             id="tokenIds"
                             value={tokenIds}
@@ -229,14 +225,11 @@ export default function AddTokenGatedRoomModal({
                         />
                     </>
                 )}
-                <Label>Enable Staking</Label>
+                <Label>{i18n('addTokenGatedRoomModal.stakingLabel')}</Label>
                 <div css={tw`flex`}>
                     <div css={tw`grow`}>
                         <Hint css={tw`pr-16`}>
-                            <Text>
-                                When token staking is enabled, participants will need to deposit the
-                                minimum amount in order to join the room.
-                            </Text>
+                            <Text>{i18n('addTokenGatedRoomModal.stakingDesc')}</Text>
                         </Hint>
                     </div>
                     <div css={tw`mt-2`}>
@@ -262,7 +255,7 @@ export default function AddTokenGatedRoomModal({
                         mt-10
                     `}
                 >
-                    <Text>Create</Text>
+                    <Text>{i18n('addTokenGatedRoomModal.createButtonLabel')}</Text>
                 </PrimaryButton>
             </Form>
         </Modal>
@@ -276,12 +269,6 @@ interface TokenProps {
 
 function Token({ info, onChangeClick }: TokenProps) {
     const isFetchingTokenStandard = useFlag(Flag.isFetchingTokenStandard(info.address))
-
-    const standard = useTokenStandard(info.address)
-
-    const dispatch = useDispatch()
-
-    const provider = useWalletProvider()
 
     return (
         <div
@@ -298,92 +285,22 @@ function Token({ info, onChangeClick }: TokenProps) {
                 text-[14px]
             `}
         >
-            {'symbol' in info ? (
-                <>
-                    <img
-                        src={`https://polygonscan.com/token/images/${info.logo}`}
-                        alt={info.symbol}
-                        width="32"
-                        height="32"
-                    />
-                    <div>
+            <TokenLogo tokenAddress={info.address} />
+            <div>
+                {'symbol' in info ? (
+                    <>
                         <div css={tw`font-semibold`}>
                             <Text>{info.symbol}</Text>
                         </div>
                         <div css={tw`text-[#59799C]`}>
                             <Text>{info.name}</Text>
                         </div>
-                    </div>
-                </>
-            ) : (
-                <>
-                    <Avatar
-                        seed={info.address.toLowerCase()}
-                        css={tw`
-                            w-8
-                            h-8
-                            mr-3
-                        `}
-                    />
-                    <div>{trunc(info.address)}</div>
-                </>
-            )}
-            {!!standard && (
-                <>
-                    {standard === TokenStandard.Unknown ? (
-                        <button
-                            type="button"
-                            css={tw`
-                                bg-[#59799C]
-                                ml-6
-                                px-1
-                                rounded-sm
-                                select-none
-                                text-[10px]
-                                text-white
-                                appearance-none
-                            `}
-                            onClick={() => {
-                                dispatch(
-                                    MiscAction.setTokenStandard({
-                                        address: info.address,
-                                        standard: undefined,
-                                    })
-                                )
-
-                                if (!provider) {
-                                    return
-                                }
-
-                                dispatch(
-                                    MiscAction.fetchTokenStandard({
-                                        address: info.address,
-                                        provider,
-                                        showLoadingToast: true,
-                                        fingerprint: Flag.isFetchingTokenStandard(info.address),
-                                    })
-                                )
-                            }}
-                        >
-                            <Text>Unknown</Text>
-                        </button>
-                    ) : (
-                        <div
-                            css={tw`
-                                bg-[#59799C]
-                                ml-6
-                                px-1
-                                rounded-sm
-                                select-none
-                                text-[10px]
-                                text-white
-                            `}
-                        >
-                            <Text>{standard}</Text>
-                        </div>
-                    )}
-                </>
-            )}
+                    </>
+                ) : (
+                    trunc(info.address)
+                )}
+            </div>
+            <TokenStandardLabel tokenAddress={info.address} css={tw`ml-6`} />
             <div css={tw`grow`} />
             {isFetchingTokenStandard ? (
                 <div
@@ -404,7 +321,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                             px-4
                         `}
                     >
-                        <Text>Change</Text>
+                        <Text>{i18n('addTokenGatedRoomModal.changeButtonLabel')}</Text>
                     </SecondaryButton>
                 </div>
             )}
@@ -503,7 +420,7 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                             w-full
                             translate-y-[-0.06em]
                         `}
-                        placeholder="Search or enter token address…"
+                        placeholder={i18n('addTokenGatedRoomModal.searchFieldPlaceholder')}
                         value={value}
                         autoFocus
                         onChange={({ target }) => void setValue(target.value)}
@@ -669,10 +586,10 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                         {isFetchingKnownTokens ? (
                             <>
                                 <Spinner />
-                                Loading tokens…
+                                {i18n('addTokenGatedRoomModal.loadingTokens')}
                             </>
                         ) : (
-                            <>No tokens</>
+                            i18n('addTokenGatedRoomModal.noTokens')
                         )}
                     </div>
                 )}
