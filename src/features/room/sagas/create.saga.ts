@@ -37,11 +37,10 @@ function* onCreateAction({
     let dismissToast = false
 
     try {
-        yield preflight(requester)
-
-        // `payload.id` is a partial room id. The real room id gets constructed by the
-        // client from the given value and the account address that creates the stream.
-
+        /**
+         * `payload.id` is a partial room id. The real room id gets constructed by the
+         * client from the given value and the account address that creates the stream.
+         */
         const { id, name: description, ...metadata }: Omit<IRoom, 'owner'> = params
 
         const {
@@ -89,6 +88,8 @@ function* onCreateAction({
         })
 
         dismissToast = true
+
+        yield preflight(requester)
 
         const stream = yield* recover(function* () {
             const s: Stream = yield streamrClient.createStream({
