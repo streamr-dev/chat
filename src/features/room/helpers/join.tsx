@@ -3,7 +3,7 @@ import { Address } from '$/types'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
-import { call, put } from 'redux-saga/effects'
+import { call, cancelled, put } from 'redux-saga/effects'
 import { BigNumber, Contract } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
@@ -12,9 +12,6 @@ import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155Joi
 import Toast, { ToastType } from '$/components/Toast'
 import StreamrClient, { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
-import { ComponentProps } from 'react'
-import { Controller } from '$/features/toaster/helpers/toast'
-import retoast from '$/features/toaster/helpers/retoast'
 import { Controller as ToastController } from '$/components/Toaster'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
@@ -25,6 +22,7 @@ import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
 import getTransactionalClient from '$/utils/getTransactionalClient'
+import retoast, { RetoastController } from '$/features/toaster/helpers/retoast'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -34,42 +32,26 @@ const Abi = {
 }
 
 interface Options {
-    onToast?: (props: ComponentProps<typeof Toast>) => void
+    retoastConstroller?: RetoastController
 }
 
 export default function join(
     stream: Stream,
     requester: Address,
-    { onToast: onToastProp }: Options = {}
+    { retoastConstroller }: Options = {}
 ) {
     return call(function* () {
         const roomId = stream.id
 
         const { name, tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
 
-        let tc: Controller | undefined
+        const toast = retoastConstroller || retoast()
 
         let tokenIdTc: ToastController<typeof Toast> | undefined
 
-        let dismissToast = false
-
-        function onToast(props: ComponentProps<typeof Toast>) {
-            return call(function* () {
-                if (!onToastProp) {
-                    tc = yield retoast(tc, props)
-
-                    dismissToast = props.type === ToastType.Processing
-
-                    return
-                }
-
-                onToastProp(props)
-            })
-        }
-
         try {
             if (!tokenAddress) {
-                yield onToast({
+                yield toast.open({
                     title: i18n('joinTokenGatedRoomToast.notTokenGatedTitle'),
                     type: ToastType.Error,
                 })
@@ -89,7 +71,7 @@ export default function join(
 
             const provider = yield* getWalletProvider()
 
-            yield onToast({
+            yield toast.open({
                 title: i18n('joinTokenGatedRoomToast.joiningTitle', name, roomId),
                 type: ToastType.Processing,
             })
@@ -126,7 +108,7 @@ export default function join(
                             typeof e?.message === 'string' &&
                             /error_notEnoughTokens/.test(e.message)
                         ) {
-                            yield onToast({
+                            yield toast.open({
                                 title: i18n('joinTokenGatedRoomToast.insufficientFundsTitle'),
                                 type: ToastType.Error,
                                 autoCloseAfter: 5,
@@ -150,7 +132,7 @@ export default function join(
                 return
             }
 
-            yield onToast({
+            yield toast.open({
                 title: i18n('joinTokenGatedRoomToast.checkingPermissionsTitle'),
                 type: ToastType.Processing,
             })
@@ -197,23 +179,24 @@ export default function join(
                 })
             )
 
-            yield onToast({
+            yield toast.open({
                 title: i18n('joinTokenGatedRoomToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
-            yield onToast({
+            yield toast.open({
                 title: i18n('joinTokenGatedRoomToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {
-            if (dismissToast) {
-                tc?.dismiss()
-            }
-
             tokenIdTc?.dismiss()
+
+            if (!retoastConstroller) {
+                // We don't wanna dismiss the outside toast. Let whoever created it clean it up.
+                yield toast.dismiss({ asap: yield cancelled() })
+            }
         }
     })
 }

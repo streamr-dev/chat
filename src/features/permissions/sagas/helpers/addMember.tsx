@@ -1,5 +1,5 @@
 import handleError from '$/utils/handleError'
-import { call, put } from 'redux-saga/effects'
+import { call, cancelled, put } from 'redux-saga/effects'
 import { Stream, StreamPermission } from 'streamr-client'
 import axios from 'axios'
 import { Address } from '$/types'
@@ -10,11 +10,10 @@ import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import MemberExistsError from '$/errors/MemberExistsError'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
-import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
-import retoast from '$/features/toaster/helpers/retoast'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
+import retoast from '$/features/toaster/helpers/retoast'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -65,17 +64,13 @@ export default function addMember({
     requester,
 }: ReturnType<typeof PermissionsAction.addMember>['payload']) {
     return call(function* () {
-        let tc: Controller | undefined
-
-        let dismissToast = false
+        const toast = retoast()
 
         try {
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('memberToast.addingTitle', member),
                 type: ToastType.Processing,
             })
-
-            dismissToast = true
 
             const user: null | string = yield resolveName(member)
 
@@ -108,9 +103,7 @@ export default function addMember({
                 }
             )
 
-            dismissToast = false
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('memberToast.successTitle', member),
                 type: ToastType.Success,
             })
@@ -127,10 +120,8 @@ export default function addMember({
                 )
             }
         } catch (e) {
-            dismissToast = false
-
             if (e instanceof MemberExistsError) {
-                tc = yield retoast(tc, {
+                yield toast.open({
                     title: i18n('memberToast.alreadyMemberTitle', e.member),
                     type: ToastType.Error,
                 })
@@ -140,14 +131,12 @@ export default function addMember({
 
             handleError(e)
 
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('memberToast.failureTitle', member),
                 type: ToastType.Error,
             })
         } finally {
-            if (dismissToast) {
-                tc?.dismiss()
-            }
+            yield toast.dismiss({ asap: yield cancelled() })
         }
     })
 }

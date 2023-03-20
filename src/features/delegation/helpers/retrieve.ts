@@ -1,24 +1,21 @@
 import { DelegationAction } from '$/features/delegation'
 import networkPreflight from '$/utils/networkPreflight'
 import { providers, utils, Wallet } from 'ethers'
-import { call, put } from 'redux-saga/effects'
+import { call, cancelled, put } from 'redux-saga/effects'
 import jschkdf from 'js-crypto-hkdf'
 import isAuthorizedDelegatedAccount from '$/utils/isAuthorizedDelegatedAccount'
 import authorizeDelegatedAccount from '$/utils/authorizeDelegatedAccount'
-import { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
-import retoast from '$/features/toaster/helpers/retoast'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
+import retoast from '$/features/toaster/helpers/retoast'
 
 export default function retrieve({
     owner,
 }: Pick<ReturnType<typeof DelegationAction.requestPrivateKey>['payload'], 'owner'>) {
     return call(function* () {
-        let tc: Controller | undefined
-
-        let dismissToast = false
+        const toast = retoast()
 
         try {
             const provider = yield* getWalletProvider()
@@ -64,9 +61,7 @@ export default function retrieve({
             )
 
             if (!isDelegationAuthorized) {
-                dismissToast = true
-
-                tc = yield retoast(tc, {
+                yield toast.open({
                     title: i18n('delegationToast.authorizingLabel'),
                     type: ToastType.Processing,
                 })
@@ -76,27 +71,21 @@ export default function retrieve({
 
             yield put(DelegationAction.setPrivateKey(privateKey))
 
-            dismissToast = false
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('delegationToast.successLabel'),
                 type: ToastType.Success,
             })
 
             return address
         } catch (e) {
-            dismissToast = false
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('delegationToast.failureLabel'),
                 type: ToastType.Error,
             })
 
             throw e
         } finally {
-            if (dismissToast) {
-                tc?.dismiss()
-            }
+            yield toast.dismiss({ asap: yield cancelled() })
         }
     })
 }

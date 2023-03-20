@@ -1,13 +1,12 @@
 import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
-import retoast from '$/features/toaster/helpers/retoast'
-import { Controller } from '$/features/toaster/helpers/toast'
 import handleError from '$/utils/handleError'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { call } from 'redux-saga/effects'
+import { call, cancelled } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import delegationPreflight from '$/utils/delegationPreflight'
 import i18n from '$/utils/i18n'
+import retoast from '$/features/toaster/helpers/retoast'
 
 export default function acceptInvite({
     roomId,
@@ -15,16 +14,12 @@ export default function acceptInvite({
     requester,
 }: ReturnType<typeof PermissionsAction.acceptInvite>['payload']) {
     return call(function* () {
-        let tc: Controller | undefined
-
-        let dismissToast = false
+        const toast = retoast()
 
         try {
             const delegatedAccount = yield* delegationPreflight(requester)
 
-            dismissToast = true
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('acceptInviteToast.joiningTitle'),
                 type: ToastType.Processing,
             })
@@ -51,25 +46,19 @@ export default function acceptInvite({
                 }
             )
 
-            dismissToast = false
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('acceptInviteToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
-            dismissToast = false
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('acceptInviteToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {
-            if (dismissToast) {
-                tc?.dismiss()
-            }
+            yield toast.dismiss({ asap: yield cancelled() })
         }
     })
 }
