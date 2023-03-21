@@ -47,7 +47,7 @@ export default function join(
 
         const toast = retoastConstroller || retoast()
 
-        let tokenIdTc: ToastController<typeof Toast> | undefined
+        let tokenIdTc: ToastController | undefined
 
         try {
             if (!tokenAddress) {

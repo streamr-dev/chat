@@ -17,7 +17,7 @@ export default function allowAnonsPublish({
     requester,
 }: ReturnType<typeof PermissionsAction.allowAnonsPublish>['payload']) {
     return call(function* () {
-        let t: ToastController<typeof Toast> | undefined
+        let t: ToastController | undefined
 
         const toast = retoast()
 
