@@ -1,7 +1,7 @@
 import { ToastType } from '$/components/Toast'
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
-import toast from '$/features/toaster/helpers/toast'
+import { ToasterAction } from '$/features/toaster'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
@@ -24,10 +24,12 @@ function* onUnpinAction({ payload: { roomId, requester } }: ReturnType<typeof Ro
     } catch (e) {
         handleError(e)
 
-        yield toast({
-            title: i18n('unpinToast.failureTitle'),
-            type: ToastType.Error,
-        })
+        yield put(
+            ToasterAction.show({
+                title: i18n('unpinToast.failureTitle'),
+                type: ToastType.Error,
+            })
+        )
     }
 }
 

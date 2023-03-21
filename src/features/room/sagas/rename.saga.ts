@@ -11,10 +11,10 @@ import { Flag } from '$/features/flag/types'
 import { FlagAction } from '$/features/flag'
 import { Stream, StreamMetadata } from 'streamr-client'
 import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
-import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
+import { ToasterAction } from '$/features/toaster'
 
 function* onRenameAction({
     payload: { roomId, name, requester },
@@ -29,10 +29,12 @@ function* onRenameAction({
         const roomMetadata = getRoomMetadata(stream)
 
         if (roomMetadata.name === name) {
-            yield toast({
-                title: i18n('roomRenameToast.upToDateTitle'),
-                type: ToastType.Info,
-            })
+            yield put(
+                ToasterAction.show({
+                    title: i18n('roomRenameToast.upToDateTitle'),
+                    type: ToastType.Info,
+                })
+            )
 
             try {
                 /**
@@ -79,10 +81,12 @@ function* onRenameAction({
 
         yield put(FlagAction.unset(Flag.isRoomNameBeingEdited(roomId)))
 
-        yield toast({
-            title: i18n('roomRenameToast.successTitle'),
-            type: ToastType.Success,
-        })
+        yield put(
+            ToasterAction.show({
+                title: i18n('roomRenameToast.successTitle'),
+                type: ToastType.Success,
+            })
+        )
     } catch (e) {
         if (e instanceof RedundantRenameError) {
             return
@@ -90,10 +94,12 @@ function* onRenameAction({
 
         handleError(e)
 
-        yield toast({
-            title: i18n('roomRenameToast.failureTitle'),
-            type: ToastType.Error,
-        })
+        yield put(
+            ToasterAction.show({
+                title: i18n('roomRenameToast.failureTitle'),
+                type: ToastType.Error,
+            })
+        )
     }
 }
 

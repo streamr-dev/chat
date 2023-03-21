@@ -14,7 +14,6 @@ import { RoomAction } from '$/features/room'
 import pinSticky from '$/features/room/helpers/pinSticky'
 import search from '$/features/room/helpers/search'
 import { ToasterAction } from '$/features/toaster'
-import toast from '$/features/toaster/helpers/toast'
 import fetchTokenMetadata from '$/features/misc/helpers/fetchTokenMetadata'
 import { TokenMetadata } from '$/types'
 import { WalletAction } from '$/features/wallet'
@@ -22,7 +21,7 @@ import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Wallet } from 'ethers'
-import { fork, put, select, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { fork, put, select, spawn, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
 import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
 import fetchTokenStandard from '$/features/misc/helpers/fetchTokenStandard'
@@ -31,6 +30,9 @@ import connectEagerly from '$/features/wallet/helpers/eagerConnect'
 import connect from '$/features/wallet/helpers/connect'
 import storeIntegrationId from '$/features/wallet/helpers/storeIntegrationId'
 import setAccount from '$/features/wallet/helpers/setAccount'
+import { Controller } from '$/components/Toaster'
+import toaster from '$/features/toaster/helpers/toaster'
+import Toast from '$/components/Toast'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -57,7 +59,15 @@ export default function* lifecycle() {
         })
 
         yield takeEvery(ToasterAction.show, function* ({ payload }) {
-            yield toast(payload)
+            yield spawn(function* () {
+                try {
+                    const tc: Controller = yield toaster(Toast, payload)
+
+                    yield tc.open()
+                } catch (e) {
+                    handleError(e)
+                }
+            })
         })
 
         yield takeEvery(AliasAction.set, function* ({ payload }) {

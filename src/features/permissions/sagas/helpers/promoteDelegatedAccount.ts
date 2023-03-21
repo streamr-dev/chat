@@ -1,12 +1,12 @@
 import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
-import toast from '$/features/toaster/helpers/toast'
+import { ToasterAction } from '$/features/toaster'
 import { selectWalletAccount } from '$/features/wallet/selectors'
 import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { call, select } from 'redux-saga/effects'
+import { call, put, select } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 export default function promoteDelegatedAccount({
@@ -30,17 +30,21 @@ export default function promoteDelegatedAccount({
                 }
             )
 
-            yield toast({
-                title: i18n('promoteToast.successTitle'),
-                type: ToastType.Success,
-            })
+            yield put(
+                ToasterAction.show({
+                    title: i18n('promoteToast.successTitle'),
+                    type: ToastType.Success,
+                })
+            )
         } catch (e) {
             handleError(e)
 
-            yield toast({
-                title: i18n('promoteToast.failureTitle'),
-                type: ToastType.Error,
-            })
+            yield put(
+                ToasterAction.show({
+                    title: i18n('promoteToast.failureTitle'),
+                    type: ToastType.Error,
+                })
+            )
         }
     })
 }

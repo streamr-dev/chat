@@ -1,5 +1,5 @@
 import db from '$/utils/db'
-import { put, takeEvery } from 'redux-saga/effects'
+import { cancelled, put, takeEvery } from 'redux-saga/effects'
 import StreamrClient, {
     Stream,
     StreamMetadata,
@@ -16,13 +16,13 @@ import { TokenStandard, TokenTypes } from '$/features/tokenGatedRooms/types'
 import { MiscAction } from '$/features/misc'
 import { RoomMetadata } from '$/utils/getRoomMetadata'
 import { BigNumber } from 'ethers'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
-import retoast from '$/features/toaster/helpers/retoast'
 import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createTokenGatePolicy'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getTransactionalClient from '$/utils/getTransactionalClient'
+import { ToasterAction } from '$/features/toaster'
+import retoast from '$/features/toaster/helpers/retoast'
 
 function* onCreateAction({
     payload: {
@@ -32,9 +32,7 @@ function* onCreateAction({
         requester,
     },
 }: ReturnType<typeof RoomAction.create>) {
-    let tc: Controller | undefined
-
-    let dismissToast = false
+    const toast = retoast()
 
     try {
         /**
@@ -72,22 +70,22 @@ function* onCreateAction({
                 tokenType.standard !== TokenStandard.ERC20 &&
                 tokenType.standard !== TokenStandard.ERC721
             ) {
-                yield toast({
-                    title: i18n('roomCreateToast.unsupportedTokenTitle'),
-                    type: ToastType.Error,
-                    okLabel: i18n('common.ok'),
-                })
+                yield put(
+                    ToasterAction.show({
+                        title: i18n('roomCreateToast.unsupportedTokenTitle'),
+                        type: ToastType.Error,
+                        okLabel: i18n('common.ok'),
+                    })
+                )
 
                 throw new Error('Unsupported standard')
             }
         }
 
-        tc = yield retoast(tc, {
+        yield toast.open({
             title: i18n('roomCreateToast.creatingTitle', params.name),
             type: ToastType.Processing,
         })
-
-        dismissToast = true
 
         yield preflight(requester)
 
@@ -118,12 +116,10 @@ function* onCreateAction({
         }
 
         if (privacy === PrivacySetting.Public) {
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('roomCreateToast.publishingTitle', params.name),
                 type: ToastType.Processing,
             })
-
-            dismissToast = true
 
             yield* recover(
                 function* () {
@@ -147,9 +143,7 @@ function* onCreateAction({
             owner: owner.toLowerCase(),
         })
 
-        dismissToast = false
-
-        tc = yield retoast(tc, {
+        yield toast.open({
             title: i18n('roomCreateToast.successTitle', params.name),
             type: ToastType.Success,
         })
@@ -173,16 +167,12 @@ function* onCreateAction({
     } catch (e: any) {
         handleError(e)
 
-        dismissToast = false
-
-        tc = yield retoast(tc, {
+        yield toast.open({
             title: i18n('roomCreateToast.failureTitle', params.name),
             type: ToastType.Error,
         })
     } finally {
-        if (dismissToast) {
-            tc?.dismiss()
-        }
+        yield toast.dismiss({ asap: yield cancelled() })
     }
 }
 

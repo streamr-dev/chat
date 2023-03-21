@@ -1,9 +1,8 @@
 import { ToastType } from '$/components/Toast'
 import { MiscAction } from '$/features/misc'
-import toast, { Controller } from '$/features/toaster/helpers/toast'
 import { InterfaceId, TokenStandard } from '$/features/tokenGatedRooms/types'
 import { selectTokenStandard } from '$/hooks/useTokenStandard'
-import { call, put, select } from 'redux-saga/effects'
+import { call, cancelled, put, select } from 'redux-saga/effects'
 import { Flag } from '$/features/flag/types'
 import { BigNumber, Contract, providers } from 'ethers'
 import { abi as erc20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
@@ -11,13 +10,14 @@ import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
 import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
 import { Address } from '$/types'
 import getWalletProvider from '$/utils/getWalletProvider'
+import retoast from '$/features/toaster/helpers/retoast'
 
 export default function fetchTokenStandard({
     address,
     showLoadingToast,
 }: ReturnType<typeof MiscAction.fetchTokenStandard>['payload']) {
     return call(function* () {
-        let tc: Controller | undefined
+        const toast = retoast()
 
         try {
             const currentStandard: undefined | TokenStandard = yield select(
@@ -26,7 +26,7 @@ export default function fetchTokenStandard({
 
             if (!currentStandard) {
                 if (showLoadingToast) {
-                    tc = yield toast({
+                    yield toast.open({
                         title: 'Loading token info…',
                         type: ToastType.Processing,
                     })
@@ -53,7 +53,7 @@ export default function fetchTokenStandard({
         } catch (e) {
             // Noop.
         } finally {
-            tc?.dismiss()
+            yield toast.dismiss({ asap: yield cancelled() })
         }
     })
 }

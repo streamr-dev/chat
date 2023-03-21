@@ -1,10 +1,10 @@
 import { ToastType } from '$/components/Toast'
 import { PreferencesAction } from '$/features/preferences'
-import toast from '$/features/toaster/helpers/toast'
+import { ToasterAction } from '$/features/toaster'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
-import { takeEvery } from 'redux-saga/effects'
+import { put, takeEvery } from 'redux-saga/effects'
 
 function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
     try {
@@ -24,10 +24,12 @@ function* onSetAction({ payload }: ReturnType<typeof PreferencesAction.set>) {
     } catch (e) {
         handleError(e)
 
-        yield toast({
-            title: i18n('preferenceToast.updateFailureTitle'),
-            type: ToastType.Error,
-        })
+        yield put(
+            ToasterAction.show({
+                title: i18n('preferenceToast.updateFailureTitle'),
+                type: ToastType.Error,
+            })
+        )
     }
 }
 

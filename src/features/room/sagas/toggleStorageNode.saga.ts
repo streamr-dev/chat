@@ -3,11 +3,11 @@ import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import takeEveryUnique from '$/utils/takeEveryUnique'
-import toast from '$/features/toaster/helpers/toast'
 import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
 import StreamrClient from 'streamr-client'
 import getTransactionalClient from '$/utils/getTransactionalClient'
+import { ToasterAction } from '$/features/toaster'
 
 function* onToggleStorageNodeAction({
     payload: { roomId, address, state, requester },
@@ -28,17 +28,21 @@ function* onToggleStorageNodeAction({
         if (state) {
             yield streamrClient.addStreamToStorageNode(roomId, address)
 
-            yield toast({
-                title: i18n('storageToast.enabledTitle'),
-                type: ToastType.Success,
-            })
+            yield put(
+                ToasterAction.show({
+                    title: i18n('storageToast.enabledTitle'),
+                    type: ToastType.Success,
+                })
+            )
         } else {
             yield streamrClient.removeStreamFromStorageNode(roomId, address)
 
-            yield toast({
-                title: i18n('storageToast.disabledTitle'),
-                type: ToastType.Success,
-            })
+            yield put(
+                ToasterAction.show({
+                    title: i18n('storageToast.disabledTitle'),
+                    type: ToastType.Success,
+                })
+            )
         }
 
         yield put(
@@ -51,12 +55,14 @@ function* onToggleStorageNodeAction({
     } catch (e) {
         handleError(e)
 
-        yield toast({
-            title: state
-                ? i18n('storageToast.failedToEnableTitle')
-                : i18n('storageToast.failedToDisableTitle'),
-            type: ToastType.Error,
-        })
+        yield put(
+            ToasterAction.show({
+                title: state
+                    ? i18n('storageToast.failedToEnableTitle')
+                    : i18n('storageToast.failedToDisableTitle'),
+                type: ToastType.Error,
+            })
+        )
     }
 }
 

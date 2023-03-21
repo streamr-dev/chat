@@ -3,14 +3,13 @@ import { Controller as ToastController } from '$/components/Toaster'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
 import retoast from '$/features/toaster/helpers/retoast'
-import { Controller } from '$/features/toaster/helpers/toast'
 import toaster from '$/features/toaster/helpers/toaster'
 import fetchStream from '$/utils/fetchStream'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import preflight from '$/utils/preflight'
-import { call } from 'redux-saga/effects'
+import { call, cancelled } from 'redux-saga/effects'
 import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
 
 export default function allowAnonsPublish({
@@ -18,19 +17,15 @@ export default function allowAnonsPublish({
     requester,
 }: ReturnType<typeof PermissionsAction.allowAnonsPublish>['payload']) {
     return call(function* () {
-        let t: ToastController<typeof Toast> | undefined
+        let t: ToastController | undefined
 
-        let tc: Controller | undefined
-
-        let dismissToast = false
+        const toast = retoast()
 
         try {
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('anonToast.title'),
                 type: ToastType.Processing,
             })
-
-            dismissToast = true
 
             try {
                 t = yield toaster(Toast, {
@@ -43,9 +38,7 @@ export default function allowAnonsPublish({
 
                 yield t?.open()
             } catch (e) {
-                dismissToast = false
-
-                tc = yield retoast(tc, {
+                yield toast.open({
                     title: i18n('anonToast.cancelledTitle'),
                     type: ToastType.Info,
                 })
@@ -75,25 +68,19 @@ export default function allowAnonsPublish({
                 ],
             })
 
-            dismissToast = false
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('anonToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
-            dismissToast = false
-
-            tc = yield retoast(tc, {
+            yield toast.open({
                 title: i18n('anonToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {
-            if (dismissToast) {
-                tc?.dismiss()
-            }
+            yield toast.dismiss({ asap: yield cancelled() })
 
             t?.dismiss()
         }
