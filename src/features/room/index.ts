@@ -1,20 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { all } from 'redux-saga/effects'
 import { Address, IFingerprinted, OptionalAddress, PreflightParams, PrivacySetting } from '$/types'
-import create from './sagas/create.saga'
-import del from './sagas/del.saga'
-import delLocal from './sagas/delLocal.saga'
-import fetch from './sagas/fetch.saga'
-import getPrivacy from './sagas/getPrivacy.saga'
-import getStorageNodes from './sagas/getStorageNodes.saga'
-import registerInvite from './sagas/registerInvite.saga'
-import rename from './sagas/rename.saga'
-import renameLocal from './sagas/renameLocal.saga'
-import sync from './sagas/sync.saga'
-import toggleStorageNode from './sagas/toggleStorageNode.saga'
 import { CachedTokenGate, IRoom, RoomId, RoomState } from './types'
-import setVisibility from '$/features/room/sagas/setVisibility.saga'
-import unpin from '$/features/room/sagas/unpin.saga'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -207,23 +193,5 @@ const reducer = createReducer(initialState, (builder) => {
         state.recentRoomId = payload
     })
 })
-
-export function* roomSaga() {
-    yield all([
-        create(),
-        del(),
-        delLocal(),
-        fetch(),
-        getPrivacy(),
-        getStorageNodes(),
-        registerInvite(),
-        rename(),
-        renameLocal(),
-        setVisibility(),
-        sync(),
-        toggleStorageNode(),
-        unpin(),
-    ])
-}
 
 export default reducer

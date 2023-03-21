@@ -6,13 +6,21 @@ import Text from '$/components/Text'
 import useWalletModal from '$/hooks/useWalletModal'
 import useHowItWorksModal from '$/hooks/useHowItWorksModal'
 import TryMetaMask from '$/components/TryMetaMask'
-import { ButtonHTMLAttributes } from 'react'
+import { ButtonHTMLAttributes, useEffect } from 'react'
 import i18n from '$/utils/i18n'
+import { WalletAction } from '$/features/wallet'
+import { useDispatch } from 'react-redux'
 
 export default function HomePage() {
     const { open, modal } = useWalletModal()
 
     const { open: openHiwModal, modal: hiwModal } = useHowItWorksModal()
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(WalletAction.connectEagerly())
+    }, [dispatch])
 
     return (
         <>

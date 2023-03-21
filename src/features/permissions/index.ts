@@ -1,9 +1,7 @@
-import lifecycle from '$/features/permissions/sagas/lifecycle.saga'
 import { IMember, PermissionsState } from '$/features/permissions/types'
 import { RoomId } from '$/features/room/types'
 import { Address, IFingerprinted, PreflightParams } from '$/types'
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { all } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 
 const initialState: PermissionsState = {
@@ -147,7 +145,3 @@ const reducer = createReducer(initialState, (b) => {
 })
 
 export default reducer
-
-export function* permissionsSaga() {
-    yield all([lifecycle()])
-}
