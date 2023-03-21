@@ -35,10 +35,6 @@ export default function IndexPage() {
         dispatch(MiscAction.setNavigate({ navigate }))
     }, [navigate, dispatch])
 
-    useEffect(() => {
-        dispatch(WalletAction.connectEagerly())
-    }, [dispatch])
-
     if (!account) {
         return <HomePage />
     }
