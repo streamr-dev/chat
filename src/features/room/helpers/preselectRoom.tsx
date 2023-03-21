@@ -1,5 +1,6 @@
 import { ToastType } from '$/components/Toast'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
+import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
 import { PreferencesAction } from '$/features/preferences'
 import { IPreference } from '$/features/preferences/types'
@@ -71,7 +72,15 @@ export default function preselect({
                     // No room id? Let's see what room was selected last time the current account
                     // visited the site and go there.
                     if (preferences?.selectedRoomId) {
-                        yield put(MiscAction.goto(preferences?.selectedRoomId))
+                        yield put(MiscAction.goto(preferences.selectedRoomId))
+
+                        yield put(
+                            RoomAction.preselect({
+                                roomId: preferences.selectedRoomId,
+                                account,
+                                fingerprint: Flag.isPreselectingRoom(preferences.selectedRoomId),
+                            })
+                        )
                     }
 
                     return
