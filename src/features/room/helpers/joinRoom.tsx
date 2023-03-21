@@ -4,7 +4,7 @@ import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import handleError from '$/utils/handleError'
 import { call, cancelled, put } from 'redux-saga/effects'
-import { BigNumber, Contract } from 'ethers'
+import { BigNumber, Contract, providers } from 'ethers'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
@@ -23,6 +23,8 @@ import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 import retoast, { RetoastController } from '$/features/toaster/helpers/retoast'
+import getSigner from '$/utils/getSigner'
+import { JSON_RPC_URL } from '$/consts'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -84,7 +86,9 @@ export default function join(
 
             const delegatedAccount = yield* delegationPreflight(requester)
 
-            const policyRegistry = getJoinPolicyRegistry(provider)
+            const policyRegistry = getJoinPolicyRegistry(
+                new providers.JsonRpcProvider(JSON_RPC_URL)
+            )
 
             const policyAddress: string = yield policyRegistry.getPolicy(
                 tokenAddress,
@@ -93,7 +97,7 @@ export default function join(
                 stakingEnabled
             )
 
-            const policy = new Contract(policyAddress, Abi[tokenStandard], policyRegistry.signer)
+            const policy = new Contract(policyAddress, Abi[tokenStandard], getSigner(provider))
 
             const ok = yield* recover(
                 function* () {

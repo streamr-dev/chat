@@ -2,6 +2,8 @@ import { Wallet } from 'ethers'
 import { sign, hash } from 'eth-crypto'
 import { Address } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
+import { Provider } from '@web3-react/types'
+import getSigner from '$/utils/getSigner'
 
 enum ChallengeType {
     Authorize = 0,
@@ -24,7 +26,7 @@ const signDelegatedChallenge = (
 export default async function authorizeDelegatedAccount(
     metamaskAccount: Address,
     delegatedPrivateKey: string,
-    rawProvider: any
+    provider: Provider
 ) {
     const signature = signDelegatedChallenge(
         metamaskAccount,
@@ -34,7 +36,7 @@ export default async function authorizeDelegatedAccount(
 
     const delegatedAddress = new Wallet(delegatedPrivateKey).address
 
-    const contract = getDelegatedAccessRegistry(rawProvider)
+    const contract = getDelegatedAccessRegistry(getSigner(provider))
 
     const tx = await contract.functions.authorize(delegatedAddress, signature)
 

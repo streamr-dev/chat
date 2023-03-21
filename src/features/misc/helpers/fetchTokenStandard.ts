@@ -9,8 +9,8 @@ import { abi as erc20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
 import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
 import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
 import { Address } from '$/types'
-import getWalletProvider from '$/utils/getWalletProvider'
 import retoast from '$/features/toaster/helpers/retoast'
+import { JSON_RPC_URL } from '$/consts'
 
 export default function fetchTokenStandard({
     address,
@@ -62,13 +62,9 @@ function* fetchUtil(address: Address) {
     let standard: TokenStandard | undefined
 
     yield call(function* () {
-        const provider = yield* getWalletProvider()
+        const provider = new providers.JsonRpcProvider(JSON_RPC_URL)
 
-        const contract = new Contract(
-            address,
-            erc165abi,
-            new providers.Web3Provider(provider).getSigner()
-        )
+        const contract = new Contract(address, erc165abi, provider)
 
         try {
             const supportsERC1155Interface: boolean = yield contract.supportsInterface(
@@ -124,11 +120,7 @@ function* fetchUtil(address: Address) {
         }
 
         // Still, ERC20 is not compulsory ERC165 so time for specific checks.
-        const erc20Contract = new Contract(
-            address,
-            erc20abi,
-            new providers.Web3Provider(provider).getSigner()
-        )
+        const erc20Contract = new Contract(address, erc20abi, provider)
 
         try {
             const balanceCheck: BigNumber = yield erc20Contract.balanceOf(erc20Contract.address)
@@ -145,11 +137,7 @@ function* fetchUtil(address: Address) {
         }
 
         // And since ERC777 doesn't include ERC165, we need to check for it separately
-        const erc777Contract = new Contract(
-            address,
-            erc777abi,
-            new providers.Web3Provider(provider).getSigner()
-        )
+        const erc777Contract = new Contract(address, erc777abi, provider)
 
         try {
             yield erc777Contract.granularity()

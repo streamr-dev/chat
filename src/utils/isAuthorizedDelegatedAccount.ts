@@ -1,13 +1,13 @@
+import { JSON_RPC_URL } from '$/consts'
 import { Address } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
-import { Provider } from '@web3-react/types'
+import { providers } from 'ethers'
 
 export default async function isAuthorizedDelegatedAccount(
     metamaskAccount: Address,
-    delegatedAccount: Address,
-    provider: Provider
+    delegatedAccount: Address
 ): Promise<boolean> {
-    const contract = getDelegatedAccessRegistry(provider)
+    const contract = getDelegatedAccessRegistry(new providers.JsonRpcProvider(JSON_RPC_URL))
 
     const [isAuthorized]: boolean[] = await contract.functions.isUserAuthorized(
         metamaskAccount,

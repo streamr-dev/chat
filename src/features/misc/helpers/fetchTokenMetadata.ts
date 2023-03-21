@@ -4,12 +4,12 @@ import { abi as ERC777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json
 import { abi as ERC1155abi } from '$/contracts/tokens/ERC1155Token.sol/ERC1155.json'
 import { BigNumber, Contract, providers } from 'ethers'
 import { Address, TokenMetadata } from '$/types'
-import { Provider } from '@web3-react/types'
 import { Erc1155, Erc20, Erc721, Erc777 } from '$/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { MiscAction } from '$/features/misc'
-import getWalletProvider from '$/utils/getWalletProvider'
 import { call } from 'redux-saga/effects'
+import { JSON_RPC_URL } from '$/consts'
+import { JsonRpcProvider } from '@ethersproject/providers'
 
 function* getURIs(tokenIds: string[], contract: Contract) {
     const uris: Record<string, string> = {}
@@ -25,12 +25,8 @@ function* getURIs(tokenIds: string[], contract: Contract) {
     return uris
 }
 
-function* fetchERC20TokenMetadata(tokenAddress: Address, provider: Provider) {
-    const contract = new Contract(
-        tokenAddress,
-        ERC20abi,
-        new providers.Web3Provider(provider).getSigner()
-    )
+function* fetchERC20TokenMetadata(tokenAddress: Address, provider: JsonRpcProvider) {
+    const contract = new Contract(tokenAddress, ERC20abi, provider)
 
     const result: Erc20 = yield call(function* () {
         return {
@@ -43,12 +39,12 @@ function* fetchERC20TokenMetadata(tokenAddress: Address, provider: Provider) {
     return result
 }
 
-function* fetchERC721TokenMetadata(tokenAddress: Address, provider: Provider, tokenIds: string[]) {
-    const contract = new Contract(
-        tokenAddress,
-        ERC721abi,
-        new providers.Web3Provider(provider).getSigner()
-    )
+function* fetchERC721TokenMetadata(
+    tokenAddress: Address,
+    provider: JsonRpcProvider,
+    tokenIds: string[]
+) {
+    const contract = new Contract(tokenAddress, ERC721abi, provider)
 
     const result: Erc721 = yield call(function* () {
         return {
@@ -61,12 +57,8 @@ function* fetchERC721TokenMetadata(tokenAddress: Address, provider: Provider, to
     return result
 }
 
-function* fetchERC777TokenMetadata(tokenAddress: Address, provider: Provider) {
-    const contract = new Contract(
-        tokenAddress,
-        ERC777abi,
-        new providers.Web3Provider(provider).getSigner()
-    )
+function* fetchERC777TokenMetadata(tokenAddress: Address, provider: JsonRpcProvider) {
+    const contract = new Contract(tokenAddress, ERC777abi, provider)
 
     const result: Erc777 = yield call(function* () {
         return {
@@ -79,12 +71,12 @@ function* fetchERC777TokenMetadata(tokenAddress: Address, provider: Provider) {
     return result
 }
 
-function* fetchERC1155TokenMetadata(tokenAddress: Address, provider: Provider, tokenIds: string[]) {
-    const contract = new Contract(
-        tokenAddress,
-        ERC1155abi,
-        new providers.Web3Provider(provider).getSigner()
-    )
+function* fetchERC1155TokenMetadata(
+    tokenAddress: Address,
+    provider: JsonRpcProvider,
+    tokenIds: string[]
+) {
+    const contract = new Contract(tokenAddress, ERC1155abi, provider)
 
     const result: Erc1155 = yield call(function* () {
         return {
@@ -103,7 +95,7 @@ export default function* fetchTokenMetadata({
     let metadata: TokenMetadata | undefined
 
     yield call(function* () {
-        const provider = yield* getWalletProvider()
+        const provider = new providers.JsonRpcProvider(JSON_RPC_URL)
 
         switch (tokenStandard) {
             case TokenStandard.ERC1155:

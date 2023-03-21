@@ -17,6 +17,7 @@ import {
     ERC20PolicyFactoryAddress,
     ERC721PolicyFactoryAddress,
     ERC777PolicyFactoryAddress,
+    JSON_RPC_URL,
     PermissionType,
 } from '$/consts'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
@@ -27,6 +28,7 @@ import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
 import retoast from '$/features/toaster/helpers/retoast'
+import getSigner from '$/utils/getSigner'
 
 const Factory: Record<
     TokenStandard,
@@ -97,11 +99,7 @@ export default function createTokenGatePolicy({
 
                     const provider = yield* getWalletProvider()
 
-                    const factoryContract = new Contract(
-                        address,
-                        abi,
-                        new providers.Web3Provider(provider).getSigner()
-                    )
+                    const factoryContract = new Contract(address, abi, getSigner(provider))
 
                     yield* recover(
                         function* () {
@@ -124,7 +122,9 @@ export default function createTokenGatePolicy({
                         }
                     )
 
-                    const policyRegistry = getJoinPolicyRegistry(provider)
+                    const policyRegistry = getJoinPolicyRegistry(
+                        new providers.JsonRpcProvider(JSON_RPC_URL)
+                    )
 
                     let policyAddress: Address = ZeroAddress
 
