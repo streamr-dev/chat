@@ -11,14 +11,9 @@ import { call, delay, put, race, select } from 'redux-saga/effects'
 
 export default function lookup({
     delegated,
-    checkNetwork = false,
 }: ReturnType<typeof DelegationAction.lookup>['payload']) {
     return call(function* () {
         try {
-            if (checkNetwork) {
-                yield networkPreflight()
-            }
-
             const provider = yield* getWalletProvider()
 
             const contract = getDelegatedAccessRegistry(provider)

@@ -18,7 +18,6 @@ export const DelegationAction = {
     lookup: createAction<
         IFingerprinted & {
             delegated: Address
-            checkNetwork?: boolean
         }
     >('delegation: lookup'),
 

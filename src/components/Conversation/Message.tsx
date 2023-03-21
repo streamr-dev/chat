@@ -404,7 +404,6 @@ function LookupAddressButton({ creator }: { creator: Address }) {
                 dispatch(
                     DelegationAction.lookup({
                         delegated: creator,
-                        checkNetwork: true,
                         fingerprint: Flag.isLookingUpDelegation(creator),
                     })
                 )
