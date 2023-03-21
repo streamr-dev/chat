@@ -21,7 +21,16 @@ import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Wallet } from 'ethers'
-import { fork, put, select, spawn, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import {
+    fork,
+    put,
+    select,
+    spawn,
+    takeEvery,
+    takeLatest,
+    takeLeading,
+    throttle,
+} from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
 import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
 import fetchTokenStandard from '$/features/misc/helpers/fetchTokenStandard'
@@ -33,6 +42,8 @@ import setAccount from '$/features/wallet/helpers/setAccount'
 import { Controller } from '$/components/Toaster'
 import toaster from '$/features/toaster/helpers/toaster'
 import Toast from '$/components/Toast'
+import { DraftAction } from '$/features/drafts'
+import storeDraft from '$/features/drafts/helpers/storeDraft'
 
 export default function* lifecycle() {
     yield takeLatest(WalletAction.changeAccount, function* ({ payload }) {
@@ -135,6 +146,10 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(RoomAction.preselect, function* ({ payload }) {
             yield preselect(payload)
+        })
+
+        yield throttle(1000, DraftAction.store, function* ({ payload }) {
+            yield storeDraft(payload)
         })
 
         // This needs to go last. It triggers some of the actions that have

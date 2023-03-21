@@ -5,7 +5,6 @@ import delegation from '$/features/delegation'
 import room, { roomSaga } from '$/features/room'
 import rooms, { roomsSaga } from '$/features/rooms'
 import permissions, { permissionsSaga } from '$/features/permissions'
-import drafts, { draftsSaga } from '$/features/drafts'
 import identicons, { identiconsSaga } from '$/features/identicons'
 import createSagaMiddleware from 'redux-saga'
 import message, { messageSaga } from '$/features/message'
@@ -20,7 +19,6 @@ import avatar from '$/features/avatar'
 
 const defaultReducer = {
     delegation,
-    drafts,
     ens,
     flag,
     identicons,
@@ -74,7 +72,6 @@ export default function createStore(reducer = defaultReducer) {
 
     sagaMiddleware.run(function* saga() {
         yield all([
-            draftsSaga(),
             ensSaga(),
             identiconsSaga(),
             permissionsSaga(),
