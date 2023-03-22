@@ -38,7 +38,7 @@
         "empty": "^0.10.1",
         "eth-crypto": "^2.6.0",
         "ethers": "^5.7.2",
-        "gsap": "^3.11.4",
+        "gsap": "^3.11.5",
         "identicon.js": "^2.3.3",
         "js-crypto-hkdf": "^1.0.4",
         "lodash": "^4.17.21",
