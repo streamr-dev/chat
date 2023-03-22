@@ -98,6 +98,11 @@ const reducer = createReducer(initialState, (b) => {
             return
         }
 
+        if (standard === TokenStandard.Unknown) {
+            // Don't cache the unknowns.
+            return
+        }
+
         state.tokenStandards[address.toLowerCase()] = standard
     })
 
