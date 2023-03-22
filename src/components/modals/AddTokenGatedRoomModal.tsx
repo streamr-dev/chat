@@ -378,7 +378,7 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                     items-center
                 `}
                 onSubmit={() => {
-                    if (!/0x[a-f\d]{40}/i.test(value)) {
+                    if (!/^0x[a-f\d]{40}$/i.test(value)) {
                         return
                     }
 
