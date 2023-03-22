@@ -12,7 +12,7 @@
         "test": "jest"
     },
     "dependencies": {
-        "@coinbase/wallet-sdk": "^3.6.4",
+        "@coinbase/wallet-sdk": "^3.6.5",
         "@emotion/react": "^11.10.6",
         "@emotion/styled": "^11.10.6",
         "@ensdomains/ens-avatar": "^0.2.1",
