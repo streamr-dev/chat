@@ -142,7 +142,6 @@ function TokenGateSummary({ roomId }: { roomId: RoomId | undefined }) {
             <Label>{i18n('roomPropertiesModal.tokenGateLabel')}</Label>
             <div
                 css={tw`
-                    [img]:mr-3
                     border
                     border-[#F1F4F7]
                     flex
@@ -154,7 +153,14 @@ function TokenGateSummary({ roomId }: { roomId: RoomId | undefined }) {
                     text-[14px]
                 `}
             >
-                <TokenLogo tokenAddress={tokenAddress} />
+                <div
+                    css={tw`
+                        shrink-0
+                        mr-3
+                    `}
+                >
+                    <TokenLogo tokenAddress={tokenAddress} />
+                </div>
                 <div css={tw`mr-6 grow`}>
                     <div css={tw`font-semibold`}>
                         <Text
