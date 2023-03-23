@@ -19,7 +19,6 @@ export default function TokenLogo({ tokenAddress }: { tokenAddress: OptionalAddr
             css={tw`
                 w-8
                 h-8
-                mr-3
             `}
         />
     )

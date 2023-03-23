@@ -14,6 +14,7 @@ export interface WalletState {
     account: string | undefined | null
     integrationId: WalletIntegrationId | undefined
     client: undefined | StreamrClient
+    transactionalClient: undefined | StreamrClient
 }
 
 export type ConnectorMap = Partial<

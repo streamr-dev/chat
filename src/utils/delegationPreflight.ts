@@ -16,7 +16,7 @@ export default function* delegationPreflight(requester: Address) {
     yield call(function* () {
         let retrievedAccess = false
 
-        let confirm: ToastController<typeof Toast> | undefined
+        let confirm: ToastController | undefined
 
         try {
             delegatedAccount = yield select(selectDelegatedAccount)

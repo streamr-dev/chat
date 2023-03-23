@@ -1,6 +1,7 @@
+import { JSON_RPC_URL } from '$/consts'
 import { Address } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
-import getWalletProvider from '$/utils/getWalletProvider'
+import { providers } from 'ethers'
 import { call } from 'redux-saga/effects'
 
 export enum AccountType {
@@ -13,9 +14,7 @@ export default function* getAccountType(account: Address) {
     let type: AccountType | undefined
 
     yield call(function* () {
-        const provider = yield* getWalletProvider()
-
-        const contract = getDelegatedAccessRegistry(provider)
+        const contract = getDelegatedAccessRegistry(new providers.JsonRpcProvider(JSON_RPC_URL))
 
         try {
             const [metamaskAccount]: boolean[] = yield contract.functions.isMainWallet(account)

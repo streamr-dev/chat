@@ -4,7 +4,7 @@ import tw from 'twin.macro'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
 import { IRoom, RoomId } from '$/features/room/types'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import useIntercept from '$/hooks/useIntercept'
 import useJustInvited from '$/hooks/useJustInvited'
 import useRecentMessage from '$/hooks/useRecentMessage'
@@ -48,10 +48,8 @@ export default function RoomButton({ room, active, ...props }: Props) {
 
     const requester = useWalletAccount()
 
-    const streamrClient = useWalletClient()
-
     useEffect(() => {
-        if (!requester || !streamrClient) {
+        if (!requester) {
             return
         }
 
@@ -59,7 +57,6 @@ export default function RoomButton({ room, active, ...props }: Props) {
             RoomAction.sync({
                 roomId: id,
                 requester,
-                streamrClient,
                 fingerprint: Flag.isSyncingRoom(id),
             })
         )
@@ -70,7 +67,7 @@ export default function RoomButton({ room, active, ...props }: Props) {
     const address = useWalletAccount()
 
     useEffect(() => {
-        if (!address || !streamrClient) {
+        if (!address) {
             return
         }
 
@@ -78,11 +75,10 @@ export default function RoomButton({ room, active, ...props }: Props) {
             PermissionsAction.fetchPermissions({
                 roomId: id,
                 address,
-                streamrClient,
                 fingerprint: Flag.isFetchingAllPermissions(id, address),
             })
         )
-    }, [id, address, streamrClient])
+    }, [id, address])
 
     const justInvited = useJustInvited(id, address)
 
@@ -162,8 +158,6 @@ export function PassiveRoomButton({
 
     const account = useWalletAccount()
 
-    const streamrClient = useWalletClient()
-
     return (
         <SidebarButton
             {...props}
@@ -176,7 +170,7 @@ export function PassiveRoomButton({
 
                 onClick?.(e)
 
-                if (!account || !streamrClient) {
+                if (!account) {
                     return
                 }
 
@@ -185,7 +179,6 @@ export function PassiveRoomButton({
                         roomId,
                         account,
                         fingerprint: Flag.isPreselectingRoom(roomId),
-                        streamrClient,
                     })
                 )
             }}

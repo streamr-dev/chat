@@ -1,22 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { all } from 'redux-saga/effects'
 import { Address, IFingerprinted, OptionalAddress, PreflightParams, PrivacySetting } from '$/types'
-import create from './sagas/create.saga'
-import del from './sagas/del.saga'
-import delLocal from './sagas/delLocal.saga'
-import fetch from './sagas/fetch.saga'
-import getPrivacy from './sagas/getPrivacy.saga'
-import getStorageNodes from './sagas/getStorageNodes.saga'
-import registerInvite from './sagas/registerInvite.saga'
-import rename from './sagas/rename.saga'
-import renameLocal from './sagas/renameLocal.saga'
-import sync from './sagas/sync.saga'
-import toggleStorageNode from './sagas/toggleStorageNode.saga'
 import { CachedTokenGate, IRoom, RoomId, RoomState } from './types'
-import setVisibility from '$/features/room/sagas/setVisibility.saga'
-import StreamrClient from 'streamr-client'
-import unpin from '$/features/room/sagas/unpin.saga'
-import leaveTokenGatedRoom from './sagas/leaveTokenGatedRoom.saga'
 
 const initialState: RoomState = {
     selectedRoomId: undefined,
@@ -45,7 +29,6 @@ export const RoomAction = {
             params: IRoom
             privacy: PrivacySetting
             storage: boolean
-            streamrClient: StreamrClient
         }
     >('room: create'),
 
@@ -53,7 +36,6 @@ export const RoomAction = {
         IFingerprinted &
             PreflightParams & {
                 roomId: RoomId
-                streamrClient: StreamrClient
             }
     >('room: delete'),
 
@@ -64,7 +46,6 @@ export const RoomAction = {
             PreflightParams & {
                 roomId: RoomId
                 name: string
-                streamrClient: StreamrClient
             }
     >('room: rename'),
 
@@ -76,17 +57,12 @@ export const RoomAction = {
         IFingerprinted & {
             roomId: RoomId
             account: OptionalAddress
-            streamrClient: StreamrClient
         }
     >('room: preselect'),
 
-    sync: createAction<
-        IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
-    >('room: sync'),
+    sync: createAction<IFingerprinted & { roomId: RoomId; requester: Address }>('room: sync'),
 
-    getStorageNodes: createAction<
-        IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }
-    >('room: get storage nodes'),
+    getStorageNodes: createAction<IFingerprinted & { roomId: RoomId }>('room: get storage nodes'),
 
     setGettingStorageNodes: createAction<{ roomId: RoomId; state: boolean }>(
         'room: set getting strorage nodes'
@@ -106,7 +82,6 @@ export const RoomAction = {
                 roomId: RoomId
                 address: string
                 state: boolean
-                streamrClient: StreamrClient
             }
     >('room: toggle storage node'),
 
@@ -126,17 +101,13 @@ export const RoomAction = {
         'room: set getting privacy'
     ),
 
-    getPrivacy: createAction<IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }>(
-        'room: get privacy'
+    getPrivacy: createAction<IFingerprinted & { roomId: RoomId }>('room: get privacy'),
+
+    registerInvite: createAction<IFingerprinted & { roomId: RoomId; invitee: Address }>(
+        'room: register invite'
     ),
 
-    registerInvite: createAction<
-        IFingerprinted & { roomId: RoomId; invitee: Address; streamrClient: StreamrClient }
-    >('room: register invite'),
-
-    fetch: createAction<{ roomId: RoomId; requester: Address; streamrClient: StreamrClient }>(
-        'room: fetch'
-    ),
+    fetch: createAction<{ roomId: RoomId; requester: Address }>('room: fetch'),
 
     setPersistingName: createAction<{ roomId: RoomId; state: boolean }>(
         'room: set persisting name'
@@ -151,13 +122,10 @@ export const RoomAction = {
     pinSticky: createAction<
         IFingerprinted & {
             requester: Address
-            streamrClient: StreamrClient
         }
     >('room: pin sticky'),
 
-    unpin: createAction<
-        IFingerprinted & { roomId: RoomId; requester: Address; streamrClient: StreamrClient }
-    >('room: unpin'),
+    unpin: createAction<IFingerprinted & { roomId: RoomId; requester: Address }>('room: unpin'),
 
     setPinning: createAction<{ owner: Address; roomId: RoomId; state: boolean }>(
         'room: set pinning'
@@ -168,9 +136,7 @@ export const RoomAction = {
         tokenGate: CachedTokenGate | null
     }>('room: cache token gate'),
 
-    search: createAction<IFingerprinted & { roomId: RoomId; streamrClient: StreamrClient }>(
-        'room: search'
-    ),
+    search: createAction<IFingerprinted & { roomId: RoomId }>('room: search'),
 
     cacheSearchResult: createAction<{
         roomId: RoomId
@@ -233,24 +199,5 @@ const reducer = createReducer(initialState, (builder) => {
         state.recentRoomId = payload
     })
 })
-
-export function* roomSaga() {
-    yield all([
-        create(),
-        del(),
-        delLocal(),
-        fetch(),
-        getPrivacy(),
-        getStorageNodes(),
-        registerInvite(),
-        rename(),
-        renameLocal(),
-        setVisibility(),
-        sync(),
-        toggleStorageNode(),
-        unpin(),
-        leaveTokenGatedRoom(),
-    ])
-}
 
 export default reducer

@@ -9,6 +9,11 @@ jest.mock('streamr-client', () => ({
     },
 }))
 
+jest.mock('$/utils/getCommitId', () => ({
+    __esModule: true,
+    default: () => 'COMMIT_ID',
+}))
+
 describe('Getting into the app', () => {
     it('displays different wallet options in the wallet modal', async () => {
         render(<App />)

@@ -17,3 +17,5 @@ export enum PermissionType {
     Subscribe,
     Grant,
 }
+
+export const JSON_RPC_URL = 'https://polygon-rpc.com'

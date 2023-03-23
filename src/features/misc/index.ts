@@ -1,5 +1,3 @@
-import fetchKnownTokens from '$/features/misc/sagas/fetchKnownTokens.saga'
-import goto from '$/features/misc/sagas/goto.saga'
 import { MiscState, TokenInfo } from '$/features/misc/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
@@ -7,7 +5,6 @@ import { Address, IFingerprinted, TokenMetadata } from '$/types'
 import isBlank from '$/utils/isBlank'
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { NavigateFunction } from 'react-router-dom'
-import { all } from 'redux-saga/effects'
 
 export const MiscAction = {
     goto: createAction<string>('misc: goto'),
@@ -101,6 +98,11 @@ const reducer = createReducer(initialState, (b) => {
             return
         }
 
+        if (standard === TokenStandard.Unknown) {
+            // Don't cache the unknowns.
+            return
+        }
+
         state.tokenStandards[address.toLowerCase()] = standard
     })
 
@@ -112,9 +114,5 @@ const reducer = createReducer(initialState, (b) => {
         }
     )
 })
-
-export function* miscSaga() {
-    yield all([goto(), fetchKnownTokens()])
-}
 
 export default reducer

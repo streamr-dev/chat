@@ -27,7 +27,7 @@ export default function RoomInfo({ roomId, mini = false, children, ...props }: P
 
     return (
         <Wrap {...props}>
-            {(!mini || privacy !== PrivacySetting.TokenGated) && (
+            {(!mini || privacy !== PrivacySetting.TokenGated || requirements === null) && (
                 <>
                     <PrivacyIcon
                         css={tw`

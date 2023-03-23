@@ -6,7 +6,6 @@ import Text from '$/components/Text'
 import { Flag } from '$/features/flag/types'
 import { RoomAction } from '$/features/room'
 import { RoomId } from '$/features/room/types'
-import { useWalletClient } from '$/features/wallet/hooks'
 import useFlag from '$/hooks/useFlag'
 import useRooms from '$/hooks/useRooms'
 import useSearchResult from '$/hooks/useSearchResult'
@@ -147,8 +146,6 @@ interface SearchProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 function Search({ roomId, onRoomId, onGoBackButtonClick, ...props }: SearchProps) {
-    const streamrClient = useWalletClient()
-
     const dispatch = useDispatch()
 
     const isSearching = useFlag(Flag.isSearching())
@@ -161,14 +158,13 @@ function Search({ roomId, onRoomId, onGoBackButtonClick, ...props }: SearchProps
                     items-center
                 `}
                 onSubmit={() => {
-                    if (isBlank(roomId) || !streamrClient) {
+                    if (isBlank(roomId)) {
                         return
                     }
 
                     dispatch(
                         RoomAction.search({
                             roomId,
-                            streamrClient,
                             fingerprint: Flag.isSearching(),
                         })
                     )

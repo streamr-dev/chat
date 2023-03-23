@@ -1,14 +1,13 @@
 import { ToastType } from '$/components/Toast'
 import { RoomId } from '$/features/room/types'
-import retoast from '$/features/toaster/helpers/retoast'
 import { TokenStandard, TokenType } from '$/features/tokenGatedRooms/types'
 import { WalletAction } from '$/features/wallet'
 import { Address } from '$/types'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { Contract, providers, BigNumber } from 'ethers'
-import { call, race, retry, spawn, take } from 'redux-saga/effects'
-import StreamrClient, { StreamPermission } from 'streamr-client'
+import { call, cancelled, race, retry, spawn, take } from 'redux-saga/effects'
+import { StreamPermission } from 'streamr-client'
 import { abi as erc20abi } from '$/contracts/Factories/ERC20PolicyFactory.sol/ERC20PolicyFactory.json'
 import { abi as erc721abi } from '$/contracts/Factories/ERC721PolicyFactory.sol/ERC721PolicyFactory.json'
 import { abi as erc777abi } from '$/contracts/Factories/ERC777PolicyFactory.sol/ERC777PolicyFactory.json'
@@ -18,16 +17,18 @@ import {
     ERC20PolicyFactoryAddress,
     ERC721PolicyFactoryAddress,
     ERC777PolicyFactoryAddress,
+    JSON_RPC_URL,
     PermissionType,
 } from '$/consts'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { ZeroAddress } from '$/consts'
-import { Controller } from '$/features/toaster/helpers/toast'
 import isSameAddress from '$/utils/isSameAddress'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
+import retoast from '$/features/toaster/helpers/retoast'
+import getSigner from '$/utils/getSigner'
 
 const Factory: Record<
     TokenStandard,
@@ -63,7 +64,6 @@ interface Params {
     minRequiredBalance?: string
     tokenIds: string[]
     stakingEnabled: boolean
-    streamrClient: StreamrClient
 }
 
 export default function createTokenGatePolicy({
@@ -74,25 +74,18 @@ export default function createTokenGatePolicy({
     minRequiredBalance,
     tokenIds,
     stakingEnabled,
-    streamrClient,
 }: Params) {
     return spawn(function* () {
         yield race([
             take(WalletAction.changeAccount),
             call(function* () {
-                let tc: Controller | undefined
-
-                let dismissToast = false
+                const toast = retoast()
 
                 try {
-                    tc = yield retoast(tc, {
+                    yield toast.open({
                         title: i18n('tokenGateToast.deployingTitle'),
                         type: ToastType.Processing,
                     })
-
-                    dismissToast = true
-
-                    yield preflight(requester)
 
                     const factory = Factory[tokenType.standard]
 
@@ -102,13 +95,11 @@ export default function createTokenGatePolicy({
 
                     const { abi, address } = factory
 
+                    yield preflight(requester)
+
                     const provider = yield* getWalletProvider()
 
-                    const factoryContract = new Contract(
-                        address,
-                        abi,
-                        new providers.Web3Provider(provider).getSigner()
-                    )
+                    const factoryContract = new Contract(address, abi, getSigner(provider))
 
                     yield* recover(
                         function* () {
@@ -131,16 +122,16 @@ export default function createTokenGatePolicy({
                         }
                     )
 
-                    const policyRegistry = getJoinPolicyRegistry(provider)
+                    const policyRegistry = getJoinPolicyRegistry(
+                        new providers.JsonRpcProvider(JSON_RPC_URL)
+                    )
 
                     let policyAddress: Address = ZeroAddress
 
-                    tc = yield retoast(tc, {
+                    yield toast.open({
                         title: i18n('tokenGateToast.waitingTitle'),
                         type: ToastType.Processing,
                     })
-
-                    dismissToast = true
 
                     yield* recover(
                         function* () {
@@ -165,12 +156,10 @@ export default function createTokenGatePolicy({
                         }
                     )
 
-                    tc = yield retoast(tc, {
+                    yield toast.open({
                         title: i18n('tokenGateToast.grantingTitle', policyAddress),
                         type: ToastType.Processing,
                     })
-
-                    dismissToast = true
 
                     yield* recover(
                         function* () {
@@ -190,9 +179,7 @@ export default function createTokenGatePolicy({
                                     },
                                 ],
                                 {
-                                    provider,
                                     requester,
-                                    streamrClient,
                                 }
                             )
                         },
@@ -204,25 +191,19 @@ export default function createTokenGatePolicy({
                         }
                     )
 
-                    tc = yield retoast(tc, {
+                    yield toast.open({
                         title: i18n('tokenGateToast.successTitle'),
                         type: ToastType.Success,
                     })
-
-                    dismissToast = false
                 } catch (e) {
                     handleError(e)
 
-                    tc = yield retoast(tc, {
+                    yield toast.open({
                         title: i18n('tokenGateToast.failureTitle'),
                         type: ToastType.Error,
                     })
-
-                    dismissToast = false
                 } finally {
-                    if (dismissToast) {
-                        tc?.dismiss()
-                    }
+                    yield toast.dismiss({ asap: yield cancelled() })
                 }
             }),
         ])

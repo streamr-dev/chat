@@ -5,6 +5,8 @@ import { Provider } from 'react-redux'
 import store from '$/store'
 import IndexPage from '$/components/IndexPage'
 import Toaster from '$/components/Toaster'
+import { Helmet } from 'react-helmet'
+import getCommitId from '$/utils/getCommitId'
 
 const customGlobalStyles = css`
     body {
@@ -81,8 +83,15 @@ const customGlobalStyles = css`
 `
 
 export default function App() {
+    const commitId = getCommitId()
+
     return (
         <Provider store={store}>
+            {commitId && (
+                <Helmet>
+                    <meta name="commit" content={commitId} />
+                </Helmet>
+            )}
             <GlobalStyles />
             <Global styles={customGlobalStyles} />
             <div>

@@ -1,20 +1,36 @@
 import { BigNumber, providers } from 'ethers'
 import { Address } from '$/types'
-import getWalletProvider from '$/utils/getWalletProvider'
 import networkPreflight from './networkPreflight'
 import InsufficientFundsError from '$/errors/InsufficientFundsError'
-import { call } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
+import { JSON_RPC_URL } from '$/consts'
+import { ToasterAction } from '$/features/toaster'
+import { ToastType } from '$/components/Toast'
 
 export default function preflight(account: Address) {
     return call(function* () {
-        yield networkPreflight()
+        try {
+            yield networkPreflight()
 
-        const provider = yield* getWalletProvider()
+            const balance: BigNumber = yield new providers.JsonRpcProvider(JSON_RPC_URL).getBalance(
+                account
+            )
 
-        const balance: BigNumber = yield new providers.Web3Provider(provider).getBalance(account)
+            if (balance.eq(0)) {
+                throw new InsufficientFundsError()
+            }
+        } catch (e) {
+            if (e instanceof InsufficientFundsError) {
+                yield put(
+                    ToasterAction.show({
+                        title: 'Insufficient funds',
+                        desc: "You don't have enough MATIC.",
+                        type: ToastType.Error,
+                    })
+                )
+            }
 
-        if (balance.eq(0)) {
-            throw new InsufficientFundsError()
+            throw e
         }
     })
 }

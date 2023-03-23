@@ -6,7 +6,7 @@ import { PermissionsAction } from '$/features/permissions'
 import useRoomMembers from '$/hooks/useRoomMembers'
 import useIsDetectingRoomMembers from '$/hooks/useIsDetectingRoomMembers'
 import { useSelectedRoomId } from '$/features/room/hooks'
-import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
+import { useWalletAccount } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import CopyIcon from '$/icons/CopyIcon'
 import ExternalLinkIcon from '$/icons/ExternalLinkIcon'
@@ -61,11 +61,9 @@ export default function EditMembersModal({
 
     const requester = useWalletAccount()
 
-    const streamrClient = useWalletClient()
-
     const onDeleteClick = useCallback(
         (member: Address) => {
-            if (!selectedRoomId || !requester || !streamrClient) {
+            if (!selectedRoomId || !requester) {
                 return
             }
 
@@ -74,12 +72,11 @@ export default function EditMembersModal({
                     roomId: selectedRoomId,
                     member,
                     requester,
-                    streamrClient,
                     fingerprint: Flag.isMemberBeingRemoved(selectedRoomId, member),
                 })
             )
         },
-        [dispatch, selectedRoomId, requester, streamrClient]
+        [dispatch, selectedRoomId, requester]
     )
 
     const members = useRoomMembers(selectedRoomId)

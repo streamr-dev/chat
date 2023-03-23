@@ -1,11 +1,11 @@
-import { ZeroAddress } from '$/consts'
+import { JSON_RPC_URL, ZeroAddress } from '$/consts'
 import { DelegationAction } from '$/features/delegation'
 import { selectMainAccount } from '$/hooks/useMainAccount'
 import { Address, OptionalAddress } from '$/types'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
-import getWalletProvider from '$/utils/getWalletProvider'
 import handleError from '$/utils/handleError'
 import isSameAddress from '$/utils/isSameAddress'
+import { providers } from 'ethers'
 import { call, delay, put, race, select } from 'redux-saga/effects'
 
 export default function lookup({
@@ -13,10 +13,6 @@ export default function lookup({
 }: ReturnType<typeof DelegationAction.lookup>['payload']) {
     return call(function* () {
         try {
-            const provider = yield* getWalletProvider()
-
-            const contract = getDelegatedAccessRegistry(provider)
-
             const mapping: OptionalAddress = yield select(selectMainAccount(delegated))
 
             if (mapping) {
@@ -31,6 +27,10 @@ export default function lookup({
                     throw new Error('Timeout')
                 }),
                 call(function* () {
+                    const contract = getDelegatedAccessRegistry(
+                        new providers.JsonRpcProvider(JSON_RPC_URL)
+                    )
+
                     let [main]: [Address] = yield contract.functions.getMainWalletFor(delegated)
 
                     if (isSameAddress(main, ZeroAddress)) {

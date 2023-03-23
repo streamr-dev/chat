@@ -285,8 +285,20 @@ function Token({ info, onChangeClick }: TokenProps) {
                 text-[14px]
             `}
         >
-            <TokenLogo tokenAddress={info.address} />
-            <div>
+            <div
+                css={tw`
+                    mr-3
+                    shrink-0
+                `}
+            >
+                <TokenLogo tokenAddress={info.address} />
+            </div>
+            <div
+                css={tw`
+                    min-w-0
+                    pr-3
+                `}
+            >
                 {'symbol' in info ? (
                     <>
                         <div css={tw`font-semibold`}>
@@ -297,7 +309,7 @@ function Token({ info, onChangeClick }: TokenProps) {
                         </div>
                     </>
                 ) : (
-                    trunc(info.address)
+                    <Text truncate>{trunc(info.address)}</Text>
                 )}
             </div>
             <TokenStandardLabel tokenAddress={info.address} css={tw`ml-6`} />
@@ -378,7 +390,7 @@ function Search({ info = defaultInfo, onInfo }: SearchProps) {
                     items-center
                 `}
                 onSubmit={() => {
-                    if (!/0x[a-f\d]{40}/i.test(value)) {
+                    if (!/^0x[a-f\d]{40}$/i.test(value)) {
                         return
                     }
 

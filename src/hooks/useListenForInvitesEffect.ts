@@ -2,7 +2,6 @@ import { BigNumber } from 'ethers'
 import { useEffect, useRef } from 'react'
 import { Address, OptionalAddress, Prefix } from '$/types'
 import { RoomId } from '$/features/room/types'
-import { NOOP } from '$/utils/consts'
 import isSameAddress from '$/utils/isSameAddress'
 import useStreamRegistry from './useStreamRegistry'
 
@@ -20,7 +19,9 @@ export default function useListenForInvitesEffect(
 
     useEffect(() => {
         if (!address || !registry) {
-            return NOOP
+            return () => {
+                // Do nothing
+            }
         }
 
         let mounted = true

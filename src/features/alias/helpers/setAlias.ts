@@ -1,12 +1,12 @@
 import { ToastType } from '$/components/Toast'
 import { AliasAction } from '$/features/alias'
-import toast from '$/features/toaster/helpers/toast'
+import { ToasterAction } from '$/features/toaster'
 import { Address } from '$/types'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import isBlank from '$/utils/isBlank'
-import { call } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 
 async function create(owner: Address, address: Address, value: string) {
     const now = Date.now()
@@ -41,10 +41,12 @@ export default function setAlias({
                 try {
                     yield destroy(owner, address)
                 } catch (e) {
-                    yield toast({
-                        title: i18n('aliasToast.failedToDestroy'),
-                        type: ToastType.Error,
-                    })
+                    yield put(
+                        ToasterAction.show({
+                            title: i18n('aliasToast.failedToDestroy'),
+                            type: ToastType.Error,
+                        })
+                    )
 
                     throw e
                 }
@@ -59,10 +61,12 @@ export default function setAlias({
                     return
                 }
             } catch (e) {
-                yield toast({
-                    title: i18n('aliasToast.failedToUpdate'),
-                    type: ToastType.Error,
-                })
+                yield put(
+                    ToasterAction.show({
+                        title: i18n('aliasToast.failedToUpdate'),
+                        type: ToastType.Error,
+                    })
+                )
 
                 throw e
             }
@@ -70,10 +74,12 @@ export default function setAlias({
             try {
                 yield create(owner, address, value)
             } catch (e) {
-                yield toast({
-                    title: i18n('aliasToast.failedToCreate'),
-                    type: ToastType.Error,
-                })
+                yield put(
+                    ToasterAction.show({
+                        title: i18n('aliasToast.failedToCreate'),
+                        type: ToastType.Error,
+                    })
+                )
 
                 throw e
             }
