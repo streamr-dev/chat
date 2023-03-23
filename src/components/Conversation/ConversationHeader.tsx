@@ -498,12 +498,11 @@ export default function ConversationHeader({
                                     <MenuButtonItem
                                         icon={<RemoveUserIcon />}
                                         onClick={() => {
-                                            if (account && selectedRoomId && streamrClient) {
+                                            if (account && selectedRoomId) {
                                                 dispatch(
                                                     RoomAction.leaveTokenGatedRoom({
                                                         roomId: selectedRoomId,
                                                         requester: account,
-                                                        streamrClient,
                                                     })
                                                 )
                                             }
@@ -511,7 +510,7 @@ export default function ConversationHeader({
                                             setRoomMenuOpen(false)
                                         }}
                                     >
-                                        Leave room
+                                        {i18n('rooms.leave')}
                                     </MenuButtonItem>
                                 )}
                                 {canDelete && (

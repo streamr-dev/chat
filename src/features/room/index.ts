@@ -148,7 +148,6 @@ export const RoomAction = {
     leaveTokenGatedRoom: createAction<{
         roomId: RoomId
         requester: Address
-        streamrClient: StreamrClient
     }>('room: leave token gated room'),
 }
 

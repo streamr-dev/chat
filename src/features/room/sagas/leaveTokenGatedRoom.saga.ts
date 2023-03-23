@@ -2,7 +2,7 @@ import { ToastType } from '$/components/Toast'
 import retoast from '$/features/toaster/helpers/retoast'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import handleError from '$/utils/handleError'
-import { Contract, BigNumber } from 'ethers'
+import { Contract, BigNumber, providers } from 'ethers'
 import { put, takeEvery } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
@@ -10,12 +10,14 @@ import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinP
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
-import { Controller } from '$/features/toaster/helpers/toast'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import { RoomAction } from '..'
-import getWalletProvider from '$/utils/getWalletProvider'
 import { PermissionsAction } from '$/features/permissions'
 import delegationPreflight from '$/utils/delegationPreflight'
+import fetchStream from '$/utils/fetchStream'
+import i18n from '$/utils/i18n'
+import networkPreflight from '$/utils/networkPreflight'
+import { JSON_RPC_URL } from '$/consts'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -25,15 +27,16 @@ const Abi = {
 }
 
 function* onLeaveTokenGatedRoom({
-    payload: { roomId, requester, streamrClient },
+    payload: { roomId, requester },
 }: ReturnType<typeof RoomAction.leaveTokenGatedRoom>) {
-    let tc: Controller | undefined
-
+    const toast = retoast()
+    let dismissToast = false
     try {
-        const stream: Stream = yield streamrClient.getStream(roomId)
+        const stream: Stream = yield fetchStream(roomId)
+
         const {
             tokenAddress,
-            tokenIds,
+            tokenIds = [],
             tokenType,
             stakingEnabled = false,
         } = getRoomMetadata(stream)
@@ -43,19 +46,18 @@ function* onLeaveTokenGatedRoom({
         if (!tokenAddress || !tokenType || tokenType.standard === TokenStandard.Unknown) {
             throw new Error('Room is not token gated')
         }
-
-        tc = yield retoast(tc, {
-            title: 'Leaving token gated room',
+        dismissToast = true
+        yield toast.open({
+            title: i18n('tokenGateToast.leaving'),
             type: ToastType.Processing,
         })
 
-        const provider = yield* getWalletProvider()
+        yield networkPreflight()
 
-        const policyRegistry = getJoinPolicyRegistry(provider)
-
+        const policyRegistry = getJoinPolicyRegistry(new providers.JsonRpcProvider(JSON_RPC_URL))
         const policyAddress: string = yield policyRegistry.getPolicy(
             tokenAddress,
-            BigNumber.from(tokenIds![0] || 0),
+            BigNumber.from(tokenIds[0] || 0),
             roomId,
             stakingEnabled
         )
@@ -81,17 +83,22 @@ function* onLeaveTokenGatedRoom({
 
         yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
 
-        tc = yield retoast(tc, {
-            title: 'Successfully left token gated room',
+        toast.open({
+            title: i18n('tokenGateToast.leaveSuccess'),
             type: ToastType.Success,
         })
+        dismissToast = false
     } catch (e) {
         handleError(e)
-
-        tc = yield retoast(tc, {
-            title: 'Failed to leave token gated room',
+        dismissToast = false
+        toast.open({
+            title: i18n('tokenGateToast.leaveFailed'),
             type: ToastType.Error,
         })
+    } finally {
+        if (dismissToast) {
+            toast.dismiss()
+        }
     }
 }
 

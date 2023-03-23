@@ -362,6 +362,7 @@ const I18n = {
     'rooms.delegatePrompt'(actions: string[]) {
         return `Activate hot wallet signing to ${actions.join(' and ')} messages.`
     },
+    'rooms.leave': 'Leave room',
     'anonToast.title': 'Granting anons more rights…',
     'anonToast.failureTitle': 'Failed to give anons more rights',
     'anonToast.successTitle': 'Done',
@@ -400,6 +401,9 @@ const I18n = {
     },
     'tokenGateToast.successTitle': 'Done',
     'tokenGateToast.failureTitle': 'Failed to deploy your token gate',
+    'tokenGateToast.leaving': 'Leaving token gated room...',
+    'tokenGateToast.leaveSuccess': 'Successfully left token gated room',
+    'tokenGateToast.leaveFailed': 'Failed to leave token gated room',
     'tokenGatePolicyRecoverToast.title': 'Failed to deploy the policy',
     'tokenGatePolicyRecoverToast.desc'() {
         return i18n('recoverToast.desc')
