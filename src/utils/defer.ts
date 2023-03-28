@@ -1,28 +1,23 @@
-export default async function defer<T = void, E = any>() {
-    let succeed: (value: T) => void = () => {
-        //
+export interface Deferral<T = void, R = unknown> {
+    resolve: (value: T | PromiseLike<T>) => void
+    reject: (reason?: R) => void
+    promise: Promise<T>
+}
+
+export default function defer<T = void, R = unknown>(): Deferral<T, R> {
+    let resolve: (value: T | PromiseLike<T>) => void = () => {
+        // This will get overwritten.
     }
 
-    let fail: (reason?: E) => void = () => {
-        //
+    let reject: (reason?: R) => void = () => {
+        // This will get overwritten.
     }
 
-    let promise: Promise<void | T> = Promise.resolve()
-
-    await new Promise((ok: (_?: unknown) => void) => {
-        promise = new Promise((resolve: (_: T) => void, reject: (_?: E) => void) => {
-            succeed = resolve
-
-            fail = reject
-
-            // At this point we're sure both `done` and `fail` are set. Let's move on.
-            ok()
-        })
-    })
+    const promise = new Promise<T>((...args) => void ([resolve, reject] = args))
 
     return {
-        promise: promise as Promise<T>,
-        reject: fail,
-        resolve: succeed,
+        promise,
+        resolve,
+        reject,
     }
 }
