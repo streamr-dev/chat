@@ -1,4 +1,4 @@
-import Modal from '$/components/modals/Modal'
+import Modal, { Props as ModalProps } from '$/components/modals/Modal'
 import TryMetaMask from '$/components/TryMetaMask'
 import { useDelegatedAccount } from '$/features/delegation/hooks'
 import { WalletAction } from '$/features/wallet'
@@ -7,10 +7,10 @@ import { WalletIntegrationId } from '$/features/wallet/types'
 import i18n from '$/utils/i18n'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
-import { Props as ModalProps } from './Modal'
 
 interface Props extends ModalProps {
     showTryMetaMask?: boolean
+    onResolve?: () => void
 }
 
 const lineup = [
@@ -22,6 +22,7 @@ const lineup = [
 export default function WalletModal({
     title = i18n('walletModal.title'),
     showTryMetaMask = false,
+    onResolve,
     ...props
 }: Props) {
     const dispatch = useDispatch()
@@ -38,6 +39,8 @@ export default function WalletModal({
         }
 
         dispatch(WalletAction.connect(integrationId))
+
+        onResolve?.()
     }
 
     return (

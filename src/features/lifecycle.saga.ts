@@ -83,6 +83,14 @@ import setRoomVisibility from '$/features/room/helpers/setRoomVisibility'
 import syncRoom from '$/features/room/helpers/syncRoom'
 import toggleStorageNode from '$/features/room/helpers/toggleStorageNode'
 import unpinRoom from '$/features/room/helpers/unpinRoom'
+import showHowItWorksModal from '$/features/misc/helpers/showHowItWorksModal'
+import showWalletModal from '$/features/misc/helpers/showWalletModal'
+import showAccountModal from '$/features/misc/helpers/showAccountModal'
+import showAddMemberModal from '$/features/misc/helpers/showAddMemberModal'
+import showRoomPropertiesModal from '$/features/misc/helpers/showRoomPropertiesModal'
+import showAnonExplainerModal from '$/features/misc/helpers/showAnonExplainerModal'
+import showAddRoomModal from '$/features/misc/helpers/showAddRoomModal'
+import showEditMembersModal from '$/features/misc/helpers/showEditMembersModal'
 
 function helper<T extends (arg: any) => any>(fn: T) {
     return function* ({ payload }: { payload: T extends (payload: infer R) => any ? R : never }) {
@@ -256,10 +264,26 @@ export default function* lifecycle() {
 
         yield takeEveryUnique(RoomAction.unpin, helper(unpinRoom))
 
+        yield takeEvery(MiscAction.showAddMemberModal, helper(showAddMemberModal))
+
+        yield takeEvery(MiscAction.showRoomPropertiesModal, helper(showRoomPropertiesModal))
+
+        yield takeEvery(MiscAction.showAnonExplainerModal, helper(showAnonExplainerModal))
+
+        yield takeEvery(MiscAction.showAddRoomModal, helper(showAddRoomModal))
+
+        yield takeEvery(MiscAction.showEditMembersModal, helper(showEditMembersModal))
+
         // This needs to go last. It triggers some of the actions that have
         // takers set up above.
         yield changeAccount(payload)
     })
+
+    yield takeEvery(MiscAction.showHowItWorksModal, helper(showHowItWorksModal))
+
+    yield takeEvery(MiscAction.showWalletModal, helper(showWalletModal))
+
+    yield takeEvery(MiscAction.showAccountModal, helper(showAccountModal))
 
     yield takeLeading(WalletAction.connectEagerly, helper(connectEagerly))
 

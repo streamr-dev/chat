@@ -7,6 +7,7 @@ import IndexPage from '$/components/IndexPage'
 import Toaster from '$/components/Toaster'
 import { Helmet } from 'react-helmet'
 import getCommitId from '$/utils/getCommitId'
+import { Container, Layer } from '$/utils/toaster'
 
 const customGlobalStyles = css`
     body {
@@ -100,6 +101,7 @@ export default function App() {
                 </HashRouter>
             </div>
             <Toaster />
+            <Container id={Layer.Modal} />
         </Provider>
     )
 }

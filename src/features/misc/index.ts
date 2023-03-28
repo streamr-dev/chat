@@ -1,4 +1,5 @@
 import { MiscState, TokenInfo } from '$/features/misc/types'
+import { RoomId } from '$/features/room/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
 import { Address, IFingerprinted, TokenMetadata } from '$/types'
@@ -38,6 +39,24 @@ export const MiscAction = {
         tokenIds: string[]
         tokenMetadata: TokenMetadata
     }>('misc: cache token metadata'),
+
+    showHowItWorksModal: createAction('misc: show how it works modal'),
+
+    showWalletModal: createAction<{ showTryMetaMask?: boolean }>('misc: show wallet modal'),
+
+    showAccountModal: createAction('misc: show account modal'),
+
+    showAddMemberModal: createAction<{ roomId: RoomId }>('misc: show add member modal'),
+
+    showRoomPropertiesModal: createAction('misc: show room properties modal'),
+
+    showAnonExplainerModal: createAction<{ anonAccount: Address; anonPrivateKey: string }>(
+        'misc: show anon explainer modal'
+    ),
+
+    showAddRoomModal: createAction('misc: show add room modal'),
+
+    showEditMembersModal: createAction('misc: show edit members modal'),
 }
 
 const initialState: MiscState = {

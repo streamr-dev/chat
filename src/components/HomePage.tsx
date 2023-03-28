@@ -3,19 +3,14 @@ import Page from '$/components/Page'
 import Navbar, { NavButton } from '$/components/Navbar'
 import Button from '$/components/Button'
 import Text from '$/components/Text'
-import useWalletModal from '$/hooks/useWalletModal'
-import useHowItWorksModal from '$/hooks/useHowItWorksModal'
 import TryMetaMask from '$/components/TryMetaMask'
 import { ButtonHTMLAttributes, useEffect } from 'react'
 import i18n from '$/utils/i18n'
 import { WalletAction } from '$/features/wallet'
 import { useDispatch } from 'react-redux'
+import { MiscAction } from '$/features/misc'
 
 export default function HomePage() {
-    const { open, modal } = useWalletModal()
-
-    const { open: openHiwModal, modal: hiwModal } = useHowItWorksModal()
-
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -23,59 +18,59 @@ export default function HomePage() {
     }, [dispatch])
 
     return (
-        <>
-            {modal}
-            {hiwModal}
-            <Page>
-                <div css={tw`relative`}>
-                    <Navbar>
-                        <NavButton onClick={() => void openHiwModal()}>
-                            {i18n('howItWorksModal.title')}
-                        </NavButton>
-                    </Navbar>
-                    <div
-                        css={[
-                            tw`
-                                flex
-                                flex-col
-                                items-center
+        <Page>
+            <div css={tw`relative`}>
+                <Navbar>
+                    <NavButton onClick={() => void dispatch(MiscAction.showHowItWorksModal())}>
+                        {i18n('howItWorksModal.title')}
+                    </NavButton>
+                </Navbar>
+                <div
+                    css={[
+                        tw`
+                            flex
+                            flex-col
+                            items-center
+                            justify-center
+                            text-center
+                            w-screen
+                            h-screen
+                        `,
+                    ]}
+                >
+                    <div>
+                        <h1
+                            css={[
+                                tw`
+                                    animate-float
+                                    font-medium
+                                    m-0
+                                    mb-[3rem]
+                                    md:mb-[6.25rem]
+                                    text-[2.5rem]
+                                    md:text-[5rem]
+                                    leading-normal
+                                `,
+                            ]}
+                        >
+                            <Text>{i18n('common.greeting')}</Text>
+                        </h1>
+                        <ConnectButton
+                            onClick={() =>
+                                void dispatch(MiscAction.showWalletModal({ showTryMetaMask: true }))
+                            }
+                        />
+                        <TryMetaMask
+                            css={tw`
                                 justify-center
-                                text-center
-                                w-screen
-                                h-screen
-                            `,
-                        ]}
-                    >
-                        <div>
-                            <h1
-                                css={[
-                                    tw`
-                                        animate-float
-                                        font-medium
-                                        m-0
-                                        mb-[3rem]
-                                        md:mb-[6.25rem]
-                                        text-[2.5rem]
-                                        md:text-[5rem]
-                                        leading-normal
-                                    `,
-                                ]}
-                            >
-                                <Text>{i18n('common.greeting')}</Text>
-                            </h1>
-                            <ConnectButton onClick={() => void open()} />
-                            <TryMetaMask
-                                css={tw`
-                                    justify-center
-                                    mt-6
-                                `}
-                            />
-                        </div>
+                                mt-6
+                            `}
+                        />
                     </div>
-                    <PoweredBy />
                 </div>
-            </Page>
-        </>
+                <PoweredBy />
+            </div>
+        </Page>
     )
 }
 

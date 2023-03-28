@@ -33,7 +33,7 @@ import useFetchingTokenMetadataForAnyTokenId from '$/hooks/useFetchingTokenMetad
 export default function RoomPropertiesModal({
     title = i18n('roomPropertiesModal.title'),
     subtitle = i18n('common.fallbackRoomName'),
-    onAbort,
+    onReject,
     ...props
 }: ModalProps) {
     const selectedRoomId = useSelectedRoomId()
@@ -88,8 +88,8 @@ export default function RoomPropertiesModal({
     }, [open, selectedRoomId])
 
     return (
-        <Modal {...props} onAbort={onAbort} title={title} subtitle={roomName || subtitle}>
-            <Form onSubmit={() => void onAbort?.()}>
+        <Modal {...props} onReject={onReject} title={title} subtitle={roomName || subtitle}>
+            <Form onSubmit={() => void onReject?.()}>
                 {!!selectedRoomId && (
                     <>
                         <Label>{i18n('roomPropertiesModal.roomIdLabel')}</Label>
