@@ -41,6 +41,13 @@ export default function retrieve({
 
             const { privateKey, address } = new Wallet(derivedKeyHexString)
 
+            yield put(
+                DelegationAction.cacheDelegation({
+                    main: owner,
+                    delegated: address,
+                })
+            )
+
             const isDelegationAuthorized = yield* recover(
                 function* () {
                     const result: boolean = yield isAuthorizedDelegatedAccount(owner, address)
