@@ -10,7 +10,6 @@ import tw from 'twin.macro'
 
 interface Props extends ModalProps {
     showTryMetaMask?: boolean
-    onResolve?: () => void
 }
 
 const lineup = [
@@ -22,7 +21,6 @@ const lineup = [
 export default function WalletModal({
     title = i18n('walletModal.title'),
     showTryMetaMask = false,
-    onResolve,
     ...props
 }: Props) {
     const dispatch = useDispatch()
@@ -39,8 +37,6 @@ export default function WalletModal({
         }
 
         dispatch(WalletAction.connect(integrationId))
-
-        onResolve?.()
     }
 
     return (
