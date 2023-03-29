@@ -7,6 +7,7 @@ import { StreamPermission } from 'streamr-client'
 import delegationPreflight from '$/utils/delegationPreflight'
 import i18n from '$/utils/i18n'
 import retoast from '$/features/misc/helpers/retoast'
+import { Address } from '$/types'
 
 export default function acceptInvite({
     roomId,
@@ -17,7 +18,7 @@ export default function acceptInvite({
         const toast = retoast()
 
         try {
-            const delegatedAccount = yield* delegationPreflight(requester)
+            const delegatedAccount: Address = yield delegationPreflight(requester)
 
             yield toast.pop({
                 title: i18n('acceptInviteToast.joiningTitle'),

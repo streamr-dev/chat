@@ -81,7 +81,7 @@ export default function joinRoom(
                 tokenId = yield* tokenIdPreflight(tokenStandard)
             }
 
-            const delegatedAccount = yield* delegationPreflight(requester)
+            const delegatedAccount: Address = yield delegationPreflight(requester)
 
             const policyRegistry = getJoinPolicyRegistry(
                 new providers.JsonRpcProvider(JSON_RPC_URL)
