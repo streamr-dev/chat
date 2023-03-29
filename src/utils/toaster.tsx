@@ -30,7 +30,7 @@ const DiscardableContext = createContext<[() => void, Promise<unknown>]>([
     Promise.resolve(),
 ])
 
-export function useDiscardableEffect(fn?: (discard: () => void) => void) {
+export function useDiscardableEffect(fn?: (discard: () => void | Promise<void>) => void) {
     const fnRef = useRef(fn)
 
     useEffect(() => {
@@ -220,7 +220,7 @@ export type SettlerReturnValue<
 
 export interface Toaster<T extends FC<any>> {
     pop: (props?: ComponentProps<T>) => Promise<SettlerReturnValue<T, 'onResolve'>>
-    discard: () => Promise<void>
+    discard: () => void
 }
 
 export function toaster<T extends FC<any>>(component: T, id: string): Toaster<T> {
@@ -273,7 +273,7 @@ export function toaster<T extends FC<any>>(component: T, id: string): Toaster<T>
                 }
             }
         },
-        async discard() {
+        discard() {
             metadata?.deferral.reject(Reason.Host)
         },
     }

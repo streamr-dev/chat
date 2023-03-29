@@ -1,7 +1,6 @@
 import Toast, { ToastType } from '$/components/Toast'
 import { ComponentProps } from 'react'
-import { Controller as ToastController } from '$/components/Toaster'
-import toaster from '$/features/toaster/helpers/toaster'
+import { Layer, toaster } from '$/utils/toaster'
 import i18n from '$/utils/i18n'
 import { call } from 'redux-saga/effects'
 
@@ -15,7 +14,7 @@ export default function* recover<T extends (...args: any[]) => Generator<any, an
     ...args: RecoverArgs<T>
 ) {
     const result: RecoverReturnType<T> = yield call(function* () {
-        let tc: ToastController | undefined
+        const toast = toaster(Toast, Layer.Toast)
 
         try {
             while (true) {
@@ -25,7 +24,7 @@ export default function* recover<T extends (...args: any[]) => Generator<any, an
                     console.warn(e)
 
                     try {
-                        tc = yield toaster(Toast, {
+                        yield toast.pop({
                             title: i18n('recoverToast.title'),
                             desc: i18n('recoverToast.desc'),
                             type: ToastType.Error,
@@ -33,15 +32,13 @@ export default function* recover<T extends (...args: any[]) => Generator<any, an
                             cancelLabel: i18n('recoverToast.cancelLabel'),
                             ...props,
                         })
-
-                        yield tc?.open()
                     } catch (_) {
                         throw e
                     }
                 }
             }
         } finally {
-            tc?.dismiss()
+            toast.discard()
         }
     })
 

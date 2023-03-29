@@ -13,7 +13,6 @@ import allowAnonsPublish from '$/features/permissions/helpers/allowAnonsPublish'
 import { RoomAction } from '$/features/room'
 import pinStickyRooms from '$/features/room/helpers/pinStickyRooms'
 import searchRoom from '$/features/room/helpers/searchRoom'
-import { ToasterAction } from '$/features/toaster'
 import fetchTokenMetadata from '$/features/misc/helpers/fetchTokenMetadata'
 import { TokenMetadata } from '$/types'
 import { WalletAction } from '$/features/wallet'
@@ -21,16 +20,7 @@ import changeAccount from '$/features/wallet/helpers/changeAccount'
 import handleError from '$/utils/handleError'
 import takeEveryUnique from '$/utils/takeEveryUnique'
 import { Wallet } from 'ethers'
-import {
-    fork,
-    put,
-    select,
-    spawn,
-    takeEvery,
-    takeLatest,
-    takeLeading,
-    throttle,
-} from 'redux-saga/effects'
+import { fork, put, select, takeEvery, takeLatest, takeLeading, throttle } from 'redux-saga/effects'
 import { MiscAction } from '$/features/misc'
 import { selectTokenMetadata } from '$/hooks/useTokenMetadata'
 import fetchTokenStandard from '$/features/misc/helpers/fetchTokenStandard'
@@ -39,9 +29,6 @@ import connectEagerly from '$/features/wallet/helpers/eagerConnect'
 import connect from '$/features/wallet/helpers/connect'
 import storeIntegrationId from '$/features/wallet/helpers/storeIntegrationId'
 import setAccount from '$/features/wallet/helpers/setAccount'
-import { Controller } from '$/components/Toaster'
-import toaster from '$/features/toaster/helpers/toaster'
-import Toast from '$/components/Toast'
 import { DraftAction } from '$/features/drafts'
 import storeDraft from '$/features/drafts/helpers/storeDraft'
 import fetchEnsDomains from '$/features/ens/helpers/fetchEnsDomains'
@@ -91,6 +78,7 @@ import showRoomPropertiesModal from '$/features/misc/helpers/showRoomPropertiesM
 import showAnonExplainerModal from '$/features/misc/helpers/showAnonExplainerModal'
 import showAddRoomModal from '$/features/misc/helpers/showAddRoomModal'
 import showEditMembersModal from '$/features/misc/helpers/showEditMembersModal'
+import toast from '$/features/misc/helpers/toast'
 
 function helper<T extends (arg: any) => any>(fn: T) {
     return function* ({ payload }: { payload: T extends (payload: infer R) => any ? R : never }) {
@@ -120,17 +108,7 @@ export default function* lifecycle() {
             yield put(AnonAction.setWallet({ roomId, wallet: Wallet.createRandom() }))
         })
 
-        yield takeEvery(ToasterAction.show, function* ({ payload }) {
-            yield spawn(function* () {
-                try {
-                    const tc: Controller = yield toaster(Toast, payload)
-
-                    yield tc.open()
-                } catch (e) {
-                    handleError(e)
-                }
-            })
-        })
+        yield takeEvery(MiscAction.toast, helper(toast))
 
         yield takeEvery(AliasAction.set, helper(setAlias))
 

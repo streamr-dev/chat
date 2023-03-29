@@ -1,9 +1,8 @@
 import Toast, { ToastType } from '$/components/Toast'
-import { Controller as ToastController } from '$/components/Toaster'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import { PermissionsAction } from '$/features/permissions'
-import retoast from '$/features/toaster/helpers/retoast'
-import toaster from '$/features/toaster/helpers/toaster'
+import retoast from '$/features/misc/helpers/retoast'
+import { Layer, toaster } from '$/utils/toaster'
 import fetchStream from '$/utils/fetchStream'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 import handleError from '$/utils/handleError'
@@ -17,33 +16,29 @@ export default function allowAnonsPublish({
     requester,
 }: ReturnType<typeof PermissionsAction.allowAnonsPublish>['payload']) {
     return call(function* () {
-        let t: ToastController | undefined
+        const confirm = toaster(Toast, Layer.Toast)
 
         const toast = retoast()
 
         try {
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('anonToast.title'),
                 type: ToastType.Processing,
             })
 
             try {
-                t = yield toaster(Toast, {
+                yield confirm.pop({
                     title: i18n('anonToast.confirmTitle'),
                     type: ToastType.Warning,
                     desc: i18n('anonToast.confirmDesc'),
                     okLabel: i18n('anonToast.confirmOkLabel'),
                     cancelLabel: i18n('anonToast.confirmCancelLabel'),
                 })
-
-                yield t?.open()
             } catch (e) {
-                yield toast.open({
+                yield toast.pop({
                     title: i18n('anonToast.cancelledTitle'),
                     type: ToastType.Info,
                 })
-
-                t = undefined
 
                 return
             }
@@ -68,21 +63,21 @@ export default function allowAnonsPublish({
                 ],
             })
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('anonToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('anonToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {
-            yield toast.dismiss({ asap: yield cancelled() })
+            toast.discard({ asap: yield cancelled() })
 
-            t?.dismiss()
+            confirm.discard()
         }
     })
 }

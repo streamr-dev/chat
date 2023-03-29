@@ -41,7 +41,7 @@ import ArrowIcon from '$/icons/ArrowIcon'
 import useJustInvited from '$/hooks/useJustInvited'
 import { RoomId } from '$/features/room/types'
 import useAnonAccount from '$/hooks/useAnonAccount'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { ToastType } from '$/components/Toast'
 import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
@@ -416,7 +416,7 @@ export default function ConversationHeader({
                                             copy(selectedRoomId)
 
                                             dispatch(
-                                                ToasterAction.show({
+                                                MiscAction.toast({
                                                     title: i18n('common.copied'),
                                                     type: ToastType.Success,
                                                 })

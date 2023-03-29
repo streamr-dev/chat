@@ -1,9 +1,8 @@
 import Toast, { ToastType } from '$/components/Toast'
 import { selectDelegatedAccount } from '$/features/delegation/selectors'
-import toaster from '$/features/toaster/helpers/toaster'
+import { Layer, toaster } from '$/utils/toaster'
 import { Address, OptionalAddress } from '$/types'
 import { call, put, select } from 'redux-saga/effects'
-import { Controller as ToastController } from '$/components/Toaster'
 import { FlagAction } from '$/features/flag'
 import { Flag } from '$/features/flag/types'
 import retrieve from '$/features/delegation/helpers/retrieve'
@@ -16,7 +15,7 @@ export default function* delegationPreflight(requester: Address) {
     yield call(function* () {
         let retrievedAccess = false
 
-        let confirm: ToastController | undefined
+        const confirm = toaster(Toast, Layer.Toast)
 
         try {
             delegatedAccount = yield select(selectDelegatedAccount)
@@ -29,7 +28,7 @@ export default function* delegationPreflight(requester: Address) {
 
             yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
 
-            confirm = yield toaster(Toast, {
+            yield confirm.pop({
                 title: i18n('delegationToast.title'),
                 type: ToastType.Warning,
                 desc: i18n('delegationToast.desc'),
@@ -37,13 +36,11 @@ export default function* delegationPreflight(requester: Address) {
                 cancelLabel: i18n('delegationToast.cancelLabel'),
             })
 
-            yield confirm?.open()
-
             delegatedAccount = yield retrieve({ owner: requester })
         } catch (e) {
             handleError(e)
         } finally {
-            confirm?.dismiss()
+            confirm.discard()
 
             if (retrievedAccess) {
                 yield put(FlagAction.unset(Flag.isAccessBeingDelegated(requester)))

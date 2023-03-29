@@ -1,3 +1,4 @@
+import Toast from '$/components/Toast'
 import { MiscState, TokenInfo } from '$/features/misc/types'
 import { RoomId } from '$/features/room/types'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
@@ -5,6 +6,7 @@ import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
 import { Address, IFingerprinted, TokenMetadata } from '$/types'
 import isBlank from '$/utils/isBlank'
 import { createAction, createReducer } from '@reduxjs/toolkit'
+import { ComponentProps } from 'react'
 import { NavigateFunction } from 'react-router-dom'
 
 export const MiscAction = {
@@ -57,6 +59,8 @@ export const MiscAction = {
     showAddRoomModal: createAction('misc: show add room modal'),
 
     showEditMembersModal: createAction('misc: show edit members modal'),
+
+    toast: createAction<ComponentProps<typeof Toast> | undefined>('misc: toast'),
 }
 
 const initialState: MiscState = {

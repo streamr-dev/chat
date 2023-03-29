@@ -8,7 +8,7 @@ import { BigNumber, Contract, providers } from 'ethers'
 import { abi as erc20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
 import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
 import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
-import retoast from '$/features/toaster/helpers/retoast'
+import retoast from '$/features/misc/helpers/retoast'
 import { JSON_RPC_URL } from '$/consts'
 
 export default function fetchTokenStandard({
@@ -31,7 +31,7 @@ export default function fetchTokenStandard({
                 }
 
                 if (showLoadingToast) {
-                    yield toast.open({
+                    yield toast.pop({
                         title: 'Loading token standard…',
                         type: ToastType.Processing,
                     })
@@ -144,7 +144,7 @@ export default function fetchTokenStandard({
         } catch (e) {
             // Noop.
         } finally {
-            yield toast.dismiss({ asap: yield cancelled() })
+            toast.discard({ asap: yield cancelled() })
         }
     })
 }

@@ -7,7 +7,7 @@ import { IPreference } from '$/features/preferences/types'
 import { RoomAction } from '$/features/room'
 import joinRoom from '$/features/room/helpers/joinRoom'
 import { IRoom, RoomId } from '$/features/room/types'
-import retoast from '$/features/toaster/helpers/retoast'
+import retoast from '$/features/misc/helpers/retoast'
 import { Address, State } from '$/types'
 import db from '$/utils/db'
 import fetchStream from '$/utils/fetchStream'
@@ -96,7 +96,7 @@ export default function preselect({
                         })
                         .first()
                 } catch (e) {
-                    yield toast.open({
+                    yield toast.pop({
                         type: ToastType.Error,
                         title: i18n('preselectToast.roomNotFoundTitle'),
                     })
@@ -106,7 +106,7 @@ export default function preselect({
 
                 const localName = selectedRoom?.name
 
-                yield toast.open({
+                yield toast.pop({
                     title: i18n('preselectToast.openingTitle', localName, roomId),
                     type: ToastType.Processing,
                 })
@@ -119,7 +119,7 @@ export default function preselect({
                                 hidden: false,
                             })
                         } catch (e) {
-                            yield toast.open({
+                            yield toast.pop({
                                 type: ToastType.Error,
                                 title: i18n('preselectToast.failedToUnhideTitle'),
                             })
@@ -145,7 +145,7 @@ export default function preselect({
 
                 const { createdAt, createdBy, tokenAddress, name = '' } = getRoomMetadata(stream)
 
-                yield toast.open({
+                yield toast.pop({
                     title: i18n('preselectToast.pinningTitle', name, roomId),
                     type: ToastType.Processing,
                 })
@@ -165,7 +165,7 @@ export default function preselect({
                     }
 
                     if (!permissions.length && !isPublic) {
-                        yield toast.open({
+                        yield toast.pop({
                             type: ToastType.Error,
                             title: i18n('preselectToast.unauthorizedTitle'),
                         })
@@ -202,14 +202,14 @@ export default function preselect({
 
                     yield selectRoom(roomId, owner)
                 } catch (e) {
-                    yield toast.open({
+                    yield toast.pop({
                         type: ToastType.Error,
                         title: i18n('preselectToast.failedtoOpenTitle'),
                     })
                 }
             })
         } finally {
-            yield toast.dismiss({
+            toast.discard({
                 asap: yield cancelled(),
             })
         }

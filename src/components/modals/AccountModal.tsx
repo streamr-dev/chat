@@ -6,7 +6,7 @@ import { ToastType } from '$/components/Toast'
 import Toggle from '$/components/Toggle'
 import { PreferencesAction } from '$/features/preferences'
 import { usePreferences } from '$/features/preferences/hooks'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
@@ -104,7 +104,7 @@ export default function AccountModal({
                             copy(account!)
 
                             dispatch(
-                                ToasterAction.show({
+                                MiscAction.toast({
                                     title: i18n('common.copied'),
                                     type: ToastType.Success,
                                 })

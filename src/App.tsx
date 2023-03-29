@@ -4,7 +4,6 @@ import { HashRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import store from '$/store'
 import IndexPage from '$/components/IndexPage'
-import Toaster from '$/components/Toaster'
 import { Helmet } from 'react-helmet'
 import getCommitId from '$/utils/getCommitId'
 import { Container, Layer } from '$/utils/toaster'
@@ -100,8 +99,21 @@ export default function App() {
                     <IndexPage />
                 </HashRouter>
             </div>
-            <Toaster />
             <Container id={Layer.Modal} />
+            <Container
+                id={Layer.Toast}
+                css={tw`
+                    fixed
+                    pb-3
+                    md:pb-6
+                    pl-3
+                    md:pl-6
+                    bottom-0
+                    right-0
+                    z-10
+                    max-w-full
+                `}
+            />
         </Provider>
     )
 }

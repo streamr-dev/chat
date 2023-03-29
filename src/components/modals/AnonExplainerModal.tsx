@@ -7,7 +7,7 @@ import i18n from '$/utils/i18n'
 import { useDispatch } from 'react-redux'
 import tw from 'twin.macro'
 import useCopy from '$/hooks/useCopy'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { ToastType } from '$/components/Toast'
 import Submit from '$/components/Submit'
 
@@ -59,7 +59,7 @@ export default function AnonExplainerModal({
                                     copy(anonPrivateKey)
 
                                     dispatch(
-                                        ToasterAction.show({
+                                        MiscAction.toast({
                                             title: i18n('common.copied'),
                                             type: ToastType.Success,
                                         })

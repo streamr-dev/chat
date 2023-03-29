@@ -1,6 +1,6 @@
 import { ToastType } from '$/components/Toast'
 import { AliasAction } from '$/features/alias'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { Address } from '$/types'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
@@ -42,7 +42,7 @@ export default function setAlias({
                     yield destroy(owner, address)
                 } catch (e) {
                     yield put(
-                        ToasterAction.show({
+                        MiscAction.toast({
                             title: i18n('aliasToast.failedToDestroy'),
                             type: ToastType.Error,
                         })
@@ -62,7 +62,7 @@ export default function setAlias({
                 }
             } catch (e) {
                 yield put(
-                    ToasterAction.show({
+                    MiscAction.toast({
                         title: i18n('aliasToast.failedToUpdate'),
                         type: ToastType.Error,
                     })
@@ -75,7 +75,7 @@ export default function setAlias({
                 yield create(owner, address, value)
             } catch (e) {
                 yield put(
-                    ToasterAction.show({
+                    MiscAction.toast({
                         title: i18n('aliasToast.failedToCreate'),
                         type: ToastType.Error,
                     })

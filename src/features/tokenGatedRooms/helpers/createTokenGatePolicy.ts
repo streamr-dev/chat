@@ -27,7 +27,7 @@ import isSameAddress from '$/utils/isSameAddress'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
-import retoast from '$/features/toaster/helpers/retoast'
+import retoast from '$/features/misc/helpers/retoast'
 import getSigner from '$/utils/getSigner'
 
 const Factory: Record<
@@ -82,7 +82,7 @@ export default function createTokenGatePolicy({
                 const toast = retoast()
 
                 try {
-                    yield toast.open({
+                    yield toast.pop({
                         title: i18n('tokenGateToast.deployingTitle'),
                         type: ToastType.Processing,
                     })
@@ -128,7 +128,7 @@ export default function createTokenGatePolicy({
 
                     let policyAddress: Address = ZeroAddress
 
-                    yield toast.open({
+                    yield toast.pop({
                         title: i18n('tokenGateToast.waitingTitle'),
                         type: ToastType.Processing,
                     })
@@ -156,7 +156,7 @@ export default function createTokenGatePolicy({
                         }
                     )
 
-                    yield toast.open({
+                    yield toast.pop({
                         title: i18n('tokenGateToast.grantingTitle', policyAddress),
                         type: ToastType.Processing,
                     })
@@ -191,19 +191,19 @@ export default function createTokenGatePolicy({
                         }
                     )
 
-                    yield toast.open({
+                    yield toast.pop({
                         title: i18n('tokenGateToast.successTitle'),
                         type: ToastType.Success,
                     })
                 } catch (e) {
                     handleError(e)
 
-                    yield toast.open({
+                    yield toast.pop({
                         title: i18n('tokenGateToast.failureTitle'),
                         type: ToastType.Error,
                     })
                 } finally {
-                    yield toast.dismiss({ asap: yield cancelled() })
+                    toast.discard({ asap: yield cancelled() })
                 }
             }),
         ])

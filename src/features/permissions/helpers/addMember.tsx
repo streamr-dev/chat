@@ -13,7 +13,7 @@ import { PermissionsAction } from '$/features/permissions'
 import { ToastType } from '$/components/Toast'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
-import retoast from '$/features/toaster/helpers/retoast'
+import retoast from '$/features/misc/helpers/retoast'
 
 function isENS(user: any): boolean {
     return typeof user === 'string' && /\.eth$/.test(user)
@@ -67,7 +67,7 @@ export default function addMember({
         const toast = retoast()
 
         try {
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('memberToast.addingTitle', member),
                 type: ToastType.Processing,
             })
@@ -103,7 +103,7 @@ export default function addMember({
                 }
             )
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('memberToast.successTitle', member),
                 type: ToastType.Success,
             })
@@ -121,7 +121,7 @@ export default function addMember({
             }
         } catch (e) {
             if (e instanceof MemberExistsError) {
-                yield toast.open({
+                yield toast.pop({
                     title: i18n('memberToast.alreadyMemberTitle', e.member),
                     type: ToastType.Error,
                 })
@@ -131,12 +131,12 @@ export default function addMember({
 
             handleError(e)
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('memberToast.failureTitle', member),
                 type: ToastType.Error,
             })
         } finally {
-            yield toast.dismiss({ asap: yield cancelled() })
+            toast.discard({ asap: yield cancelled() })
         }
     })
 }
