@@ -189,12 +189,7 @@ export function Container({
                         discardDeferral: { resolve: discard },
                     },
                 ]) => {
-                    const {
-                        onResolve: omit0,
-                        onReject: omit1,
-                        onDiscard: omit2,
-                        ...rest
-                    } = (innerProps || {}) as any
+                    const { onResolve: omit0, onReject: omit1, ...rest } = (innerProps || {}) as any
 
                     return (
                         <DiscardableContext.Provider key={key} value={[discard, promise]}>
