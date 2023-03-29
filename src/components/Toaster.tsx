@@ -82,7 +82,7 @@ function forge({
                     ...(props || {}),
                 }
 
-                const { resolve, reject, promise } = await defer<ResolveResult<T>>()
+                const { resolve, reject, promise } = defer<ResolveResult<T>>()
 
                 const moddedProps: Props<T> = {
                     ...(rest as any),
