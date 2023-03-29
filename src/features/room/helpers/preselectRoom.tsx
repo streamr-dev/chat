@@ -16,6 +16,7 @@ import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import i18n from '$/utils/i18n'
 import { call, cancelled, put, select } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
+import handleError from '$/utils/handleError'
 
 function selectRecentRoomId({ room }: State) {
     return room.recentRoomId
@@ -41,7 +42,7 @@ function selectRoom(roomId: RoomId, owner: Address) {
     })
 }
 
-export default function preselect({
+export default function preselectRoom({
     roomId,
     account,
 }: ReturnType<typeof RoomAction.preselect>['payload']) {
@@ -208,6 +209,8 @@ export default function preselect({
                     })
                 }
             })
+        } catch (e) {
+            handleError(e)
         } finally {
             toast.discard({
                 asap: yield cancelled(),
