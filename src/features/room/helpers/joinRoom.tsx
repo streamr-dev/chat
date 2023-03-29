@@ -118,6 +118,15 @@ export default function joinRoom(
                             return false
                         }
 
+                        if (typeof e?.message === 'string' && /ACTION_REJECTED/.test(e.message)) {
+                            yield toast.pop({
+                                title: i18n('anonToast.cancelledTitle'),
+                                type: ToastType.Info,
+                            })
+
+                            return false
+                        }
+
                         throw e
                     }
                 },
