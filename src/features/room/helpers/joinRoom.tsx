@@ -36,7 +36,7 @@ interface Options {
     retoastConstroller?: RetoastController
 }
 
-export default function join(
+export default function joinRoom(
     stream: Stream,
     requester: Address,
     { retoastConstroller }: Options = {}

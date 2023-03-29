@@ -198,12 +198,7 @@ export function Container({
 
                     return (
                         <DiscardableContext.Provider key={key} value={[discard, promise]}>
-                            <C
-                                {...rest}
-                                onResolve={resolve}
-                                onReject={reject}
-                                onDiscard={discard}
-                            />
+                            <C {...rest} onResolve={resolve} onReject={reject} />
                         </DiscardableContext.Provider>
                     )
                 }

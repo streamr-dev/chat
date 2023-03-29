@@ -168,20 +168,12 @@ export default function Toast({
 
     useEffect(() => {
         if (autoCloseAfter === false) {
-            return () => {
-                // Do nothing
-            }
+            return () => void 0
         }
 
-        const timeoutId = setTimeout(() => {
-            onReject?.()
+        const timeoutId = setTimeout(() => void onReject?.(), autoCloseAfter * 1000)
 
-            hide()
-        }, autoCloseAfter * 1000)
-
-        return () => {
-            clearTimeout(timeoutId)
-        }
+        return () => void clearTimeout(timeoutId)
     }, [autoCloseAfter, onReject])
 
     useLayoutEffect(() => {
@@ -295,7 +287,7 @@ export default function Toast({
                                 <Dot size={3} css={tw`mx-2`} />
                             )}
                             {cancelLabel != null && (
-                                <Button onClick={onReject}>
+                                <Button onClick={() => void onReject?.()}>
                                     <Text>{cancelLabel}</Text>
                                 </Button>
                             )}
@@ -306,7 +298,7 @@ export default function Toast({
                     <>
                         {/* Close button */}
                         <button
-                            onClick={onReject}
+                            onClick={() => void onReject?.()}
                             type="button"
                             css={tw`
                                 appearance-none
