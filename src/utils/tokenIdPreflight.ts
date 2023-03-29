@@ -1,21 +1,18 @@
 import TokenIdToast from '$/components/TokenIdToast'
-import { Controller as ToastController } from '$/components/Toaster'
-import toaster from '$/features/toaster/helpers/toaster'
+import { Layer, toaster } from '$/utils/toaster'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { call } from 'redux-saga/effects'
 
 export default function* tokenIdPreflight(tokenStandard: TokenStandard) {
     const result: string = yield call(function* () {
-        let tc: ToastController<typeof TokenIdToast> | undefined
+        const toast = toaster(TokenIdToast, Layer.Toast)
 
         try {
-            tc = yield toaster(TokenIdToast, {
+            return (yield toast.pop({
                 tokenStandard,
-            })
-
-            return (yield tc?.open()) as string
+            })) as string
         } finally {
-            tc?.dismiss()
+            toast.discard()
         }
     })
 

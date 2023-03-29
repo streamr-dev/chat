@@ -10,9 +10,6 @@ import usePrivacy from '$/hooks/usePrivacy'
 import useCanGrant from '$/hooks/useCanGrant'
 import useResendEffect from '$/hooks/useResendEffect'
 import useResends from '$/hooks/useResends'
-import useAddMemberModal from '$/hooks/useAddMemberModal'
-import useEditMembersModal from '$/hooks/useEditMembersModal'
-import useRoomPropertiesModal from '$/hooks/useRoomPropertiesModal'
 import { Flag } from '$/features/flag/types'
 import { useDispatch } from 'react-redux'
 import { FlagAction } from '$/features/flag'
@@ -28,15 +25,10 @@ import usePromoteDelegatedAccount from '$/hooks/usePromoteDelegatedAccount'
 import useJoin from '$/hooks/useJoin'
 import usePublisher, { PublisherState } from '$/hooks/usePublisher'
 import i18n from '$/utils/i18n'
+import { MiscAction } from '$/features/misc'
 
 export default function Conversation() {
     const messages = useMessages()
-
-    const { open: openAddMemberModal, modal: addMemberModal } = useAddMemberModal()
-
-    const { open: openEditMembersModal, modal: editMembersModal } = useEditMembersModal()
-
-    const { open: openRoomPropertiesModal, modal: roomPropertiesModal } = useRoomPropertiesModal()
 
     const canGrant = useCanGrant()
 
@@ -53,92 +45,97 @@ export default function Conversation() {
     const dispatch = useDispatch()
 
     return (
-        <>
-            {addMemberModal}
-            {editMembersModal}
-            {roomPropertiesModal}
+        <div
+            css={tw`
+                h-full
+                flex
+                flex-col
+                w-full
+            `}
+        >
+            <ConversationHeader
+                canModifyMembers={canGrant}
+                onAddMemberClick={() => {
+                    if (selectedRoomId) {
+                        dispatch(MiscAction.showAddMemberModal({ roomId: selectedRoomId }))
+                    }
+                }}
+                onEditMembersClick={() => void dispatch(MiscAction.showEditMembersModal())}
+                onRoomPropertiesClick={() => void dispatch(MiscAction.showRoomPropertiesModal())}
+                onGoBackClick={() => void dispatch(FlagAction.set(Flag.isDisplayingRooms()))}
+                css={tw`shrink-0`}
+            />
             <div
                 css={tw`
-                    h-full
+                    grow
                     flex
                     flex-col
                     w-full
+                    relative
                 `}
             >
-                <ConversationHeader
-                    canModifyMembers={canGrant}
-                    onAddMemberClick={() => void openAddMemberModal()}
-                    onEditMembersClick={() => void openEditMembersModal()}
-                    onRoomPropertiesClick={() => void openRoomPropertiesModal()}
-                    onGoBackClick={() => void dispatch(FlagAction.set(Flag.isDisplayingRooms()))}
-                    css={tw`shrink-0`}
-                />
                 <div
                     css={tw`
-                        grow
-                        flex
-                        flex-col
+                        absolute
+                        top-0
+                        left-0
                         w-full
-                        relative
+                        h-full
                     `}
                 >
-                    <div
-                        css={tw`
-                            absolute
-                            top-0
-                            left-0
-                            w-full
-                            h-full
-                        `}
-                    >
-                        <div css={tw`h-full`}>
-                            {(messages || []).length ? (
-                                <div
+                    <div css={tw`h-full`}>
+                        {(messages || []).length ? (
+                            <div
+                                css={tw`
+                                    h-full
+                                    flex
+                                    flex-col
+                                `}
+                            >
+                                <div css={tw`grow`} />
+                                <MessageFeed
+                                    messages={messages}
+                                    resends={resends}
                                     css={tw`
-                                        h-full
-                                        flex
-                                        flex-col
+                                        max-h-full
+                                        overflow-auto
                                     `}
-                                >
-                                    <div css={tw`grow`} />
-                                    <MessageFeed
-                                        messages={messages}
-                                        resends={resends}
-                                        css={tw`
-                                            max-h-full
-                                            overflow-auto
-                                        `}
-                                    />
-                                </div>
-                            ) : (
-                                <EmptyMessageFeed
-                                    onAddMemberClick={() => void openAddMemberModal()}
                                 />
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <EmptyMessageFeed
+                                onAddMemberClick={() => {
+                                    if (selectedRoomId) {
+                                        dispatch(
+                                            MiscAction.showAddMemberModal({
+                                                roomId: selectedRoomId,
+                                            })
+                                        )
+                                    }
+                                }}
+                            />
+                        )}
                     </div>
                 </div>
-                {canAct && (
-                    <div
-                        css={tw`
-                            shrink-0
-                            shadow-[inset 0 1px 0 #dee6ee]
-                            p-4
-                            lg:p-6
-                        `}
-                    >
-                        {publisher instanceof StreamrClient && (
-                            <MessageInput streamrClient={publisher} />
-                        )}
-                        {publisher === PublisherState.NeedsDelegation && <DelegationBox />}
-                        {publisher === PublisherState.NeedsPermission && <PermitBox />}
-                        {publisher === PublisherState.NeedsTokenGatedPermission && (
-                            <TokenGatedBox />
-                        )}
-                    </div>
-                )}
             </div>
-        </>
+            {canAct && (
+                <div
+                    css={tw`
+                        shrink-0
+                        shadow-[inset 0 1px 0 #dee6ee]
+                        p-4
+                        lg:p-6
+                    `}
+                >
+                    {publisher instanceof StreamrClient && (
+                        <MessageInput streamrClient={publisher} />
+                    )}
+                    {publisher === PublisherState.NeedsDelegation && <DelegationBox />}
+                    {publisher === PublisherState.NeedsPermission && <PermitBox />}
+                    {publisher === PublisherState.NeedsTokenGatedPermission && <TokenGatedBox />}
+                </div>
+            )}
+        </div>
     )
 }
 

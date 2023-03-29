@@ -1,7 +1,7 @@
 import { ToastType } from '$/components/Toast'
 import { JSON_RPC_URL, ZeroAddress } from '$/consts'
 import { PermissionsAction } from '$/features/permissions'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import getDelegatedAccessRegistry from '$/utils/getDelegatedAccessRegistry'
 import getDisplayUsername from '$/utils/getDisplayUsername'
 import handleError from '$/utils/handleError'
@@ -46,7 +46,7 @@ export default function removeMember({
             })
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('removeMemberToast.successTitle', displayName),
                     type: ToastType.Success,
                 })
@@ -55,7 +55,7 @@ export default function removeMember({
             handleError(e)
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('removeMemberToast.failureTitle', displayName),
                     type: ToastType.Error,
                 })

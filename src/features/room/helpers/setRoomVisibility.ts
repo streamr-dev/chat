@@ -1,6 +1,6 @@
 import { ToastType } from '$/components/Toast'
 import { RoomAction } from '$/features/room'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
@@ -20,7 +20,7 @@ export default function setRoomVisibility({
             handleError(e)
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('roomVisibilityToast.failedToToggleTitle'),
                     type: ToastType.Error,
                 })

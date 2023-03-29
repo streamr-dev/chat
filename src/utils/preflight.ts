@@ -4,7 +4,7 @@ import networkPreflight from './networkPreflight'
 import InsufficientFundsError from '$/errors/InsufficientFundsError'
 import { call, put } from 'redux-saga/effects'
 import { JSON_RPC_URL } from '$/consts'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { ToastType } from '$/components/Toast'
 
 export default function preflight(account: Address) {
@@ -22,7 +22,7 @@ export default function preflight(account: Address) {
         } catch (e) {
             if (e instanceof InsufficientFundsError) {
                 yield put(
-                    ToasterAction.show({
+                    MiscAction.toast({
                         title: 'Insufficient funds',
                         desc: "You don't have enough MATIC.",
                         type: ToastType.Error,

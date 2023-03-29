@@ -1,35 +1,33 @@
 import Toast, { ToastType } from '$/components/Toast'
 import { selectDelegatedAccount } from '$/features/delegation/selectors'
-import toaster from '$/features/toaster/helpers/toaster'
+import { Layer, toaster } from '$/utils/toaster'
 import { Address, OptionalAddress } from '$/types'
 import { call, put, select } from 'redux-saga/effects'
-import { Controller as ToastController } from '$/components/Toaster'
 import { FlagAction } from '$/features/flag'
 import { Flag } from '$/features/flag/types'
 import retrieve from '$/features/delegation/helpers/retrieve'
-import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 
-export default function* delegationPreflight(requester: Address) {
-    let delegatedAccount: OptionalAddress
-
-    yield call(function* () {
+export default function delegationPreflight(requester: Address) {
+    return call(function* () {
         let retrievedAccess = false
 
-        let confirm: ToastController | undefined
+        const confirm = toaster(Toast, Layer.Toast)
+
+        let delegatedAccount: OptionalAddress
 
         try {
             delegatedAccount = yield select(selectDelegatedAccount)
 
             if (delegatedAccount) {
-                return
+                return delegatedAccount
             }
 
             retrievedAccess = true
 
             yield put(FlagAction.set(Flag.isAccessBeingDelegated(requester)))
 
-            confirm = yield toaster(Toast, {
+            yield confirm.pop({
                 title: i18n('delegationToast.title'),
                 type: ToastType.Warning,
                 desc: i18n('delegationToast.desc'),
@@ -37,23 +35,13 @@ export default function* delegationPreflight(requester: Address) {
                 cancelLabel: i18n('delegationToast.cancelLabel'),
             })
 
-            yield confirm?.open()
-
-            delegatedAccount = yield retrieve({ owner: requester })
-        } catch (e) {
-            handleError(e)
+            return (yield retrieve({ owner: requester })) as string
         } finally {
-            confirm?.dismiss()
+            confirm.discard()
 
             if (retrievedAccess) {
                 yield put(FlagAction.unset(Flag.isAccessBeingDelegated(requester)))
             }
         }
     })
-
-    if (!delegatedAccount) {
-        throw new Error('No delegated account')
-    }
-
-    return delegatedAccount
 }

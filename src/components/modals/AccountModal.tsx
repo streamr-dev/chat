@@ -6,7 +6,7 @@ import { ToastType } from '$/components/Toast'
 import Toggle from '$/components/Toggle'
 import { PreferencesAction } from '$/features/preferences'
 import { usePreferences } from '$/features/preferences/hooks'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { useWalletAccount, useWalletIntegrationId } from '$/features/wallet/hooks'
 import useCopy from '$/hooks/useCopy'
 import getExplorerURL from '$/utils/getExplorerURL'
@@ -18,12 +18,12 @@ import tw from 'twin.macro'
 import Modal, { Props as ModalProps } from './Modal'
 
 interface Props extends ModalProps {
-    onProceed?: () => void
+    onResolve?: () => void
 }
 
 export default function AccountModal({
     title = i18n('accountModal.title'),
-    onProceed,
+    onResolve,
     ...props
 }: Props) {
     const integrationId = useWalletIntegrationId()
@@ -65,7 +65,7 @@ export default function AccountModal({
                         {i18n('accountModal.connectedWith', integrationId)}
                     </div>
                     <div>
-                        <SecondaryButton onClick={() => void onProceed?.()}>
+                        <SecondaryButton onClick={() => void onResolve?.()}>
                             <Text>{i18n('accountModal.change')}</Text>
                         </SecondaryButton>
                     </div>
@@ -104,7 +104,7 @@ export default function AccountModal({
                             copy(account!)
 
                             dispatch(
-                                ToasterAction.show({
+                                MiscAction.toast({
                                     title: i18n('common.copied'),
                                     type: ToastType.Success,
                                 })

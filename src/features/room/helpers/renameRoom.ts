@@ -13,7 +13,7 @@ import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import { ToastType } from '$/components/Toast'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 
 export default function renameRoom({
     roomId,
@@ -32,7 +32,7 @@ export default function renameRoom({
 
             if (roomMetadata.name === name) {
                 yield put(
-                    ToasterAction.show({
+                    MiscAction.toast({
                         title: i18n('roomRenameToast.upToDateTitle'),
                         type: ToastType.Info,
                     })
@@ -87,7 +87,7 @@ export default function renameRoom({
             yield put(FlagAction.unset(Flag.isRoomNameBeingEdited(roomId)))
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('roomRenameToast.successTitle'),
                     type: ToastType.Success,
                 })
@@ -100,7 +100,7 @@ export default function renameRoom({
             handleError(e)
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('roomRenameToast.failureTitle'),
                     type: ToastType.Error,
                 })

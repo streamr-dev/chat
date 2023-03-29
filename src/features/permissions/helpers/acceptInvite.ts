@@ -6,7 +6,8 @@ import { call, cancelled } from 'redux-saga/effects'
 import { StreamPermission } from 'streamr-client'
 import delegationPreflight from '$/utils/delegationPreflight'
 import i18n from '$/utils/i18n'
-import retoast from '$/features/toaster/helpers/retoast'
+import retoast from '$/features/misc/helpers/retoast'
+import { Address } from '$/types'
 
 export default function acceptInvite({
     roomId,
@@ -17,9 +18,9 @@ export default function acceptInvite({
         const toast = retoast()
 
         try {
-            const delegatedAccount = yield* delegationPreflight(requester)
+            const delegatedAccount: Address = yield delegationPreflight(requester)
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('acceptInviteToast.joiningTitle'),
                 type: ToastType.Processing,
             })
@@ -46,19 +47,19 @@ export default function acceptInvite({
                 }
             )
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('acceptInviteToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('acceptInviteToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {
-            yield toast.dismiss({ asap: yield cancelled() })
+            toast.discard({ asap: yield cancelled() })
         }
     })
 }

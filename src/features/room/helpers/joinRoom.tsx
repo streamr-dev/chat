@@ -12,7 +12,6 @@ import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155Joi
 import { ToastType } from '$/components/Toast'
 import StreamrClient, { Stream } from 'streamr-client'
 import getRoomMetadata from '$/utils/getRoomMetadata'
-import { Controller as ToastController } from '$/components/Toaster'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
 import waitForPermissions from '$/utils/waitForPermissions'
@@ -22,7 +21,7 @@ import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
 import getTransactionalClient from '$/utils/getTransactionalClient'
-import retoast, { RetoastController } from '$/features/toaster/helpers/retoast'
+import retoast, { RetoastController } from '$/features/misc/helpers/retoast'
 import getSigner from '$/utils/getSigner'
 import { JSON_RPC_URL } from '$/consts'
 
@@ -37,7 +36,7 @@ interface Options {
     retoastConstroller?: RetoastController
 }
 
-export default function join(
+export default function joinRoom(
     stream: Stream,
     requester: Address,
     { retoastConstroller }: Options = {}
@@ -49,11 +48,9 @@ export default function join(
 
         const toast = retoastConstroller || retoast()
 
-        let tokenIdTc: ToastController | undefined
-
         try {
             if (!tokenAddress) {
-                yield toast.open({
+                yield toast.pop({
                     title: i18n('joinTokenGatedRoomToast.notTokenGatedTitle'),
                     type: ToastType.Error,
                 })
@@ -73,7 +70,7 @@ export default function join(
 
             const provider = yield* getWalletProvider()
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('joinTokenGatedRoomToast.joiningTitle', name, roomId),
                 type: ToastType.Processing,
             })
@@ -84,7 +81,7 @@ export default function join(
                 tokenId = yield* tokenIdPreflight(tokenStandard)
             }
 
-            const delegatedAccount = yield* delegationPreflight(requester)
+            const delegatedAccount: Address = yield delegationPreflight(requester)
 
             const policyRegistry = getJoinPolicyRegistry(
                 new providers.JsonRpcProvider(JSON_RPC_URL)
@@ -112,10 +109,19 @@ export default function join(
                             typeof e?.message === 'string' &&
                             /error_notEnoughTokens/.test(e.message)
                         ) {
-                            yield toast.open({
+                            yield toast.pop({
                                 title: i18n('joinTokenGatedRoomToast.insufficientFundsTitle'),
                                 type: ToastType.Error,
                                 autoCloseAfter: 5,
+                            })
+
+                            return false
+                        }
+
+                        if (typeof e?.message === 'string' && /ACTION_REJECTED/.test(e.message)) {
+                            yield toast.pop({
+                                title: i18n('anonToast.cancelledTitle'),
+                                type: ToastType.Info,
                             })
 
                             return false
@@ -136,7 +142,7 @@ export default function join(
                 return
             }
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('joinTokenGatedRoomToast.checkingPermissionsTitle'),
                 type: ToastType.Processing,
             })
@@ -183,23 +189,21 @@ export default function join(
                 })
             )
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('joinTokenGatedRoomToast.successTitle'),
                 type: ToastType.Success,
             })
         } catch (e) {
             handleError(e)
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('joinTokenGatedRoomToast.failureTitle'),
                 type: ToastType.Error,
             })
         } finally {
-            tokenIdTc?.dismiss()
-
             if (!retoastConstroller) {
                 // We don't wanna dismiss the outside toast. Let whoever created it clean it up.
-                yield toast.dismiss({ asap: yield cancelled() })
+                toast.discard({ asap: yield cancelled() })
             }
         }
     })
