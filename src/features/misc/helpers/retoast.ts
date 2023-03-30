@@ -1,8 +1,9 @@
 import { ComponentProps } from 'react'
 import Toast, { ToastType } from '$/components/Toast'
 import { ForkEffect, spawn } from 'redux-saga/effects'
-import { Layer, Toaster, toaster } from '$/utils/toaster'
+import { Toaster, toaster } from 'toasterhea'
 import handleError from '$/utils/handleError'
+import { Layer } from '$/consts'
 
 export interface RetoastController {
     pop: (props?: ComponentProps<typeof Toast>) => ForkEffect<unknown>

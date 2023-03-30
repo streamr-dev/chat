@@ -1,8 +1,9 @@
 import WalletModal from '$/components/modals/WalletModal'
 import { MiscAction } from '$/features/misc'
 import { WalletAction } from '$/features/wallet'
-import { Layer, toaster, Toaster } from '$/utils/toaster'
+import { toaster, Toaster } from 'toasterhea'
 import { call, cancelled, race, take } from 'redux-saga/effects'
+import { Layer } from '$/consts'
 
 let modal: Toaster<typeof WalletModal> | undefined
 

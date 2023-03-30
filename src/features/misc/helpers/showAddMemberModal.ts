@@ -5,8 +5,9 @@ import { PermissionsAction } from '$/features/permissions'
 import { selectWalletAccount } from '$/features/wallet/selectors'
 import { OptionalAddress } from '$/types'
 import handleError from '$/utils/handleError'
-import { Layer, toaster, Toaster } from '$/utils/toaster'
+import { toaster, Toaster } from 'toasterhea'
 import { call, cancelled, put, select } from 'redux-saga/effects'
+import { Layer } from '$/consts'
 
 let modal: Toaster<typeof AddMemberModal> | undefined
 

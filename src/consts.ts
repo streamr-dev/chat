@@ -1,3 +1,5 @@
+import uniqueId from 'lodash/uniqueId'
+
 export const ZeroAddress = '0x0000000000000000000000000000000000000000'
 
 export const ERC20PolicyFactoryAddress = '0x74A40cA38616FD84F9ee5576e28a42aDA7302607'
@@ -19,3 +21,8 @@ export enum PermissionType {
 }
 
 export const JSON_RPC_URL = 'https://polygon-rpc.com'
+
+export const Layer = {
+    Modal: uniqueId('modals-'),
+    Toast: uniqueId('toasts-'),
+}

@@ -5,9 +5,10 @@ import { TokenTypes } from '$/features/tokenGatedRooms/types'
 import { selectWalletAccount } from '$/features/wallet/selectors'
 import { OptionalAddress, Prefix, PrivacySetting } from '$/types'
 import handleError from '$/utils/handleError'
-import { Layer, toaster, Toaster } from '$/utils/toaster'
+import { toaster, Toaster } from 'toasterhea'
 import { call, cancelled, put, select } from 'redux-saga/effects'
 import { v4 as uuidv4 } from 'uuid'
+import { Layer } from '$/consts'
 
 let basic: Toaster<typeof AddRoomModal> | undefined
 

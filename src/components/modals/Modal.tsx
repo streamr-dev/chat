@@ -1,5 +1,5 @@
 import i18n from '$/utils/i18n'
-import { useDiscardableEffect } from '$/utils/toaster'
+import { useDiscardableEffect } from 'toasterhea'
 import gsap from 'gsap'
 import { ReactNode, useEffect, useRef } from 'react'
 import { useGlobalKeyDownEffect } from 'streamr-ui/hooks'

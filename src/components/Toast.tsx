@@ -3,7 +3,7 @@ import Form from '$/components/Form'
 import Spinner from '$/components/Spinner'
 import Text from '$/components/Text'
 import i18n from '$/utils/i18n'
-import { useDiscardableEffect } from '$/utils/toaster'
+import { useDiscardableEffect } from 'toasterhea'
 import {
     ButtonHTMLAttributes,
     FC,

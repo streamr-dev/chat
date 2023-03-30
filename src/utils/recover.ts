@@ -1,8 +1,9 @@
 import Toast, { ToastType } from '$/components/Toast'
 import { ComponentProps } from 'react'
-import { Layer, toaster } from '$/utils/toaster'
+import { toaster } from 'toasterhea'
 import i18n from '$/utils/i18n'
 import { call } from 'redux-saga/effects'
+import { Layer } from '$/consts'
 
 type RecoverReturnType<T> = T extends () => Generator<any, infer U, any> ? U : never
 

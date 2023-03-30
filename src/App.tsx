@@ -6,7 +6,8 @@ import store from '$/store'
 import IndexPage from '$/components/IndexPage'
 import { Helmet } from 'react-helmet'
 import getCommitId from '$/utils/getCommitId'
-import { Container, Layer } from '$/utils/toaster'
+import { Container } from 'toasterhea'
+import { Layer } from '$/consts'
 
 const customGlobalStyles = css`
     body {

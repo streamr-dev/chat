@@ -1,12 +1,13 @@
 import Toast, { ToastType } from '$/components/Toast'
 import { selectDelegatedAccount } from '$/features/delegation/selectors'
-import { Layer, toaster } from '$/utils/toaster'
+import { toaster } from 'toasterhea'
 import { Address, OptionalAddress } from '$/types'
 import { call, put, select } from 'redux-saga/effects'
 import { FlagAction } from '$/features/flag'
 import { Flag } from '$/features/flag/types'
 import retrieve from '$/features/delegation/helpers/retrieve'
 import i18n from '$/utils/i18n'
+import { Layer } from '$/consts'
 
 export default function delegationPreflight(requester: Address) {
     return call(function* () {

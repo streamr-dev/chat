@@ -1,8 +1,9 @@
 import Toast from '$/components/Toast'
 import { MiscAction } from '$/features/misc'
 import handleError from '$/utils/handleError'
-import { Layer, toaster } from '$/utils/toaster'
+import { toaster } from 'toasterhea'
 import { spawn } from 'redux-saga/effects'
+import { Layer } from '$/consts'
 
 export default function toast(props: ReturnType<typeof MiscAction.toast>['payload']) {
     return spawn(function* () {

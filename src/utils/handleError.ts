@@ -1,4 +1,4 @@
-import { Reason } from '$/utils/toaster'
+import { Reason } from 'toasterhea'
 import Dexie from 'dexie'
 
 export default function handleError(e: any) {

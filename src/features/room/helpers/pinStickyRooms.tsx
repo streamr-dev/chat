@@ -13,9 +13,10 @@ import getUserPermissions from '$/utils/getUserPermissions'
 import { PreferencesAction } from '$/features/preferences'
 import Toast, { ToastType } from '$/components/Toast'
 import tw from 'twin.macro'
-import { Layer, toaster } from '$/utils/toaster'
+import { toaster } from 'toasterhea'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
+import { Layer } from '$/consts'
 
 function quietPin(roomId: RoomId, requester: Address) {
     return call(function* () {

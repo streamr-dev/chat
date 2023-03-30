@@ -1,7 +1,8 @@
 import TokenIdToast from '$/components/TokenIdToast'
-import { Layer, toaster } from '$/utils/toaster'
+import { toaster } from 'toasterhea'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { call } from 'redux-saga/effects'
+import { Layer } from '$/consts'
 
 export default function* tokenIdPreflight(tokenStandard: TokenStandard) {
     const result: string = yield call(function* () {
