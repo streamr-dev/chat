@@ -1,20 +1,21 @@
 import i18n from '$/utils/i18n'
+import { useDiscardableEffect } from 'toasterhea'
 import gsap from 'gsap'
 import { ReactNode, useEffect, useRef } from 'react'
 import { useGlobalKeyDownEffect } from 'streamr-ui/hooks'
 import tw from 'twin.macro'
 
-export enum AbortReason {
-    CloseButton,
-    Backdrop,
-    Escape,
+export const RejectReason = {
+    CloseButton: Symbol('close button'),
+    Backdrop: Symbol('backdrop'),
+    EscapeKey: Symbol('escape key'),
 }
 
 export interface Props {
     children?: ReactNode
     title?: string
     subtitle?: string
-    onAbort?: (reason?: any) => void
+    onReject?: (reason?: any) => void
     onBeforeAbort?: (reason?: any) => boolean | null | void
 }
 
@@ -22,7 +23,7 @@ export default function Modal({
     title = i18n('modal.defaultTitle'),
     subtitle,
     children,
-    onAbort,
+    onReject,
     onBeforeAbort,
 }: Props) {
     const wigglyRef = useRef<HTMLDivElement>(null)
@@ -55,6 +56,8 @@ export default function Modal({
         )
     }
 
+    useDiscardableEffect()
+
     useEffect(
         () => () => {
             tweenRef.current?.kill()
@@ -73,12 +76,12 @@ export default function Modal({
             return
         }
 
-        onAbort?.(reason)
+        onReject?.(reason)
     }
 
     useGlobalKeyDownEffect((e) => {
         if (e.key === 'Escape') {
-            close(AbortReason.Escape)
+            close(RejectReason.EscapeKey)
         }
     })
 
@@ -102,7 +105,7 @@ export default function Modal({
                     w-full
                     h-full
                 `}
-                onMouseDown={() => void close(AbortReason.Backdrop)}
+                onMouseDown={() => void close(RejectReason.Backdrop)}
             />
             <div
                 css={tw`
@@ -188,7 +191,7 @@ export default function Modal({
                                                     appearance-none
                                                     [svg]:block
                                                 `}
-                                                onClick={() => void close(AbortReason.CloseButton)}
+                                                onClick={() => void close(RejectReason.CloseButton)}
                                             >
                                                 <svg
                                                     width="32"

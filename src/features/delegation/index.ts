@@ -21,7 +21,7 @@ export const DelegationAction = {
         }
     >('delegation: lookup'),
 
-    setDelegation: createAction<{ main: OptionalAddress; delegated: Address }>(
+    cacheDelegation: createAction<{ main: OptionalAddress; delegated: Address }>(
         'delegation: set delegation'
     ),
 }
@@ -37,7 +37,7 @@ const reducer = createReducer(initialState, (builder) => {
             : undefined
     })
 
-    builder.addCase(DelegationAction.setDelegation, (state, { payload: { main, delegated } }) => {
+    builder.addCase(DelegationAction.cacheDelegation, (state, { payload: { main, delegated } }) => {
         if (typeof main === 'undefined') {
             delete state.delegations[delegated.toLowerCase()]
 

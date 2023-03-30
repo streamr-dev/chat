@@ -40,7 +40,7 @@ export default function lookup({
                     }
 
                     yield put(
-                        DelegationAction.setDelegation({
+                        DelegationAction.cacheDelegation({
                             main,
                             delegated,
                         })
@@ -51,7 +51,7 @@ export default function lookup({
             handleError(e)
 
             yield put(
-                DelegationAction.setDelegation({
+                DelegationAction.cacheDelegation({
                     main: null,
                     delegated,
                 })

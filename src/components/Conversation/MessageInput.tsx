@@ -14,17 +14,10 @@ import SpyIcon from '$/icons/SpyIcon'
 import Avatar from '$/components/Avatar'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import useAnonClient from '$/hooks/useAnonClient'
-import useInfoModal from '$/hooks/useInfoModal'
-import TextField from '$/components/TextField'
-import Hint from '$/components/Hint'
 import useAnonPrivateKey from '$/hooks/useAnonPrivateKey'
-import Label from '$/components/Label'
-import useCopy from '$/hooks/useCopy'
-import { ToasterAction } from '$/features/toaster'
-import { ToastType } from '$/components/Toast'
-import Submit from '$/components/Submit'
 import Textarea from '$/components/Conversation/Textarea'
 import i18n from '$/utils/i18n'
+import { MiscAction } from '$/features/misc'
 
 interface Props {
     disabled?: boolean
@@ -117,9 +110,9 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
         }
     }, [account, selectedRoomId])
 
-    const anonAccount = useAnonAccount(selectedRoomId)
+    const anonAccount = useAnonAccount(selectedRoomId) || ''
 
-    const anonPKey = useAnonPrivateKey(selectedRoomId)
+    const anonPrivateKey = useAnonPrivateKey(selectedRoomId) || ''
 
     const anonClient = useAnonClient(selectedRoomId)
 
@@ -127,17 +120,12 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
 
     const seed = (anonRoom ? anonAccount : account)?.toLowerCase()
 
-    const { open, close, modal } = useInfoModal()
-
-    const { copy } = useCopy()
-
     const [isShiftDown, setIsShiftDown] = useState(false)
 
     const [rightOffset, setRightOffset] = useState(0)
 
     return (
         <>
-            {modal}
             <Form
                 css={tw`
                     bg-[#f7f9fc]
@@ -207,71 +195,11 @@ export default function MessageInput({ streamrClient, disabled = false }: Props)
                         <button
                             type="button"
                             onClick={() =>
-                                void open(
-                                    <>
-                                        <p
-                                            css={tw`
-                                                leading-6
-                                                text-[14px]
-                                            `}
-                                        >
-                                            {i18n('anonExplainer.desc')}
-                                        </p>
-                                        <Label css={tw`mt-6`}>
-                                            {i18n('anonExplainer.addressLabel')}
-                                        </Label>
-                                        <TextField defaultValue={anonAccount} readOnly />
-                                        {!!i18n('anonExplainer.addressHint') && (
-                                            <Hint>{i18n('anonExplainer.addressHint')}</Hint>
-                                        )}
-                                        {!!anonPKey && (
-                                            <>
-                                                <Label css={tw`mt-6`}>
-                                                    <div
-                                                        css={tw`
-                                                            flex
-                                                            items-center
-                                                        `}
-                                                    >
-                                                        <div css={tw`grow`}>
-                                                            {i18n('anonExplainer.privateKeyLabel')}
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            css={tw`appearance-none`}
-                                                            onClick={() => {
-                                                                copy(anonPKey)
-
-                                                                dispatch(
-                                                                    ToasterAction.show({
-                                                                        title: i18n(
-                                                                            'common.copied'
-                                                                        ),
-                                                                        type: ToastType.Success,
-                                                                    })
-                                                                )
-                                                            }}
-                                                        >
-                                                            {i18n('common.copy')}
-                                                        </button>
-                                                    </div>
-                                                </Label>
-                                                <TextField
-                                                    defaultValue={anonPKey}
-                                                    readOnly
-                                                    type="password"
-                                                />
-                                                <Submit
-                                                    label={i18n('anonExplainer.okLabel')}
-                                                    type="button"
-                                                    onClick={() => void close()}
-                                                />
-                                            </>
-                                        )}
-                                    </>,
-                                    {
-                                        title: i18n('anonExplainer.title'),
-                                    }
+                                void dispatch(
+                                    MiscAction.showAnonExplainerModal({
+                                        anonAccount,
+                                        anonPrivateKey,
+                                    })
                                 )
                             }
                             css={tw`

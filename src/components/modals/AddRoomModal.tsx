@@ -13,7 +13,7 @@ import PrivacySelectField, {
     privacyOptions,
     PrivateRoomOption,
 } from '$/components/PrivacySelectField'
-import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
+import Modal, { RejectReason, Props as ModalProps } from '$/components/modals/Modal'
 import i18n from '$/utils/i18n'
 
 export interface NewRoom {
@@ -29,7 +29,7 @@ export const defaultParams: NewRoom = {
 }
 
 interface Props extends ModalProps {
-    onProceed?: (params: NewRoom) => void
+    onResolve?: (params: NewRoom) => void
     params?: NewRoom
 }
 
@@ -40,7 +40,7 @@ function getPrivacyOptionForSetting(value: PrivacySetting): PrivacyOption {
 export default function AddRoomModal({
     title = i18n('addRoomModal.title'),
     params = defaultParams,
-    onProceed,
+    onResolve,
     ...props
 }: Props) {
     const [privacySetting, setPrivacySetting] = useState<PrivacyOption>(
@@ -75,7 +75,7 @@ export default function AddRoomModal({
             {...props}
             title={title}
             onBeforeAbort={(reason) => {
-                if (reason === AbortReason.Backdrop) {
+                if (reason === RejectReason.Backdrop) {
                     return (
                         privacySetting === PrivateRoomOption &&
                         isBlank(roomName) &&
@@ -90,7 +90,7 @@ export default function AddRoomModal({
                         return
                     }
 
-                    onProceed?.({
+                    onResolve?.({
                         name: roomName,
                         storage,
                         privacy: privacySetting.value,

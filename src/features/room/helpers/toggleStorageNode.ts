@@ -6,7 +6,7 @@ import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
 import StreamrClient from 'streamr-client'
 import getTransactionalClient from '$/utils/getTransactionalClient'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 
 export default function toggleStorageNode({
     roomId,
@@ -32,7 +32,7 @@ export default function toggleStorageNode({
                 yield streamrClient.addStreamToStorageNode(roomId, address)
 
                 yield put(
-                    ToasterAction.show({
+                    MiscAction.toast({
                         title: i18n('storageToast.enabledTitle'),
                         type: ToastType.Success,
                     })
@@ -41,7 +41,7 @@ export default function toggleStorageNode({
                 yield streamrClient.removeStreamFromStorageNode(roomId, address)
 
                 yield put(
-                    ToasterAction.show({
+                    MiscAction.toast({
                         title: i18n('storageToast.disabledTitle'),
                         type: ToastType.Success,
                     })
@@ -59,7 +59,7 @@ export default function toggleStorageNode({
             handleError(e)
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: state
                         ? i18n('storageToast.failedToEnableTitle')
                         : i18n('storageToast.failedToDisableTitle'),

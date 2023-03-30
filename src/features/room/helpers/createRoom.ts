@@ -21,8 +21,7 @@ import createTokenGatePolicy from '$/features/tokenGatedRooms/helpers/createToke
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getTransactionalClient from '$/utils/getTransactionalClient'
-import { ToasterAction } from '$/features/toaster'
-import retoast from '$/features/toaster/helpers/retoast'
+import retoast from '$/features/misc/helpers/retoast'
 
 export default function createRoom({
     privacy,
@@ -70,7 +69,7 @@ export default function createRoom({
                     tokenType.standard !== TokenStandard.ERC721
                 ) {
                     yield put(
-                        ToasterAction.show({
+                        MiscAction.toast({
                             title: i18n('roomCreateToast.unsupportedTokenTitle'),
                             type: ToastType.Error,
                             okLabel: i18n('common.ok'),
@@ -81,7 +80,7 @@ export default function createRoom({
                 }
             }
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('roomCreateToast.creatingTitle', params.name),
                 type: ToastType.Processing,
             })
@@ -115,7 +114,7 @@ export default function createRoom({
             }
 
             if (privacy === PrivacySetting.Public) {
-                yield toast.open({
+                yield toast.pop({
                     title: i18n('roomCreateToast.publishingTitle', params.name),
                     type: ToastType.Processing,
                 })
@@ -142,7 +141,7 @@ export default function createRoom({
                 owner: owner.toLowerCase(),
             })
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('roomCreateToast.successTitle', params.name),
                 type: ToastType.Success,
             })
@@ -166,12 +165,14 @@ export default function createRoom({
         } catch (e: any) {
             handleError(e)
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('roomCreateToast.failureTitle', params.name),
                 type: ToastType.Error,
             })
         } finally {
-            yield toast.dismiss({ asap: yield cancelled() })
+            toast.discard({
+                asap: yield cancelled(),
+            })
         }
     })
 }

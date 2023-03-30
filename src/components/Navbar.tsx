@@ -3,8 +3,12 @@ import Text from './Text'
 import Button from './Button'
 import { ButtonHTMLAttributes, HTMLAttributes } from 'react'
 import i18n from '$/utils/i18n'
+import { WalletAction } from '$/features/wallet'
+import { useDispatch } from 'react-redux'
 
 export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElement>) {
+    const dispatch = useDispatch()
+
     return (
         <nav
             {...props}
@@ -23,8 +27,11 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
             `}
         >
             <div css={tw`grow`}>
-                <h4
+                <button
+                    type="button"
+                    onClick={() => void dispatch(WalletAction.setIntegrationId(undefined))}
                     css={tw`
+                        appearance-none
                         cursor-pointer
                         m-0
                         select-none
@@ -73,7 +80,7 @@ export default function Navbar({ children, ...props }: HTMLAttributes<HTMLElemen
                             </div>
                         )}
                     </div>
-                </h4>
+                </button>
             </div>
             <div
                 css={tw`

@@ -1,6 +1,6 @@
 import { ToastType } from '$/components/Toast'
 import { IPreference } from '$/features/preferences/types'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
@@ -26,7 +26,7 @@ export default function setPreferences(preference: IPreference) {
             handleError(e)
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('preferenceToast.updateFailureTitle'),
                     type: ToastType.Error,
                 })

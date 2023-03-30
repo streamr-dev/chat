@@ -6,7 +6,7 @@ import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
 import StreamrClient from 'streamr-client'
 import getTransactionalClient from '$/utils/getTransactionalClient'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 
 export default function deleteRoom({
     roomId,
@@ -23,7 +23,7 @@ export default function deleteRoom({
             yield put(RoomAction.deleteLocal({ roomId, requester }))
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('deleteRoomToast.successTitle'),
                     type: ToastType.Success,
                 })
@@ -32,7 +32,7 @@ export default function deleteRoom({
             handleError(e)
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('deleteRoomToast.failureTitle'),
                     type: ToastType.Error,
                 })

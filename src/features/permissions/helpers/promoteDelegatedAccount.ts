@@ -1,6 +1,6 @@
 import { ToastType } from '$/components/Toast'
 import { PermissionsAction } from '$/features/permissions'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { selectWalletAccount } from '$/features/wallet/selectors'
 import { Address } from '$/types'
 import handleError from '$/utils/handleError'
@@ -31,7 +31,7 @@ export default function promoteDelegatedAccount({
             )
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('promoteToast.successTitle'),
                     type: ToastType.Success,
                 })
@@ -40,7 +40,7 @@ export default function promoteDelegatedAccount({
             handleError(e)
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('promoteToast.failureTitle'),
                     type: ToastType.Error,
                 })

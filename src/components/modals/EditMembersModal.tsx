@@ -35,7 +35,7 @@ import useENSName from '$/hooks/useENSName'
 import trunc from '$/utils/trunc'
 import { AccountType } from '$/utils/getAccountType'
 import useCanGrant from '$/hooks/useCanGrant'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
 import usePrivacy from '$/hooks/usePrivacy'
@@ -469,7 +469,7 @@ function Item({
                                     setMemberMenuOpen(false)
 
                                     dispatch(
-                                        ToasterAction.show({
+                                        MiscAction.toast({
                                             title: i18n('common.copied'),
                                             type: ToastType.Success,
                                         })

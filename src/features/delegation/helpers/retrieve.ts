@@ -9,7 +9,7 @@ import { ToastType } from '$/components/Toast'
 import recover from '$/utils/recover'
 import i18n from '$/utils/i18n'
 import getWalletProvider from '$/utils/getWalletProvider'
-import retoast from '$/features/toaster/helpers/retoast'
+import retoast from '$/features/misc/helpers/retoast'
 import getSigner from '$/utils/getSigner'
 
 export default function retrieve({
@@ -41,6 +41,13 @@ export default function retrieve({
 
             const { privateKey, address } = new Wallet(derivedKeyHexString)
 
+            yield put(
+                DelegationAction.cacheDelegation({
+                    main: owner,
+                    delegated: address,
+                })
+            )
+
             const isDelegationAuthorized = yield* recover(
                 function* () {
                     const result: boolean = yield isAuthorizedDelegatedAccount(owner, address)
@@ -56,7 +63,7 @@ export default function retrieve({
             )
 
             if (!isDelegationAuthorized) {
-                yield toast.open({
+                yield toast.pop({
                     title: i18n('delegationToast.authorizingLabel'),
                     type: ToastType.Processing,
                 })
@@ -66,21 +73,21 @@ export default function retrieve({
 
             yield put(DelegationAction.setPrivateKey(privateKey))
 
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('delegationToast.successLabel'),
                 type: ToastType.Success,
             })
 
             return address
         } catch (e) {
-            yield toast.open({
+            yield toast.pop({
                 title: i18n('delegationToast.failureLabel'),
                 type: ToastType.Error,
             })
 
             throw e
         } finally {
-            yield toast.dismiss({ asap: yield cancelled() })
+            toast.discard({ asap: yield cancelled() })
         }
     })
 }

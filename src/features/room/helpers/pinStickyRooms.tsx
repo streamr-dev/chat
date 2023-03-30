@@ -13,10 +13,10 @@ import getUserPermissions from '$/utils/getUserPermissions'
 import { PreferencesAction } from '$/features/preferences'
 import Toast, { ToastType } from '$/components/Toast'
 import tw from 'twin.macro'
-import { Controller } from '$/components/Toaster'
-import toaster from '$/features/toaster/helpers/toaster'
+import { toaster } from 'toasterhea'
 import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
+import { Layer } from '$/consts'
 
 function quietPin(roomId: RoomId, requester: Address) {
     return call(function* () {
@@ -81,7 +81,7 @@ export default function pinSticky({
     requester,
 }: ReturnType<typeof RoomAction.pinSticky>['payload']) {
     return call(function* () {
-        let t: Controller<typeof Toast> | undefined
+        const toast = toaster(Toast, Layer.Toast)
 
         try {
             if (!stickyRoomIds.length) {
@@ -133,28 +133,22 @@ export default function pinSticky({
                 return
             }
 
-            try {
-                t = yield toaster(Toast, {
-                    title: i18n('stickyPinToast.title', n),
-                    type: ToastType.Info,
-                    desc: (
-                        <ol css={tw`text-[14px] list-decimal`}>
-                            {newPins.map(([id, name]) => (
-                                <li key={id}>{name}</li>
-                            ))}
-                        </ol>
-                    ),
-                    okLabel: i18n('stickyPinToast.okLabel'),
-                })
-
-                yield t?.open()
-            } catch (e) {
-                t = undefined
-            }
+            yield toast.pop({
+                title: i18n('stickyPinToast.title', n),
+                type: ToastType.Info,
+                desc: (
+                    <ol css={tw`text-[14px] list-decimal`}>
+                        {newPins.map(([id, name]) => (
+                            <li key={id}>{name}</li>
+                        ))}
+                    </ol>
+                ),
+                okLabel: i18n('stickyPinToast.okLabel'),
+            })
         } catch (e) {
             handleError(e)
         } finally {
-            t?.dismiss()
+            toast.discard()
         }
     })
 }

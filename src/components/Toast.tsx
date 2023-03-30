@@ -3,6 +3,7 @@ import Form from '$/components/Form'
 import Spinner from '$/components/Spinner'
 import Text from '$/components/Text'
 import i18n from '$/utils/i18n'
+import { useDiscardableEffect } from 'toasterhea'
 import {
     ButtonHTMLAttributes,
     FC,
@@ -94,14 +95,12 @@ const Shape: Partial<Record<ToastType, FC>> = {
 }
 
 export interface ToastableProps {
-    onProceed?: () => void
-    onAbort?: () => void
-    onDiscardable?: () => void
-    abortSignal?: AbortSignal
+    onResolve?: () => void
+    onReject?: () => void
 }
 
 export interface Props
-    extends Omit<FormHTMLAttributes<HTMLFormElement>, 'title' | 'children' | 'onAbort'>,
+    extends Omit<FormHTMLAttributes<HTMLFormElement>, 'title' | 'children' | 'onReject'>,
         ToastableProps {
     type?: ToastType
     autoCloseAfter?: number | boolean
@@ -117,14 +116,12 @@ const defaultAutoCloseAfter = 3
 export default function Toast({
     type = ToastType.None,
     autoCloseAfter: autoCloseAfterProp = true,
-    onAbort,
-    onProceed,
-    onDiscardable,
+    onReject,
+    onResolve,
     title = i18n('toasts.defaultTitle'),
     desc,
     okLabel,
     cancelLabel,
-    abortSignal,
     canSubmit = true,
     ...props
 }: Props) {
@@ -140,65 +137,27 @@ export default function Toast({
 
     const innerRef = useRef<HTMLDivElement>(null)
 
-    const onDiscardableRef = useRef(onDiscardable)
+    const mountedAtRef = useRef(performance.now())
 
-    useEffect(() => {
-        if (!abortSignal) {
-            return () => {
-                // Noop
-            }
-        }
-
-        function abort() {
-            onAbort?.()
-
-            hide()
-        }
-
-        if (abortSignal.aborted) {
-            abort()
-
-            return () => {
-                // Do nothing
-            }
-        }
-
-        abortSignal.addEventListener('abort', abort)
-
-        return () => {
-            abortSignal.removeEventListener('abort', abort)
-        }
-    }, [abortSignal, onAbort])
-
-    useEffect(() => {
-        onDiscardableRef.current = onDiscardable
-    }, [onDiscardable])
-
-    useEffect(() => {
+    useDiscardableEffect((discard) => {
         const { current: root } = ref
 
-        if (!root) {
-            return () => {
-                // Noop
-            }
-        }
-
-        function onAnimationEnd({ animationName }: AnimationEvent) {
+        root?.addEventListener('animationend', ({ animationName }: AnimationEvent) => {
             if (animationName === 'toastOut') {
                 squeeze()
             }
 
             if (animationName === 'toastSqueeze') {
-                onDiscardableRef.current?.()
+                discard()
             }
-        }
+        })
 
-        root.addEventListener('animationend', onAnimationEnd)
-
-        return () => {
-            root.removeEventListener('animationend', onAnimationEnd)
-        }
-    }, [onDiscardable])
+        /**
+         * Let's make sure each open toast stays visible for at least a second. Otherwise
+         * it's jumpy and a bit confusing.
+         */
+        setTimeout(hide, Math.max(0, 1000 - (performance.now() - mountedAtRef.current)))
+    })
 
     const autoCloseAfter =
         type !== ToastType.Processing && okLabel == null && cancelLabel == null
@@ -209,21 +168,13 @@ export default function Toast({
 
     useEffect(() => {
         if (autoCloseAfter === false) {
-            return () => {
-                // Do nothing
-            }
+            return () => void 0
         }
 
-        const timeoutId = setTimeout(() => {
-            onAbort?.()
+        const timeoutId = setTimeout(() => void onReject?.(), autoCloseAfter * 1000)
 
-            hide()
-        }, autoCloseAfter * 1000)
-
-        return () => {
-            clearTimeout(timeoutId)
-        }
-    }, [autoCloseAfter, onAbort])
+        return () => void clearTimeout(timeoutId)
+    }, [autoCloseAfter, onReject])
 
     useLayoutEffect(() => {
         const { current: root } = innerRef
@@ -312,13 +263,9 @@ export default function Toast({
                         [ol]:list-inside
                     `}
                     onSubmit={() => {
-                        if (!canSubmit) {
-                            return
+                        if (canSubmit) {
+                            onResolve?.()
                         }
-
-                        onProceed?.()
-
-                        hide()
                     }}
                 >
                     <h4>{title}</h4>
@@ -340,13 +287,7 @@ export default function Toast({
                                 <Dot size={3} css={tw`mx-2`} />
                             )}
                             {cancelLabel != null && (
-                                <Button
-                                    onClick={() => {
-                                        onAbort?.()
-
-                                        hide()
-                                    }}
-                                >
+                                <Button onClick={() => void onReject?.()}>
                                     <Text>{cancelLabel}</Text>
                                 </Button>
                             )}
@@ -357,11 +298,7 @@ export default function Toast({
                     <>
                         {/* Close button */}
                         <button
-                            onClick={() => {
-                                onAbort?.()
-
-                                hide()
-                            }}
+                            onClick={() => void onReject?.()}
                             type="button"
                             css={tw`
                                 appearance-none

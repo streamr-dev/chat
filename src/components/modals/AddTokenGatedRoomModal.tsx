@@ -1,6 +1,6 @@
 import Form from '$/components/Form'
 import Label from '$/components/Label'
-import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
+import Modal, { RejectReason, Props as ModalProps } from '$/components/modals/Modal'
 import PrimaryButton from '$/components/PrimaryButton'
 import SecondaryButton from '$/components/SecondaryButton'
 import Spinner from '$/components/Spinner'
@@ -30,7 +30,7 @@ import i18n from '$/utils/i18n'
 import TokenStandardLabel from '$/components/TokenStandardLabel'
 import TokenLogo from '$/components/TokenLogo'
 
-interface Gate {
+export interface Gate {
     tokenAddress: Address
     standard: TokenStandard
     minRequiredBalance?: string
@@ -39,7 +39,7 @@ interface Gate {
 }
 
 interface Props extends ModalProps {
-    onProceed?: (gate: Gate) => void
+    onResolve?: (gate: Gate) => void
 }
 
 interface BasicTokenInfo {
@@ -60,7 +60,7 @@ const defaultTransientParams = {
 
 export default function AddTokenGatedRoomModal({
     title = i18n('addTokenGatedRoomModal.title'),
-    onProceed,
+    onResolve,
     ...props
 }: Props) {
     const [tokenInfo, setTokenInfo] = useState<Info>(defaultInfo)
@@ -144,7 +144,7 @@ export default function AddTokenGatedRoomModal({
             {...props}
             title={title}
             onBeforeAbort={(reason) => {
-                if (reason === AbortReason.Backdrop) {
+                if (reason === RejectReason.Backdrop) {
                     return tokenInfo.address === '' && tokenIds === '' && minRequiredBalance === ''
                 }
             }}
@@ -187,7 +187,7 @@ export default function AddTokenGatedRoomModal({
                         ...params,
                     }
 
-                    onProceed?.(result)
+                    onResolve?.(result)
                 }}
             >
                 {!!isCountable && (

@@ -6,7 +6,7 @@ import waitForPermissions from '$/utils/waitForPermissions'
 import isSameAddress from '$/utils/isSameAddress'
 import i18n from '$/utils/i18n'
 import getTransactionalClient from '$/utils/getTransactionalClient'
-import { ToasterAction } from '$/features/toaster'
+import { MiscAction } from '$/features/misc'
 
 export default function registerRoomInvite({
     roomId,
@@ -36,7 +36,7 @@ export default function registerRoomInvite({
             })
 
             yield put(
-                ToasterAction.show({
+                MiscAction.toast({
                     title: i18n('gotInviteToast.title'),
                     desc: i18n('gotInviteToast.desc'),
                 })

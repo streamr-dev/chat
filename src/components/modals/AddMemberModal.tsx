@@ -5,17 +5,17 @@ import Label from '../Label'
 import Submit from '../Submit'
 import TextField from '../TextField'
 import { Address } from '$/types'
-import Modal, { AbortReason, Props as ModalProps } from '$/components/modals/Modal'
+import Modal, { RejectReason, Props as ModalProps } from '$/components/modals/Modal'
 import useCanGrant from '$/hooks/useCanGrant'
 import i18n from '$/utils/i18n'
 
 interface Props extends ModalProps {
-    onProceed?: (address: Address) => void
+    onResolve?: (address: Address) => void
 }
 
 export default function AddMemberModal({
     title = i18n('addMemberModal.title'),
-    onProceed,
+    onResolve,
     ...props
 }: Props) {
     const [address, setAddress] = useState<Address>('')
@@ -29,7 +29,7 @@ export default function AddMemberModal({
             {...props}
             title={title}
             onBeforeAbort={(reason) => {
-                if (reason === AbortReason.Backdrop) {
+                if (reason === RejectReason.Backdrop) {
                     return isBlank(address)
                 }
             }}
@@ -37,7 +37,7 @@ export default function AddMemberModal({
             <Form
                 onSubmit={() => {
                     if (canSubmit) {
-                        onProceed?.(address)
+                        onResolve?.(address)
                     }
                 }}
             >

@@ -395,7 +395,7 @@ function LookupAddressButton({ creator }: { creator: Address }) {
             type="button"
             onClick={() => {
                 dispatch(
-                    DelegationAction.setDelegation({
+                    DelegationAction.cacheDelegation({
                         delegated: creator,
                         main: undefined,
                     })

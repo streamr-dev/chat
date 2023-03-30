@@ -10,7 +10,6 @@ import misc from '$/features/misc'
 import flag from '$/features/flag'
 import lifecycle from '$/features/lifecycle.saga'
 import anon from '$/features/anon'
-import toaster from '$/features/toaster'
 import avatar from '$/features/avatar'
 
 const defaultReducer = {
@@ -23,7 +22,6 @@ const defaultReducer = {
     wallet,
     misc,
     anon,
-    toaster,
     avatar,
 }
 
@@ -40,7 +38,6 @@ export default function createStore(reducer = defaultReducer) {
                             'payload.provider',
                             'payload.streamrClient',
                             'payload.navigate',
-                            'payload.instance',
                             'payload.wallet',
                             'payload.title',
                             'payload.desc',
@@ -54,7 +51,6 @@ export default function createStore(reducer = defaultReducer) {
                             'misc.navigate',
                             'anon.rooms',
                             'anon.rooms',
-                            'toaster.instance',
                         ],
                     },
                 }),
