@@ -21,7 +21,7 @@ npm install
 Finally, you can start the app for development and usage in your own machine with the following command:
 
 ```bash
-npm run start
+npm start
 ```
 The app will be available at [http://localhost:5173/](http://localhost:5173/)
 
