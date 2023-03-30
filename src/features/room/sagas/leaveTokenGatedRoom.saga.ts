@@ -65,20 +65,17 @@ function* onLeaveTokenGatedRoom({
 
         const policy = new Contract(policyAddress, Abi[tokenType.standard], policyRegistry.signer)
 
-        let txs: Record<string, any>[] = []
+        let tx: Record<string, any>
         if (
             tokenType.standard === TokenStandard.ERC721 ||
             tokenType.standard === TokenStandard.ERC1155
         ) {
             const tokenIds: BigNumber[] = yield policy.getStakedTokenIds(requester)
-            txs = yield Promise.all(
-                tokenIds.map((tokenId) => policy.requestDelegatedLeave(tokenId))
-            )
+            tx = yield policy.requestDelegatedLeaveWithMultipleIds(tokenIds)
         } else {
-            txs.push(yield policy.requestDelegatedLeave())
+            tx = yield policy.requestDelegatedLeave()
         }
-
-        yield Promise.all(txs.map((tx) => tx.wait()))
+        yield tx.wait()
 
         yield put(PermissionsAction.invalidateAll({ roomId, address: requester }))
 
