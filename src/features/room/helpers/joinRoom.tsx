@@ -46,6 +46,7 @@ export default function joinRoom(
 ) {
     return call(function* () {
         const roomId = stream.id
+        const toast = retoastConstroller || retoast()
 
         const {
             name,
@@ -54,8 +55,6 @@ export default function joinRoom(
             stakingEnabled = false,
             minRequiredBalance,
         } = getRoomMetadata(stream)
-
-        const toast = retoastConstroller || retoast()
 
         try {
             if (!tokenAddress) {
@@ -109,7 +108,7 @@ export default function joinRoom(
                 function* () {
                     try {
                         if (stakingEnabled) {
-                            yield toast.open({
+                            yield toast.pop({
                                 title: i18n('joinTokenGatedRoomToast.authorizeTokenTransfer'),
                                 type: ToastType.Processing,
                             })
@@ -143,12 +142,12 @@ export default function joinRoom(
                             }
 
                             yield authorizationTx.wait()
-                            yield toast.open({
+                            yield toast.pop({
                                 title: i18n('joinTokenGatedRoomToast.authorizationComplete'),
                                 type: ToastType.Success,
                             })
                         }
-                        yield toast.open({
+                        yield toast.pop({
                             title: i18n('joinTokenGatedRoomToast.requestingJoin'),
                             type: ToastType.Processing,
                         })
@@ -162,7 +161,7 @@ export default function joinRoom(
 
                         // revoke the token allowance for the tokenGate
                         if (stakingEnabled) {
-                            yield toast.open({
+                            yield toast.pop({
                                 title: i18n('joinTokenGatedRoomToast.revokeTokenTransfer'),
                                 type: ToastType.Processing,
                             })
@@ -200,7 +199,7 @@ export default function joinRoom(
                             yield authorizationTx.wait()
                         }
 
-                        yield toast.open({
+                        yield toast.pop({
                             title: i18n('joinTokenGatedRoomToast.requestComplete'),
                             type: ToastType.Success,
                         })

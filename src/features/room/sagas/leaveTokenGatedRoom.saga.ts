@@ -1,9 +1,8 @@
 import { ToastType } from '$/components/Toast'
-import retoast from '$/features/toaster/helpers/retoast'
 import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import handleError from '$/utils/handleError'
 import { Contract, BigNumber, providers } from 'ethers'
-import { put, takeEvery } from 'redux-saga/effects'
+import { cancelled, put, takeEvery } from 'redux-saga/effects'
 import { Stream } from 'streamr-client'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
@@ -18,6 +17,8 @@ import fetchStream from '$/utils/fetchStream'
 import i18n from '$/utils/i18n'
 import networkPreflight from '$/utils/networkPreflight'
 import { JSON_RPC_URL } from '$/consts'
+import retoast from '$/features/misc/helpers/retoast'
+import { Address } from '$/types'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -30,7 +31,7 @@ function* onLeaveTokenGatedRoom({
     payload: { roomId, requester },
 }: ReturnType<typeof RoomAction.leaveTokenGatedRoom>) {
     const toast = retoast()
-    let dismissToast = false
+
     try {
         const stream: Stream = yield fetchStream(roomId)
 
@@ -41,13 +42,13 @@ function* onLeaveTokenGatedRoom({
             stakingEnabled = false,
         } = getRoomMetadata(stream)
 
-        const delegatedAccount = yield* delegationPreflight(requester)
+        const delegatedAccount: Address = yield delegationPreflight(requester)
 
         if (!tokenAddress || !tokenType || tokenType.standard === TokenStandard.Unknown) {
             throw new Error('Room is not token gated')
         }
-        dismissToast = true
-        yield toast.open({
+
+        yield toast.pop({
             title: i18n('tokenGateToast.leaving'),
             type: ToastType.Processing,
         })
@@ -83,22 +84,19 @@ function* onLeaveTokenGatedRoom({
 
         yield put(PermissionsAction.invalidateAll({ roomId, address: delegatedAccount }))
 
-        toast.open({
+        toast.pop({
             title: i18n('tokenGateToast.leaveSuccess'),
             type: ToastType.Success,
         })
-        dismissToast = false
     } catch (e) {
         handleError(e)
-        dismissToast = false
-        toast.open({
+
+        toast.pop({
             title: i18n('tokenGateToast.leaveFailed'),
             type: ToastType.Error,
         })
     } finally {
-        if (dismissToast) {
-            toast.dismiss()
-        }
+        toast.discard({ asap: yield cancelled() })
     }
 }
 
