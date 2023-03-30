@@ -50,7 +50,7 @@
         "react-router-dom": "^6.9.0",
         "react-select": "^5.7.0",
         "redux-saga": "^1.2.2",
-        "streamr-client": "^8.0.2",
+        "streamr-client": "^8.1.0",
         "streamr-client-protocol": "^13.0.0",
         "streamr-client-react": "^3.0.0-beta.9",
         "streamr-ui": "^1.0.0-experimental.0",
