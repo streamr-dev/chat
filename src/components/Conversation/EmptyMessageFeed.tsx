@@ -18,7 +18,7 @@ import usePrivacy from '$/hooks/usePrivacy'
 import { PrivacySetting } from '$/types'
 import useTokenMetadata from '$/hooks/useTokenMetadata'
 import i18n from '$/utils/i18n'
-import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import useCachedTokenGate from '$/hooks/useCachedTokenGate'
 
 interface Props {
     onAddMemberClick?: () => void
@@ -96,37 +96,40 @@ export default function EmptyMessageFeed({ onAddMemberClick }: Props) {
 }
 
 function TokenGatedMessage() {
-    const { tokenAddress, tokenIds, tokenType, stakingEnabled } = useSelectedRoom() || {}
+    const tokenData = useCachedTokenGate(useSelectedRoomId())
+    const room = useSelectedRoom()
 
-    if (!tokenType || tokenIds) {
-        return null
-    }
-    const tokenMetadata = useTokenMetadata(tokenAddress, tokenIds || [])
-    const polygonScanUrl = `https://polygonscan.com/token/${tokenAddress}`
+    const tokenMetadata = useTokenMetadata(tokenData!.tokenAddress, tokenData!.tokenIds)
 
-    const displayTokenAddress = useDisplayUsername(tokenAddress, {
-        fallback: tokenAddress,
+    const displayTokenAddress = useDisplayUsername(tokenData!.tokenAddress, {
+        fallback: tokenData!.tokenAddress,
     })
 
+    if (!tokenMetadata || !tokenData || !tokenData.tokenAddress || !room || !room.tokenType) {
+        return null
+    }
+    const { tokenType } = room
+
+    const { tokenAddress, stakingEnabled } = tokenData
+
+    const polygonScanUrl = `https://polygonscan.com/token/${tokenAddress}`
+
     const urlText =
-        tokenMetadata && tokenType.standard !== TokenStandard.ERC1155
+        tokenMetadata && 'name' in tokenMetadata && 'symbol' in tokenMetadata
             ? `${tokenMetadata.name} (${tokenMetadata.symbol})`
             : displayTokenAddress
 
-    if (tokenAddress) {
-        return (
-            <div>
-                This is a{stakingEnabled ? ' staking' : ' token'}
-                -gated room, governed by the
-                <a href={polygonScanUrl} target="_blank">
-                    {' '}
-                    <b>{urlText}</b>{' '}
-                </a>
-                {tokenType.standard} token
-            </div>
-        )
-    }
-    return null
+    return (
+        <div>
+            This is a{stakingEnabled ? ' staking ' : ' token '}
+            gated room, governed by the
+            <a href={polygonScanUrl} target="_blank">
+                {' '}
+                <b>{urlText}</b>{' '}
+            </a>
+            {tokenType.standard} token
+        </div>
+    )
 }
 
 function Credits() {
