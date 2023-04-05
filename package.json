@@ -55,7 +55,7 @@
         "streamr-client-protocol": "^13.0.0",
         "streamr-client-react": "^3.0.0",
         "streamr-ui": "^1.0.0-experimental.0",
-        "tailwindcss": "^3.2.7",
+        "tailwindcss": "^3.3.1",
         "toasterhea": "^1.0.3",
         "twin.macro": "^3.1.0",
         "uuid": "^9.0.0"
