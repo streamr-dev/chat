@@ -57,7 +57,7 @@
         "streamr-ui": "^1.0.0-experimental.0",
         "tailwindcss": "^3.2.7",
         "toasterhea": "^1.0.3",
-        "twin.macro": "^3.1.0",
+        "twin.macro": "^3.3.1",
         "uuid": "^9.0.0"
     },
     "devDependencies": {
