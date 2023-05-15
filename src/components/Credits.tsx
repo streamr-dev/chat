@@ -12,7 +12,6 @@ export default function Credits({ tiny = false }: { tiny?: boolean }) {
                     py-2.5
                     rounded-full
                     text-plug
-                    shadow-sm
                     text-center
                     md:text-left
                     whitespace-nowrap
