@@ -133,7 +133,7 @@ const I18n = {
                 return WalletConnectIcon
         }
     },
-    'common.frontPageTitle': 'Streamr Chat dApp',
+    'common.frontPageTitle': 'thechat.app - Decentralized Web3 group chat',
     'common.chatPageTitle': "Let's chat!",
     'common.addNewRoomLabel': 'Add new room',
     'common.holdLabel'(flip = false) {
