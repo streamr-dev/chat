@@ -9,6 +9,7 @@ import i18n from '$/utils/i18n'
 import { WalletAction } from '$/features/wallet'
 import { useDispatch } from 'react-redux'
 import { MiscAction } from '$/features/misc'
+import Credits from '$/components/Credits'
 
 export default function HomePage() {
     const dispatch = useDispatch()
@@ -68,7 +69,24 @@ export default function HomePage() {
                         />
                     </div>
                 </div>
-                <PoweredBy />
+                <div
+                    css={[
+                        tw`
+                            -translate-x-1/2
+                            absolute
+                            bottom-6
+                            left-1/2
+                            w-full
+                            px-6
+                            md:px-0
+                            md:left-5
+                            md:translate-x-0
+                            md:w-fit
+                        `,
+                    ]}
+                >
+                    <Credits />
+                </div>
             </div>
         </Page>
     )
@@ -99,51 +117,5 @@ function ConnectButton(props: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'chi
         >
             <Text>{i18n('common.connectWalletLabel')}</Text>
         </Button>
-    )
-}
-
-function PoweredBy() {
-    return (
-        <div
-            css={[
-                tw`
-                    -translate-x-1/2
-                    absolute
-                    bottom-6
-                    left-1/2
-                    w-full
-                    px-6
-                    md:px-0
-                    md:left-5
-                    md:translate-x-0
-                    md:w-fit
-                `,
-            ]}
-        >
-            <div
-                css={tw`
-                    bg-white
-                    px-5
-                    py-2.5
-                    rounded-full
-                    text-plug
-                    shadow-sm
-                    text-center
-                    md:text-left
-                `}
-            >
-                <Text>
-                    {i18n('common.decentralizedBy')}&nbsp;
-                    <a
-                        css={tw`!text-[#ff5924]`}
-                        href="https://streamr.network"
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
-                        Streamr
-                    </a>
-                </Text>
-            </div>
-        </div>
     )
 }
