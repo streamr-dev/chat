@@ -1,3 +1,4 @@
+import Credits from '$/components/Credits'
 import Form from '$/components/Form'
 import RoomButton, { PassiveRoomButton } from '$/components/RoomButton'
 import RoomInfo from '$/components/RoomInfo'
@@ -49,11 +50,13 @@ export default function Sidebar({ onAddRoomButtonClick, ...props }: Props) {
             css={tw`
                 hidden
                 md:block
-                h-full
+                h-[calc(100% - 56px)]
+                md:h-[calc(100% - 40px)]
                 w-full
                 md:w-[18rem]
                 lg:w-[22rem]
                 p-4
+                pb-0
                 md:p-0
                 overflow-auto
             `}

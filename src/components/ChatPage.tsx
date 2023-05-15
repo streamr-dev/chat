@@ -19,6 +19,7 @@ import ActionButton from '$/components/ActionButton'
 import Sidebar from '$/components/Sidebar'
 import i18n from '$/utils/i18n'
 import { MiscAction } from '$/features/misc'
+import Credits from '$/components/Credits'
 
 export default function ChatPage() {
     const selectedRoom = useSelectedRoom()
@@ -66,6 +67,17 @@ export default function ChatPage() {
                         css={isDisplayingRooms && tw`block`}
                         onAddRoomButtonClick={() => void dispatch(MiscAction.showAddRoomModal())}
                     />
+                    <div
+                        css={tw`
+                            absolute
+                            left-4
+                            bottom-4
+                            md:left-0
+                            md:bottom-0
+                        `}
+                    >
+                        <Credits tiny />
+                    </div>
                     <div
                         css={[
                             tw`
