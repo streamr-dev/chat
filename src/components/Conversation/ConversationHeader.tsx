@@ -195,7 +195,7 @@ export default function ConversationHeader({
                     css={tw`
                         shrink-0
                         block
-                        lg:hidden
+                        md:hidden
                         mr-4
                     `}
                     onClick={onGoBackClick}
