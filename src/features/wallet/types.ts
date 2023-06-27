@@ -1,7 +1,7 @@
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet'
 import { initializeConnector } from '@web3-react/core'
 import { MetaMask } from '@web3-react/metamask'
-import { WalletConnect } from '@web3-react/walletconnect'
+import { WalletConnect } from '@web3-react/walletconnect-v2'
 import StreamrClient from 'streamr-client'
 
 export enum WalletIntegrationId {

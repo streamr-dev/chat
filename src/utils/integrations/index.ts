@@ -1,6 +1,6 @@
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet'
 import { MetaMask } from '@web3-react/metamask'
-import { WalletConnect } from '@web3-react/walletconnect'
+import { WalletConnect } from '@web3-react/walletconnect-v2'
 import { Integration, WalletIntegrationId } from '$/features/wallet/types'
 import { Matic } from '$/utils/chains'
 
@@ -39,12 +39,12 @@ integrations.set(WalletIntegrationId.WalletConnect, {
         return new WalletConnect({
             actions,
             options: {
+                showQrModal: true,
                 rpc: {
                     [chainId]: url,
                 },
-                // For v2:
-                // projectId: '3329d87879d2b4db0032d7b9502a7609',
-                // chains: [chainId],
+                projectId: '3329d87879d2b4db0032d7b9502a7609',
+                chains: [chainId],
             },
             defaultChainId: chainId,
         })
