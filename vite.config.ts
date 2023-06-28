@@ -38,6 +38,7 @@ export default defineConfig({
             assert: 'rollup-plugin-node-polyfills/polyfills/assert',
             process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
             $: `${__dirname}/src`,
+            '@walletconnect/universal-provider': `${__dirname}/node_modules/@walletconnect/universal-provider/dist/index.es.js`,
         },
     },
     build: {
