@@ -4,7 +4,7 @@ import { RoomId } from '$/features/room/types'
 import { OptionalAddress, State } from '$/types'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import type { StreamPermission } from 'streamr-client'
+import type { StreamPermission } from '@streamr/sdk'
 
 function selectAbility(
     roomId: undefined | RoomId,

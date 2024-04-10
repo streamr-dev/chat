@@ -1,6 +1,6 @@
 import { PrivacySetting } from '$/types'
 import getRoomMetadata from '$/utils/getRoomMetadata'
-import { Stream, StreamPermission } from 'streamr-client'
+import { Stream, StreamPermission } from '@streamr/sdk'
 
 export default async function fetchPrivacy(stream: Stream) {
     if (getRoomMetadata(stream).tokenAddress) {

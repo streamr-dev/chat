@@ -1,4 +1,4 @@
-import StreamrClient from 'streamr-client'
+import StreamrClient from '@streamr/sdk'
 import { Address, IRecord } from '$/types'
 
 export interface DelegationState {

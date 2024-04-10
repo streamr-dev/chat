@@ -14,7 +14,7 @@ export default function Page({ children, title = i18n('common.frontPageTitle') }
     return (
         <>
             <Helmet title={title}>
-                <meta name="streamr-client" content={pkg.dependencies['streamr-client'].version} />
+                <meta name="streamr-client" content={pkg.dependencies['@streamr/sdk'].version} />
             </Helmet>
             <main
                 css={[

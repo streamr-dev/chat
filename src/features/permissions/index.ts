@@ -2,7 +2,7 @@ import { IMember, PermissionsState } from '$/features/permissions/types'
 import { RoomId } from '$/features/room/types'
 import { Address, IFingerprinted, PreflightParams } from '$/types'
 import { createAction, createReducer } from '@reduxjs/toolkit'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 
 const initialState: PermissionsState = {
     roomMembers: {},

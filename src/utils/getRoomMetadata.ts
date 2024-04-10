@@ -1,5 +1,5 @@
 import { IRoom } from '$/features/room/types'
-import type { Stream, StreamMetadata } from 'streamr-client'
+import type { Stream, StreamMetadata } from '@streamr/sdk'
 
 export type RoomMetadata = Omit<
     IRoom,

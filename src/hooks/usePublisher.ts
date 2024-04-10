@@ -6,7 +6,7 @@ import useAbility from '$/hooks/useAbility'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import useAnonClient from '$/hooks/useAnonClient'
 import { PrivacySetting } from '$/types'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 
 export enum PublisherState {
     Unavailable,

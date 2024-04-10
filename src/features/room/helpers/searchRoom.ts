@@ -3,7 +3,7 @@ import fetchStream from '$/utils/fetchStream'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
 import { call, put } from 'redux-saga/effects'
-import { Stream } from 'streamr-client'
+import { Stream } from '@streamr/sdk'
 
 export default function searchRoom({ roomId }: ReturnType<typeof RoomAction.search>['payload']) {
     return call(function* () {

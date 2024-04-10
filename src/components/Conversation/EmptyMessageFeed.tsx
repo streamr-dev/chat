@@ -12,7 +12,7 @@ import useAcceptInvite from '$/hooks/useAcceptInvite'
 import useIsInviteBeingAccepted from '$/hooks/useIsInviteBeingAccepted'
 import Spinner from '$/components/Spinner'
 import useAbility from '$/hooks/useAbility'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 import useAnonAccount from '$/hooks/useAnonAccount'
 import i18n from '$/utils/i18n'
 

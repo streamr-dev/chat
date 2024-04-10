@@ -1,4 +1,4 @@
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 import useAbility from '$/hooks/useAbility'
 import { useSelectedRoomId } from '$/features/room/hooks'
 import { useWalletAccount } from '$/features/wallet/hooks'

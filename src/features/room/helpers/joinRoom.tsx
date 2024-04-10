@@ -10,7 +10,7 @@ import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinP
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
 import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
 import { ToastType } from '$/components/Toast'
-import StreamrClient, { Stream } from 'streamr-client'
+import StreamrClient, { Stream } from '@streamr/sdk'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'

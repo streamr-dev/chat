@@ -9,8 +9,8 @@ import getRoomMetadata from '$/utils/getRoomMetadata'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 import handleError from '$/utils/handleError'
 import { call, fork, put, select } from 'redux-saga/effects'
-import type StreamrClient from 'streamr-client'
-import type { Stream } from 'streamr-client'
+import type StreamrClient from '@streamr/sdk'
+import type { Stream } from '@streamr/sdk'
 
 export default function fetchStream(roomId: RoomId) {
     return call(function* () {

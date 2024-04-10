@@ -2,7 +2,7 @@ import { RoomId } from '$/features/room/types'
 import getNewStreamrClient from '$/utils/getNewStreamrClient'
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import type { Wallet } from 'ethers'
-import StreamrClient from 'streamr-client'
+import StreamrClient from '@streamr/sdk'
 
 type AnonState = {
     rooms: Partial<

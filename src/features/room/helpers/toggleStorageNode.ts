@@ -4,7 +4,7 @@ import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { ToastType } from '$/components/Toast'
 import i18n from '$/utils/i18n'
-import StreamrClient from 'streamr-client'
+import StreamrClient from '@streamr/sdk'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 import { MiscAction } from '$/features/misc'
 

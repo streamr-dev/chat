@@ -1,5 +1,5 @@
 import { call, put } from 'redux-saga/effects'
-import StreamrClient, { PermissionAssignment, StreamPermission } from 'streamr-client'
+import StreamrClient, { PermissionAssignment, StreamPermission } from '@streamr/sdk'
 import handleError from '$/utils/handleError'
 import isSameAddress from '$/utils/isSameAddress'
 import { PermissionsAction } from '$/features/permissions'

@@ -5,7 +5,7 @@ import { Address } from '$/types'
 import waitForPermissions, { Validator } from '$/utils/waitForPermissions'
 import preflight from '$/utils/preflight'
 import { call, put } from 'redux-saga/effects'
-import StreamrClient, { StreamPermission, UserPermissionAssignment } from 'streamr-client'
+import StreamrClient, { StreamPermission, UserPermissionAssignment } from '@streamr/sdk'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 
 interface Options {

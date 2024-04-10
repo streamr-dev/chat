@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { STREAMR_STORAGE_NODE_GERMANY } from 'streamr-client'
+import { STREAMR_STORAGE_NODE_GERMANY } from '@streamr/sdk'
 import tw from 'twin.macro'
 import { RoomAction } from '$/features/room'
 import {

@@ -1,6 +1,6 @@
 import { RoomId } from '$/features/room/types'
 import { retry } from 'redux-saga/effects'
-import StreamrClient, { PermissionAssignment } from 'streamr-client'
+import StreamrClient, { PermissionAssignment } from '@streamr/sdk'
 
 export type Validator = (assignments: PermissionAssignment[]) => boolean
 

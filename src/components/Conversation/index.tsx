@@ -1,4 +1,4 @@
-import StreamrClient from 'streamr-client'
+import StreamrClient from '@streamr/sdk'
 import tw from 'twin.macro'
 import useMessages from '$/hooks/useMessages'
 import ConversationHeader from './ConversationHeader'

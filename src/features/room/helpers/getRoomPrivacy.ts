@@ -1,5 +1,5 @@
 import { call, put, select } from 'redux-saga/effects'
-import { Stream } from 'streamr-client'
+import { Stream } from '@streamr/sdk'
 import { RoomAction } from '..'
 import { PrivacySetting } from '$/types'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'

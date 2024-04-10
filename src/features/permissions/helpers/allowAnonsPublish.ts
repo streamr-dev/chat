@@ -9,7 +9,7 @@ import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import preflight from '$/utils/preflight'
 import { call, cancelled } from 'redux-saga/effects'
-import StreamrClient, { Stream, StreamPermission } from 'streamr-client'
+import StreamrClient, { Stream, StreamPermission } from '@streamr/sdk'
 import { Layer } from '$/consts'
 
 export default function allowAnonsPublish({
