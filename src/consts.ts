@@ -12,6 +12,8 @@ export const ERC1155PolicyFactoryAddress = '0x0f31377cBd078C82b34Ab586A3f8d973fE
 
 export const JoinPolicyRegistryAddress = '0x3eB2Ec4d2876d22EE103aBc1e0A7CCEefD117CD3'
 
+export const StreamRegistryAddress = '0x0D483E10612F327FC11965Fc82E90dC19b141641'
+
 export enum PermissionType {
     Edit = 0,
     Delete,

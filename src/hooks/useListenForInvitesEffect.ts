@@ -3,13 +3,13 @@ import { useEffect, useRef } from 'react'
 import { Address, OptionalAddress, Prefix } from '$/types'
 import { RoomId } from '$/features/room/types'
 import isSameAddress from '$/utils/isSameAddress'
-import useStreamRegistry from './useStreamRegistry'
+import { getStreamRegistry } from '$/utils'
 
 export default function useListenForInvitesEffect(
     address: OptionalAddress,
     onInvite: (roomId: RoomId, address: Address) => void
 ) {
-    const registry = useStreamRegistry()
+    const registry = getStreamRegistry()
 
     const onInviteRef = useRef(onInvite)
 
