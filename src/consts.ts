@@ -22,8 +22,6 @@ export enum PermissionType {
     Grant,
 }
 
-export const JSON_RPC_URL = 'https://polygon-rpc.com'
-
 export const Layer = {
     Modal: uniqueId('modals-'),
     Toast: uniqueId('toasts-'),

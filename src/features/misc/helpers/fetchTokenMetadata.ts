@@ -1,15 +1,14 @@
+import { abi as ERC1155abi } from '$/contracts/tokens/ERC1155Token.sol/ERC1155.json'
 import { abi as ERC20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
 import { abi as ERC721abi } from '$/contracts/tokens/ERC721Token.sol/ERC721.json'
 import { abi as ERC777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
-import { abi as ERC1155abi } from '$/contracts/tokens/ERC1155Token.sol/ERC1155.json'
-import { BigNumber, Contract, providers } from 'ethers'
-import { Address } from '$/types'
-import { Erc1155, Erc20, Erc721, Erc777 } from '$/types'
-import { TokenStandard } from '$/features/tokenGatedRooms/types'
 import { MiscAction } from '$/features/misc'
-import { call } from 'redux-saga/effects'
-import { JSON_RPC_URL } from '$/consts'
+import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import { Address, Erc1155, Erc20, Erc721, Erc777 } from '$/types'
+import { getJsonRpcProvider } from '$/utils'
 import { JsonRpcProvider } from '@ethersproject/providers'
+import { BigNumber, Contract } from 'ethers'
+import { call } from 'redux-saga/effects'
 
 function getURIs(tokenIds: string[], contract: Contract) {
     return call(function* () {
@@ -102,7 +101,7 @@ export default function fetchTokenMetadata({
     tokenIds,
     tokenStandard,
 }: ReturnType<typeof MiscAction.fetchTokenMetadata>['payload']) {
-    const provider = new providers.JsonRpcProvider(JSON_RPC_URL)
+    const provider = getJsonRpcProvider()
 
     switch (tokenStandard) {
         case TokenStandard.ERC1155:

@@ -1,34 +1,34 @@
 import { ToastType } from '$/components/Toast'
-import { RoomId } from '$/features/room/types'
-import { TokenStandard, TokenType } from '$/features/tokenGatedRooms/types'
-import { WalletAction } from '$/features/wallet'
-import { Address } from '$/types'
-import handleError from '$/utils/handleError'
-import preflight from '$/utils/preflight'
-import { Contract, providers, BigNumber } from 'ethers'
-import { call, cancelled, race, retry, spawn, take } from 'redux-saga/effects'
-import { StreamPermission } from '@streamr/sdk'
-import { abi as erc20abi } from '$/contracts/Factories/ERC20PolicyFactory.sol/ERC20PolicyFactory.json'
-import { abi as erc721abi } from '$/contracts/Factories/ERC721PolicyFactory.sol/ERC721PolicyFactory.json'
-import { abi as erc777abi } from '$/contracts/Factories/ERC777PolicyFactory.sol/ERC777PolicyFactory.json'
-import { abi as erc1155abi } from '$/contracts/Factories/ERC1155PolicyFactory.sol/ERC1155PolicyFactory.json'
 import {
     ERC1155PolicyFactoryAddress,
     ERC20PolicyFactoryAddress,
     ERC721PolicyFactoryAddress,
     ERC777PolicyFactoryAddress,
-    JSON_RPC_URL,
     PermissionType,
+    ZeroAddress,
 } from '$/consts'
-import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
-import setMultiplePermissions from '$/utils/setMultiplePermissions'
-import { ZeroAddress } from '$/consts'
-import isSameAddress from '$/utils/isSameAddress'
-import recover from '$/utils/recover'
-import i18n from '$/utils/i18n'
-import getWalletProvider from '$/utils/getWalletProvider'
+import { abi as erc1155abi } from '$/contracts/Factories/ERC1155PolicyFactory.sol/ERC1155PolicyFactory.json'
+import { abi as erc20abi } from '$/contracts/Factories/ERC20PolicyFactory.sol/ERC20PolicyFactory.json'
+import { abi as erc721abi } from '$/contracts/Factories/ERC721PolicyFactory.sol/ERC721PolicyFactory.json'
+import { abi as erc777abi } from '$/contracts/Factories/ERC777PolicyFactory.sol/ERC777PolicyFactory.json'
 import retoast from '$/features/misc/helpers/retoast'
+import { RoomId } from '$/features/room/types'
+import { TokenStandard, TokenType } from '$/features/tokenGatedRooms/types'
+import { WalletAction } from '$/features/wallet'
+import { Address } from '$/types'
+import { getJsonRpcProvider } from '$/utils'
+import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
 import getSigner from '$/utils/getSigner'
+import getWalletProvider from '$/utils/getWalletProvider'
+import handleError from '$/utils/handleError'
+import i18n from '$/utils/i18n'
+import isSameAddress from '$/utils/isSameAddress'
+import preflight from '$/utils/preflight'
+import recover from '$/utils/recover'
+import setMultiplePermissions from '$/utils/setMultiplePermissions'
+import { StreamPermission } from '@streamr/sdk'
+import { BigNumber, Contract } from 'ethers'
+import { call, cancelled, race, retry, spawn, take } from 'redux-saga/effects'
 
 const Factory: Record<
     TokenStandard,
@@ -122,9 +122,7 @@ export default function createTokenGatePolicy({
                         }
                     )
 
-                    const policyRegistry = getJoinPolicyRegistry(
-                        new providers.JsonRpcProvider(JSON_RPC_URL)
-                    )
+                    const policyRegistry = getJoinPolicyRegistry(getJsonRpcProvider())
 
                     let policyAddress: Address = ZeroAddress
 

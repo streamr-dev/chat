@@ -1,4 +1,5 @@
-import { JSON_RPC_URL, StreamRegistryAddress } from '$/consts'
+import { StreamRegistryAddress } from '$/consts'
+import { JsonRpcProvider } from '@ethersproject/providers'
 import { Contract, providers } from 'ethers'
 import { StreamRegistryV3 } from '../contracts/StreamRegistryV3.sol/StreamRegistryV3'
 import { abi } from '../contracts/StreamRegistryV3.sol/StreamRegistryV3.json'
@@ -10,9 +11,19 @@ export function getStreamRegistry() {
         streamRegistry = new Contract(
             StreamRegistryAddress,
             abi,
-            new providers.JsonRpcProvider(JSON_RPC_URL)
+            getJsonRpcProvider()
         ) as StreamRegistryV3
     }
 
     return streamRegistry
+}
+
+let jsonRpcProvider: undefined | JsonRpcProvider
+
+export function getJsonRpcProvider() {
+    if (!jsonRpcProvider) {
+        jsonRpcProvider = new providers.JsonRpcProvider('https://polygon-rpc.com')
+    }
+
+    return jsonRpcProvider
 }

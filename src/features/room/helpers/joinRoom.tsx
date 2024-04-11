@@ -1,29 +1,29 @@
-import { TokenStandard } from '$/features/tokenGatedRooms/types'
-import { Address } from '$/types'
-import delegationPreflight from '$/utils/delegationPreflight'
-import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
-import handleError from '$/utils/handleError'
-import { call, cancelled, put } from 'redux-saga/effects'
-import { BigNumber, Contract, providers } from 'ethers'
+import { ToastType } from '$/components/Toast'
+import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
 import { abi as ERC20JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC20JoinPolicy.sol/ERC20JoinPolicy.json'
 import { abi as ERC721JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC721JoinPolicy.sol/ERC721JoinPolicy.json'
 import { abi as ERC777JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC777JoinPolicy.sol/ERC777JoinPolicy.json'
-import { abi as ERC1155JoinPolicyAbi } from '$/contracts/JoinPolicies/ERC1155JoinPolicy.sol/ERC1155JoinPolicy.json'
-import { ToastType } from '$/components/Toast'
-import StreamrClient, { Stream } from '@streamr/sdk'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import retoast, { RetoastController } from '$/features/misc/helpers/retoast'
 import { PermissionsAction } from '$/features/permissions'
 import { RoomAction } from '$/features/room'
-import waitForPermissions from '$/utils/waitForPermissions'
-import isSameAddress from '$/utils/isSameAddress'
-import tokenIdPreflight from '$/utils/tokenIdPreflight'
-import recover from '$/utils/recover'
-import i18n from '$/utils/i18n'
-import getWalletProvider from '$/utils/getWalletProvider'
-import getTransactionalClient from '$/utils/getTransactionalClient'
-import retoast, { RetoastController } from '$/features/misc/helpers/retoast'
+import { TokenStandard } from '$/features/tokenGatedRooms/types'
+import { Address } from '$/types'
+import { getJsonRpcProvider } from '$/utils'
+import delegationPreflight from '$/utils/delegationPreflight'
+import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
+import getRoomMetadata from '$/utils/getRoomMetadata'
 import getSigner from '$/utils/getSigner'
-import { JSON_RPC_URL } from '$/consts'
+import getTransactionalClient from '$/utils/getTransactionalClient'
+import getWalletProvider from '$/utils/getWalletProvider'
+import handleError from '$/utils/handleError'
+import i18n from '$/utils/i18n'
+import isSameAddress from '$/utils/isSameAddress'
+import recover from '$/utils/recover'
+import tokenIdPreflight from '$/utils/tokenIdPreflight'
+import waitForPermissions from '$/utils/waitForPermissions'
+import StreamrClient, { Stream } from '@streamr/sdk'
+import { BigNumber, Contract } from 'ethers'
+import { call, cancelled, put } from 'redux-saga/effects'
 
 const Abi = {
     [TokenStandard.ERC1155]: ERC1155JoinPolicyAbi,
@@ -83,9 +83,7 @@ export default function joinRoom(
 
             const delegatedAccount: Address = yield delegationPreflight(requester)
 
-            const policyRegistry = getJoinPolicyRegistry(
-                new providers.JsonRpcProvider(JSON_RPC_URL)
-            )
+            const policyRegistry = getJoinPolicyRegistry(getJsonRpcProvider())
 
             const policyAddress: string = yield policyRegistry.getPolicy(
                 tokenAddress,

@@ -1,20 +1,18 @@
-import { BigNumber, providers } from 'ethers'
-import { Address } from '$/types'
-import networkPreflight from './networkPreflight'
-import InsufficientFundsError from '$/errors/InsufficientFundsError'
-import { call, put } from 'redux-saga/effects'
-import { JSON_RPC_URL } from '$/consts'
-import { MiscAction } from '$/features/misc'
 import { ToastType } from '$/components/Toast'
+import InsufficientFundsError from '$/errors/InsufficientFundsError'
+import { MiscAction } from '$/features/misc'
+import { Address } from '$/types'
+import { getJsonRpcProvider } from '$/utils'
+import { BigNumber } from 'ethers'
+import { call, put } from 'redux-saga/effects'
+import networkPreflight from './networkPreflight'
 
 export default function preflight(account: Address) {
     return call(function* () {
         try {
             yield networkPreflight()
 
-            const balance: BigNumber = yield new providers.JsonRpcProvider(JSON_RPC_URL).getBalance(
-                account
-            )
+            const balance: BigNumber = yield getJsonRpcProvider().getBalance(account)
 
             if (balance.eq(0)) {
                 throw new InsufficientFundsError()

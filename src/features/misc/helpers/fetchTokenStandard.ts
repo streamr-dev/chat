@@ -1,15 +1,15 @@
 import { ToastType } from '$/components/Toast'
+import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
+import { abi as erc20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
+import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
+import { Flag } from '$/features/flag/types'
 import { MiscAction } from '$/features/misc'
+import retoast from '$/features/misc/helpers/retoast'
 import { InterfaceId, TokenStandard } from '$/features/tokenGatedRooms/types'
 import { selectTokenStandard } from '$/hooks/useTokenStandard'
+import { getJsonRpcProvider } from '$/utils'
+import { BigNumber, Contract } from 'ethers'
 import { call, cancelled, put, select } from 'redux-saga/effects'
-import { Flag } from '$/features/flag/types'
-import { BigNumber, Contract, providers } from 'ethers'
-import { abi as erc20abi } from '$/contracts/tokens/ERC20Token.sol/ERC20.json'
-import { abi as erc165abi } from '$/contracts/tokens/ERC165.json'
-import { abi as erc777abi } from '$/contracts/tokens/ERC777Token.sol/ERC777.json'
-import retoast from '$/features/misc/helpers/retoast'
-import { JSON_RPC_URL } from '$/consts'
 
 export default function fetchTokenStandard({
     address,
@@ -37,7 +37,7 @@ export default function fetchTokenStandard({
                     })
                 }
 
-                const provider = new providers.JsonRpcProvider(JSON_RPC_URL)
+                const provider = getJsonRpcProvider()
 
                 const contract = new Contract(address, erc165abi, provider)
 
