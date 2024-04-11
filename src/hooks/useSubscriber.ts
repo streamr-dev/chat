@@ -4,7 +4,7 @@ import { RoomId } from '$/features/room/types'
 import { useWalletAccount, useWalletClient } from '$/features/wallet/hooks'
 import useAbility from '$/hooks/useAbility'
 import { PrivacySetting } from '$/types'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 
 /**
  * Returns an instance of `StreamrClient` associated with the entity (account)

@@ -2,7 +2,7 @@ import App from '$/App'
 import { screen, render } from '@testing-library/react'
 import { act } from 'react-dom/test-utils'
 
-jest.mock('streamr-client', () => ({
+jest.mock('@streamr/sdk', () => ({
     __esModule: true,
     default: () => {
         // Do nothing.

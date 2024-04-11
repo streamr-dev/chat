@@ -7,7 +7,7 @@ import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { call, put, select } from 'redux-saga/effects'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 
 export default function promoteDelegatedAccount({
     roomId,

@@ -1,7 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { RoomId } from '../room/types'
 import { IMessage, MessageState } from './types'
-import StreamrClient from 'streamr-client'
+import StreamrClient from '@streamr/sdk'
 import { Address, IFingerprinted } from '$/types'
 
 export const MessageAction = {

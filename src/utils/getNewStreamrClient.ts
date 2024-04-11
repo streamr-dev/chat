@@ -1,4 +1,4 @@
-import StreamrClient, { StreamrClientConfig } from 'streamr-client'
+import StreamrClient, { StreamrClientConfig } from '@streamr/sdk'
 
 export default function getNewStreamrClient(auth: StreamrClientConfig['auth']) {
     return new StreamrClient({

@@ -1,6 +1,6 @@
 import { Address } from '$/types'
 import isSameAddress from '$/utils/isSameAddress'
-import { PermissionAssignment, Stream, StreamPermission } from 'streamr-client'
+import { PermissionAssignment, Stream, StreamPermission } from '@streamr/sdk'
 
 export type UserPermissions = [StreamPermission[], boolean]
 

@@ -1,7 +1,7 @@
 import type { RoomId } from '$/features/room/types'
 import type { Address } from '$/types'
 import { AccountType } from '$/utils/getAccountType'
-import type { StreamPermission } from 'streamr-client'
+import type { StreamPermission } from '@streamr/sdk'
 
 export interface IMember {
     address: Address

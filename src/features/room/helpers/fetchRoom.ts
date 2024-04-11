@@ -4,7 +4,7 @@ import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import { IRoom } from '../types'
-import { Stream } from 'streamr-client'
+import { Stream } from '@streamr/sdk'
 import getRoomMetadata from '$/utils/getRoomMetadata'
 import fetchStream from '$/utils/fetchStream'
 

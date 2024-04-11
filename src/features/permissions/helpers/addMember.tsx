@@ -1,6 +1,6 @@
 import handleError from '$/utils/handleError'
 import { call, cancelled, put } from 'redux-saga/effects'
-import { Stream, StreamPermission } from 'streamr-client'
+import { Stream, StreamPermission } from '@streamr/sdk'
 import axios from 'axios'
 import { Address } from '$/types'
 import { EnsAction } from '$/features/ens'

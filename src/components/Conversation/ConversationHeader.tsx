@@ -1,6 +1,6 @@
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 import tw from 'twin.macro'
 import useAbility from '$/hooks/useAbility'
 import { RoomAction } from '$/features/room'

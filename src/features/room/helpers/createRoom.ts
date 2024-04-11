@@ -5,7 +5,7 @@ import StreamrClient, {
     StreamMetadata,
     StreamPermission,
     STREAMR_STORAGE_NODE_GERMANY,
-} from 'streamr-client'
+} from '@streamr/sdk'
 import handleError from '$/utils/handleError'
 import preflight from '$/utils/preflight'
 import { PrivacySetting } from '$/types'

@@ -15,7 +15,7 @@ import getRoomMetadata from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import i18n from '$/utils/i18n'
 import { call, cancelled, put, select } from 'redux-saga/effects'
-import { Stream } from 'streamr-client'
+import { Stream } from '@streamr/sdk'
 import handleError from '$/utils/handleError'
 
 function selectRecentRoomId({ room }: State) {

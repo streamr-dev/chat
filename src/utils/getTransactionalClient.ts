@@ -1,6 +1,6 @@
 import { State } from '$/types'
 import { call, select } from 'redux-saga/effects'
-import StreamrClient from 'streamr-client'
+import StreamrClient from '@streamr/sdk'
 
 export default function getTransactionalClient() {
     return call(function* () {

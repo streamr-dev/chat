@@ -10,7 +10,7 @@ import isSameAddress from '$/utils/isSameAddress'
 import setMultiplePermissions from '$/utils/setMultiplePermissions'
 import { providers } from 'ethers'
 import { call, put } from 'redux-saga/effects'
-import type { UserPermissionAssignment } from 'streamr-client'
+import type { UserPermissionAssignment } from '@streamr/sdk'
 
 export default function removeMember({
     roomId,

@@ -1,7 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { Address, OptionalAddress, StorageKey } from '$/types'
 import { WalletIntegrationId, WalletState } from './types'
-import StreamrClient from 'streamr-client'
+import StreamrClient from '@streamr/sdk'
 
 const initialState: WalletState = {
     account: undefined,

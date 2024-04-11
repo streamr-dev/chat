@@ -4,7 +4,7 @@ import { RoomId } from '$/features/room/types'
 import { tokenMetadataCacheKey } from '$/hooks/useTokenMetadata'
 import { Address } from '$/types'
 import getBeginningOfDay from '$/utils/getBeginningOfDay'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 
 export interface FlagState {
     [key: string]: true

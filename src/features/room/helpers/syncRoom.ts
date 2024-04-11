@@ -1,5 +1,5 @@
 import { call, put } from 'redux-saga/effects'
-import { Stream } from 'streamr-client'
+import { Stream } from '@streamr/sdk'
 import handleError from '$/utils/handleError'
 import { RoomAction } from '..'
 import { IRoom } from '$/features/room/types'

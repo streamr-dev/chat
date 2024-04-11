@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { StreamPermission } from 'streamr-client'
+import { StreamPermission } from '@streamr/sdk'
 import { OptionalAddress } from '$/types'
 import usePermissions from '$/hooks/usePermissions'
 import { RoomId } from '$/features/room/types'

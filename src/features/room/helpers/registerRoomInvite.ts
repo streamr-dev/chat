@@ -1,5 +1,5 @@
 import { call, put } from 'redux-saga/effects'
-import StreamrClient, { StreamPermission } from 'streamr-client'
+import StreamrClient, { StreamPermission } from '@streamr/sdk'
 import { RoomAction } from '..'
 import handleError from '$/utils/handleError'
 import waitForPermissions from '$/utils/waitForPermissions'
