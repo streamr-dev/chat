@@ -15,7 +15,7 @@
     "dependencies": {
         "@coinbase/wallet-sdk": "^3.7.1",
         "@emotion/react": "^11.10.6",
-        "@emotion/styled": "^11.10.6",
+        "@emotion/styled": "^11.14.0",
         "@ensdomains/ens-avatar": "^0.2.1",
         "@ethersproject/bignumber": "^5.7.0",
         "@ethersproject/experimental": "^5.7.0",
