@@ -5,7 +5,7 @@ import { RoomId } from '$/features/room/types'
 import { selectPrivacy } from '$/hooks/usePrivacy'
 import { PrivacySetting } from '$/types'
 import fetchPrivacy from '$/utils/fetchPrivacy'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 import handleError from '$/utils/handleError'
 import { call, fork, put, select } from 'redux-saga/effects'
@@ -24,7 +24,7 @@ export default function fetchStream(roomId: RoomId) {
                 tokenIds = [],
                 minRequiredBalance = '0',
                 stakingEnabled = false,
-            } = getRoomMetadata(stream)
+            }: RoomMetadata = yield getRoomMetadata(stream)
 
             yield put(
                 RoomAction.cacheTokenGate({

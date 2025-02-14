@@ -1,19 +1,19 @@
-import { call, put } from 'redux-saga/effects'
+import { ToastType } from '$/components/Toast'
+import RedundantRenameError from '$/errors/RedundantRenameError'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
-import preflight from '$/utils/preflight'
-import { RoomAction } from '..'
-import handleError from '$/utils/handleError'
+import { FlagAction } from '$/features/flag'
+import { Flag } from '$/features/flag/types'
+import { MiscAction } from '$/features/misc'
 import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
-import RedundantRenameError from '$/errors/RedundantRenameError'
-import { Flag } from '$/features/flag/types'
-import { FlagAction } from '$/features/flag'
-import { Stream, StreamMetadata } from '@streamr/sdk'
-import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
-import { ToastType } from '$/components/Toast'
 import fetchStream from '$/utils/fetchStream'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
+import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
-import { MiscAction } from '$/features/misc'
+import preflight from '$/utils/preflight'
+import { Stream } from '@streamr/sdk'
+import { call, put } from 'redux-saga/effects'
+import { RoomAction } from '..'
 
 export default function renameRoom({
     roomId,
@@ -28,7 +28,7 @@ export default function renameRoom({
                 throw new RoomNotFoundError(roomId)
             }
 
-            const roomMetadata = getRoomMetadata(stream)
+            const roomMetadata: RoomMetadata = yield getRoomMetadata(stream)
 
             if (roomMetadata.name === name) {
                 yield put(

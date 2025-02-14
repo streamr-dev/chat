@@ -5,7 +5,7 @@ import { RoomAction } from '..'
 import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import fetchStream from '$/utils/fetchStream'
 
 export default function syncRoom({
@@ -33,7 +33,7 @@ export default function syncRoom({
                 }
 
                 if (permissions.length || pinned) {
-                    const { name = '' } = getRoomMetadata(stream)
+                    const { name = '' }: RoomMetadata = yield getRoomMetadata(stream)
 
                     yield put(
                         RoomAction.renameLocal({

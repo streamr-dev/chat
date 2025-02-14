@@ -7,7 +7,7 @@ import { IRoom, RoomId } from '$/features/room/types'
 import { Stream } from '@streamr/sdk'
 import RoomNotFoundError from '$/errors/RoomNotFoundError'
 import handleError from '$/utils/handleError'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import { Address } from '$/types'
 import getUserPermissions from '$/utils/getUserPermissions'
 import { PreferencesAction } from '$/features/preferences'
@@ -29,7 +29,12 @@ function quietPin(roomId: RoomId, requester: Address) {
                 throw new RoomNotFoundError(roomId)
             }
 
-            const { createdAt, createdBy, tokenAddress, name = '' } = getRoomMetadata(stream)
+            const {
+                createdAt,
+                createdBy,
+                tokenAddress,
+                name = '',
+            }: RoomMetadata = yield getRoomMetadata(stream)
 
             if (tokenAddress) {
                 // Skip quiet-pinning token gated rooms (by design).

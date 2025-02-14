@@ -8,8 +8,8 @@ export interface RoomMetadata
     name?: string
 }
 
-export default function getRoomMetadata(stream: Stream): RoomMetadata {
-    const { description: name, extensions } = parseStreamMetadata(stream.getMetadata())
+export default async function getRoomMetadata(stream: Stream): Promise<RoomMetadata> {
+    const { description: name, extensions } = parseStreamMetadata(await stream.getMetadata())
 
     const { ['thechat.eth']: chatExtension } = extensions
 

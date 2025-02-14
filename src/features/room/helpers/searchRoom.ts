@@ -1,6 +1,6 @@
 import { RoomAction } from '$/features/room'
 import fetchStream from '$/utils/fetchStream'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
 import { call, put } from 'redux-saga/effects'
 import { Stream } from '@streamr/sdk'
@@ -21,7 +21,7 @@ export default function searchRoom({ roomId }: ReturnType<typeof RoomAction.sear
                 return
             }
 
-            const { tokenAddress, name = '' } = getRoomMetadata(stream)
+            const { tokenAddress, name = '' }: RoomMetadata = yield getRoomMetadata(stream)
 
             yield put(
                 RoomAction.cacheSearchResult({
