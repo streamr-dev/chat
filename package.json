@@ -1,7 +1,7 @@
 {
     "name": "chat",
     "private": true,
-    "version": "0.0.0",
+    "version": "0.1.0",
     "scripts": {
         "check": "tsc --noEmit && npm run lint && npm test",
         "build": "tsc && vite build",
