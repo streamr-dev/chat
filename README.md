@@ -2,7 +2,7 @@
 
 Visit https://thechat.app!
 
-___
+---
 
 ## Installation
 
@@ -23,10 +23,20 @@ Finally, you can start the app for development and usage in your own machine wit
 ```bash
 npm start
 ```
+
 The app will be available at [http://localhost:5173/](http://localhost:5173/)
 
 If you want to make the app available to other machines in your network, you can use the following command:
 
 ```bash
 npm run start:prod
+```
+
+## Deployment
+
+Add a tag on `main` and push them together.
+
+```bash
+npm version patch
+git push --atomic main v1.2.3
 ```
