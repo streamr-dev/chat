@@ -158,7 +158,7 @@ export default function joinRoom(
                             }
 
                             if (
-                                isSameAddress(assignment.user, requester) &&
+                                isSameAddress(assignment.userId, requester) &&
                                 assignment.permissions.length
                             ) {
                                 return true

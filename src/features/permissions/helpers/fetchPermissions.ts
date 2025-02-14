@@ -24,7 +24,7 @@ export default function fetchPermissions({
             }
 
             assignments.forEach((assignment) => {
-                if ('public' in assignment || isSameAddress(assignment.user, address)) {
+                if ('public' in assignment || isSameAddress(assignment.userId, address)) {
                     assignment.permissions.forEach((permission) => {
                         permissions[permission] = true
                     })

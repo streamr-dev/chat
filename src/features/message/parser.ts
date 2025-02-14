@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export function parseMessage(content: unknown) {
+export function parseChatMessage(content: unknown) {
     return z
         .object({
             content: z.string(),

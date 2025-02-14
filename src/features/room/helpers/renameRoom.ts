@@ -67,7 +67,7 @@ export default function renameRoom({
 
             yield preflight(requester)
 
-            yield stream.update({
+            yield stream.setMetadata({
                 description: name,
                 extensions: {
                     'thechat.eth': {
@@ -75,7 +75,7 @@ export default function renameRoom({
                         updatedAt: Date.now(),
                     },
                 },
-            } as Partial<StreamMetadata> & Record<'extensions', Partial<Record<'thechat.eth', RoomMetadata>>>)
+            })
 
             yield put(
                 RoomAction.renameLocal({

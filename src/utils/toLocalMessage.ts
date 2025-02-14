@@ -1,9 +1,8 @@
-import { IMessage, StreamMessage } from '$/features/message/types'
-import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
+import { parseChatMessage } from '$/features/message/parser'
+import { IMessage } from '$/features/message/types'
+import { StreamMessage } from '@streamr/sdk'
 
-export default function toLocalMessage(
-    message: StreamrMessage<StreamMessage>
-): Omit<IMessage, 'owner'> {
+export default function toLocalMessage(message: StreamMessage): Omit<IMessage, 'owner'> {
     const {
         messageId: {
             msgChainId,
@@ -13,17 +12,12 @@ export default function toLocalMessage(
             timestamp: createdAt,
             streamId: roomId,
         },
-        serializedContent,
     } = message
 
     let content: undefined | string
 
     try {
-        const parsed = message.getParsedContent()
-
-        if (typeof parsed !== 'string') {
-            content = parsed.content
-        }
+        content = parseChatMessage(message.getParsedContent()).content
     } catch (e) {
         // Still encrypted.
     }
@@ -34,7 +28,6 @@ export default function toLocalMessage(
         createdAt,
         createdBy,
         content,
-        serializedContent,
         updatedAt: createdAt,
         id,
         roomId,

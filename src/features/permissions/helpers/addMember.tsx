@@ -72,9 +72,9 @@ export default function addMember({
                 type: ToastType.Processing,
             })
 
-            const user: null | string = yield resolveName(member)
+            const userId: null | string = yield resolveName(member)
 
-            if (!user) {
+            if (!userId) {
                 throw new Error('Address could not be resolved')
             }
 
@@ -84,7 +84,7 @@ export default function addMember({
                 throw new RoomNotFoundError(roomId)
             }
 
-            const [currentPermissions]: UserPermissions = yield getUserPermissions(user, stream)
+            const [currentPermissions]: UserPermissions = yield getUserPermissions(userId, stream)
 
             if (currentPermissions.length) {
                 throw new MemberExistsError(member)
@@ -94,7 +94,7 @@ export default function addMember({
                 roomId,
                 [
                     {
-                        user,
+                        userId,
                         permissions: [StreamPermission.GRANT, StreamPermission.SUBSCRIBE],
                     },
                 ],
@@ -112,7 +112,7 @@ export default function addMember({
                 yield put(
                     EnsAction.store({
                         record: {
-                            address: user,
+                            address: userId,
                             content: member,
                         },
                         fingerprint: Flag.isENSNameBeingStored(member),

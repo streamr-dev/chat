@@ -34,7 +34,7 @@ export default function setMultiplePermissions(
         })
 
         for (let i = 0; i < assignments.length; i++) {
-            yield put(PermissionsAction.invalidateAll({ roomId, address: assignments[i].user }))
+            yield put(PermissionsAction.invalidateAll({ roomId, address: assignments[i].userId }))
         }
 
         if (validate === true) {
@@ -44,7 +44,7 @@ export default function setMultiplePermissions(
 
             assignments.forEach((a) => {
                 // Array#sort() mutates the array thus we use a copy.
-                assignmentsMap[a.user.toLowerCase()] = [...a.permissions].sort()
+                assignmentsMap[a.userId.toLowerCase()] = [...a.permissions].sort()
 
                 if (!a.permissions.length) {
                     emptyAssignments.push(a)
@@ -65,11 +65,11 @@ export default function setMultiplePermissions(
                 for (let i = 0; i < current.length; i++) {
                     const a = current[i]
 
-                    if (!('user' in a)) {
+                    if (!('userId' in a)) {
                         continue
                     }
 
-                    const user = a.user.toLowerCase()
+                    const user = a.userId.toLowerCase()
 
                     if (copy[user]) {
                         const left = JSON.stringify([...a.permissions].sort())
