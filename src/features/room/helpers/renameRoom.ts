@@ -7,11 +7,15 @@ import { MiscAction } from '$/features/misc'
 import { IRoom } from '$/features/room/types'
 import db from '$/utils/db'
 import fetchStream from '$/utils/fetchStream'
-import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
+import getRoomMetadata, {
+    ParsedStreamMetadata,
+    parseStreamMetadata,
+    RoomMetadata,
+} from '$/utils/getRoomMetadata'
 import handleError from '$/utils/handleError'
 import i18n from '$/utils/i18n'
 import preflight from '$/utils/preflight'
-import { Stream } from '@streamr/sdk'
+import { Stream, StreamMetadata } from '@streamr/sdk'
 import { call, put } from 'redux-saga/effects'
 import { RoomAction } from '..'
 
@@ -28,9 +32,14 @@ export default function renameRoom({
                 throw new RoomNotFoundError(roomId)
             }
 
-            const roomMetadata: RoomMetadata = yield getRoomMetadata(stream)
+            const { name: persistedName, ...roomMetadata }: RoomMetadata = yield getRoomMetadata(
+                stream
+            )
 
-            if (roomMetadata.name === name) {
+            const { client: _, ...streamMetadata }: ParsedStreamMetadata =
+                yield parseStreamMetadata(yield stream.getMetadata())
+
+            if (persistedName === name) {
                 yield put(
                     MiscAction.toast({
                         title: i18n('roomRenameToast.upToDateTitle'),
@@ -68,8 +77,10 @@ export default function renameRoom({
             yield preflight(requester)
 
             yield stream.setMetadata({
+                ...streamMetadata,
                 description: name,
                 extensions: {
+                    ...streamMetadata.extensions,
                     'thechat.eth': {
                         ...roomMetadata,
                         updatedAt: Date.now(),

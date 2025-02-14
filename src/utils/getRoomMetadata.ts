@@ -9,7 +9,9 @@ export interface RoomMetadata
 }
 
 export default async function getRoomMetadata(stream: Stream): Promise<RoomMetadata> {
-    const { description: name, extensions } = parseStreamMetadata(await stream.getMetadata())
+    const streamMetadata = parseStreamMetadata(await stream.getMetadata())
+
+    const { description: name, extensions } = streamMetadata
 
     const { ['thechat.eth']: chatExtension } = extensions
 
@@ -19,7 +21,7 @@ export default async function getRoomMetadata(stream: Stream): Promise<RoomMetad
     }
 }
 
-function parseStreamMetadata(content: unknown) {
+export function parseStreamMetadata(content: unknown) {
     return z
         .object({
             description: z.string().optional(),
@@ -27,11 +29,15 @@ function parseStreamMetadata(content: unknown) {
                 .object({
                     'thechat.eth': RoomMetadata.passthrough().optional().default({}),
                 })
+                .passthrough()
                 .optional()
                 .default({}),
         })
+        .passthrough()
         .parse(content)
 }
+
+export type ParsedStreamMetadata = ReturnType<typeof parseStreamMetadata>
 
 const RoomMetadata = z.object({
     createdBy: z.string().optional(),

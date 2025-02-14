@@ -51,7 +51,7 @@ function formatMessage(message: string): ReactNode {
     return (
         <>
             {first}
-            {links.map((href, i) => (
+            {links.map((_, i) => (
                 <Fragment key={i}>
                     <Link href={links[i]}>{links[i]}</Link>
                     {texts[i]}
