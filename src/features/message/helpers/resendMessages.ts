@@ -1,13 +1,12 @@
 import { Flag } from '$/features/flag/types'
 import { MessageAction } from '$/features/message'
-import { IResend, StreamMessage } from '$/features/message/types'
+import { IResend } from '$/features/message/types'
 import db from '$/utils/db'
 import getBeginningOfDay, { DayInMillis, TimezoneOffset } from '$/utils/getBeginningOfDay'
 import handleError from '$/utils/handleError'
 import { resend as resendUtil } from 'streamr-client-react'
 import toLocalMessage from '$/utils/toLocalMessage'
 import { call, put } from 'redux-saga/effects'
-import { StreamMessage as StreamrMessage } from 'streamr-client-protocol'
 
 function formatFilter(timestamp: undefined | number, exact: boolean) {
     if (typeof timestamp === 'undefined') {
@@ -84,8 +83,7 @@ export default function resendMessages({
             let minCreatedAt: undefined | number = undefined
 
             while (true) {
-                const { value, done }: ReadableStreamReadResult<StreamrMessage<StreamMessage>> =
-                    yield queue.next()
+                const { value, done } = yield queue.next()
 
                 if (value) {
                     const message = toLocalMessage(value)

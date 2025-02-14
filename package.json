@@ -24,7 +24,7 @@
         "@metamask/eth-sig-util": "^5.0.2",
         "@reduxjs/toolkit": "^1.9.3",
         "@rollup/plugin-inject": "^5.0.3",
-        "@streamr/sdk": "^100.2.2",
+        "@streamr/sdk": "^102.0.0",
         "@walletconnect/ethereum-provider": "^2.8.4",
         "@web3-react/coinbase-wallet": "^8.2.0",
         "@web3-react/core": "^8.2.0",
@@ -52,13 +52,13 @@
         "react-router-dom": "^6.11.1",
         "react-select": "^5.7.0",
         "redux-saga": "^1.2.3",
-        "streamr-client-protocol": "^13.0.0",
-        "streamr-client-react": "^3.2.0",
+        "streamr-client-react": "^3.3.0",
         "streamr-ui": "^1.0.0-experimental.0",
         "tailwindcss": "^3.3.2",
         "toasterhea": "^1.0.3",
         "twin.macro": "^3.3.1",
-        "uuid": "^9.0.0"
+        "uuid": "^9.0.0",
+        "zod": "^3.24.2"
     },
     "devDependencies": {
         "@babel/plugin-transform-react-jsx": "^7.21.0",

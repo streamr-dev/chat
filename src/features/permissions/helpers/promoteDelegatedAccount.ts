@@ -21,7 +21,7 @@ export default function promoteDelegatedAccount({
                 roomId,
                 [
                     {
-                        user: delegatedAddress,
+                        userId: delegatedAddress,
                         permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
                     },
                 ],

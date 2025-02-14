@@ -11,7 +11,7 @@ import { Address } from '$/types'
 import { getJsonRpcProvider } from '$/utils'
 import delegationPreflight from '$/utils/delegationPreflight'
 import getJoinPolicyRegistry from '$/utils/getJoinPolicyRegistry'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import getSigner from '$/utils/getSigner'
 import getTransactionalClient from '$/utils/getTransactionalClient'
 import getWalletProvider from '$/utils/getWalletProvider'
@@ -44,7 +44,12 @@ export default function joinRoom(
     return call(function* () {
         const roomId = stream.id
 
-        const { name, tokenAddress, tokenType, stakingEnabled = false } = getRoomMetadata(stream)
+        const {
+            name,
+            tokenAddress,
+            tokenType,
+            stakingEnabled = false,
+        }: RoomMetadata = yield getRoomMetadata(stream)
 
         const toast = retoastConstroller || retoast()
 
@@ -158,7 +163,7 @@ export default function joinRoom(
                             }
 
                             if (
-                                isSameAddress(assignment.user, requester) &&
+                                isSameAddress(assignment.userId, requester) &&
                                 assignment.permissions.length
                             ) {
                                 return true

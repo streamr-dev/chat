@@ -10,7 +10,7 @@ async function getRoomIds(client: StreamrClient, account: string) {
     const ids: RoomId[] = []
 
     const search = client.searchStreams(Prefix.Room, {
-        user: account,
+        userId: account,
         allowPublic: false,
     })
 

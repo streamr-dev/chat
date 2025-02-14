@@ -5,7 +5,7 @@ import db from '$/utils/db'
 import handleError from '$/utils/handleError'
 import { IRoom } from '../types'
 import { Stream } from '@streamr/sdk'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import fetchStream from '$/utils/fetchStream'
 
 export default function fetchRoom({
@@ -20,7 +20,7 @@ export default function fetchRoom({
                 throw new RoomNotFoundError(roomId)
             }
 
-            const { createdAt, createdBy, name = '' } = getRoomMetadata(stream)
+            const { createdAt, createdBy, name = '' }: RoomMetadata = yield getRoomMetadata(stream)
 
             const owner = requester.toLowerCase()
 

@@ -29,11 +29,11 @@ export default function acceptInvite({
                 roomId,
                 [
                     {
-                        user: delegatedAccount,
+                        userId: delegatedAccount,
                         permissions: [StreamPermission.PUBLISH, StreamPermission.SUBSCRIBE],
                     },
                     {
-                        user: member,
+                        userId: member,
                         permissions: [
                             StreamPermission.GRANT,
                             StreamPermission.EDIT,

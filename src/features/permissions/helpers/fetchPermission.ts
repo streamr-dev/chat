@@ -19,7 +19,7 @@ export default function fetchPermission({
             }
 
             const value: boolean = yield stream.hasPermission({
-                user: address,
+                userId: address,
                 permission,
                 allowPublic: true,
             })

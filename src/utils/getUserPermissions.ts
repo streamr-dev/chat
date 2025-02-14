@@ -25,7 +25,7 @@ export default async function getUserPermissions(
             continue
         }
 
-        if (isSameAddress(assignment.user, user)) {
+        if (isSameAddress(assignment.userId, user)) {
             permissions = assignment.permissions
         }
     }

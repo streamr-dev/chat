@@ -11,7 +11,7 @@ import retoast from '$/features/misc/helpers/retoast'
 import { Address, State } from '$/types'
 import db from '$/utils/db'
 import fetchStream from '$/utils/fetchStream'
-import getRoomMetadata from '$/utils/getRoomMetadata'
+import getRoomMetadata, { RoomMetadata } from '$/utils/getRoomMetadata'
 import getUserPermissions, { UserPermissions } from '$/utils/getUserPermissions'
 import i18n from '$/utils/i18n'
 import { call, cancelled, put, select } from 'redux-saga/effects'
@@ -144,7 +144,12 @@ export default function preselectRoom({
                     throw new RoomNotFoundError(roomId)
                 }
 
-                const { createdAt, createdBy, tokenAddress, name = '' } = getRoomMetadata(stream)
+                const {
+                    createdAt,
+                    createdBy,
+                    tokenAddress,
+                    name = '',
+                }: RoomMetadata = yield getRoomMetadata(stream)
 
                 yield toast.pop({
                     title: i18n('preselectToast.pinningTitle', name, roomId),

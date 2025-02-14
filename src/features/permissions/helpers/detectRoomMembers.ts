@@ -26,7 +26,7 @@ export default function detectRoomMembers({
             const assignments: PermissionAssignment[] = yield stream.getPermissions()
 
             for (const assignment of assignments) {
-                if (!('user' in assignment) || !assignment.user) {
+                if (!('userId' in assignment) || !assignment.userId) {
                     // Skip `PublicPermissionAssignment` items.
                     continue
                 }
@@ -35,13 +35,13 @@ export default function detectRoomMembers({
                     continue
                 }
 
-                const accountType = yield* getAccountType(assignment.user)
+                const accountType = yield* getAccountType(assignment.userId)
 
                 if (accountType === AccountType.Delegated) {
                     yield put(
                         DelegationAction.lookup({
-                            delegated: assignment.user,
-                            fingerprint: Flag.isLookingUpDelegation(assignment.user),
+                            delegated: assignment.userId,
+                            fingerprint: Flag.isLookingUpDelegation(assignment.userId),
                         })
                     )
 
@@ -51,7 +51,7 @@ export default function detectRoomMembers({
                 }
 
                 members.push({
-                    address: assignment.user,
+                    address: assignment.userId,
                     permissions: assignment.permissions,
                     accountType,
                 })

@@ -23,7 +23,7 @@ export default function registerRoomInvite({
                 for (let i = 0; i < assignments.length; i++) {
                     const a = assignments[i]
 
-                    if ('user' in a && isSameAddress(a.user, invitee)) {
+                    if ('userId' in a && isSameAddress(a.userId, invitee)) {
                         return (
                             a.permissions.length === 2 &&
                             a.permissions.includes(StreamPermission.GRANT) &&

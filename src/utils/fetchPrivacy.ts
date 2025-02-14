@@ -3,7 +3,9 @@ import getRoomMetadata from '$/utils/getRoomMetadata'
 import { Stream, StreamPermission } from '@streamr/sdk'
 
 export default async function fetchPrivacy(stream: Stream) {
-    if (getRoomMetadata(stream).tokenAddress) {
+    const roomMetadata = await getRoomMetadata(stream)
+
+    if (roomMetadata.tokenAddress) {
         return PrivacySetting.TokenGated
     }
 

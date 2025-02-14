@@ -29,14 +29,14 @@ export default function removeMember({
 
             const assignments: UserPermissionAssignment[] = [
                 {
-                    user: member,
+                    userId: member,
                     permissions: [],
                 },
             ]
 
             if (!isSameAddress(delegatedWallet, ZeroAddress)) {
                 assignments.push({
-                    user: delegatedWallet,
+                    userId: delegatedWallet,
                     permissions: [],
                 })
             }

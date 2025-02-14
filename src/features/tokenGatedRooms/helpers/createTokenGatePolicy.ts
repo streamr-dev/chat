@@ -165,14 +165,14 @@ export default function createTokenGatePolicy({
                                 roomId,
                                 [
                                     {
-                                        user: requester,
+                                        userId: requester,
                                         permissions: [
                                             StreamPermission.EDIT,
                                             StreamPermission.DELETE,
                                         ],
                                     },
                                     {
-                                        user: policyAddress,
+                                        userId: policyAddress,
                                         permissions: [StreamPermission.GRANT],
                                     },
                                 ],
