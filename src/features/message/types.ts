@@ -1,5 +1,6 @@
 import { RoomId } from '$/features/room/types'
 import { Address, IRecord } from '$/types'
+import { parseMessage } from '$/features/message/parser'
 
 export interface IMessage extends IRecord {
     content?: undefined | string
@@ -10,11 +11,7 @@ export interface IMessage extends IRecord {
     seenAt?: number
 }
 
-export interface StreamMessage {
-    content: string
-    createdBy: string
-    id: string
-}
+export type ChatMessage = ReturnType<typeof parseMessage>
 
 export interface IResend {
     roomId: RoomId
